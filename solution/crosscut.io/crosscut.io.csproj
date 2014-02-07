@@ -40,10 +40,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="copy.cs" />
-    <Compile Include="codedom.cs" />
+    <Compile Include="dom.cs" />
     <Compile Include="file.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="serializers.cs" />
+    <Compile Include="xml.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
