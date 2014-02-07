@@ -43,6 +43,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "crosscut.security", "crossc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "crosscut.goodies", "crosscut.goodies\crosscut.goodies.csproj", "{F21CB427-5DD9-41B2-A993-17CD8085535A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{994ADDCE-FC85-436E-8F9A-FCCE54BE307C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web.prod.test", "xcal.application.server.web.prod.test\xcal.application.server.web.prod.test.csproj", "{025CCBED-6906-4908-9E06-5BB452ABE37A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web.dev.test", "xcal.application.server.web.dev.test\xcal.application.server.web.dev.test.csproj", "{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web.hybrid.test", "xcal.application.server.web.hybrid.test\xcal.application.server.web.hybrid.test.csproj", "{1F63864F-431D-4D06-97CE-322914B059F0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +117,18 @@ Global
 		{F21CB427-5DD9-41B2-A993-17CD8085535A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F21CB427-5DD9-41B2-A993-17CD8085535A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F21CB427-5DD9-41B2-A993-17CD8085535A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{025CCBED-6906-4908-9E06-5BB452ABE37A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{025CCBED-6906-4908-9E06-5BB452ABE37A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{025CCBED-6906-4908-9E06-5BB452ABE37A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{025CCBED-6906-4908-9E06-5BB452ABE37A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F63864F-431D-4D06-97CE-322914B059F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F63864F-431D-4D06-97CE-322914B059F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F63864F-431D-4D06-97CE-322914B059F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F63864F-431D-4D06-97CE-322914B059F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -129,5 +149,8 @@ Global
 		{F21CB427-5DD9-41B2-A993-17CD8085535A} = {0C7DBB41-D410-47F4-9457-A30932FF94F2}
 		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0} = {5B408BB2-D4AC-4E37-856D-048127414AB7}
 		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD} = {5B408BB2-D4AC-4E37-856D-048127414AB7}
+		{025CCBED-6906-4908-9E06-5BB452ABE37A} = {994ADDCE-FC85-436E-8F9A-FCCE54BE307C}
+		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422} = {994ADDCE-FC85-436E-8F9A-FCCE54BE307C}
+		{1F63864F-431D-4D06-97CE-322914B059F0} = {994ADDCE-FC85-436E-8F9A-FCCE54BE307C}
 	EndGlobalSection
 EndGlobal
