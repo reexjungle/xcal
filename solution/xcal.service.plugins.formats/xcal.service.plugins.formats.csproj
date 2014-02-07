@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}</ProjectGuid>
+    <ProjectGuid>{7496B2C6-BD7E-44A9-9C33-02CD399F0DE0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.xcal.infrastructure.ormlite.extensions</RootNamespace>
-    <AssemblyName>xcal.infrastructure.ormlite.extensions</AssemblyName>
+    <RootNamespace>reexmonkey.xcal.service.plugins.formats</RootNamespace>
+    <AssemblyName>xcal.service.plugins.formats</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
