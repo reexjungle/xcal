@@ -39,6 +39,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="enumerations.cs" />
+    <Compile Include="ialarm.cs" />
+    <Compile Include="icalendar.cs" />
+    <Compile Include="icomponent.cs" />
+    <Compile Include="ievent.cs" />
+    <Compile Include="iparameters.cs" />
+    <Compile Include="iproperties.cs" />
+    <Compile Include="itimezone.cs" />
+    <Compile Include="ivalues.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
