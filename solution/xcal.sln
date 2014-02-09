@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2013 for Web
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "application", "application", "{A6C8E01B-8688-4D61-AACF-E045B9BC68C6}"
 EndProject
@@ -27,10 +27,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.domain.operations", "x
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.domain.extensions", "xcal.domain.extensions\xcal.domain.extensions.csproj", "{42829410-CF99-4F3D-999C-29B6AC810143}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.infrastructure.ormlite.extensions", "xcal.infrastructure.ormlite.extensions\xcal.infrastructure.ormlite.extensions.csproj", "{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.infrastructure.redis.extensions", "xcal.infrastructure.redis.extensions\xcal.infrastructure.redis.extensions.csproj", "{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.service.interfaces", "xcal.service.interfaces\xcal.service.interfaces.csproj", "{0B922294-6A3F-4232-A150-CAC6BFC7BCFD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.service.repositories.contracts", "xcal.service.repositories.contracts\xcal.service.repositories.contracts.csproj", "{1898784A-99B2-4226-8C33-689EA6558CFA}"
@@ -54,6 +50,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "crosscut.essentials", "crosscut.essentials\crosscut.essentials.csproj", "{EEDF1367-A0FC-400A-A649-716261252B9E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web.local", "xcal.application.server.web.local\xcal.application.server.web.local.csproj", "{22781B88-7BD4-4A97-B67D-3854AFBF6452}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "infrastructure.ormlite.extensions", "infrastructure.ormlite.extensions\infrastructure.ormlite.extensions.csproj", "{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "infrastructure.redis.extensions", "infrastructure.redis.extensions\infrastructure.redis.extensions.csproj", "{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,14 +89,6 @@ Global
 		{42829410-CF99-4F3D-999C-29B6AC810143}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42829410-CF99-4F3D-999C-29B6AC810143}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42829410-CF99-4F3D-999C-29B6AC810143}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0B922294-6A3F-4232-A150-CAC6BFC7BCFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0B922294-6A3F-4232-A150-CAC6BFC7BCFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B922294-6A3F-4232-A150-CAC6BFC7BCFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -141,6 +133,14 @@ Global
 		{22781B88-7BD4-4A97-B67D-3854AFBF6452}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22781B88-7BD4-4A97-B67D-3854AFBF6452}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22781B88-7BD4-4A97-B67D-3854AFBF6452}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
