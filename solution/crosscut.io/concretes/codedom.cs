@@ -6,7 +6,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.IO;
 
-namespace reexmonkey.crosscut.io
+namespace reexmonkey.crosscut.io.concretes
 {
     public enum CodeDomLanguage
     { 

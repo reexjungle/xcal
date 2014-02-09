@@ -3,9 +3,21 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Security.Cryptography;
 
-namespace reexmonkey.crosscut.io
+namespace reexmonkey.crosscut.io.concretes
 {
+    /// <summary>
+    /// Represents an enumeration of cyptographic hash algorithms
+    /// </summary>
+    public enum HashAlgorithmMode
+    {
+        SHA1 = 0x0001,
+        SHA256 = 0x0002,
+        SHA384 = 0x0004,
+        SHA512 = 0x0008,
+        MD5 = 0x0010
+    }
 
     public static class FileExtensions
     {
@@ -92,6 +104,23 @@ namespace reexmonkey.crosscut.io
         }
 
         /// <summary>
+        /// Creates a relative path from one file or folder to another.
+        /// </summary>
+        /// <param name="origin">Contains the directory that defines the start of the relative path.</param>
+        /// <param name="destination">Contains the path that defines the endpoint of the relative path.</param>
+        /// <returns>The relative path from the start directory to the end path</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <remarks>Acknowledgements to: http://stackoverflow.com/questions/275689/how-to-get-relative-path-from-absolute-path</remarks>  
+        public static string GetRelativePath(this string origin, string destination)
+        {
+            if (origin == destination) return Path.GetFileName(origin);
+            Uri relativeUri = new Uri(origin).MakeRelativeUri(new Uri(destination));
+            var relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+            return relativePath.Replace('/', Path.DirectorySeparatorChar);
+
+        }
+
+        /// <summary>
         /// Appends a path to a root path 
         /// </summary>
         /// <param name="root">The root path</param>
@@ -102,6 +131,51 @@ namespace reexmonkey.crosscut.io
             StringBuilder sb = new StringBuilder(root);
             sb.AppendFormat("\\{0}", path);
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="mode"></param>
+        /// <returns></returns>
+        public static string GetCheckSum(this string path, HashAlgorithmMode mode)
+        {
+            byte[] checksum = null;
+            using (var sr = new StreamReader(path))
+            {
+                switch (mode)
+                {
+                    case HashAlgorithmMode.MD5:
+                        var md5h = new MD5CryptoServiceProvider();
+                        checksum = md5h.ComputeHash(sr.BaseStream);
+                        break;
+                    case HashAlgorithmMode.SHA1:
+                        var sha1h = new SHA1CryptoServiceProvider();
+                        checksum = sha1h.ComputeHash(sr.BaseStream);
+                        break;
+                    case HashAlgorithmMode.SHA256:
+                        var sha2h = new SHA256CryptoServiceProvider();
+                        checksum = sha2h.ComputeHash(sr.BaseStream);
+                        break;
+                    case HashAlgorithmMode.SHA384:
+                        var sha3h = new SHA384CryptoServiceProvider();
+                        checksum = sha3h.ComputeHash(sr.BaseStream);
+                        break;
+                    case HashAlgorithmMode.SHA512:
+                        var sha5h = new SHA512CryptoServiceProvider();
+                        checksum = sha5h.ComputeHash(sr.BaseStream);
+                        break;
+                    default:
+                        var defh = new SHA1CryptoServiceProvider();
+                        checksum = defh.ComputeHash(sr.BaseStream);
+                        break;
+
+                }
+
+            }
+
+            return BitConverter.ToString(checksum);
         }
     }
 

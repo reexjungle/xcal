@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -39,11 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="copy.cs" />
-    <Compile Include="dom.cs" />
-    <Compile Include="file.cs" />
+    <Compile Include="concretes\copy.cs" />
+    <Compile Include="concretes\codedom.cs" />
+    <Compile Include="concretes\file.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="xml.cs" />
+    <Compile Include="concretes\xml.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

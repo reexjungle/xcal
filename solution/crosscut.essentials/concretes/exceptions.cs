@@ -5,9 +5,9 @@ using System.Text;
 
 namespace reexmonkey.crosscut.essentials.concretes
 {
-    #region extensions...
+    #region extensions
 
-    public class ExceptionExtensions
+    public static class ExceptionExtensions
     {
         public static void ThrowIfNull<TValue>(this TValue source, string paramName = null, string message = null)
         {
@@ -27,7 +27,7 @@ namespace reexmonkey.crosscut.essentials.concretes
  
     #endregion
 
-    #region helpers...
+    #region helpers
 
     /// <summary>
     /// Provides generic exception services

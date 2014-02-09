@@ -40,12 +40,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="concretes\collections.cs" />
+    <Compile Include="concretes\comparer.cs" />
     <Compile Include="concretes\exceptions.cs" />
+    <Compile Include="concretes\math.cs" />
+    <Compile Include="concretes\numerical.cs" />
+    <Compile Include="contracts\identifier.cs" />
+    <Compile Include="contracts\paging.cs" />
+    <Compile Include="contracts\repository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="contracts\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
