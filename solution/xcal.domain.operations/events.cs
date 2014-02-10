@@ -1,17 +1,14 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using ServiceStack.ServiceHost;
-using reexmonkey.crosscut.essentials.contracts;
-using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 
 namespace uniable.uview.domains.operations
 {
 
-    #region VEVENT methods based on RFC 5546
+    #region VEVENT operations based on RFC 5546
 
     /// <summary>
     /// Represents class to request for the publishing of events
@@ -37,17 +34,7 @@ namespace uniable.uview.domains.operations
         /// </summary>
         [DataMember]
         public string ProductId { get; set; }
-        
-        /// <summary>
-        /// Constructor of request class.
-        /// </summary>
-        /// <param name="events">The list of events to publish</param>
-        public PublishEvents(string prodid, List<VEVENT> events, List<VTIMEZONE> timezones = null)
-        {
-            this.ProductId = prodid;
-            this.Events = events;
-            this.TimeZones = timezones;
-        }
+       
     }
 
     /// <summary>
@@ -75,22 +62,6 @@ namespace uniable.uview.domains.operations
         [DataMember]
         public string ProductId { get; set; }
 
-        /// <summary>
-        /// Constructor of request class.
-        /// </summary>
-        /// <param name="events">The list of events to publish</param>
-        public RescheduleEvents(string prodid, List<VEVENT> events, List<VTIMEZONE> timezones = null)
-        {
-            this.ProductId = prodid;
-            this.Events = events;
-            this.TimeZones = timezones;
-        }
-
-        public RescheduleEvents(string prodid, params VEVENT[] events)
-        {
-            this.ProductId = prodid;
-            this.Events = new List<VEVENT>(events);
-        }
     }
 
     /// <summary>
@@ -114,24 +85,8 @@ namespace uniable.uview.domains.operations
         [DataMember]
         public List<VEVENT> Events { get; set; }
 
+        [DataMember]
         public List<VTIMEZONE> TimeZones { get; set; }
-
-        /// <summary>
-        /// Constructor of request class.
-        /// </summary>
-        /// <param name="events">The list of events to publish</param>
-        public UpdateEvent(string prodid, List<VEVENT> events, List<VTIMEZONE> timezones = null)
-        {
-            this.ProductId = prodid;
-            this.Events = events;
-            this.TimeZones = timezones;
-        }
-
-        public UpdateEvent( string prodid, params VEVENT[] events)
-        {
-            this.ProductId = prodid;
-            this.Events = events.ToList();
-        }
     }
     
     /// <summary>
@@ -154,19 +109,6 @@ namespace uniable.uview.domains.operations
         [DataMember]
         public List<VEVENT> Events { get; set; }
 
-        public DelegateEvent(string prodid, List<VEVENT> events)
-        {
-            events.ThrowIfNullOrEmpty("Events MUST be available to reschedule!");
-            this.ProductId = prodid;
-            this.Events = events;
-        }
-
-        public DelegateEvent(string prodid, params VEVENT[] events)
-        {
-            events.ThrowIfNullOrEmpty("Events MUST be available to reschedule!");
-            this.ProductId = prodid;
-            this.Events = events.ToList();
-        }
     }
 
     /// <summary>
@@ -185,18 +127,6 @@ namespace uniable.uview.domains.operations
         /// </summary>
         [DataMember]
         public string ProductId { get; set; }
-        
-        public ChangeOrganizer(string prodid, List<VEVENT> events)
-        {
-            this.ProductId = prodid;
-            this.Events = events;
-        }
-
-        public ChangeOrganizer(string prodid, params VEVENT[] events)
-        {
-            this.ProductId = prodid;
-            this.Events = events.ToList();
-        }
     }
 
     [DataContract]
@@ -211,17 +141,6 @@ namespace uniable.uview.domains.operations
         /// </summary>
         [DataMember]
         public string ProductId { get; set; }
-
-        public SendOnBehalf(string prodid, List<VEVENT> events)
-        {
-            this.ProductId = prodid;
-        }
-
-        public SendOnBehalf(string prodid, params VEVENT[] events)
-        {
-            this.ProductId = prodid;
-            this.Events = events.ToList();
-        }
     }
 
     [DataContract]
@@ -232,28 +151,13 @@ namespace uniable.uview.domains.operations
         public List<VEVENT> Events { get; set; }
 
         [DataMember]
-        public Dictionary<UID, List<ATTENDEE>> Guests { get; set; }
+        public Dictionary<UID, List<ATTENDEE>> Invited { get; set; }
 
         /// <summary>
         /// Gets or sets the Product Id of the calendar
         /// </summary>
         [DataMember]
-        public string ProductId { get; set; }
-    
-        public ForwardEvent(string prodid, Dictionary<UID, List<ATTENDEE>> guests, List<VEVENT> events)
-        {
-            this.ProductId = prodid;
-            this.Events = events;
-            this.Guests = guests;
-        }
-
-        public ForwardEvent(string prodid, Dictionary<UID, List<ATTENDEE>> guests, params VEVENT[] events)
-        {
-            this.ProductId = prodid;
-            this.Events = events.ToList();
-            this.Guests = guests;
-        }
-       
+        public string ProductId { get; set; }   
     }
 
     [DataContract]
@@ -271,20 +175,6 @@ namespace uniable.uview.domains.operations
         /// </summary>
         [DataMember]
         public string ProductId { get; set; }
-
-        public UpdateAttendeesStatus(string prodid, Dictionary<UID, List<ATTENDEE>> updates, List<VEVENT> events)
-        {
-            this.ProductId = prodid;
-            this.Updates = updates;
-            this.Events = events;
-        }
-
-        public UpdateAttendeesStatus(string prodid, Dictionary<UID, List<ATTENDEE>> updates, params VEVENT[] events)
-        {
-            this.ProductId = prodid;
-            this.Updates = updates;
-            this.Events = events.ToList();
-        }
 
     }
 
@@ -306,36 +196,11 @@ namespace uniable.uview.domains.operations
         [DataMember]
         public string ProductId { get; set; }
 
-        public ReplyToEvent(string prodid, List<VEVENT> events)
-        {
-            this.ProductId = prodid;
-            this.Events = events;
-        }
-
-        public ReplyToEvent(string prodid, params VEVENT[] events)
-        {
-            this.ProductId = prodid;
-            this.Events = events.ToList();
-        }
     }
 
 
     [DataContract]
     [Route("/calendars/{ProductId}/event/add", "PUT")]
-    [KnownType(typeof(ATTACH_BINARY))]
-    [KnownType(typeof(ATTACH_URI))]
-    [KnownType(typeof(ATTENDEE))]
-    [KnownType(typeof(CATEGORIES))]
-    [KnownType(typeof(COMMENT))]
-    [KnownType(typeof(CONTACT))]
-    [KnownType(typeof(EXDATE))]
-    [KnownType(typeof(REQUEST_STATUS))]
-    [KnownType(typeof(RESOURCES))]
-    [KnownType(typeof(RELATEDTO))]
-    [KnownType(typeof(RDATE))]
-    [KnownType(typeof(AUDIO_ALARM))]
-    [KnownType(typeof(DISPLAY_ALARM))]
-    [KnownType(typeof(EMAIL_ALARM))]
     public class AddToEvent: IReturn<VCALENDAR>
     {
 
@@ -345,7 +210,7 @@ namespace uniable.uview.domains.operations
         public UID Uid { get; set; }
 
         [DataMember]
-        public IDATE_TIME StartDate { get; set; }
+        public DATE_TIME StartDate { get; set; }
 
         [DataMember]
         public CLASS Classification { get; set; }
@@ -363,7 +228,7 @@ namespace uniable.uview.domains.operations
         public ORGANIZER Organizer { get; set; }
 
         [DataMember]
-        public IPRIORITY Priority { get; set; }
+        public PRIORITY Priority { get; set; }
 
         [DataMember]
         public int Sequence { get; set; }
@@ -393,46 +258,49 @@ namespace uniable.uview.domains.operations
         public DURATION Duration { get; set; }
 
         [DataMember]
-        public List<IATTACH> Attachments { get; set; }
+        public List<ATTACH_BINARY> AttachmentBinaries { get; set; }
 
         [DataMember]
-        public List<IATTENDEE> Attendees { get; set; }
+        public List<ATTACH_URI> AttachmentUris { get; set; }
 
         [DataMember]
-        public ICATEGORIES Categories { get; set; }
+        public List<ATTENDEE> Attendees { get; set; }
 
         [DataMember]
-        public List<ITEXT> Comments { get; set; }
+        public CATEGORIES Categories { get; set; }
 
         [DataMember]
-        public List<ICONTACT> Contacts { get; set; }
+        public List<COMMENT> Comments { get; set; }
 
         [DataMember]
-        public List<IEXDATE> ExceptionDates { get; set; }
+        public List<CONTACT> Contacts { get; set; }
 
         [DataMember]
-        public List<IREQUEST_STATUS> RequestStatuses { get; set; }
+        public List<EXDATE> ExceptionDates { get; set; }
 
         [DataMember]
-        public List<IRESOURCES> Resources { get; set; }
+        public List<REQUEST_STATUS> RequestStatuses { get; set; }
 
         [DataMember]
-        public List<IRELATEDTO> RelatedTos { get; set; }
+        public List<RESOURCES> Resources { get; set; }
 
         [DataMember]
-        public List<IRDATE> RecurrenceDates { get; set; }
+        public List<RELATEDTO> RelatedTos { get; set; }
 
         [DataMember]
-        public List<IALARM> Alarms { get; set; }
+        public List<RDATE> RecurrenceDates { get; set; }
+
+        [DataMember]
+        public List<AUDIO_ALARM> AudioAlarms { get; set; }
+
+        [DataMember]
+        public List<DISPLAY_ALARM> DisplayAlarms { get; set; }
+
+        [DataMember]
+        public List<EMAIL_ALARM> EmailAlarms { get; set; }
 
         [DataMember]
         public List<VTIMEZONE> TimeZones { get; set; }
-
-        public AddToEvent(UID uid, List<VTIMEZONE> timezones = null)
-        {
-            this.Uid = uid;
-            this.TimeZones = timezones;
-        }
     }
 
 
@@ -447,20 +315,6 @@ namespace uniable.uview.domains.operations
         public List<VEVENT> Events { get; set; }
 
         public List<VTIMEZONE> TimeZones { get; set; }
-
-        public CancelEvent(string prodid, List<VEVENT> events, List<VTIMEZONE> timezones = null)
-        {
-            this.ProductId = prodid;
-            this.Events = events;
-            this.TimeZones = timezones;
-        }
-
-        public CancelEvent(string prodid, params VEVENT[] events)
-        {
-            this.ProductId = prodid;
-            this.Events = events.ToList();
-        }
-
     }
 
 
@@ -552,71 +406,15 @@ namespace uniable.uview.domains.operations
         }
     }
 
-
-
     #endregion
 
     #region Other VEVENT operations
 
     [DataContract]
-    [Route("/calendars/{CalendarKey}/events/keys", "GET")]
-    [Route("/calendars/{CalendarKey}/events/keys/{Page}", "GET")]
-    [Route("/calendars/{CalendarKey}/events/keys/page/{Page}", "GET")]
-    public class RetrieveEventKeys : IReturn<List<string>>
-    {
-        [DataMember]
-        public string CalendarKey { get; set; }
-
-        [DataMember]
-        public int? Page { get; set; }
-    }
-
-    [DataContract]
-    [Route("/calendars/events/keys", "GET")]
-    [Route("/calendars/events/keys/{Page}", "GET")]
-    [Route("/calendars/events/keys/page/{Page}", "GET")]
-    public class RetrieveEventKeysFromCalendars : IReturn<List<string>>
-    {
-        [DataMember]
-        public List<string> CalendarKeys { get; set; }
-
-        [DataMember]
-        public int? Page { get; set; }
-    }
-
-
-    [DataContract]
-    [Route("/calendars/{ProductId}/events/sparse/{Page}", "GET")]
-    [Route("/calendars/{ProductId}/events/sparse/page/{Page}", "GET")]
-    [Route("/calendars/{ProductId}/events/sparse", "GET")]
-    [Route("/calendars/{ProductId}/events/sparse/page/{Page}", "GET")]
-    public class RetrieveSparseEvents : IReturn<List<VEVENT>>
-    {
-        [DataMember]
-        public string ProductId { get; set; }
-
-        [DataMember]
-        public int? Page { get; set; }
-    }
-
-    [DataContract]
-    [Route("/calendars/events/sparse/{Page}", "GET")]
-    [Route("/calendars/events/sparse/page/{Page}", "GET")]
-    [Route("/calendars/events/sparse", "GET")]
-    [Route("/calendars/events/sparse/page/{Page}", "GET")]
-    public class RetrieveSparseEventsFromCalendars : IReturn<List<VEVENT>>
-    {
-        [DataMember]
-        public List<string> ProductIds { get; set; }
-
-        [DataMember]
-        public int? Page { get; set; }
-    }
-
-
-    [DataContract]
-    [Route("/calendars/{ProductId}/events/location/{Uid}/{Page}", "GET")]
-    [Route("/calendars/{ProductId}/events/location/{Uid}/page/{Page}", "GET")]
+    [Route("/calendars/{ProductId}/events/{Uid}/{Page}", "GET")]
+    [Route("/calendars/{ProductId}/events/page/{Page}", "GET")]
+    [Route("/calendars/{ProductId}/events/uid/{Uid}/{Page}", "GET")]
+    [Route("/calendars/{ProductId}/events/uid/{Uid}/page/{Page}", "GET")]
     public class RetrieveEvent : IReturn<VEVENT>
     {
         [DataMember]
@@ -688,8 +486,5 @@ namespace uniable.uview.domains.operations
     }
 
     #endregion
-
-
-
 
 }
