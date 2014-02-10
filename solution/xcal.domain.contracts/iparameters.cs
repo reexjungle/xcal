@@ -14,12 +14,12 @@ namespace reexmonkey.xcal.domain.contracts
     /// Alternative Text Representation Parameter.
     /// Specifies the alternative text representation of a property value.
     /// </summary>
-    public interface IALTREP : IPARAMETER
+    public interface IALTREP : IURI
     {
-        /// <summary>
-        /// Gets or sets the Uniform Resource Identifier (URI) that points to an alternative representation for a textual property value
-        /// </summary>
-        IURI Uri{ get; set; }
+        ///// <summary>
+        ///// Gets or sets the Uniform Resource Identifier (URI) that points to an alternative representation for a textual property value
+        ///// </summary>
+        //IURI Uri{ get; set; }
     }
 
     public interface ICN : IPARAMETER

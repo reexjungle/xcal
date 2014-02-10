@@ -551,7 +551,7 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("DESCRIPTION");
-            if (this.AlternativeText.Uri != null) sb.AppendFormat(";{0}", this.AlternativeText);
+            if (this.AlternativeText != null) sb.AppendFormat(";{0}", this.AlternativeText);
             if (!this.Language.Equals(string.Empty)) sb.AppendFormat(";{0}", this.Language);
             sb.AppendFormat(":{0}", this.Text).AppendLine();
             return sb.ToString();
@@ -879,7 +879,7 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("RESOURCES");
-            if (this.AlternativeText.Uri != null) sb.AppendFormat(";{0}", this.AlternativeText);
+            if (this.AlternativeText != null) sb.AppendFormat(";{0}", this.AlternativeText);
             if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
             sb.Append(":");
             var last = this.Values.Last();

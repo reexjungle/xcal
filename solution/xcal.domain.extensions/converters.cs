@@ -919,9 +919,8 @@ namespace reexmonkey.xcal.domain.extensions
 
         #region specialized converters for iCalendar Parameter types
 
-        public static T ParseAltRep<T, U>(this string value)
+        public static T ParseAltRep<T>(this string value)
             where T: IALTREP, new()
-            where U: IURI, new()
         {
             var altrep = Activator.CreateInstance<T>();
             try
@@ -933,7 +932,7 @@ namespace reexmonkey.xcal.domain.extensions
                  foreach(Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
                  {
                      if(match.Groups["value"].Success) 
-                         altrep.Uri = match.Groups["value"].Value.Replace("\"", string.Empty).ParseUri<U>();
+                         altrep.Path = match.Groups["value"].Value.Replace("\"", string.Empty);
                  }
                 
             }
@@ -945,9 +944,8 @@ namespace reexmonkey.xcal.domain.extensions
             return altrep;
         }
 
-        public static T TryParseAltRep<T, U>(this string value)
+        public static T TryParseAltRep<T>(this string value)
             where T: IALTREP, new()
-            where U: IURI, new()
         {
             var altrep = Activator.CreateInstance<T>();
             try
@@ -960,7 +958,7 @@ namespace reexmonkey.xcal.domain.extensions
                 {
                     if (match.Groups["value"].Success)
                     {
-                        altrep.Uri = match.Groups["value"].Value.Replace("\"", string.Empty).ParseUri<U>();
+                        altrep.Path = match.Groups["value"].Value.Replace("\"", string.Empty);
                         break;
                     }
                 }
@@ -974,16 +972,15 @@ namespace reexmonkey.xcal.domain.extensions
         }
 
 
-        public static T ParseCN<T>(this string value)
-            where T: ICN, new()
+        public static string ParseCN(this string value)
         {
-            var cn = Activator.CreateInstance<T>();
+            var cn = string.Empty;
             try
             {
                 if (!Regex.IsMatch(value, @"^(\p{Lt})+(,*\s\p{Lt}+)*$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
                     throw new FormatException("Invalid Common Name Format");
                 var parts = value.Split(new string[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts != null && parts.Length == 2) cn.Value = parts[1];
+                if (parts != null && parts.Length == 2) cn = parts[1];
 
             }
             catch (ArgumentNullException){throw;}
@@ -992,22 +989,20 @@ namespace reexmonkey.xcal.domain.extensions
             return cn;
         }
 
-
-        public static T TryParseCN<T>(this string value)
-            where T:ICN, new()
+        public static string TryParseCN(this string value)
         {
-            var cn = Activator.CreateInstance<T>();
+            var cn = string.Empty;
             try
             {
-                if (string.IsNullOrEmpty(value)) return default(T);
+                if (string.IsNullOrEmpty(value)) return null;
                 if (!Regex.IsMatch(value, @"^(\p{Lt})+(,*\s\p{Lt}+)*$", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                    return default(T);
+                    return null;
                 var parts = value.Split(new string[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts != null && parts.Length == 2) cn.Value = parts[1];
+                if (parts != null && parts.Length == 2) cn = parts[1];
             }
-            catch (ArgumentNullException) { return default(T); }
-            catch (ArgumentOutOfRangeException) { return default(T); }
-            catch (ArgumentException) { return default(T); }
+            catch (ArgumentNullException) { return null; }
+            catch (ArgumentOutOfRangeException) { return null; }
+            catch (ArgumentException) { return null; }
             return cn;
         }
 

@@ -8,67 +8,90 @@ using reexmonkey.xcal.domain.contracts;
 
 namespace reexmonkey.xcal.domain.models
 {
+
     /// <summary>
     /// Provides the alternative text representation of a property value.
     /// </summary>
     [DataContract]
-    [KnownType(typeof(URI))]
-    public class ALTREP : IALTREP, IEquatable<ALTREP>
+    public class ALTREP : IURI, IEquatable<ALTREP>, IComparable<ALTREP>
     {
-        /// <summary>
-        /// Gets or sets the Uniform Resource Identifier (URI) that points to an alternative representation for a textual property value
-        /// </summary>
+        private string path;
+
         [DataMember]
-        public IURI Uri { get; set; }
+        public string Path
+        {
+            get { return this.path; }
+            set
+            {
+                if (Uri.IsWellFormedUriString(value, UriKind.RelativeOrAbsolute)) this.path = value;
+                else throw new FormatException("The format of the path is not URI-compatible");
+            }
+
+        }
 
         public bool IsDefault()
         {
-            return this.Uri.IsDefault();
+            return (this.Path.Equals(string.Empty));
         }
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="uri">The textual representation of the URI value for the alternative text representation</param>
-        public ALTREP(URI uri)
+        public ALTREP(string value)
         {
-            this.Uri = uri;
-        }
-
-        public bool Equals(ALTREP other)
-        {
-            if (other == null) return false;
-            return (this.Uri == other.Uri);
+            if (Uri.IsWellFormedUriString(value, UriKind.RelativeOrAbsolute)) this.path = value;
+            else throw new FormatException("The path is not a valid uri!");
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("ALTREP=\"{0}\"", this.Uri);
+            sb.AppendFormat("ALTREP=\"{0}\"", this.path);
             return sb.ToString();
+        }
+
+        public bool Equals(ALTREP other)
+        {
+            if (other == null) return false;
+            return (this.path.Equals(other.Path, StringComparison.OrdinalIgnoreCase));
         }
 
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            return this.Equals(obj as ALTREP);
+            var other = (ALTREP)obj;
+            return (other == null) ? false : Equals(other);
         }
 
         public override int GetHashCode()
         {
-            return this.Uri.GetHashCode();
+            return this.path.GetHashCode();
         }
 
-        public static bool operator ==(ALTREP altrep, ALTREP other)
+        public int CompareTo(ALTREP other)
         {
-            if (other == null) return false;
-            return altrep.Equals(other);
+            return this.path.CompareTo(other.Path);
         }
 
-        public static bool operator !=(ALTREP altrep, ALTREP other)
+        public static bool operator <(ALTREP x, ALTREP y)
         {
-            if (other == null) return false;
-            return !altrep.Equals(other);
+            if (x == null || y == null) return false;
+            return x.CompareTo(y) < 0;
+        }
+
+        public static bool operator >(ALTREP x, ALTREP y)
+        {
+            if (x == null || y == null) return false;
+            return x.CompareTo(y) > 0;
+        }
+
+        public static bool operator ==(ALTREP x, ALTREP y)
+        {
+            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            return x.Equals(y);
+        }
+
+        public static bool operator !=(ALTREP x, ALTREP y)
+        {
+            if (x == null || y == null) return !object.Equals(x, y);
+            return !x.Equals(y);
         }
 
     }

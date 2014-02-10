@@ -15,7 +15,6 @@ namespace reexmonkey.xcal.domain.models
     /// <summary>
     /// Specifes a contract for the VEVENT component of the iCalendar Core Object
     /// </summary>
-    [Alias("Events")]
     [DataContract]
     [KnownType(typeof(DATE_TIME))]
     [KnownType(typeof(DESCRIPTION))]
@@ -56,11 +55,7 @@ namespace reexmonkey.xcal.domain.models
         public string Id
         {
             get { return this.Uid; }
-            set 
-            {
-                if (value.NullOrEmpty()) throw new ArgumentException("Id MUST neither be null nor empty!");
-                this.Uid = value; 
-            }
+            set { this.Uid = value; }
         }
 
         /// <summary>

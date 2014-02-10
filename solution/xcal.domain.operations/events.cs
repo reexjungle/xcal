@@ -556,14 +556,13 @@ namespace uniable.uview.domains.operations
 
     #endregion
 
- 
-    #region retrieve events
+    #region Other VEVENT operations
 
     [DataContract]
     [Route("/calendars/{CalendarKey}/events/keys", "GET")]
     [Route("/calendars/{CalendarKey}/events/keys/{Page}", "GET")]
     [Route("/calendars/{CalendarKey}/events/keys/page/{Page}", "GET")]
-    public class RetrieveEventKeys: IReturn<List<string>>
+    public class RetrieveEventKeys : IReturn<List<string>>
     {
         [DataMember]
         public string CalendarKey { get; set; }
@@ -632,42 +631,13 @@ namespace uniable.uview.domains.operations
     [Route("/calendars/{ProductId}/events/{Page}", "GET")]
     [Route("/calendars/{ProductId}/events/page/{Page}", "GET")]
     [Route("/calendars/{ProductId}/events/page/{Page}", "GET")]
-    public class RetrieveEvents: IReturn<List<VEVENT>> 
+    public class RetrieveEvents : IReturn<List<VEVENT>>
     {
         [DataMember]
         public string ProductId { get; set; }
 
         [DataMember]
         public int? Page { get; set; }
-    }
-
-
-    [DataContract]
-    [Route("/calendars/events", "GET")]
-    [Route("/calendars/events/{Page}", "GET")]
-    [Route("/calendars/events/page/{Page}", "GET")]
-    public class RetrieveEventsFromCalendars : IReturn<List<VEVENT>>
-    {
-        [DataMember]
-        public List<string> ProductIds { get; set; }
-
-        [DataMember]
-        public int? Page { get; set; }
-    }
-
-#endregion
-
-    #region CRUD single event
-
-    [DataContract]
-    [Route("/calendars/{ProductId}/event/create", "POST")]
-    public class CreateVEvent : IReturn<VEVENT>
-    {
-        [DataMember]
-        public string ProductId {get; set;}
-
-        [DataMember]
-        public VEVENT Event { get; set; }
     }
 
     [Route("/calendars/{ProductId}/event/patch", "PATCH")]   
@@ -679,6 +649,18 @@ namespace uniable.uview.domains.operations
 
         [DataMember]
         public VEVENT Patch {get; set;}
+    }
+
+    [DataContract]
+    [Route("/calendars/{ProductId}/events/patch", "PATCH")]
+    public class PatchEvents : IReturn<List<VEVENT>>
+    {
+        [DataMember]
+        public string ProductId { get; set; }
+
+        [DataMember]
+        public IEnumerable<VEVENT> Patches { get; set; }
+
     }
 
 
@@ -693,45 +675,6 @@ namespace uniable.uview.domains.operations
         public string Uid { get; set; }
     }
 
-    #endregion
-
-    #region CRUD mulltiple events
-
-    [DataContract]
-    [Route("/calendars/{ProductId}/events/create", "POST")]
-    public class CreateEvents : IReturn<VEVENT>
-    {
-                
-        [DataMember]
-        public string ProductId { get; set; }
-
-        [DataMember]
-        public List<VEVENT> Events { get; set; }
-
-        public CreateEvents()
-        {
-            this.Events = new List<VEVENT>();
-        }
-
-        public CreateEvents(IEnumerable<VEVENT> events)
-        {
-            this.Events.AddRange(events);
-        }
-    }
-
-
-    [DataContract]
-    [Route("/calendars/{ProductId}/events/patch", "PATCH")]
-    public class PatchEvents : IReturn<List<VEVENT>>
-    {
-        [DataMember]
-        public string ProductId { get; set; }
-
-        [DataMember]
-        public IEnumerable<VEVENT> Patches { get; set; }
-    
-    }
-
 
     [DataContract]
     [Route("/calendars/{ProductId}/events/delete", "DELETE")]
@@ -744,97 +687,8 @@ namespace uniable.uview.domains.operations
         public List<string> Uids { get; set; }
     }
 
-
-
-    [DataContract]
-    [Route("/calendars/events/delete", "DELETE")]
-    public class DeleteEventsFromCalendars : IReturnVoid
-    {
-        [DataMember]
-        public List<string> ProductIds { get; set; }
-
-        [DataMember]
-        public List<string> Uids { get; set; }
-
-    }
-
     #endregion
 
-    #region event details
-
-    #region Event Details - Organizers
-
-    [DataContract]
-    [Route("/calendars/events/organizers", "GET")]
-    [Route("/calendars/events/organizers/{Page}", "GET")]
-    [Route("/calendars/events/organizers/page/{Page}", "GET")]
-    public class RetrieveOrganizersFromEvents : IReturn<List<ORGANIZER>>
-    {
-        [DataMember]
-        public List<string> Uids { get; set; }
-
-        [DataMember]
-        public int? Page { get; set; }
-    }
-
-    [DataContract]
-    [Route("/calendars/events/attendees", "GET")]
-    [Route("/calendars/events/attendees/{Page}", "GET")]
-    [Route("/calendars/events/attendees/page/{Page}", "GET")]
-    public class RetrieveAttendeesFromEvents : IReturn<List<ATTENDEE>>
-    {
-        [DataMember]
-        public List<string> Uids { get; set; }
-
-        [DataMember]
-        public int? Page { get; set; }
-    }
-
-    [DataContract]
-    [Route("/calendars/events/attendees", "GET")]
-    [Route("/calendars/events/attendees/{Page}", "GET")]
-    [Route("/calendars/events/attendees/page/{Page}", "GET")]
-    public class RetrieveContactsFromEvents : IReturn<List<CONTACT>>
-    {
-        [DataMember]
-        public List<string> Uids { get; set; }
-
-        [DataMember]
-        public int? Page { get; set; }
-    }
-
-
-    [DataContract]
-    [Route("/calendars/events/comments", "GET")]
-    [Route("/calendars/events/comments/{Page}", "GET")]
-    [Route("/calendars/events/comments/page/{Page}", "GET")]
-    public class RetrieveCommentsFromEvents : IReturn<List<COMMENT>>
-    {
-        [DataMember]
-        public List<string> Uids { get; set; }
-
-        [DataMember]
-        public int? Page { get; set; }
-    }
-
-    [DataContract]
-    [Route("/calendars/events/resources", "GET")]
-    [Route("/calendars/events/resources/{Page}", "GET")]
-    [Route("/calendars/events/resources/page/{Page}", "GET")]
-    public class RetrieveResourcesFromEvents : IReturn<List<RESOURCES>>
-    {
-        [DataMember]
-        public List<string> Uids { get; set; }
-
-        [DataMember]
-        public int? Page { get; set; }
-    }
-
-    #endregion
-
-   
-
-#endregion
 
 
 
