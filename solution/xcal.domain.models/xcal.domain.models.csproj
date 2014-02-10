@@ -56,6 +56,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -63,10 +64,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="alarm.cs" />
+    <Compile Include="calendar.cs" />
+    <Compile Include="calendar_rels.cs" />
+    <Compile Include="event.cs" />
+    <Compile Include="event_rels.cs" />
+    <Compile Include="parameters.cs" />
+    <Compile Include="properties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="timezone.cs" />
+    <Compile Include="values.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\crosscut.essentials\crosscut.essentials.csproj">
+      <Project>{eedf1367-a0fc-400a-a649-716261252b9e}</Project>
+      <Name>crosscut.essentials</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.domain.contracts\xcal.domain.contracts.csproj">
+      <Project>{5cc7e3d9-702b-45a3-a413-a07d010c2651}</Project>
+      <Name>xcal.domain.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.domain.extensions\xcal.domain.extensions.csproj">
+      <Project>{42829410-cf99-4f3d-999c-29b6ac810143}</Project>
+      <Name>xcal.domain.extensions</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

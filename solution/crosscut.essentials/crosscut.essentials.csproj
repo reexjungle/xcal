@@ -41,9 +41,12 @@
   <ItemGroup>
     <Compile Include="concretes\collections.cs" />
     <Compile Include="concretes\comparer.cs" />
+    <Compile Include="concretes\datetime.cs" />
     <Compile Include="concretes\exceptions.cs" />
+    <Compile Include="concretes\expressions.cs" />
     <Compile Include="concretes\math.cs" />
     <Compile Include="concretes\numerical.cs" />
+    <Compile Include="concretes\strings.cs" />
     <Compile Include="contracts\identifier.cs" />
     <Compile Include="contracts\paging.cs" />
     <Compile Include="contracts\repository.cs" />

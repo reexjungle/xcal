@@ -195,8 +195,8 @@ namespace reexmonkey.crosscut.goodies.concretes
             {
                 bytes = Convert.FromBase64String(base64);
             }
-            catch (ArgumentNullException ex) { throw; }
-            catch (FormatException ex) { throw; }
+            catch (ArgumentNullException) { throw; }
+            catch (FormatException) { throw; }
             return bytes;
 
         }

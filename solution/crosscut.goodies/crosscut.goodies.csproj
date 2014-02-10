@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="concretes\utilities.cs" />
     <Compile Include="concretes\reflectors.cs" />
+    <Compile Include="concretes\search.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

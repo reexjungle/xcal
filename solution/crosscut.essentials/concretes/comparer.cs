@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using reexmonkey.crosscut.essentials.contracts;
 
-namespace reexmonkey.crosscut.goodies.concretes
+namespace reexmonkey.crosscut.essentials.concretes
 {
     public class EqualByTId<TPrimary, TId> : IEqualityComparer<TPrimary>
         where TPrimary : IContainsId<TId>
