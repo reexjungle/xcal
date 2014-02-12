@@ -7,7 +7,7 @@
     <ProjectGuid>{2CCD1317-B13C-4372-B14F-CE7128103F5C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>xcal.service.plugins.validators</RootNamespace>
+    <RootNamespace>reexmonkey.xcal.service.plugins.validators</RootNamespace>
     <AssemblyName>xcal.service.plugins.validators</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -66,11 +66,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="concretes\event_validator.cs" />
+    <Compile Include="concretes\parameter_validators.cs" />
+    <Compile Include="concretes\property_validators.cs" />
+    <Compile Include="contracts\parameter_validators.cs" />
+    <Compile Include="contracts\property_validators.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\crosscut.essentials\crosscut.essentials.csproj">
+      <Project>{eedf1367-a0fc-400a-a649-716261252b9e}</Project>
+      <Name>crosscut.essentials</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.domain.contracts\xcal.domain.contracts.csproj">
+      <Project>{5cc7e3d9-702b-45a3-a413-a07d010c2651}</Project>
+      <Name>xcal.domain.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.domain.models\xcal.domain.models.csproj">
+      <Project>{5b708e08-1f69-4fde-9d99-afa3784a49d7}</Project>
+      <Name>xcal.domain.models</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

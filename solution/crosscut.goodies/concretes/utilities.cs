@@ -99,7 +99,6 @@ namespace reexmonkey.crosscut.goodies.concretes
             return path;
         }
 
-
         public static string[] GetAssembyPaths(this Type[] types)
         {
             IEnumerable<string> paths = null;

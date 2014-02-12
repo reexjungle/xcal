@@ -64,7 +64,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="calendars.cs" />
     <Compile Include="events.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

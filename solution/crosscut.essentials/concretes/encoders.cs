@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Linq;
 
-namespace reexmonkey.xcal.domain.extensions
+namespace reexmonkey.crosscut.essentials.concretes
 {
     public static class EncodingExtensions
     {
@@ -36,22 +35,53 @@ namespace reexmonkey.xcal.domain.extensions
 
         public static string EncodeToUtf8(this string unicode)
         {
-            var encoded = string.Empty;
+            string encoded = null;
             try
             {
                 var utf8 = new UTF8Encoding();
                 var bytes = utf8.GetBytes(unicode);
                 encoded = utf8.GetString(bytes);
             }
-            catch (ArgumentNullException ex)
-            {
-                throw new ArgumentNullException(ex.ToString(), ex);
-            }
-            catch (EncoderFallbackException ex)
-            {
-                throw new EncoderFallbackException(ex.ToString(), ex);
-            }
+            catch (ArgumentNullException ) { throw; }
+            catch (EncoderFallbackException ) { throw; }
             return encoded;
+        }
+
+        public static byte[] EncodeToUtf8Bytes(this string unicode)
+        {
+            byte[] bytes = null;
+            try
+            {
+                var utf8 = new UTF8Encoding();
+                bytes = utf8.GetBytes(unicode);
+            }
+            catch (ArgumentNullException ) { throw; }
+            catch (EncoderFallbackException ) { throw; }
+            catch (Exception) { throw; }
+            return bytes;
+        }
+
+        public static IEnumerable<byte[]> SplitToLines(this byte[] bytes, int length)
+        {
+            List<byte[]> lines = null;
+            try
+            {
+                int offset = 0;
+                int count = bytes.Length / length;
+                int rem = bytes.Length % length;
+                lines = (rem == 0) ? new List<byte[]>(count) : new List<byte[]>(count + 1);
+                while (offset < bytes.Length)
+                {
+                    var buffer = new byte[length];
+                    Buffer.BlockCopy(bytes, offset, buffer, 0, length);
+                    lines.Add(buffer);
+                    offset += length;
+                }
+            }
+            catch (ArgumentNullException) { throw; }
+            catch (DivideByZeroException) { throw; }
+            catch (Exception) { throw; }
+            return lines;
         }
 
         /// <summary>
@@ -61,22 +91,17 @@ namespace reexmonkey.xcal.domain.extensions
         /// <returns>The Base64-based binary value encoded from the plain text</returns>
         /// <exception cref="ArgumentNullException">Throw when the plain text argument is null</exception>
         /// <exception cref="EncoderFallbackException">Throw when encoding the plain text to Base64 fails</exception>
-        public static IEnumerable<byte> ToBytes(this string unicode)
+        public static byte[] ToUnicodeBytes(this string unicode)
         {
-            IEnumerable<byte> bytes = null;
+            byte[] bytes = null;
             if (unicode == null) throw new ArgumentNullException();
             try
             {
                 bytes = Encoding.Unicode.GetBytes(unicode);
             }
-            catch (ArgumentNullException ex)
-            {
-                throw new ArgumentException(ex.ToString(), ex);
-            }
-            catch (EncoderFallbackException ex)
-            {
-                throw new EncoderFallbackException(ex.ToString(), ex);
-            }
+            catch (ArgumentNullException) { throw; }
+            catch (EncoderFallbackException) { throw; }
+
             return bytes;
         }
 
@@ -91,24 +116,15 @@ namespace reexmonkey.xcal.domain.extensions
         /// <exception cref="DecoderFallbackException">Thrown when decoding from raw binary data to plain text fails</exception>
         public static string DecodeToUnicode(this string base64)
         {
-            var unicode = string.Empty;
+            string unicode = null;
             try
             {
                 var bytes = Convert.FromBase64String(base64);
                 unicode = Encoding.Unicode.GetString(bytes);
             }
-            catch (ArgumentNullException ex)
-            {
-                throw new ArgumentNullException(ex.ToString(), ex);
-            }
-            catch (FormatException ex)
-            {
-                throw new ArgumentException(ex.ToString(), ex);
-            }
-            catch (DecoderFallbackException ex)
-            {
-                throw new DecoderFallbackException(ex.ToString(), ex);
-            }
+            catch (ArgumentNullException) { throw; }
+            catch (EncoderFallbackException) { throw; }
+            catch (DecoderFallbackException) { throw; }
             return unicode;
 
         }

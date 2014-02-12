@@ -42,6 +42,7 @@
     <Compile Include="concretes\collections.cs" />
     <Compile Include="concretes\comparer.cs" />
     <Compile Include="concretes\datetime.cs" />
+    <Compile Include="concretes\encoders.cs" />
     <Compile Include="concretes\exceptions.cs" />
     <Compile Include="concretes\expressions.cs" />
     <Compile Include="concretes\math.cs" />

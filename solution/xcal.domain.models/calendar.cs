@@ -22,7 +22,6 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// Gets or sets the product identifier. Neccesary as primary key in Ormlite
         /// </summary>
-        [Index(Unique = true)] 
         public string Id 
         {
             get { return prodid; }
@@ -34,6 +33,7 @@ namespace reexmonkey.xcal.domain.models
         /// This property is REQUIRED. This identifier should be guaranteed to be a globally unique identifier (GUID)
         /// </summary>
         [DataMember]
+        [Index(Unique = true)] 
         public string ProdId
         { 
             get { return prodid; }

@@ -16,7 +16,6 @@ namespace reexmonkey.xcal.domain.models
     /// <summary>
     /// Specifies a contract for attaching an inline binary encooded content information.
     /// </summary>
-    [Alias("AttachmentBinaries")]
     [DataContract]
     public class ATTACH_BINARY : IATTACH<BINARY>, IEquatable<ATTACH_BINARY>, IContainsId<string>
     {
@@ -148,7 +147,6 @@ namespace reexmonkey.xcal.domain.models
     /// <summary>
     /// Capability to associate a document or another resource given by it's URI with a calendar component
     /// </summary>
-    [Alias("AttachmentUris")]
     [DataContract]
     public class ATTACH_URI : IATTACH<URI>, IEquatable<ATTACH_URI>, IComparable<ATTACH_URI>, IContainsId<string>
     {
@@ -271,7 +269,6 @@ namespace reexmonkey.xcal.domain.models
     /// <summary>
     /// Defines the categories or subtypes for a calendar component
     /// </summary>
-    [Alias("Categories")]
     [DataContract]
     public class CATEGORIES : ICATEGORIES, IEquatable<CATEGORIES>, IContainsId<string>
     {
@@ -370,7 +367,6 @@ namespace reexmonkey.xcal.domain.models
     /// Specify non-processing information intended to provide a comment to the calendar user
     /// </summary>
     [DataContract]
-    [Alias("Comments")]
     public class COMMENT : ITEXT, IEquatable<COMMENT>, IComparable<COMMENT>, IContainsId<string>
     {
         /// <summary>
