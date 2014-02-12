@@ -306,7 +306,10 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public IEnumerable<IATTENDEE> Attendees { get; set; }
 
-        public EMAIL_ALARM() : base() { }
+        public EMAIL_ALARM() : base() 
+        {
+            this.attendees = new List<IATTENDEE>();
+        }
 
         public EMAIL_ALARM(ACTION action, ITRIGGER trigger, ITEXT description, ITEXT summary, 
             IEnumerable<IATTENDEE> attendees, IEnumerable<IATTACH> attachments = null)

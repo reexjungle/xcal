@@ -2255,7 +2255,7 @@ namespace reexmonkey.xcal.domain.models
                 this.Member.Equals(string.Empty) &&
                 this.Role == ROLE.NON_PARTICIPANT &&
                 this.Participation.Equals(string.Empty) &&
-                this.Rsvp == null &&
+                this.Rsvp == BOOLEAN.UNKNOWN &&
                 this.Delegate == null &&
                 this.Delegator ==null &&
                 this.SentBy.Equals(string.Empty) &&

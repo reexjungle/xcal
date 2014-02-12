@@ -42,7 +42,7 @@ namespace reexmonkey.xcal.domain.operations
         /// Page number of paged calendars
         /// </summary>
         [DataMember]        
-        [ApiMember(Name = "Page", Description = "Page number of paged calendars", ParameterType = "path", DataType = "int", IsRequired = true)
+        [ApiMember(Name = "Page", Description = "Page number of paged calendars", ParameterType = "path", DataType = "int", IsRequired = true)]
         public int? Page { get; set; }
     }
 

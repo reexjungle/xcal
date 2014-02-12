@@ -1314,8 +1314,8 @@ namespace reexmonkey.xcal.domain.models
 
         public PERIOD()
         {
-            this.Start = new DATE_TIME();
-            this.End = new DATE_TIME();
+            this.start = new DATE_TIME();
+            this.end = new DATE_TIME();
             this.format = PeriodFormat.Start;
         }
 
@@ -1642,7 +1642,7 @@ namespace reexmonkey.xcal.domain.models
         public RECUR()
         {
             this.FREQ = contracts.FREQ.UNKNOWN;
-            this.UNTIL = null;
+            this.until = null;
             this.COUNT = 0;
             this.INTERVAL = 1;
             this.BYSECOND = new List<uint>();
