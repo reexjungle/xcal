@@ -14,7 +14,8 @@ namespace uniable.uview.domains.operations
     /// Represents class to request for the publishing of events
     /// </summary>
     [DataContract]
-    [Route("/calendars/{ProductId}/events/publish", "POST")]
+    [Api ("Post notification of an event or events. Used primarily as a method of advertising the existence of an  event.")]
+    [Route("/calendars/{ProductId}/events/publish", "POST", Summary="Publishes an event or events")]
     public class PublishEvents : IReturn<VCALENDAR>
     {
         /// <summary>
@@ -41,7 +42,8 @@ namespace uniable.uview.domains.operations
     /// Represents request class for the rescheduling of events
     /// </summary>
     [DataContract]
-    [Route("/calendars/{ProductId}/event/reschedule", "POST")]
+    [Api ("Reschedules an event or events. This involves a change in terms of time or recurrence intervals and possibly the location or description.")]
+    [Route("/calendars/{ProductId}/event/reschedule", "POST", Summary="Reschedules an event or events", Notes="All the events must share the same UID")]
     public class RescheduleEvents : IReturn<VCALENDAR>
     {
         /// <summary>
@@ -415,7 +417,7 @@ namespace uniable.uview.domains.operations
     [Route("/calendars/{ProductId}/events/page/{Page}", "GET")]
     [Route("/calendars/{ProductId}/events/uid/{Uid}/{Page}", "GET")]
     [Route("/calendars/{ProductId}/events/uid/{Uid}/page/{Page}", "GET")]
-    public class RetrieveEvent : IReturn<VEVENT>
+    public class FindEvent: IReturn<VEVENT>
     {
         [DataMember]
         public string ProductId { get; set; }
@@ -429,21 +431,26 @@ namespace uniable.uview.domains.operations
     [Route("/calendars/{ProductId}/events/{Page}", "GET")]
     [Route("/calendars/{ProductId}/events/page/{Page}", "GET")]
     [Route("/calendars/{ProductId}/events/page/{Page}", "GET")]
-    public class RetrieveEvents : IReturn<List<VEVENT>>
+    public class FindEvents: IReturn<List<VEVENT>>
     {
         [DataMember]
         public string ProductId { get; set; }
 
         [DataMember]
+        List<string> Uids { get; set; }
+
+        [DataMember]
         public int? Page { get; set; }
     }
 
-    [Route("/calendars/{ProductId}/event/patch", "PATCH")]   
+    [Route("/calendars/{ProductId}/event/{Uid}/patch", "PATCH")]   
     [DataContract]
     public class PatchEvent : IReturn<VEVENT>
     {
         [DataMember]
         public string ProductId{get; set;}
+
+        public string Uid { get; set; }
 
         [DataMember]
         public VEVENT Patch {get; set;}

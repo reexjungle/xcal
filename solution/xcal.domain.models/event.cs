@@ -52,6 +52,7 @@ namespace reexmonkey.xcal.domain.models
         /// Gets or sets the unique identifier of the event. It is synonymous to the &quot;Uid&quot; property of the event. 
         /// </summary>
         [DataMember]
+        [Index(Unique = true)] 
         public string Id
         {
             get { return this.Uid; }

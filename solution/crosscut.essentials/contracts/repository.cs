@@ -40,31 +40,31 @@ namespace reexmonkey.crosscut.essentials.contracts
     /// <summary>
     /// Specifies the interface for read-only operations on a relational repository
     /// </summary>
-    /// <typeparam name="TEntity">The type of primary entity to be retrieved from the relational entity</typeparam>
-    /// <typeparam name="TPKey">The unique identifier of the referenced parent-entity</typeparam>
-    /// <typeparam name="TKey"The unique identifier of the entity></typeparam>
+    /// <typeparam name="TEntity">The type of referencing entity to be retrieved from the relational entity</typeparam>
+    /// <typeparam name="TFKey">The unique identifier of the referenced parent-entity</typeparam>
+    /// <typeparam name="TPKey"The unique identifier of the referencing child entity></typeparam>
     public interface IReadRepository<out TPEntity, in TPKey, in TFKey> : IRepository
     {
 
         /// <summary>
-        /// Retrieves a primary entity in the repository related to secondary entity in the repository
+        /// Searches for a referencing entity, which may be related to other referenced entities
         /// </summary>
         /// <param name="pkey">The unique identifier for the primary entity</param>
         /// <param name="fkey">The unique identifier for the secondary entity</param>
         /// <returns></returns>
-        TPEntity Find(TPKey pkey, TFKey fkey);
+        TPEntity Find(TFKey fkey, TPKey pkey);
 
         /// <summary>
-        /// Retrieves primary entities in the repository related to secondary entities in the repository
+        /// Searches for referencing entities, which are related to referenced entities
         /// </summary>
-        /// <param name="pkeys">The unique identifiers for the primary entities</param>
-        /// <param name="fkeys">The unique identifiers for the secondary entities</param>
+        /// <param name="pkeys">The unique identifiers for the referencing entities</param>
+        /// <param name="fkeys">Null or the unique identifiers for the referenced entities</param>
         /// <param name="page">The page number of the retrieved entities when the results are paged</param>
         /// <returns></returns>
-        IEnumerable<TPEntity> Find(IEnumerable<TPKey> pkeys, IEnumerable<TFKey> fkeys, int? page = null);
+        IEnumerable<TPEntity> Find(IEnumerable<TFKey> fkeys, IEnumerable<TPKey> pkeys = null, int? page = null);
 
         /// <summary>
-        /// Gets all primary entities from the repository
+        /// Gets all referencing entities from the repository
         /// </summary>
         /// <param name="page">The page number of the retrieved entities when the results are paged</param>
         /// <returns></returns>

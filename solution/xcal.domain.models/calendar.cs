@@ -11,21 +11,22 @@ using reexmonkey.xcal.domain.contracts;
 namespace reexmonkey.xcal.domain.models
 {
     /// <summary>
-    /// 
+    /// Represents a core Calendar type
     /// </summary>
-    [Alias("Calendars")]
     [DataContract]
     [KnownType(typeof(VEVENT))]
     public class VCALENDAR : ICALENDAR, IEquatable<VCALENDAR>, IContainsId<string>
     {
-        private string prodid = string.Empty;
+        private string prodid;
 
         /// <summary>
         /// Gets or sets the product identifier. Neccesary as primary key in Ormlite
         /// </summary>
+        [Index(Unique = true)] 
         public string Id 
         {
             get { return prodid; }
+            set { this.prodid = value; }
         }
 
         /// <summary>
@@ -33,7 +34,6 @@ namespace reexmonkey.xcal.domain.models
         /// This property is REQUIRED. This identifier should be guaranteed to be a globally unique identifier (GUID)
         /// </summary>
         [DataMember]
-        [Index(Unique = true)]
         public string ProdId
         { 
             get { return prodid; }
@@ -64,50 +64,8 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         public VCALENDAR()
         {
-            this.prodid = Guid.NewGuid().ToString();
             this.Version = "2.0";
             this.Calscale = CALSCALE.GREGORIAN;
-            this.Components = new List<ICOMPONENT>();
-        }
-
-        /// <summary>
-        /// Overloaded Constructor of the iCalendar core object
-        /// </summary>
-        /// <param name="prodid">Specifies the product identifier of the iCalendar core object</param>
-        /// <param name="version">Specifies the version of the iCalendar core object</param>
-        public VCALENDAR(string prodid, string version)
-        {
-            this.prodid = prodid;
-            this.Version = version;
-            this.Calscale = CALSCALE.UNKNOWN;
-            this.Components = new List<ICOMPONENT>();
-        }
-
-
-        /// <summary>
-        /// Overloaded Constructor of the iCalendar core object
-        /// </summary>
-        /// <param name="scale">Specifies the iCalendar object method associated with this iCalendar core object.</param>
-        /// <param name="method">Specifies the type of </param>
-        public VCALENDAR(CALSCALE scale)
-        {
-            this.prodid = Guid.NewGuid().ToString();
-            this.Version = "2.0";
-            this.Calscale = scale;
-            this.Components = new List<ICOMPONENT>();
-        }
-
-        /// <summary>
-        /// Overloaded Constructor of the iCalendar core object
-        /// </summary>
-        /// <param name="prodid">Specifies the product identifier of the iCalendar core object</param>
-        /// <param name="scale">Specifies the iCalendar object method associated with this iCalendar core object.</param>
-        /// <param name="method">Specifies the type of </param>
-        public VCALENDAR(string prodid, CALSCALE scale)
-        {
-            this.prodid = prodid;
-            this.Version = "2.0";
-            this.Calscale =scale;
             this.Components = new List<ICOMPONENT>();
         }
 
