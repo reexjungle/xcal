@@ -14,7 +14,8 @@ namespace reexmonkey.xcal.service.plugins.validators.concretes
     {
         public EventValidator(): base()
         {
-            RuleFor(x => x.Comments.OfType<COMMENT>()).SetCollectionValidator(new CommentValidator()).When(x => !x.Comments.OfType<COMMENT>().NullOrEmpty());
+            RuleFor(x => x.Description).SetValidator(new TextValidator()).When(x => x.Description != null);
+            RuleFor(x => x.Comments).SetCollectionValidator(new TextValidator()).When(x => !x.Comments.NullOrEmpty());
         }
     }
 }

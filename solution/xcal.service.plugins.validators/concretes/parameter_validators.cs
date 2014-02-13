@@ -2,25 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ServiceStack.FluentValidation;
 using reexmonkey.xcal.domain.contracts;
-using reexmonkey.xcal.service.plugins.validators.contracts;
 
 namespace reexmonkey.xcal.service.plugins.validators.concretes
 {
-    public class AltrepValidator : IAltrepValidator
+    public class AltrepValidator: AbstractValidator<IALTREP>
     {
-        public bool Valid(IALTREP value)
+        public AltrepValidator(): base()
         {
-            return  value != null && value.Path != null &&
-                Uri.IsWellFormedUriString(value.Path, UriKind.RelativeOrAbsolute);
+            RuleFor(x => x).Must(x => Uri.IsWellFormedUriString(x.Path, UriKind.RelativeOrAbsolute)).When(x => x.Path != null);
         }
     }
 
-    public class LanguageValidator : ILanguageValidator
+    public class LanguageValidator: AbstractValidator<ILANGUAGE>
     {
-        public bool Valid(ILANGUAGE value)
+        public LanguageValidator(): base()
         {
-            return value != null && value.Tag != null;
+            RuleFor(x => x).Must(x => x.Tag != null);
         }
     }
 }

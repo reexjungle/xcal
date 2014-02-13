@@ -69,8 +69,6 @@
     <Compile Include="concretes\event_validator.cs" />
     <Compile Include="concretes\parameter_validators.cs" />
     <Compile Include="concretes\property_validators.cs" />
-    <Compile Include="contracts\parameter_validators.cs" />
-    <Compile Include="contracts\property_validators.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

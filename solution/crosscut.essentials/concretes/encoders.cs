@@ -61,21 +61,21 @@ namespace reexmonkey.crosscut.essentials.concretes
             return bytes;
         }
 
-        public static IEnumerable<byte[]> SplitToLines(this byte[] bytes, int length)
+        public static IEnumerable<byte[]> SplitToLines(this byte[] bytes, int len)
         {
             List<byte[]> lines = null;
             try
             {
                 int offset = 0;
-                int count = bytes.Length / length;
-                int rem = bytes.Length % length;
+                int count = bytes.Length / len;
+                int rem = bytes.Length % len;
                 lines = (rem == 0) ? new List<byte[]>(count) : new List<byte[]>(count + 1);
                 while (offset < bytes.Length)
                 {
-                    var buffer = new byte[length];
-                    Buffer.BlockCopy(bytes, offset, buffer, 0, length);
+                    var buffer = new byte[len];
+                    Buffer.BlockCopy(bytes, offset, buffer, 0, len);
                     lines.Add(buffer);
-                    offset += length;
+                    offset += len;
                 }
             }
             catch (ArgumentNullException) { throw; }
