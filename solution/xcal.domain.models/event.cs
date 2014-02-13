@@ -23,7 +23,7 @@ namespace reexmonkey.xcal.domain.models
     [KnownType(typeof(ORGANIZER))]
     [KnownType(typeof(PRIORITY))]
     [KnownType(typeof(SUMMARY))]
-    [KnownType(typeof(URL))]
+    [KnownType(typeof(URI))]
     [KnownType(typeof(RECURRENCE_ID))]
     [KnownType(typeof(RECUR))]
     [KnownType(typeof(DURATION))]
@@ -86,7 +86,6 @@ namespace reexmonkey.xcal.domain.models
             get { return this.start; }
             set
             {
-                if (value == null) throw new ArgumentNullException("Null Start Date not allowed");
                 this.start = value;
                 if (this.end == null) this.end = start;
             }
@@ -130,7 +129,7 @@ namespace reexmonkey.xcal.domain.models
         public TRANSP Transparency { get; set; }
 
         [DataMember]
-        public IURL Url { get; set; }
+        public IURI Url { get; set; }
 
         [DataMember]
         [Ignore]
@@ -151,12 +150,7 @@ namespace reexmonkey.xcal.domain.models
         public IDURATION Duration
         {
             get { return this.duration; }
-            set 
-            {
-                if (value != null && this.Start.ValueFormat == ValueFormat.DATE && value.WEEKS == 0 && value.DAYS == 0)
-                    throw new ArgumentException("Duration for event with a format DATE, the duration must be specified with at least a day or week");
-                this.duration = value;
-            }
+            set { this.duration = value; }
         }
 
         [DataMember]
@@ -332,11 +326,8 @@ namespace reexmonkey.xcal.domain.models
 
             if (this.Start != null)
             {
-                if (this.Start.ValueFormat == ValueFormat.DATE_TIME) sb.AppendFormat("DTSTART;VALUE=DATE-TIME:{0}", this.Start).AppendLine();
-                else if (this.Start.ValueFormat == ValueFormat.DATE) sb.AppendFormat("DTSTART;VALUE=DATE:{0}", this.Start.ToDate<DATE>()).AppendLine();
-                else if (this.Start.ValueFormat != ValueFormat.DATE_TIME && this.Start.ValueFormat != ValueFormat.DATE && this.Start.TimeZoneId != null)
-                    sb.AppendFormat("DTSTART;{0}:{1}", this.Start.TimeZoneId, this.Start).AppendLine();
-                else sb.AppendFormat("DTSTART:{0}", this.Start).AppendLine(); 
+                if (this.Start.TimeZoneId != null )sb.AppendFormat("DTSTART;{0}:{1}", this.Start.TimeZoneId, this.Start).AppendLine();
+                else sb.AppendFormat("DTSTART:{0}", this.Start).AppendLine();
             }
 
             if (this.Classification != CLASS.UNKNOWN) sb.AppendFormat("CLASS:{0}", this.Classification).AppendLine();
@@ -356,10 +347,7 @@ namespace reexmonkey.xcal.domain.models
             if (this.RecurrenceRule != null) sb.AppendFormat("RRULE:{0}", this.RecurrenceRule).AppendLine();
             if (this.End != null)
             {
-                if (this.End.ValueFormat == ValueFormat.DATE_TIME) sb.AppendFormat("DTEND;VALUE=DATE-TIME:{0}", this.End).AppendLine();
-                else if (this.End.ValueFormat == ValueFormat.DATE) sb.AppendFormat("DTEND;VALUE=DATE:{0}", this.End.ToDate<DATE>()).AppendLine();
-                else if (this.End.ValueFormat != ValueFormat.DATE_TIME && this.End.ValueFormat != ValueFormat.DATE && this.End.TimeZoneId != null)
-                    sb.AppendFormat("DTEND;{0}:{1}", this.End.TimeZoneId, this.End).AppendLine();
+                if (this.Start.TimeZoneId != null) sb.AppendFormat("DTEND;{0}:{1}", this.End.TimeZoneId, this.End).AppendLine();
                 else sb.AppendFormat("DTEND:{0}", this.End).AppendLine();
             }
             else if (this.Duration != null) sb.Append(this.Duration).AppendLine();

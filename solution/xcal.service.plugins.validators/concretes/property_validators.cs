@@ -18,4 +18,14 @@ namespace reexmonkey.xcal.service.plugins.validators.concretes
             RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
         }
     }
+
+    public class RecurrenceIdValidator: AbstractValidator<IRECURRENCE_ID>
+    {
+        public RecurrenceIdValidator(): base()
+        {
+            RuleFor(x => x.Value).NotNull().When(x => x != null);
+            RuleFor(x => x.Range).NotEqual(RANGE.UNKNOWN).When(x => x != null);
+            RuleFor(x => x.TimeZoneId).SetValidator(new TzIdValidator()).When(x => x.TimeZoneId != null);
+        }
+    }
 }

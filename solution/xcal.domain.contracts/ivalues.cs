@@ -61,9 +61,9 @@ namespace reexmonkey.xcal.domain.contracts
     /// where YYYY is 4-digit year, MM is 2-digit month and DD is 2-digit day
     /// 
     /// </summary>
-    public interface IDATE_TIME : IDATE, ITIME 
+    public interface IDATE_TIME : IDATE, ITIME  
     {
-        ValueFormat ValueFormat { get; set; }
+        //ValueFormat Format { get; set; }
     }
 
     /// <summary>
@@ -241,6 +241,8 @@ namespace reexmonkey.xcal.domain.contracts
         /// FRREQ = MONTHLY; BYDAY = MO, TU, WE, TH, FR; BYSETPOS = -1
         /// </remarks>
         IEnumerable<int> BYSETPOS { get; set; }
+
+        RecurFormat Format { get; set; }
     
     }
 

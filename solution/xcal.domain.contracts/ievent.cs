@@ -26,7 +26,7 @@ namespace reexmonkey.xcal.domain.contracts
         STATUS Status { get; set; }
         ITEXT Summary { get; set; }
         TRANSP Transparency { get; set; }
-        IURL Url { get; set; }
+        IURI Url { get; set; }
         IRECURRENCE_ID RecurrenceId { get; set; }
         IRECUR RecurrenceRule { get; set; }
         IDATE_TIME End { get; set; }

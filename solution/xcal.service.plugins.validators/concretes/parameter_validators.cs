@@ -11,7 +11,7 @@ namespace reexmonkey.xcal.service.plugins.validators.concretes
     {
         public AltrepValidator(): base()
         {
-            RuleFor(x => x).Must(x => Uri.IsWellFormedUriString(x.Path, UriKind.RelativeOrAbsolute)).When(x => x.Path != null);
+            RuleFor(x => x).SetValidator(new UriValidator());
         }
     }
 
@@ -20,6 +20,16 @@ namespace reexmonkey.xcal.service.plugins.validators.concretes
         public LanguageValidator(): base()
         {
             RuleFor(x => x).Must(x => x.Tag != null);
+        }
+    }
+
+    public class TzIdValidator : AbstractValidator<ITZID>
+    {
+        public TzIdValidator()
+            : base()
+        {
+            RuleFor(x => x).Must(x => x.Prefix != null).When(x => x.GloballyUnique = false);
+            RuleFor(x => x).Must(x => x.Suffix != null);
         }
     }
 }

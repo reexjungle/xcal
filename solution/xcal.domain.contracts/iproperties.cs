@@ -124,18 +124,6 @@ namespace reexmonkey.xcal.domain.contracts
 
     #region Date and Time Component Properties
 
-    public interface IDTSTART: IPROPERTY
-    {
-        IDATE_TIME Value {get; set;}
-        ValueFormat Format { get; set; }
-    }
-
-    public interface IDTEND: IPROPERTY
-    {
-        IDATE_TIME Value { get; set; }
-        ValueFormat Format { get; set; }
-    }
-
     public interface IDURATIONPROP: IPROPERTY
     {
         IDURATION Value { get; set; }
@@ -232,7 +220,6 @@ namespace reexmonkey.xcal.domain.contracts
         IDATE_TIME Value { get; set; }
         RANGE Range { get; set; }
         ITZID TimeZoneId { get; set; }
-        ValueFormat Format {get; set;}
     }
    
     public interface IRELATEDTO : IPROPERTY

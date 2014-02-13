@@ -332,7 +332,6 @@ namespace reexmonkey.xcal.domain.models
         private uint month;
         private uint mday;
         private TimeFormat tformat;
-        private ValueFormat vformat;
         private ITZID tzid;
         private IUTC_OFFSET utc_offset;
 
@@ -425,17 +424,6 @@ namespace reexmonkey.xcal.domain.models
         }
 
         [DataMember]
-        public ValueFormat ValueFormat
-        {
-            get { return this.vformat; }
-            set
-            {
-                if (value == ValueFormat.DATE || value == ValueFormat.DATE_TIME || value == ValueFormat.UNKNOWN) this.vformat = value;
-                else throw new ArgumentException("Invalid value format");
-            }
-        }
-
-        [DataMember]
         public TimeFormat TimeFormat
         {
             get { return this.tformat; }
@@ -485,7 +473,6 @@ namespace reexmonkey.xcal.domain.models
             this.MINUTE = 0u;
             this.SECOND = 0u;
             this.tformat = TimeFormat.Local;
-            this.vformat = contracts.ValueFormat.UNKNOWN;
             this.tzid = null;
         }
 
@@ -500,7 +487,6 @@ namespace reexmonkey.xcal.domain.models
             this.SECOND = second;
             this.tformat = tformat;
             this.tzid = tzid;
-            this.vformat = vformat;
         }
 
         public DATE_TIME(IDATE_TIME source)
@@ -513,7 +499,6 @@ namespace reexmonkey.xcal.domain.models
             this.SECOND = source.SECOND;
             this.tformat = source.TimeFormat;
             this.tzid = source.TimeZoneId;
-            this.vformat = source.ValueFormat;         
         }
 
         public DATE_TIME(DateTime datetime, TimeZoneInfo tzinfo = null)
@@ -530,7 +515,6 @@ namespace reexmonkey.xcal.domain.models
                 this.TimeFormat = TimeFormat.LocalAndTimeZone;
             }
             else if (datetime.Kind == DateTimeKind.Utc) this.TimeFormat = TimeFormat.Utc;
-            this.vformat = contracts.ValueFormat.UNKNOWN;
         }
 
         public DATE_TIME(DateTimeOffset datetime)
@@ -543,7 +527,6 @@ namespace reexmonkey.xcal.domain.models
             this.SECOND = (uint)datetime.Second;
             this.Utc_Offset = new UTC_OFFSET(datetime.Offset.Hours, datetime.Offset.Minutes, datetime.Offset.Seconds);
             this.TimeFormat = TimeFormat.Utc;
-            this.ValueFormat = contracts.ValueFormat.UNKNOWN;
         }
 
         public DATE_TIME(DATE date, TZID tzid = null)
@@ -553,7 +536,6 @@ namespace reexmonkey.xcal.domain.models
             this.MONTH = date.MONTH;
             this.MDAY = date.MDAY;
             this.TimeZoneId = tzid;
-            this.ValueFormat = contracts.ValueFormat.DATE;
         }
 
         public DATE_TIME(TIME time)
@@ -1430,40 +1412,25 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public class WEEKDAYNUM : IWEEKDAYNUM, IEquatable<WEEKDAYNUM>, IComparable<WEEKDAYNUM>
     {
-        private int ordwk;
-        private WEEKDAY weekday;
 
         [DataMember]
-        public int OrdinalWeek 
-        { 
-            get {return this.ordwk;}
-            set 
-            {
-                if (value > 0 && value < 54) this.ordwk = value;
-                else throw new ArgumentOutOfRangeException("Value MUST be between 1 and 53");
-            } 
-        
-        }
+        public int OrdinalWeek { get; set; }
 
         [DataMember]
-        public WEEKDAY Weekday 
-        {
-            get {return this.weekday;}
-            set { this.weekday = value; }
-        }
+        public WEEKDAY Weekday { get; set; }
 
         public bool IsDefault
         {
             get
             {
-                return (this.ordwk == 0 && this.weekday == WEEKDAY.UNKNOWN);
+                return (this.OrdinalWeek == 0 && this.Weekday == WEEKDAY.UNKNOWN);
             }
         }
 
-        public WEEKDAYNUM(int ordwk, WEEKDAY weekday)
+        public WEEKDAYNUM(int OrdinalWeek, WEEKDAY Weekday)
         {
-            this.ordwk = ordwk;
-            this.weekday = weekday;
+            this.OrdinalWeek = OrdinalWeek;
+            this.Weekday = Weekday;
         }
 
         public bool Equals(WEEKDAYNUM other)
@@ -1480,38 +1447,38 @@ namespace reexmonkey.xcal.domain.models
 
         public override int GetHashCode()
         {
-            return this.ordwk.GetHashCode() ^ this.weekday.GetHashCode();
+            return this.OrdinalWeek.GetHashCode() ^ this.Weekday.GetHashCode();
         }
 
         public override string ToString()
         {
-            if (this.ordwk != 0)
+            if (this.OrdinalWeek != 0)
             {
-                return (this.ordwk < 0) ?
-                    string.Format("{0} {1}", (uint)this.ordwk, this.weekday) :
-                    string.Format("+{0} {1}", (uint)this.ordwk, this.weekday);
+                return (this.OrdinalWeek < 0) ?
+                    string.Format("{0} {1}", (uint)this.OrdinalWeek, this.Weekday) :
+                    string.Format("+{0} {1}", (uint)this.OrdinalWeek, this.Weekday);
             }
-            else return string.Format("{0}", this.weekday);
+            else return string.Format("{0}", this.Weekday);
 
         }
 
         public int CompareTo(WEEKDAYNUM other)
         {
             if (other == null) return -2; //undefined
-            if (this.ordwk != 0)
+            if (this.OrdinalWeek != 0)
             {
-                if (this.ordwk < other.OrdinalWeek) return -1;
-                else if (this.ordwk > other.OrdinalWeek) return 1;
+                if (this.OrdinalWeek < other.OrdinalWeek) return -1;
+                else if (this.OrdinalWeek > other.OrdinalWeek) return 1;
                 else
                 {
-                    if (this.weekday < other.Weekday) return -1;
-                    else if (this.weekday > other.Weekday) return 1;
+                    if (this.Weekday < other.Weekday) return -1;
+                    else if (this.Weekday > other.Weekday) return 1;
                     else return 0;
                 }
             }
 
-            if (this.weekday < other.Weekday) return -1;
-            else if (this.weekday > other.Weekday) return 1;
+            if (this.Weekday < other.Weekday) return -1;
+            else if (this.Weekday > other.Weekday) return 1;
             else return 0;
         }
 
@@ -1557,30 +1524,18 @@ namespace reexmonkey.xcal.domain.models
     [KnownType(typeof(WEEKDAYNUM))]
     public class RECUR : IRECUR, IEquatable<RECUR>, IContainsId<string>
     {
-        private RecurFormat format;
-        private DATE_TIME until;
-
+        [DataMember]
         public string Id { get; set; }
+
+        [DataMember]
+        public RecurFormat Format { get; set; }
+
 
         [DataMember]
         public FREQ FREQ { get; set; }
 
         [DataMember]
-        public IDATE_TIME UNTIL 
-        {
-            get { return this.until; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("until");
-                this.until.FULLYEAR = value.FULLYEAR;
-                this.until.MONTH = value.MONTH;
-                this.until.MDAY = value.MDAY;
-                this.until.HOUR = value.HOUR;
-                this.until.MINUTE = value.MINUTE;
-                this.until.SECOND = value.SECOND;
-                this.until.TimeZoneId = value.TimeZoneId;
-            }
-        }
+        public IDATE_TIME UNTIL { get; set; }
 
         [DataMember]
         public uint COUNT { get; set; }
@@ -1625,7 +1580,7 @@ namespace reexmonkey.xcal.domain.models
                         this.FREQ == FREQ.DAILY &&
                         this.COUNT == 0 &&
                         this.INTERVAL == 1 &&
-                        this.format == RecurFormat.DateTime &&
+                        this.Format == RecurFormat.DateTime &&
                         this.BYSECOND.Count() == 0 &&
                         this.BYMINUTE.Count() == 0 &&
                         this.BYHOUR.Count() == 0 &&
@@ -1642,7 +1597,7 @@ namespace reexmonkey.xcal.domain.models
         public RECUR()
         {
             this.FREQ = contracts.FREQ.UNKNOWN;
-            this.until = null;
+            this.UNTIL = null;
             this.COUNT = 0;
             this.INTERVAL = 1;
             this.BYSECOND = new List<uint>();
@@ -1655,7 +1610,7 @@ namespace reexmonkey.xcal.domain.models
             this.BYMONTH = new List<uint>();
             this.WKST = WEEKDAY.SU;
             this.BYSETPOS = new List<int>();
-            this.format = RecurFormat.DateTime;
+            this.Format = RecurFormat.DateTime;
         }
 
         public RECUR(FREQ freq, IDATE_TIME until)
@@ -1674,7 +1629,7 @@ namespace reexmonkey.xcal.domain.models
             this.BYMONTH = new List<uint>();
             this.WKST = WEEKDAY.SU;
             this.BYSETPOS = new List<int>();
-            this.format = RecurFormat.DateTime;
+            this.Format = RecurFormat.DateTime;
         }
 
         public RECUR(FREQ freq, uint count, uint interval)
@@ -1692,7 +1647,7 @@ namespace reexmonkey.xcal.domain.models
             this.BYMONTH = new List<uint>();
             this.WKST = WEEKDAY.SU;
             this.BYSETPOS = new List<int>();
-            this.format = RecurFormat.Range;
+            this.Format = RecurFormat.Range;
         }
 
         public override string ToString()
@@ -1701,7 +1656,7 @@ namespace reexmonkey.xcal.domain.models
 
             sb.AppendFormat("FREQ={0};", this.FREQ);
 
-            if(this.format  == RecurFormat.DateTime ) sb.AppendFormat("UNTIL={0};", this.UNTIL);            
+            if(this.Format  == RecurFormat.DateTime ) sb.AppendFormat("UNTIL={0};", this.UNTIL);            
             else sb.AppendFormat("COUNT={0};", this.COUNT);
 
             sb.AppendFormat("INTERVAL={0};", this.INTERVAL.ToString());
@@ -1815,7 +1770,7 @@ namespace reexmonkey.xcal.domain.models
             if (other == null) return false;
             return
                 this.FREQ == other.FREQ &&
-                (this.format == RecurFormat.DateTime) ?
+                (this.Format == RecurFormat.DateTime) ?
                 this.UNTIL.ToString().Equals(other.UNTIL.ToString(), StringComparison.OrdinalIgnoreCase) : 
                 this.COUNT == other.COUNT &&
                 this.INTERVAL == other.INTERVAL &&
@@ -1852,7 +1807,7 @@ namespace reexmonkey.xcal.domain.models
                 this.WKST.GetHashCode() ^
                 this.BYSETPOS.GetHashCode();
 
-            if (this.format == RecurFormat.DateTime) hash ^= this.UNTIL.GetHashCode();
+            if (this.Format == RecurFormat.DateTime) hash ^= this.UNTIL.GetHashCode();
             else hash ^= this.COUNT.GetHashCode();
 
             return hash;
@@ -1892,7 +1847,7 @@ namespace reexmonkey.xcal.domain.models
 
         public bool IsDefault()
         {
-           return (this.Path.Equals(string.Empty));
+           return (this.Path == null);
         }
 
         public URI(string value)

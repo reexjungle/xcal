@@ -2660,15 +2660,13 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public RANGE Range { get; set; }
 
-        public ValueFormat Format {get; set;}
-
         /// <summary>
         /// Gets TRUE if the RECCURENCE_ID property is set to default
         /// </summary>
         public bool IsDefault()
         {
                 return this.Value.IsDefault() && this.TimeZoneId.IsDefault() &&
-                this.Range == RANGE.THISANDFUTURE && this.Format == ValueFormat.UNKNOWN;
+                this.Range == RANGE.THISANDFUTURE;
         }
 
         public RECURRENCE_ID()
@@ -2698,7 +2696,6 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("RECURRENCE-ID");
-            if (this.Format != ValueFormat.UNKNOWN) sb.AppendFormat("VALUE={0}", this.Format);
             if (this.TimeZoneId != null) sb.AppendFormat(";{0}", this.TimeZoneId);
             if (this.Range != RANGE.UNKNOWN) sb.AppendFormat(";{0}", this.Range);
             sb.AppendFormat(":{0}", this.Value).AppendLine();
@@ -2710,7 +2707,7 @@ namespace reexmonkey.xcal.domain.models
             if (other == null) return false;
             return this.Value == other.Value &&
                 this.TimeZoneId == other.TimeZoneId &&
-                this.Range == other.Range && this.Format == other.Format;
+                this.Range == other.Range;
         }
 
         public override bool Equals(object obj)
@@ -2723,7 +2720,7 @@ namespace reexmonkey.xcal.domain.models
         {
             return  this.Value.GetHashCode() ^
                     ((this.TimeZoneId != null) ? this.TimeZoneId.GetHashCode() : 0) ^
-                    this.Range.GetHashCode() ^ this.Format.GetHashCode();
+                    this.Range.GetHashCode();
 
         }
 
@@ -2850,39 +2847,31 @@ namespace reexmonkey.xcal.domain.models
 
 
     [DataContract]
-    [KnownType(typeof(URI))]
-    public class URL : IURL, IEquatable<URL>, IComparable<URL>
+    public class URL : IURI, IEquatable<URL>, IComparable<URL>
     {
-        private URI uri;
-
-        /// <summary>
-        /// Uniform Resource Identifier of the network location
-        /// </summary>
-        [DataMember]
-        public IURI Uri { get; set; }
+        public string Path { get; set; }
 
         /// <summary>
         /// Indicates, if the URL property is set to dafault
         /// </summary>
         public bool IsDefault()
         {
-            return this.uri.IsDefault();
+            return (this.Path == null);
         }
 
         /// <summary>
         /// Constructor, specifying the URI
         /// </summary>
         /// <param name="uri"> Uniform Resource Identifier of the network location</param>
-        public URL(URI uri)
+        public URL(string path)
         {
-            if (uri == null) throw new ArgumentNullException("uri");
-            this.uri = uri;
+            this.Path = path;
         }
 
         public bool Equals(URL other)
         {
             if (other == null) return false;
-            return this.Uri == other.Uri;
+            return this.Path.Equals(other.Path, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -2893,12 +2882,12 @@ namespace reexmonkey.xcal.domain.models
 
         public override int GetHashCode()
         {
-            return this.uri.GetHashCode();
+            return (this.Path != null)? this.Path.GetHashCode(): 0;
         }
 
         public int CompareTo(URL other)
         {
-            return this.uri.CompareTo((URI)other.Uri);
+            return this.Path.CompareTo(other.Path);
         }
 
         public static bool operator ==(URL a, URL b)
@@ -2931,9 +2920,8 @@ namespace reexmonkey.xcal.domain.models
         /// <returns>String representation of the URL property in form of "URL:Uri"</returns>
         public override string ToString()
         {
-            return string.Format("URL:{0}{1}", this.uri, Environment.NewLine);
+            return string.Format("URL:{0}{1}", this.Path, Environment.NewLine);
         }
-
     }
 
 
