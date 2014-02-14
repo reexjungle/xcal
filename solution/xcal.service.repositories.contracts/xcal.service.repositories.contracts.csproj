@@ -63,10 +63,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="event_rep.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\crosscut.essentials\crosscut.essentials.csproj">
+      <Project>{eedf1367-a0fc-400a-a649-716261252b9e}</Project>
+      <Name>crosscut.essentials</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.domain.contracts\xcal.domain.contracts.csproj">
+      <Project>{5cc7e3d9-702b-45a3-a413-a07d010c2651}</Project>
+      <Name>xcal.domain.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.domain.models\xcal.domain.models.csproj">
+      <Project>{5b708e08-1f69-4fde-9d99-afa3784a49d7}</Project>
+      <Name>xcal.domain.models</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using ServiceStack.OrmLite;
 
-namespace reexmonkey.xcal.infrastructure.ormlite.extensions
+namespace reexmonkey.infrastructure.ormlite.extensions
 {
     #region helper enumerations
 

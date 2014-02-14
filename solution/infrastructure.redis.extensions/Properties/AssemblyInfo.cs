@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("xcal.infrastructure.redis.extensions")]
+[assembly: AssemblyTitle("infrastructure.redis.extensions")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Capgemini")]
-[assembly: AssemblyProduct("xcal.infrastructure.redis.extensions")]
-[assembly: AssemblyCopyright("Copyright © Capgemini 2014")]
+[assembly: AssemblyCompany("ReexMonkey")]
+[assembly: AssemblyProduct("infrastructure.redis.extensions")]
+[assembly: AssemblyCopyright("Copyright © ReexMonkey 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
