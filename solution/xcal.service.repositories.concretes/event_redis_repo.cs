@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using ServiceStack.Redis;
 using ServiceStack.Redis.Generic;
 using reexmonkey.xcal.domain.models;
-using reexmonkey.xcal.technical.repositories.contracts;
+using reexmonkey.xcal.service.repositories.contracts;
 
-namespace reexmonkey.xcal.technical.repositories.concrete
+namespace reexmonkey.xcal.service.repositories.concrete
 {
     public class EventRedisRepository: IEventRedisRepository
     {

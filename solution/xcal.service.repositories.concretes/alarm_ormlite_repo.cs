@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Data;
+using System.Linq;
 using System.Collections.Generic;
-using ServiceStack.Redis;
-using ServiceStack.Redis.Generic;
+using ServiceStack.OrmLite;
+using reexmonkey.infrastructure.ormlite.extensions;
+using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.xcal.domain.models;
-using reexmonkey.xcal.technical.repositories.contracts;
+using reexmonkey.xcal.service.repositories.contracts;
 
-namespace reexmonkey.xcal.technical.repositories.concretes
+namespace reexmonkey.xcal.service.repositories.concretes
 {
-    public class AudioAlarmRedisRepository: IAudioAlarmRedisRepository
+    public class AudioAlarmOrmLiteRepository: IAudioAlarmOrmLiteRepository
     {
-        public IRedisClientsManager RedisClientsManager
+
+        public IDbConnectionFactory DbConnectionFactory
         {
             get { throw new NotImplementedException(); }
         }
@@ -90,10 +94,10 @@ namespace reexmonkey.xcal.technical.repositories.concretes
         }
     }
 
-    public class DisplayAlarmRepository: IDisplayAlarmRedisRepository
+    public class DisplayAlarmOrmLiteRepository: IDisplayAlarmOrmLiteRepository
     {
 
-        public IRedisClientsManager RedisClientsManager
+        public IDbConnectionFactory DbConnectionFactory
         {
             get { throw new NotImplementedException(); }
         }
@@ -174,10 +178,10 @@ namespace reexmonkey.xcal.technical.repositories.concretes
         }
     }
 
-    public class EmailAlarmRepository: IEmailAlarmRedisRepository
+    public class EmailAlarmOrmLiteRepository: IEmailAlarmOrmLiteRepository
     {
 
-        public IRedisClientsManager RedisClientsManager
+        public IDbConnectionFactory DbConnectionFactory
         {
             get { throw new NotImplementedException(); }
         }
@@ -257,4 +261,5 @@ namespace reexmonkey.xcal.technical.repositories.concretes
             get { throw new NotImplementedException(); }
         }
     }
+
 }

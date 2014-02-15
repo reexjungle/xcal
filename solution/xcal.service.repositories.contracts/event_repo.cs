@@ -4,7 +4,7 @@ using ServiceStack.Redis;
 using reexmonkey.crosscut.essentials.contracts;
 using reexmonkey.xcal.domain.models;
 
-namespace reexmonkey.xcal.technical.repositories.contracts
+namespace reexmonkey.xcal.service.repositories.contracts
 {
     
     /// <summary>

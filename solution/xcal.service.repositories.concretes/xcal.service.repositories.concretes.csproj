@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1898784A-99B2-4226-8C33-689EA6558CFA}</ProjectGuid>
+    <ProjectGuid>{17322A2E-E311-41BD-9070-6146842A46C3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.xcal.technical.repositories.contracts</RootNamespace>
-    <AssemblyName>xcal.technical.repositories.contracts</AssemblyName>
+    <RootNamespace>reexmonkey.xcal.service.repositories.concretes</RootNamespace>
+    <AssemblyName>xcal.service.repositories.concretes</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -63,8 +63,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="alarm_repo.cs" />
-    <Compile Include="event_repo.cs" />
+    <Compile Include="alarm_ormlite_repo.cs" />
+    <Compile Include="alarm_redis_repo.cs" />
+    <Compile Include="event_ormlite_repo.cs" />
+    <Compile Include="event_redis_repo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -75,6 +77,14 @@
       <Project>{eedf1367-a0fc-400a-a649-716261252b9e}</Project>
       <Name>crosscut.essentials</Name>
     </ProjectReference>
+    <ProjectReference Include="..\technical.ormlite.extensions\technical.ormlite.extensions.csproj">
+      <Project>{3346db20-5077-4fc8-93ee-e4a590bcc1d0}</Project>
+      <Name>technical.ormlite.extensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\technical.redis.extensions\technical.redis.extensions.csproj">
+      <Project>{b4a2596a-5689-4ec9-bd01-0b2ff4453dad}</Project>
+      <Name>technical.redis.extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\xcal.domain.contracts\xcal.domain.contracts.csproj">
       <Project>{5cc7e3d9-702b-45a3-a413-a07d010c2651}</Project>
       <Name>xcal.domain.contracts</Name>
@@ -82,6 +92,10 @@
     <ProjectReference Include="..\xcal.domain.models\xcal.domain.models.csproj">
       <Project>{5b708e08-1f69-4fde-9d99-afa3784a49d7}</Project>
       <Name>xcal.domain.models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.service.repositories.contracts\xcal.service.repositories.contracts.csproj">
+      <Project>{1898784a-99b2-4226-8c33-689ea6558cfa}</Project>
+      <Name>xcal.service.repositories.contracts</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

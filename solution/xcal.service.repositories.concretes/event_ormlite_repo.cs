@@ -6,9 +6,9 @@ using ServiceStack.OrmLite;
 using reexmonkey.infrastructure.ormlite.extensions;
 using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.xcal.domain.models;
-using reexmonkey.xcal.technical.repositories.contracts;
+using reexmonkey.xcal.service.repositories.contracts;
 
-namespace reexmonkey.xcal.technical.repositories.concretes
+namespace reexmonkey.xcal.service.repositories.concretes
 {
     /// <summary>
     /// Reüpresents a a repository of events connected to an ORMlite source
