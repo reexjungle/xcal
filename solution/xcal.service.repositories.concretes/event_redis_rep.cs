@@ -43,7 +43,7 @@ namespace reexmonkey.xcal.service.repositories.concrete
         }
 
 
-        public VEVENT Rehydrate(VEVENT dry)
+        public VEVENT Hydrate(VEVENT dry)
         {
             throw new NotImplementedException();
         }

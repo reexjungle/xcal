@@ -59,7 +59,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
-            return (sparse != null) ? this.Rehydrate(sparse) : sparse;
+            return (sparse != null) ? this.Hydrate(sparse) : sparse;
         }
 
         public IEnumerable<VEVENT> Find(IEnumerable<string> keys, int? page = null)
@@ -122,102 +122,99 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public VEVENT Rehydrate(VEVENT sparse)
+        public VEVENT Hydrate(VEVENT dry)
         {
             try
             {
-                sparse.Organizer = db.Select<ORGANIZER, VEVENT, REL_EVENTS_ORGANIZERS>(
+                var orgs = db.Select<ORGANIZER, VEVENT, REL_EVENTS_ORGANIZERS>(
                     r => r.OrganizerId,
                     r => r.Uid,
-                    e => e.Id == sparse.Uid).FirstOrDefault();
+                    e => e.Id == dry.Uid);
+                if (!orgs.NullOrEmpty()) dry.Organizer = orgs.FirstOrDefault();
 
-                sparse.RecurrenceId = db.Select<RECURRENCE_ID, VEVENT, REL_EVENTS_RECURRENCE_IDS>(
+                var rids = db.Select<RECURRENCE_ID, VEVENT, REL_EVENTS_RECURRENCE_IDS>(
                     r => r.RecurrenceId_Id,
                     r => r.Uid,
-                    e => e.Id == sparse.Uid).FirstOrDefault();
+                    e => e.Id == dry.Uid);
+                if (!rids.NullOrEmpty()) dry.RecurrenceId = rids.FirstOrDefault();
 
-                sparse.RecurrenceRule = db.Select<RECUR, VEVENT, REL_EVENTS_RRULES>(
+                var rrules = db.Select<RECUR, VEVENT, REL_EVENTS_RRULES>(
                     r => r.RecurrenceRuleId, 
                     r => r.Uid, 
-                    e => e.Id == sparse.Uid).FirstOrDefault();
+                    e => e.Id == dry.Uid);
+                if (!rrules.NullOrEmpty()) dry.RecurrenceRule = rrules.FirstOrDefault();
 
-                sparse.Attachments.Clear();
-                sparse.Attachments.AddRange(
-                    db.Select<ATTACH_BINARY, VEVENT, REL_EVENTS_ATTACHMENTS>(
-                    r => r.AttachmentId,
-                    r => r.Uid,
-                    e => e.Id == sparse.Uid));
 
-                sparse.Attachments.AddRange(
-                    db.Select<ATTACH_URI, VEVENT, REL_EVENTS_ATTACHMENTS>(
-                    r => r.AttachmentId,
-                    r => r.Uid,
-                    e => e.Id == sparse.Uid));
+               dry.Attachments.AddRange(db.Select<ATTACH_BINARY, VEVENT, REL_EVENTS_ATTACHMENTS>(
+                   r => r.AttachmentId,
+                   r => r.Uid,
+                   e => e.Id == dry.Uid).Except(dry.Attachments.OfType<ATTACH_BINARY>()));
 
-                sparse.Attendees.Clear();
-                sparse.Attendees.AddRange(
-                    db.Select<ATTENDEE, VEVENT, REL_EVENTS_ATTENDEES>(
+               dry.Attachments.AddRange(db.Select<ATTACH_URI, VEVENT, REL_EVENTS_ATTACHMENTS>(
+                   r => r.AttachmentId,
+                   r => r.Uid,
+                   e => e.Id == dry.Uid).Except(dry.Attachments.OfType<ATTACH_URI>()));
+
+                dry.Attendees.AddRange(db.Select<ATTENDEE, VEVENT, REL_EVENTS_ATTENDEES>(
                     r => r.AttendeeId,
                     r => r.Uid,
-                    e => e.Id == sparse.Uid));
+                    e => e.Id == dry.Uid).Except(dry.Attendees.OfType<ATTENDEE>()));
 
-                sparse.Comments.Clear();
-                sparse.Comments.AddRange(db.Select<COMMENT, VEVENT, REL_EVENTS_COMMENTS>(
-                    r => r.CommentId, 
-                    r => r.Uid, 
-                    e => e.Id == sparse.Uid));
+                dry.Comments.AddRange(db.Select<COMMENT, VEVENT, REL_EVENTS_COMMENTS>(
+                    r => r.CommentId,
+                    r => r.Uid,
+                    e => e.Id == dry.Uid).Except(dry.Comments.OfType<COMMENT>()));
 
-                sparse.Contacts.Clear();
-                sparse.Contacts.AddRange(db.Select<CONTACT, VEVENT, REL_EVENTS_CONTACTS >(
+                dry.Contacts.AddRange(db.Select<CONTACT, VEVENT, REL_EVENTS_CONTACTS >(
                     r => r.ContactId,
                     r => r.Uid,
-                    e => e.Id == sparse.Uid));
+                    e => e.Id == dry.Uid).Except(dry.Contacts.OfType<CONTACT>()));
 
-                sparse.RecurrenceDates.Clear();
-                sparse.RecurrenceDates.AddRange(db.Select<RDATE, VEVENT, REL_EVENTS_RDATES>(
+                dry.RecurrenceDates.Clear();
+                dry.RecurrenceDates.AddRange(db.Select<RDATE, VEVENT, REL_EVENTS_RDATES>(
                     r => r.RecurrenceDateId, 
                     r => r.Uid, 
-                    e => e.Id == sparse.Uid));
+                    e => e.Id == dry.Uid));
 
-                sparse.ExceptionDates.Clear();
-                sparse.ExceptionDates.AddRange(db.Select<EXDATE, VEVENT, REL_EVENTS_EXDATES>(
+                dry.ExceptionDates.Clear();
+                dry.ExceptionDates.AddRange(db.Select<EXDATE, VEVENT, REL_EVENTS_EXDATES>(
                     r => r.ExceptionDateId, 
                     r => r.Uid, 
-                    e => e.Id == sparse.Uid));
+                    e => e.Id == dry.Uid));
 
-                sparse.RelatedTos.Clear();
-                sparse.RelatedTos.AddRange(db.Select<RELATEDTO, VEVENT, REL_EVENTS_RELATEDTOS>(
+                dry.RelatedTos.Clear();
+                dry.RelatedTos.AddRange(db.Select<RELATEDTO, VEVENT, REL_EVENTS_RELATEDTOS>(
                     r => r.RelatedToId, 
                     r => r.Uid, 
-                    e => e.Id == sparse.Uid));
+                    e => e.Id == dry.Uid));
 
-                sparse.RequestStatuses.Clear();
-                sparse.RequestStatuses.AddRange(db.Select<REQUEST_STATUS, VEVENT, REL_EVENTS_REQSTATS>(
+                dry.RequestStatuses.Clear();
+                dry.RequestStatuses.AddRange(db.Select<REQUEST_STATUS, VEVENT, REL_EVENTS_REQSTATS>(
                     r => r.ReqStatId, 
                     r => r.Uid, 
-                    e => e.Id == sparse.Uid));
+                    e => e.Id == dry.Uid));
 
-                sparse.Alarms.Clear();
-                sparse.Alarms.AddRange(db.Select<AUDIO_ALARM, VEVENT, REL_EVENTS_ALARMS>(
+                dry.Alarms.Clear();
+                dry.Alarms.AddRange(db.Select<AUDIO_ALARM, VEVENT, REL_EVENTS_ALARMS>(
                     r => r.AlarmId,
                     r => r.Uid,
-                    e => e.Id == sparse.Uid));
+                    e => e.Id == dry.Uid));
 
-                sparse.Alarms.AddRange(db.Select<DISPLAY_ALARM, VEVENT, REL_EVENTS_ALARMS>(
+                dry.Alarms.AddRange(db.Select<DISPLAY_ALARM, VEVENT, REL_EVENTS_ALARMS>(
                     r => r.AlarmId,
                     r => r.Uid,
-                    e => e.Id == sparse.Uid));
+                    e => e.Id == dry.Uid));
 
-                sparse.Alarms.AddRange(db.Select<EMAIL_ALARM, VEVENT, REL_EVENTS_ALARMS>(
+                dry.Alarms.AddRange(db.Select<EMAIL_ALARM, VEVENT, REL_EVENTS_ALARMS>(
                     r => r.AlarmId,
                     r => r.Uid,
-                    e => e.Id == sparse.Uid));
+                    e => e.Id == dry.Uid));
 
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
 
-            return sparse;
+            return dry;
 
         }
 
