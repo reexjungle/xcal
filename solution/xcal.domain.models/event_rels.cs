@@ -247,6 +247,28 @@ namespace reexmonkey.xcal.domain.models
     }
 
     [DataContract]
+    public class REL_EVENTS_RESOURCES
+    {
+        /// <summary>
+        /// Gets or sets the unique identifier of the event-resources relation
+        /// </summary>
+        [DataMember]
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the related event entity
+        /// </summary>
+        [DataMember]
+        public string Uid { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the related resources-entity
+        /// </summary>
+        [DataMember]
+        public string ResourceId { get; set; }
+    }
+
+    [DataContract]
     public class REL_EVENTS_ALARMS
     {
         /// <summary>

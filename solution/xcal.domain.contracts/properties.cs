@@ -47,7 +47,7 @@ namespace reexmonkey.xcal.domain.contracts
         /// <summary>
         /// Gets or sets the value of the categories
         /// </summary>
-        IEnumerable<string> Values { get; set; }
+        List<string> Values { get; set; }
 
         /// <summary>
         /// Gets or sets the language used for the categories 
@@ -101,7 +101,7 @@ namespace reexmonkey.xcal.domain.contracts
 
         ILANGUAGE Language { get; set; }
 
-        IEnumerable<string> Values { get; set; }
+        List<string> Values { get; set; }
     }
 
     //public interface ISUMMARY : IPROPERTY

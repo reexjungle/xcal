@@ -19,7 +19,6 @@ namespace reexmonkey.xcal.service.plugins.validators.concretes
             RuleFor(x => x.Summary).SetValidator(new TextValidator()).When(x => x.Summary != null);
             RuleFor(x => x.RecurrenceRule).SetValidator(new RecurrenceValidator()).When(x => x.RecurrenceRule != null);
             RuleFor(x => x.Comments).SetCollectionValidator(new TextValidator()).When(x => !x.Comments.NullOrEmpty());
-
         }
     }
 }

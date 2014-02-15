@@ -1,0 +1,112 @@
+﻿using System;
+using System.Collections.Generic;
+using ServiceStack.Redis;
+using ServiceStack.Redis.Generic;
+using reexmonkey.xcal.domain.models;
+using reexmonkey.xcal.technical.repositories.contracts;
+
+namespace reexmonkey.xcal.technical.repositories.concrete
+{
+    public class EventRedisRepository: IEventRedisRepository
+    {
+        private IRedisTypedClient<VEVENT> client = null;
+        private IRedisClientsManager manager = null;
+        private int? pages= null;
+
+        private IRedisTypedClient<VEVENT> redis
+        {
+            get { return client ?? manager.GetClient().As<VEVENT>(); }
+        }
+
+        public IRedisClientsManager RedisClientsManager
+        {
+            get { return this.manager; }
+        }
+
+        public int? Pages
+        {
+            get { return this.pages; }
+        }
+
+        public EventRedisRepository(IRedisClientsManager manager, int? pages = null)
+        {
+            if (manager == null) throw new ArgumentNullException("Null Redis Client Manager");
+            this.manager = manager;
+            if (pages == null) throw new ArgumentNullException("Null pages");
+            this.pages = pages;
+            this.client = manager.GetClient().As<VEVENT>();
+            if(this.client == null) throw new ArgumentNullException("Null Redis client");
+        }
+
+
+        public VEVENT Hydrate(VEVENT dry)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<VEVENT> Hydrate(IEnumerable<VEVENT> dry)
+        {
+            throw new NotImplementedException();
+        }
+
+        public VEVENT Dehydrate(VEVENT full)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<VEVENT> Dehydrate(IEnumerable<VEVENT> full)
+        {
+            throw new NotImplementedException();
+        }
+
+        public VEVENT Find(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<VEVENT> Find(IEnumerable<string> keys, int? page = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<VEVENT> Get(int? page = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Save(VEVENT entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Patch(VEVENT entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Erase(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SaveAll(IEnumerable<VEVENT> entities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PatchAll(IEnumerable<VEVENT> entities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void EraseAll(IEnumerable<string> keys)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void EraseAll()
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

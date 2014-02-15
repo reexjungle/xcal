@@ -281,7 +281,7 @@ namespace reexmonkey.xcal.domain.models
         /// Description of the category or the subtype
         /// </summary>
         [DataMember]
-        public IEnumerable<string> Values { get; set; }
+        public List<string> Values { get; set; }
 
         /// <summary>
         /// Language used for this category of calendar components
@@ -308,7 +308,7 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         /// <param name="text">Description of the calendar component category or subtype</param>
         /// <param name="language">Language, used in a given category of calendar components</param>
-        public CATEGORIES(IEnumerable<string> values, ILANGUAGE language = null)
+        public CATEGORIES(List<string> values, ILANGUAGE language = null)
         {
             this.Values = values;
             this.Language = language;
@@ -825,6 +825,7 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// ID of a particular Resource
         /// </summary>
+        [DataMember]
         public string Id { get; set; }
 
         /// <summary>
@@ -843,7 +844,7 @@ namespace reexmonkey.xcal.domain.models
         /// Name and other parameters, descripting a particular Resource
         /// </summary>
         [DataMember]
-        public IEnumerable<string> Values { get; set; }
+        public List<string> Values { get; set; }
 
         /// <summary>
         /// Indicates, if the Resource Property is set to default
@@ -853,18 +854,24 @@ namespace reexmonkey.xcal.domain.models
             return this.Values.Count() == 0 && this.AlternativeText.IsDefault();
         }
 
+        public RESOURCES()
+        {
+            this.Values = null;
+            this.AlternativeText = null;
+            this.Language = null;
+        }
+
         /// <summary>
         /// Constructor specifying the Text, Alternative Text and Language for Resource Property
         /// </summary>
         /// <param name="text">Text with the name and other parameters, specifying the current Resource</param>
         /// <param name="alt">Alternative Text, can represent particular the description of the Resource</param>
         /// <param name="language">Language nescessary for the Resource</param>
-        public RESOURCES(IEnumerable<string> values, IALTREP alt, ILANGUAGE language)
+        public RESOURCES(List<string> values, IALTREP alt, ILANGUAGE language)
         {
             this.Values = values;
             this.AlternativeText = alt;
             this.Language = language;
-            this.Id = Guid.NewGuid().ToString();
         }
 
         /// <summary>
