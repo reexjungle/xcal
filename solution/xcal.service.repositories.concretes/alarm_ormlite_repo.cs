@@ -58,22 +58,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public void Patch(AUDIO_ALARM entity)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Erase(string key)
         {
             throw new NotImplementedException();
         }
 
         public void SaveAll(IEnumerable<AUDIO_ALARM> entities)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void PatchAll(IEnumerable<AUDIO_ALARM> entities)
         {
             throw new NotImplementedException();
         }
@@ -142,22 +132,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public void Patch(DISPLAY_ALARM entity)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Erase(string key)
         {
             throw new NotImplementedException();
         }
 
         public void SaveAll(IEnumerable<DISPLAY_ALARM> entities)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void PatchAll(IEnumerable<DISPLAY_ALARM> entities)
         {
             throw new NotImplementedException();
         }
@@ -226,22 +206,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public void Patch(EMAIL_ALARM entity)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Erase(string key)
         {
             throw new NotImplementedException();
         }
 
         public void SaveAll(IEnumerable<EMAIL_ALARM> entities)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void PatchAll(IEnumerable<EMAIL_ALARM> entities)
         {
             throw new NotImplementedException();
         }

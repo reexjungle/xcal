@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ServiceStack.OrmLite;
 using ServiceStack.Redis;
 using reexmonkey.crosscut.essentials.contracts;
@@ -29,20 +30,6 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// <param name="dry">The sparse events entities to be populated</param>
         /// <returns>Populated event entities</returns>
         IEnumerable<VEVENT> Hydrate(IEnumerable<VEVENT> dry);
-
-        /// <summary>
-        /// Depopulates an event entity of its constituent details
-        /// </summary>
-        /// <param name="full">The event entity to be depopulated</param>
-        /// <returns>A sparse event entity</returns>
-        VEVENT Dehydrate(VEVENT full);
-
-        /// <summary>
-        /// Depopulates event entities of constituent event details
-        /// </summary>
-        /// <param name="full">The events entities to be depopulated</param>
-        /// <returns>Populated event entities</returns>
-        IEnumerable<VEVENT> Dehydrate(IEnumerable<VEVENT> full);
     } 
 
     /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Collections.Generic;
 using ServiceStack.Redis;
 using ServiceStack.Redis.Generic;
@@ -79,11 +80,6 @@ namespace reexmonkey.xcal.service.repositories.concrete
             throw new NotImplementedException();
         }
 
-        public void Patch(VEVENT entity)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Erase(string key)
         {
             throw new NotImplementedException();
@@ -94,10 +90,6 @@ namespace reexmonkey.xcal.service.repositories.concrete
             throw new NotImplementedException();
         }
 
-        public void PatchAll(IEnumerable<VEVENT> entities)
-        {
-            throw new NotImplementedException();
-        }
 
         public void EraseAll(IEnumerable<string> keys)
         {
@@ -108,5 +100,6 @@ namespace reexmonkey.xcal.service.repositories.concrete
         {
             throw new NotImplementedException();
         }
+
     }
 }

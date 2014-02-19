@@ -32,19 +32,6 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// <returns>Populated event entities</returns>
         IEnumerable<AUDIO_ALARM> Hydrate(IEnumerable<AUDIO_ALARM> dry);
 
-        /// <summary>
-        /// Depopulates an event entity of its constituent details
-        /// </summary>
-        /// <param name="full">The event entity to be depopulated</param>
-        /// <returns>A sparse event entity</returns>
-        AUDIO_ALARM Dehydrate(AUDIO_ALARM full);
-
-        /// <summary>
-        /// Depopulates event entities of constituent event details
-        /// </summary>
-        /// <param name="full">The events entities to be depopulated</param>
-        /// <returns>Populated event entities</returns>
-        IEnumerable<AUDIO_ALARM> Dehydrate(IEnumerable<AUDIO_ALARM> full);
     }
 
     /// <summary>
@@ -97,19 +84,6 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// <returns>Populated event entities</returns>
         IEnumerable<DISPLAY_ALARM> Hydrate(IEnumerable<DISPLAY_ALARM> dry);
 
-        /// <summary>
-        /// Depopulates an event entity of its constituent details
-        /// </summary>
-        /// <param name="full">The event entity to be depopulated</param>
-        /// <returns>A sparse event entity</returns>
-        DISPLAY_ALARM Dehydrate(DISPLAY_ALARM full);
-
-        /// <summary>
-        /// Depopulates event entities of constituent event details
-        /// </summary>
-        /// <param name="full">The events entities to be depopulated</param>
-        /// <returns>Populated event entities</returns>
-        IEnumerable<DISPLAY_ALARM> Dehydrate(IEnumerable<DISPLAY_ALARM> full);
     }
 
     /// <summary>
@@ -163,19 +137,6 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// <returns>Populated event entities</returns>
         IEnumerable<EMAIL_ALARM> Hydrate(IEnumerable<EMAIL_ALARM> dry);
 
-        /// <summary>
-        /// Depopulates an event entity of its constituent details
-        /// </summary>
-        /// <param name="full">The event entity to be depopulated</param>
-        /// <returns>A sparse event entity</returns>
-        DISPLAY_ALARM Dehydrate(EMAIL_ALARM full);
-
-        /// <summary>
-        /// Depopulates event entities of constituent event details
-        /// </summary>
-        /// <param name="full">The events entities to be depopulated</param>
-        /// <returns>Populated event entities</returns>
-        IEnumerable<EMAIL_ALARM> Dehydrate(IEnumerable<EMAIL_ALARM> full);
     }
 
     /// <summary>

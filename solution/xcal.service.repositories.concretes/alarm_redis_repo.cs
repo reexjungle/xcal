@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Collections.Generic;
 using ServiceStack.Redis;
 using ServiceStack.Redis.Generic;
@@ -9,6 +10,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 {
     public class AudioAlarmRedisRepository: IAudioAlarmRedisRepository
     {
+
         public IRedisClientsManager RedisClientsManager
         {
             get { throw new NotImplementedException(); }
@@ -20,16 +22,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
 
         public IEnumerable<AUDIO_ALARM> Hydrate(IEnumerable<AUDIO_ALARM> dry)
-        {
-            throw new NotImplementedException();
-        }
-
-        public AUDIO_ALARM Dehydrate(AUDIO_ALARM full)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<AUDIO_ALARM> Dehydrate(IEnumerable<AUDIO_ALARM> full)
         {
             throw new NotImplementedException();
         }
@@ -54,22 +46,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public void Patch(AUDIO_ALARM entity)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Erase(string key)
         {
             throw new NotImplementedException();
         }
 
         public void SaveAll(IEnumerable<AUDIO_ALARM> entities)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void PatchAll(IEnumerable<AUDIO_ALARM> entities)
         {
             throw new NotImplementedException();
         }
@@ -92,7 +74,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
     public class DisplayAlarmRepository: IDisplayAlarmRedisRepository
     {
-
         public IRedisClientsManager RedisClientsManager
         {
             get { throw new NotImplementedException(); }
@@ -104,16 +85,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
 
         public IEnumerable<DISPLAY_ALARM> Hydrate(IEnumerable<DISPLAY_ALARM> dry)
-        {
-            throw new NotImplementedException();
-        }
-
-        public DISPLAY_ALARM Dehydrate(DISPLAY_ALARM full)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<DISPLAY_ALARM> Dehydrate(IEnumerable<DISPLAY_ALARM> full)
         {
             throw new NotImplementedException();
         }
@@ -138,7 +109,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public void Patch(DISPLAY_ALARM entity)
+        public void Patch(DISPLAY_ALARM patch, Expression<Func<DISPLAY_ALARM, object>> fields, Expression<Func<DISPLAY_ALARM, bool>> where = null)
         {
             throw new NotImplementedException();
         }
@@ -149,11 +120,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
 
         public void SaveAll(IEnumerable<DISPLAY_ALARM> entities)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void PatchAll(IEnumerable<DISPLAY_ALARM> entities)
         {
             throw new NotImplementedException();
         }
@@ -192,16 +158,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public DISPLAY_ALARM Dehydrate(EMAIL_ALARM full)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<EMAIL_ALARM> Dehydrate(IEnumerable<EMAIL_ALARM> full)
-        {
-            throw new NotImplementedException();
-        }
-
         public EMAIL_ALARM Find(string key)
         {
             throw new NotImplementedException();
@@ -222,7 +178,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public void Patch(EMAIL_ALARM entity)
+        public void Patch(EMAIL_ALARM patch, Expression<Func<EMAIL_ALARM, object>> fields, Expression<Func<EMAIL_ALARM, bool>> where = null)
         {
             throw new NotImplementedException();
         }
@@ -233,11 +189,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
 
         public void SaveAll(IEnumerable<EMAIL_ALARM> entities)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void PatchAll(IEnumerable<EMAIL_ALARM> entities)
         {
             throw new NotImplementedException();
         }

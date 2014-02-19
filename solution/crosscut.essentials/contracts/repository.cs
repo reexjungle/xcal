@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Collections.Generic;
 
 namespace reexmonkey.crosscut.essentials.contracts
 {
@@ -86,12 +89,6 @@ namespace reexmonkey.crosscut.essentials.contracts
         void Save(TEntity entity);
 
         /// <summary>
-        /// Patches an entity in the repository
-        /// </summary>
-        /// <param name="entity">The patch containing the attributes that need to be patched for that entity</param>
-        void Patch(TEntity entity);
-
-        /// <summary>
         /// Erases an entity from the repository based on a unique identifier
         /// </summary>
         /// <param name="key">The unique identifier of the entity</param>
@@ -102,12 +99,6 @@ namespace reexmonkey.crosscut.essentials.contracts
         /// </summary>
         /// <param name="entities">The entities to save</param>
         void SaveAll(IEnumerable<TEntity> entities);
-
-        /// <summary>
-        /// Patches entities in the repository
-        /// </summary>
-        /// <param name="entities">The entities to patch</param>
-        void PatchAll(IEnumerable<TEntity> entities);
 
         /// <summary>
         /// Erases entities from the repository based on unique identifiers
