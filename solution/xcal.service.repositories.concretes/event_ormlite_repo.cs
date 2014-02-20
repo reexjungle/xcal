@@ -27,23 +27,37 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public IDbConnectionFactory DbConnectionFactory
         {
             get { return this.factory; }
-            set { this.factory = value; }
+            set 
+            {
+                if (value == null) throw new ArgumentNullException("Null factory");
+                this.factory = value; 
+            }
         }
-        public IAudioAlarmOrmLiteRepository AudioAlarmOrmLiteRepository { get; set; }
-        public IDisplayAlarmOrmLiteRepository DisplayAlarmOrmLiteRepository { get; set; }
-        public IEmailAlarmOrmLiteRepository EmailAlarmOrmLiteRepository { get; set; }
         public int? Pages
         {
             get { return this.pages; }
+            set 
+            {
+                if (value == null) throw new ArgumentNullException("Null pages");
+                this.pages = value; 
+            }
         }
+
+        public IAudioAlarmOrmLiteRepository AudioAlarmOrmLiteRepository { get; set; }
+        public IDisplayAlarmOrmLiteRepository DisplayAlarmOrmLiteRepository { get; set; }
+        public IEmailAlarmOrmLiteRepository EmailAlarmOrmLiteRepository { get; set; }
 
         public EventOrmLiteRepository(IDbConnectionFactory factory, int? pages)
         {
-            if (factory == null) throw new ArgumentNullException("Null factory");
-            this.factory = factory;
-            if (pages == null) throw new ArgumentNullException("Null pages");
-            this.pages = pages;
-            this.conn = factory.OpenDbConnection();
+            this.DbConnectionFactory = factory;
+            this.Pages = pages;
+            this.conn = this.factory.OpenDbConnection();
+        }
+
+        public EventOrmLiteRepository(IDbConnection connection, int? pages)
+        {
+            this.conn = connection; 
+            this.Pages = pages;
         }
 
         //cleanup

@@ -3393,7 +3393,7 @@ namespace reexmonkey.xcal.domain.models
             set 
             {
                 if (this.tformat != TriggerFormat.Related) throw new ArgumentException("Duration values are only allowed for relative triggers");
-                this.duration = (DURATION)value;
+                this.duration = value;
                 this.tformat = TriggerFormat.Related;
             }
         }
@@ -3436,19 +3436,27 @@ namespace reexmonkey.xcal.domain.models
             this.tformat == TriggerFormat.Related;
         }
 
-        public TRIGGER(DURATION duration, RELATED related = RELATED.UNKNOWN, ValueFormat vformat = ValueFormat.UNKNOWN)
+        public TRIGGER()
+        {
+            this.duration = null;
+            this.related = RELATED.UNKNOWN;
+            this.vformat = ValueFormat.UNKNOWN;
+            this.tformat = TriggerFormat.Related;
+        }
+
+        public TRIGGER(IDURATION duration, RELATED related = RELATED.UNKNOWN, ValueFormat vformat = ValueFormat.UNKNOWN)
         {
             this.duration = duration;
             this.related = related;
             this.vformat = vformat;
-            this.datetime = new DATE_TIME();
+            this.datetime = null;
             this.tformat = TriggerFormat.Related;
         }
 
-        public TRIGGER(DATE_TIME datetime, ValueFormat vformat = ValueFormat.UNKNOWN)
+        public TRIGGER(IDATE_TIME datetime, ValueFormat vformat = ValueFormat.UNKNOWN)
         {
 
-            this.duration = new DURATION();
+            this.duration = null;
             this.related = RELATED.UNKNOWN;
             this.vformat = vformat;
             this.datetime = datetime;

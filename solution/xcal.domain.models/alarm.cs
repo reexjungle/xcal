@@ -22,7 +22,7 @@ namespace reexmonkey.xcal.domain.models
     {     
         protected ITRIGGER trigger;
         protected IDURATION duration;
-        protected IREPEAT repeat;
+        protected int repeat;
 
         [DataMember]
         public string Id { get; set; }
@@ -54,7 +54,7 @@ namespace reexmonkey.xcal.domain.models
         }
 
         [DataMember]
-        public IREPEAT Repeat
+        public int Repeat
         {
             get { return this.repeat; }
             set
@@ -69,7 +69,7 @@ namespace reexmonkey.xcal.domain.models
         {
             this.Action = ACTION.UNKNOWN;
             this.trigger = null;
-            this.repeat = null;
+            this.repeat = -1;
         }
 
         public VALARM(ACTION action, ITRIGGER trigger)
@@ -78,7 +78,7 @@ namespace reexmonkey.xcal.domain.models
             this.Trigger = trigger;
         }
      
-        public VALARM(ACTION action, ITRIGGER trigger, IDURATION duration, IREPEAT repeat)
+        public VALARM(ACTION action, ITRIGGER trigger, IDURATION duration, int repeat)
         {
             this.Action = action;
             this.Trigger = trigger;
@@ -110,7 +110,7 @@ namespace reexmonkey.xcal.domain.models
             this.Attachment = attachment;
         }
 
-        public AUDIO_ALARM(ACTION action, ITRIGGER trigger, IDURATION duration, IREPEAT repeat, IATTACH attachment = null)
+        public AUDIO_ALARM(ACTION action, ITRIGGER trigger, IDURATION duration, int repeat, IATTACH attachment = null)
             : base(action, trigger, duration, repeat)
         {
             this.Attachment = attachment;
@@ -132,7 +132,7 @@ namespace reexmonkey.xcal.domain.models
             if (this.Duration != null && this.Repeat != null)
             {
                 sb.AppendFormat("{0}", this.Duration).AppendLine();
-                sb.AppendFormat("{0}", this.Repeat).AppendLine();
+                sb.AppendFormat("REPEAT:{0}", this.Repeat).AppendLine();
             }
             if(this.Attachment != null)  sb.AppendFormat("{0}", this.Attachment).AppendLine();
             sb.Append("END:VALARM").AppendLine();
@@ -171,7 +171,7 @@ namespace reexmonkey.xcal.domain.models
             return this.Action == ACTION.UNKNOWN &&
                 ((this.Trigger != null) ? this.Trigger.IsDefault() : true) &&
                 ((this.Duration != null) ? this.Duration.IsDefault() : true) &&
-                ((this.Repeat != null) ? this.Repeat.IsDefault() : true) &&
+                (this.Repeat != -1) &&
                 ((this.Attachment != null) ? this.Attachment.IsDefault() : true);
         }
     }
@@ -200,7 +200,7 @@ namespace reexmonkey.xcal.domain.models
             this.Description = description;
         }
 
-        public DISPLAY_ALARM(ACTION action, ITRIGGER trigger, IDURATION duration, IREPEAT repeat, ITEXT description = null): base(action, trigger, duration, repeat)
+        public DISPLAY_ALARM(ACTION action, ITRIGGER trigger, IDURATION duration, int repeat, ITEXT description = null): base(action, trigger, duration, repeat)
         {
             this.Description = description;
         }
@@ -224,7 +224,7 @@ namespace reexmonkey.xcal.domain.models
             if (this.Duration != null && this.Repeat != null)
             {
                 sb.AppendFormat("{0}", this.Duration).AppendLine();
-                sb.AppendFormat("{0}", this.Repeat).AppendLine();
+                sb.AppendFormat("REPEAT:{0}", this.Repeat).AppendLine();
             }
             sb.Append("END:VALARM").AppendLine();
             return sb.ToString();
@@ -262,7 +262,7 @@ namespace reexmonkey.xcal.domain.models
             return this.Action == ACTION.UNKNOWN &&
                 ((this.Trigger != null) ? this.Trigger.IsDefault() : true) &&
                 ((this.Duration != null) ? this.Duration.IsDefault() : true) &&
-                ((this.Repeat != null) ? this.Repeat.IsDefault() : true) &&
+                (this.Repeat != -1) &&
                 ((this.Description != null) ? this.Description.IsDefault() : true);
 
         }
@@ -272,14 +272,14 @@ namespace reexmonkey.xcal.domain.models
     [KnownType(typeof(ATTACH_BINARY))]
     [KnownType(typeof(ATTACH_URI))]
     [KnownType(typeof(DESCRIPTION))]
+    [KnownType(typeof(SUMMARY))]
     public class EMAIL_ALARM : VALARM, IEMAIL_ALARM, IEquatable<EMAIL_ALARM>
     {
         private ITEXT description;
         private ITEXT summary;
-        private IEnumerable<IATTENDEE> attendees;
 
         [DataMember]
-        public IEnumerable<IATTACH> Attachments { get; set; }
+        public List<IATTACH> Attachments { get; set; }
 
         [DataMember]
         public ITEXT Description 
@@ -304,15 +304,16 @@ namespace reexmonkey.xcal.domain.models
         }
 
         [DataMember]
-        public IEnumerable<IATTENDEE> Attendees { get; set; }
+        public List<IATTENDEE> Attendees { get; set; }
 
         public EMAIL_ALARM() : base() 
         {
-            this.attendees = new List<IATTENDEE>();
+            this.Attendees = new List<IATTENDEE>();
+            this.Attachments = new List<IATTACH>();
         }
 
         public EMAIL_ALARM(ACTION action, ITRIGGER trigger, ITEXT description, ITEXT summary, 
-            IEnumerable<IATTENDEE> attendees, IEnumerable<IATTACH> attachments = null)
+            List<IATTENDEE> attendees, List<IATTACH> attachments = null)
             : base(action, trigger)
         {
             this.Description = description;
@@ -322,8 +323,8 @@ namespace reexmonkey.xcal.domain.models
 
         }
 
-        public EMAIL_ALARM(ACTION action, ITRIGGER trigger, IDURATION duration, IREPEAT repeat, ITEXT description, ITEXT summary, 
-            IEnumerable<IATTENDEE> attendees, IEnumerable<IATTACH> attachments = null)
+        public EMAIL_ALARM(ACTION action, ITRIGGER trigger, IDURATION duration, int repeat, ITEXT description, ITEXT summary, 
+            List<IATTENDEE> attendees, List<IATTACH> attachments = null)
             : base(action, trigger, duration, repeat)
         {
             this.Description = description;
@@ -394,10 +395,12 @@ namespace reexmonkey.xcal.domain.models
 
         public bool IsDefault()
         {
-            return this.Action == ACTION.UNKNOWN && this.Trigger.IsDefault() &&
-                this.duration.IsDefault() && this.repeat.IsDefault() &&
-                this.Description != null &&
-                this.Summary != null &&
+            return this.Action == ACTION.UNKNOWN &&
+                ((this.Trigger != null) ? this.Trigger.IsDefault() : true) &&
+                ((this.Duration != null) ? this.Duration.IsDefault() : true) &&
+                (this.Repeat != -1) &&
+                ((this.Description != null)? this.Description.IsDefault(): true) &&
+                ((this.Summary != null)? this.summary.IsDefault(): true) &&
                 this.Attendees.NullOrEmpty() &&
                 this.Attachments.NullOrEmpty();
         }

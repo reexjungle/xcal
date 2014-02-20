@@ -15,7 +15,7 @@ namespace reexmonkey.xcal.domain.contracts
         ACTION Action { get; set; }
         ITRIGGER Trigger { get; set; }
         IDURATION Duration { get; set; }
-        IREPEAT Repeat { get; set; }
+        int Repeat { get; set; }
 
     }
 
@@ -24,7 +24,7 @@ namespace reexmonkey.xcal.domain.contracts
         IATTACH Attachment { get; set; }
     }
 
-    public interface IDALARM
+    public interface IDALARM: IALARM
     {
         ITEXT Description { get; set; }
     }
@@ -33,8 +33,8 @@ namespace reexmonkey.xcal.domain.contracts
     {
         ITEXT Description { get; set; }
         ITEXT Summary { get; set; }
-        IEnumerable<IATTENDEE> Attendees { get; set; }
-        IEnumerable<IATTACH> Attachments { get; set; }
+        List<IATTENDEE> Attendees { get; set; }
+        List<IATTACH> Attachments { get; set; }
     }
 
 }

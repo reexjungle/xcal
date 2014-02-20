@@ -12,10 +12,43 @@ namespace reexmonkey.xcal.service.repositories.concretes
 {
     public class AudioAlarmOrmLiteRepository: IAudioAlarmOrmLiteRepository
     {
+        private IDbConnection conn;
+        private IDbConnectionFactory factory = null;
+        private int? pages = null;
 
+        private IDbConnection db
+        {
+            get { return (this.conn) ?? factory.OpenDbConnection(); }
+        }
         public IDbConnectionFactory DbConnectionFactory
         {
-            get { throw new NotImplementedException(); }
+            get { return this.factory; }
+            set
+            {
+                if (value == null) throw new ArgumentNullException("Null factory");
+                this.factory = value;
+            }
+        }
+        public int? Pages
+        {
+            get { return this.pages; }
+            set
+            {
+                if (value == null) throw new ArgumentNullException("Null pages");
+                this.pages = value;
+            }
+        }
+
+        public AudioAlarmOrmLiteRepository(IDbConnectionFactory factory, int? pages)
+        {
+            this.DbConnectionFactory = factory;
+            this.Pages = pages;
+            this.conn = this.factory.OpenDbConnection();
+        }
+
+        public AudioAlarmOrmLiteRepository(IDbConnection connection, int? pages)
+        {
+
         }
 
         public AUDIO_ALARM Hydrate(AUDIO_ALARM dry)
@@ -78,10 +111,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public int? Pages
-        {
-            get { throw new NotImplementedException(); }
-        }
     }
 
     public class DisplayAlarmOrmLiteRepository: IDisplayAlarmOrmLiteRepository
