@@ -56,6 +56,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public EventOrmLiteRepository(IDbConnection connection, int? pages)
         {
+            if (connection == null) throw new ArgumentNullException("connection");
             this.conn = connection; 
             this.Pages = pages;
         }
@@ -76,7 +77,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
-            return (dry != null) ? this.Hydrate(dry) : dry;
+            return (dry != null) ? this.Hydrate(dry) : null;
         }
 
         public IEnumerable<VEVENT> Find(IEnumerable<string> keys, int? page = null)
@@ -89,7 +90,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
-            return (!dry.NullOrEmpty()) ? this.Hydrate(dry) : dry;
+            return (!dry.NullOrEmpty()) ? this.Hydrate(dry) : null;
         }
 
         public IEnumerable<VEVENT> Get(int? page = null)
@@ -102,7 +103,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
 
-            return (!dry.NullOrEmpty()) ? this.Hydrate(dry) : dry;
+            return (!dry.NullOrEmpty()) ? this.Hydrate(dry) : null;
         }
 
         public void Save(VEVENT entity)
@@ -215,19 +216,19 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 if (rorg != null && !ororgs.Contains(rorg)) db.Save(rorg);
                 if (rrid != null && !orrids.Contains(rrid)) db.Save(rrid);
                 if (rrrule != null && !orrrules.Contains(rrrule)) db.Save(rrule);
-                if (!rattends.NullOrEmpty() && orattends.Intersect(rattends).NullOrEmpty()) db.SaveAll(rattends);
-                if(!rattachbins.NullOrEmpty() && orattachbins.Intersect(rattachbins).NullOrEmpty()) db.SaveAll(rattachbins);
-                if(!rattachuris.NullOrEmpty() && orattachuris.Intersect(rattachuris).NullOrEmpty()) db.SaveAll(rattachuris);
-                if (!rcontacts.NullOrEmpty() && orcontacts.Intersect(rcontacts).NullOrEmpty()) db.SaveAll(rcontacts);
-                if (!rcomments.NullOrEmpty() && orcomments.Intersect(rcomments).NullOrEmpty()) db.SaveAll(rcomments);
-                if (!rrdates.NullOrEmpty() && orrdates.Intersect(rrdates).NullOrEmpty()) db.SaveAll(rrdates);
-                if (!rexdates.NullOrEmpty() && orexdates.Intersect(rexdates).NullOrEmpty()) db.SaveAll(rexdates);
-                if (!rrelateds.NullOrEmpty() && orrelateds.Intersect(rrelateds).NullOrEmpty()) db.SaveAll(rrelateds);
-                if (!rresources.NullOrEmpty() && orresources.Intersect(rresources).NullOrEmpty()) db.SaveAll(rresources);
-                if (!rreqstats.NullOrEmpty() && orreqstats.Intersect(rreqstats).NullOrEmpty()) db.SaveAll(rreqstats);
-                if (!raalarms.NullOrEmpty() && oraalarms.Intersect(raalarms).NullOrEmpty()) db.SaveAll(raalarms);
-                if (!rdalarms.NullOrEmpty() && ordalarms.Intersect(rdalarms).NullOrEmpty()) db.SaveAll(rdalarms);
-                if (!realarms.NullOrEmpty() && orealarms.Intersect(realarms).NullOrEmpty()) db.SaveAll(realarms);
+                if (!rattends.NullOrEmpty() && !rattends.Except(orattends).NullOrEmpty()) db.SaveAll(rattends.Except(orattends));
+                if (!rattachbins.NullOrEmpty() && !rattachbins.Except(orattachbins).NullOrEmpty()) db.SaveAll(rattachbins.Except(orattachbins));
+                if (!rattachuris.NullOrEmpty() && !rattachuris.Except(orattachuris).NullOrEmpty()) db.SaveAll(rattachuris.Except(orattachuris));
+                if (!rcontacts.NullOrEmpty() && !rcontacts.Except(orcontacts).NullOrEmpty()) db.SaveAll(rcontacts.Except(orcontacts));
+                if (!rcomments.NullOrEmpty() && !rcomments.Except(orcomments).NullOrEmpty()) db.SaveAll(rcomments.Except(orcomments));
+                if (!rrdates.NullOrEmpty() && !rrdates.Except(orrdates).NullOrEmpty()) db.SaveAll(rrdates.Except(orrdates));
+                if (!rexdates.NullOrEmpty() && !rexdates.Except(orexdates).NullOrEmpty()) db.SaveAll(rexdates.Except(orexdates));
+                if (!rrelateds.NullOrEmpty() && !rrelateds.Except(orrelateds).NullOrEmpty()) db.SaveAll(rrelateds.Except(orrelateds));
+                if (!rresources.NullOrEmpty() && !rresources.Except(orresources).NullOrEmpty()) db.SaveAll(rresources.Except(orresources));
+                if (!rreqstats.NullOrEmpty() && !rreqstats.Except(orreqstats).NullOrEmpty()) db.SaveAll(rreqstats.Except(orreqstats));
+                if (!raalarms.NullOrEmpty() && !raalarms.Except(oraalarms).NullOrEmpty()) db.SaveAll(raalarms.Except(oraalarms));
+                if (!rdalarms.NullOrEmpty() && !rdalarms.Except(ordalarms).NullOrEmpty()) db.SaveAll(rdalarms.Except(ordalarms));
+                if (!realarms.NullOrEmpty() && !realarms.Except(orealarms).NullOrEmpty()) db.SaveAll(realarms.Except(orealarms));
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
@@ -282,9 +283,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!relateds.NullOrEmpty()) db.SaveAll(relateds);
                     if (!resources.NullOrEmpty()) db.SaveAll(resources);
                     if (!reqstats.NullOrEmpty()) db.SaveAll(reqstats);
-                    if (!aalarms.NullOrEmpty()) db.SaveAll(aalarms);
-                    if (!dalarms.NullOrEmpty()) db.SaveAll(dalarms);
-                    if (!ealarms.NullOrEmpty()) db.SaveAll(ealarms);
+                    if (!aalarms.NullOrEmpty()) this.AudioAlarmOrmLiteRepository.SaveAll(aalarms);
+                    if (!dalarms.NullOrEmpty()) this.DisplayAlarmOrmLiteRepository.SaveAll(dalarms);
+                    if (!ealarms.NullOrEmpty()) this.EmailAlarmOrmLiteRepository.SaveAll(ealarms);
 
                     //3. construct available relations
                     var rorgs = entities.Where(x => x.Organizer != null && x.Organizer is ORGANIZER)
@@ -373,22 +374,22 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
 
                     //5. save non-existing entity-details relations
-                    if (!rorgs.NullOrEmpty() && ororgs.Intersect(rorgs).NullOrEmpty()) db.SaveAll(rorgs);
-                    if (!rrids.NullOrEmpty() && orrids.Intersect(rrids).NullOrEmpty()) db.SaveAll(rrids);
-                    if (!rrrules.NullOrEmpty() && orrrules.Intersect(rrrules).NullOrEmpty()) db.SaveAll(rrrules);
-                    if (!rattends.NullOrEmpty() && orattends.Intersect(rattends).NullOrEmpty()) db.SaveAll(rattends);
-                    if (!rattachbins.NullOrEmpty() && orattachbins.Intersect(rattachbins).NullOrEmpty()) db.SaveAll(rattachbins);
-                    if (!rattachuris.NullOrEmpty() && orattachuris.Intersect(rattachuris).NullOrEmpty()) db.SaveAll(rattachuris);
-                    if (!rcontacts.NullOrEmpty() && orcontacts.Intersect(rcontacts).NullOrEmpty()) db.SaveAll(rcontacts);
-                    if (!rcomments.NullOrEmpty() && orcomments.Intersect(rcomments).NullOrEmpty()) db.SaveAll(rcomments);
-                    if (!rrdates.NullOrEmpty() && orrdates.Intersect(rrdates).NullOrEmpty()) db.SaveAll(rrdates);
-                    if (!rexdates.NullOrEmpty() && orexdates.Intersect(rexdates).NullOrEmpty()) db.SaveAll(rexdates);
-                    if (!rrelateds.NullOrEmpty() && orrelateds.Intersect(rrelateds).NullOrEmpty()) db.SaveAll(rrelateds);
-                    if (!rresources.NullOrEmpty() && orresources.Intersect(rresources).NullOrEmpty()) db.SaveAll(rresources);
-                    if (!rreqstats.NullOrEmpty() && orreqstats.Intersect(rreqstats).NullOrEmpty()) db.SaveAll(rreqstats);
-                    if (!raalarms.NullOrEmpty() && oraalarms.Intersect(raalarms).NullOrEmpty()) db.SaveAll(raalarms);
-                    if (!rdalarms.NullOrEmpty() && ordalarms.Intersect(rdalarms).NullOrEmpty()) db.SaveAll(rdalarms);
-                    if (!realarms.NullOrEmpty() && orealarms.Intersect(realarms).NullOrEmpty()) db.SaveAll(realarms);
+                    if (!rorgs.NullOrEmpty() && rorgs.Except(ororgs).NullOrEmpty()) db.SaveAll(rorgs.Except(ororgs));
+                    if (!rrids.NullOrEmpty() && rrids.Except(orrids).NullOrEmpty()) db.SaveAll(rrids.Except(orrids));
+                    if (!rrrules.NullOrEmpty() && rrrules.Except(orrrules).NullOrEmpty()) db.SaveAll(rrrules.Except(orrrules));
+                    if (!rattends.NullOrEmpty() && !rattends.Except(orattends).NullOrEmpty()) db.SaveAll(rattends.Except(orattends));
+                    if (!rattachbins.NullOrEmpty() && !rattachbins.Except(orattachbins).NullOrEmpty()) db.SaveAll(rattachbins.Except(orattachbins));
+                    if (!rattachuris.NullOrEmpty() && !rattachuris.Except(orattachuris).NullOrEmpty()) db.SaveAll(rattachuris.Except(orattachuris));
+                    if (!rcontacts.NullOrEmpty() && !rcontacts.Except(orcontacts).NullOrEmpty()) db.SaveAll(rcontacts.Except(orcontacts));
+                    if (!rcomments.NullOrEmpty() && !rcomments.Except(orcomments).NullOrEmpty()) db.SaveAll(rcomments.Except(orcomments));
+                    if (!rrdates.NullOrEmpty() && !rrdates.Except(orrdates).NullOrEmpty()) db.SaveAll(rrdates.Except(orrdates));
+                    if (!rexdates.NullOrEmpty() && !rexdates.Except(orexdates).NullOrEmpty()) db.SaveAll(rexdates.Except(orexdates));
+                    if (!rrelateds.NullOrEmpty() && !rrelateds.Except(orrelateds).NullOrEmpty()) db.SaveAll(rrelateds.Except(orrelateds));
+                    if (!rresources.NullOrEmpty() && !rresources.Except(orresources).NullOrEmpty()) db.SaveAll(rresources.Except(orresources));
+                    if (!rreqstats.NullOrEmpty() && !rreqstats.Except(orreqstats).NullOrEmpty()) db.SaveAll(rreqstats.Except(orreqstats));
+                    if (!raalarms.NullOrEmpty() && !raalarms.Except(oraalarms).NullOrEmpty()) db.SaveAll(raalarms.Except(oraalarms));
+                    if (!rdalarms.NullOrEmpty() && !rdalarms.Except(ordalarms).NullOrEmpty()) db.SaveAll(rdalarms.Except(ordalarms));
+                    if (!realarms.NullOrEmpty() && !realarms.Except(orealarms).NullOrEmpty()) db.SaveAll(realarms.Except(orealarms));
 
             }
             catch (InvalidOperationException) { throw; }
@@ -488,20 +489,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     e => e.Id == dry.Uid).Except(dry.Resources.OfType<RESOURCES>()));
 
 
-                dry.Alarms.AddRange(db.Select<AUDIO_ALARM, VEVENT, REL_EVENTS_AUDIO_ALARMS>(
-                    r => r.AlarmId,
-                    r => r.Uid,
-                    e => e.Id == dry.Uid).Except(dry.Alarms.OfType<AUDIO_ALARM>()));
-
-                dry.Alarms.AddRange(db.Select<DISPLAY_ALARM, VEVENT, REL_EVENTS_AUDIO_ALARMS>(
-                    r => r.AlarmId,
-                    r => r.Uid,
-                    e => e.Id == dry.Uid).Except(dry.Alarms.OfType<DISPLAY_ALARM>()));
-
-                dry.Alarms.AddRange(db.Select<EMAIL_ALARM, VEVENT, REL_EVENTS_AUDIO_ALARMS>(
-                    r => r.AlarmId,
-                    r => r.Uid,
-                    e => e.Id == dry.Uid).Except(dry.Alarms.OfType<EMAIL_ALARM>()));
+                dry.Alarms.AddRange(this.AudioAlarmOrmLiteRepository.Find(dry.Uid.ToSingleton()));
+                dry.Alarms.AddRange(this.DisplayAlarmOrmLiteRepository.Find(dry.Uid.ToSingleton()));
+                dry.Alarms.AddRange(this.EmailAlarmOrmLiteRepository.Find(dry.Uid.ToSingleton()));
 
             }
             catch (ArgumentNullException) { throw; }
@@ -531,7 +521,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 var rrelateds = db.Select<REL_EVENTS_RELATEDTOS>(q => Sql.In(q.Uid, uids));
                 var rrstats = db.Select<REL_EVENTS_REQSTATS>(q => Sql.In(q.Uid, uids));
                 var rresources = db.Select<REL_EVENTS_RESOURCES>(q => Sql.In(q.Uid, uids));
-                var ralarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.Uid, uids));
+                var raalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.Uid, uids));
+                var rdalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.Uid, uids));
+                var realarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.Uid, uids));
 
                 //2. retrieve secondary entities
                 var orgs = (!rorgs.Empty())? db.Select<ORGANIZER>(q => Sql.In(q.Id, rorgs.Select(r => r.OrganizerId).ToArray())): null;
@@ -547,9 +539,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 var relatedtos = (!rrelateds.Empty()) ? db.Select<RELATEDTO>(q => Sql.In(q.Id, rrelateds.Select(r => r.RelatedToId).ToArray())) : null;
                 var reqstats = (!rrstats.Empty()) ? db.Select<REQUEST_STATUS>(q => Sql.In(q.Id, rrstats.Select(r => r.ReqStatsId).ToArray())) : null;
                 var resources = (!rresources.Empty()) ? db.Select<RESOURCES>(q => Sql.In(q.Id, rresources.Select(r => r.ResourcesId).ToArray())) : null;
-                var aalarms = (!ralarms.Empty()) ? db.Select<AUDIO_ALARM>(q => Sql.In(q.Id, ralarms.Select(r => r.AlarmId))) : null;
-                var dalarms = (!ralarms.Empty()) ? db.Select<DISPLAY_ALARM>(q => Sql.In(q.Id, ralarms.Select(r => r.AlarmId))) : null;
-                var ealarms = (!ralarms.Empty()) ? db.Select<EMAIL_ALARM>(q => Sql.In(q.Id, ralarms.Select(r => r.AlarmId))) : null;
+                var aalarms = (!raalarms.Empty()) ? this.AudioAlarmOrmLiteRepository.Find(uids, raalarms.Select(r => r.AlarmId)).ToList() : null;
+                var dalarms = (!rdalarms.Empty()) ? this.DisplayAlarmOrmLiteRepository.Find(uids, rdalarms.Select(r => r.AlarmId)).ToList() : null;
+                var ealarms = (!realarms.Empty()) ? this.EmailAlarmOrmLiteRepository.Find(uids, realarms.Select(r => r.AlarmId)).ToList() : null;
 
                 //3. Use Linq to stitch secondary entities to primary entities
                 full = dry.Select(x =>
@@ -593,13 +585,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     var xresources = (!resources.NullOrEmpty()) ? (from y in resources join r in rresources on y.Id equals r.ResourcesId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y) : null;
                     if (!xresources.NullOrEmpty()) x.Resources.AddRange(xresources.Except(x.Resources.OfType<RESOURCES>()));
 
-                    var xaalarms = (!aalarms.NullOrEmpty())?(from y in aalarms join r in ralarms on y.Id equals r.AlarmId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y): null;
+                    var xaalarms = (!aalarms.NullOrEmpty())?(from y in aalarms join r in raalarms on y.Id equals r.AlarmId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y): null;
                     if (!xaalarms.NullOrEmpty()) x.Alarms.AddRange(xaalarms.Except(x.Alarms.OfType<AUDIO_ALARM>()));
 
-                    var xdalarms = (!dalarms.NullOrEmpty()) ? (from y in dalarms join r in ralarms on y.Id equals r.AlarmId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y) : null;
+                    var xdalarms = (!dalarms.NullOrEmpty()) ? (from y in dalarms join r in raalarms on y.Id equals r.AlarmId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y) : null;
                     if (!xdalarms.NullOrEmpty()) x.Alarms.AddRange(xdalarms.Except(x.Alarms.OfType<DISPLAY_ALARM>()));
 
-                    var xealarms = (!ealarms.NullOrEmpty()) ? (from y in ealarms join r in ralarms on y.Id equals r.AlarmId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y) : null;
+                    var xealarms = (!ealarms.NullOrEmpty()) ? (from y in ealarms join r in raalarms on y.Id equals r.AlarmId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y) : null;
                     if (!xealarms.NullOrEmpty()) x.Alarms.AddRange(xealarms.Except(x.Alarms.OfType<EMAIL_ALARM>()));
 
                     return x;

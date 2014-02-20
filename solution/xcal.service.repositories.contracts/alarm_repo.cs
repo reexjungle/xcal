@@ -13,26 +13,9 @@ namespace reexmonkey.xcal.service.repositories.contracts
     /// Specifies a general interface for a repository of audio alerts
     /// </summary>
     public interface IAudioAlarmRepository :
-        IReadRepository<AUDIO_ALARM, string>,
+        IReadRepository<AUDIO_ALARM, string, string>,
         IWriteRepository<AUDIO_ALARM, string>,
-        IPaged<int>
-    {
-
-        /// <summary>
-        /// Populates a sparse event entity with details from its consitutent entities
-        /// </summary>
-        /// <param name="dry">The sparse event entity to be populated</param>
-        /// <returns>The populated event entity</returns>
-        AUDIO_ALARM Hydrate(AUDIO_ALARM dry);
-
-        /// <summary>
-        /// Populates event entities with details from respective constituent entities
-        /// </summary>
-        /// <param name="dry">The sparse events entities to be populated</param>
-        /// <returns>Populated event entities</returns>
-        IEnumerable<AUDIO_ALARM> Hydrate(IEnumerable<AUDIO_ALARM> dry);
-
-    }
+        IPaged<int> {}
 
     /// <summary>
     /// Specifies an interface for a repository of audio alerts connected to an ORMlite source
@@ -65,26 +48,9 @@ namespace reexmonkey.xcal.service.repositories.contracts
     /// Specifies a general interface for a repository of display alerts
     /// </summary>
     public interface IDisplayAlarmRepository :
-        IReadRepository<DISPLAY_ALARM, string>,
+        IReadRepository<DISPLAY_ALARM, string, string>,
         IWriteRepository<DISPLAY_ALARM, string>,
-        IPaged<int>
-    {
-
-        /// <summary>
-        /// Populates a sparse event entity with details from its consitutent entities
-        /// </summary>
-        /// <param name="dry">The sparse event entity to be populated</param>
-        /// <returns>The populated event entity</returns>
-        DISPLAY_ALARM Hydrate(DISPLAY_ALARM dry);
-
-        /// <summary>
-        /// Populates event entities with details from respective constituent entities
-        /// </summary>
-        /// <param name="dry">The sparse events entities to be populated</param>
-        /// <returns>Populated event entities</returns>
-        IEnumerable<DISPLAY_ALARM> Hydrate(IEnumerable<DISPLAY_ALARM> dry);
-
-    }
+        IPaged<int> {}
 
     /// <summary>
     /// Specifies an interface for a repository of display alerts connected to an ORMlite source
@@ -118,7 +84,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
     /// Specifies a general interface for a repository of email alerts
     /// </summary>
     public interface IEmailAlarmRepository :
-        IReadRepository<EMAIL_ALARM, string>,
+        IReadRepository<EMAIL_ALARM, string, string>,
         IWriteRepository<EMAIL_ALARM, string>,
         IPaged<int>
     {

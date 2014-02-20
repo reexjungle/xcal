@@ -47,7 +47,7 @@ namespace reexmonkey.xcal.domain.models
             get { return duration; }
             set
             {
-                if (value == null && this.repeat != null) 
+                if (value == null && this.repeat != -1) 
                     throw new ArgumentException("The Repeat and Duration properties are optional but MUST occur together"); 
                 this.duration = value;
             }
@@ -59,7 +59,7 @@ namespace reexmonkey.xcal.domain.models
             get { return this.repeat; }
             set
             {
-                if (value == null && this.duration != null) 
+                if (value != -1 && this.duration != null) 
                     throw new ArgumentException("The Repeat and Duration properties are optional but MUST occur together"); 
                 this.repeat = value;
             }
@@ -129,7 +129,7 @@ namespace reexmonkey.xcal.domain.models
             sb.Append("BEGIN:VALARM").AppendLine();
             sb.AppendFormat("ACTION:{0}", this.Action).AppendLine();
             if(this.Trigger != null) sb.AppendFormat("{0}", this.Trigger).AppendLine();
-            if (this.Duration != null && this.Repeat != null)
+            if (this.Duration != null && this.Repeat != -1)
             {
                 sb.AppendFormat("{0}", this.Duration).AppendLine();
                 sb.AppendFormat("REPEAT:{0}", this.Repeat).AppendLine();
@@ -150,7 +150,7 @@ namespace reexmonkey.xcal.domain.models
             return this.Action.GetHashCode() ^
                 ((this.Trigger != null)? this.Trigger.GetHashCode(): 0)^ 
                 ((this.Duration != null)? this.Duration.GetHashCode(): 0)^
-                ((this.Repeat != null)? this.Repeat.GetHashCode(): 0) ^
+                this.Repeat.GetHashCode() ^
                 ((this.Attachment != null)? this.Attachment.GetHashCode(): 0);
         }
 
@@ -221,7 +221,7 @@ namespace reexmonkey.xcal.domain.models
             sb.Append("BEGIN:VALARM").AppendLine();
             sb.AppendFormat("ACTION:{0}", this.Action).AppendLine();
             if (this.Description != null) sb.AppendFormat("{0}", this.Description).AppendLine();
-            if (this.Duration != null && this.Repeat != null)
+            if (this.Duration != null && this.Repeat != -1)
             {
                 sb.AppendFormat("{0}", this.Duration).AppendLine();
                 sb.AppendFormat("REPEAT:{0}", this.Repeat).AppendLine();
@@ -241,7 +241,7 @@ namespace reexmonkey.xcal.domain.models
             return this.Action.GetHashCode() ^
                 ((this.Trigger != null) ? this.Trigger.GetHashCode() : 0) ^
                 ((this.Duration != null) ? this.Duration.GetHashCode() : 0) ^
-                ((this.Repeat != null) ? this.Repeat.GetHashCode() : 0) ^
+                ((this.Repeat != -1) ? this.Repeat.GetHashCode() : 0) ^
                 ((this.Description != null) ? this.Description.GetHashCode() : 0);
         }
 
@@ -279,9 +279,6 @@ namespace reexmonkey.xcal.domain.models
         private ITEXT summary;
 
         [DataMember]
-        public List<IATTACH> Attachments { get; set; }
-
-        [DataMember]
         public ITEXT Description 
         {
             get { return this.description; }
@@ -304,7 +301,13 @@ namespace reexmonkey.xcal.domain.models
         }
 
         [DataMember]
+        [Ignore]
         public List<IATTENDEE> Attendees { get; set; }
+
+        [DataMember]
+        [Ignore]
+        public List<IATTACH> Attachments { get; set; }
+
 
         public EMAIL_ALARM() : base() 
         {
@@ -352,7 +355,7 @@ namespace reexmonkey.xcal.domain.models
             sb.Append("BEGIN:VALARM").AppendLine();
             if (this.Description != null) sb.AppendFormat("{0}", this.Description).AppendLine();
             if (this.Summary != null) sb.AppendFormat("{0}", this.Summary).AppendLine();
-            if (this.Duration != null && this.Repeat != null)
+            if (this.Duration != null && this.Repeat != -1)
             {
                 sb.AppendFormat("{0}", this.Duration).AppendLine();
                 sb.AppendFormat("{0}", this.Repeat).AppendLine();
@@ -374,7 +377,7 @@ namespace reexmonkey.xcal.domain.models
             return this.Action.GetHashCode() ^
                 ((this.Trigger != null)? this.Trigger.GetHashCode(): 0) ^
                 ((this.Duration != null)? this.Duration.GetHashCode(): 0) ^
-                ((this.Repeat != null)? this.Repeat.GetHashCode(): 0) ^
+                (this.Repeat.GetHashCode()) ^
                 ((this.Description != null) ? this.Description.GetHashCode() : 0) ^
                 ((this.Summary != null) ? this.Description.GetHashCode() : 0) ^
                 ((!this.Attendees.NullOrEmpty()) ? this.Attendees.GetHashCode() : 0) ^
@@ -404,8 +407,6 @@ namespace reexmonkey.xcal.domain.models
                 this.Attendees.NullOrEmpty() &&
                 this.Attachments.NullOrEmpty();
         }
-
-
 
     }
 

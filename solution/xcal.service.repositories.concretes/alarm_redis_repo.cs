@@ -16,26 +16,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
             get { throw new NotImplementedException(); }
         }
 
-        public AUDIO_ALARM Hydrate(AUDIO_ALARM dry)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<AUDIO_ALARM> Hydrate(IEnumerable<AUDIO_ALARM> dry)
-        {
-            throw new NotImplementedException();
-        }
-
-        public AUDIO_ALARM Find(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<AUDIO_ALARM> Find(IEnumerable<string> keys, int? page = null)
-        {
-            throw new NotImplementedException();
-        }
-
         public IEnumerable<AUDIO_ALARM> Get(int? page = null)
         {
             throw new NotImplementedException();
@@ -70,6 +50,16 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             get { throw new NotImplementedException(); }
         }
+
+        public AUDIO_ALARM Find(string fkey, string pkey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<AUDIO_ALARM> Find(IEnumerable<string> fkeys, IEnumerable<string> pkeys = null, int? page = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class DisplayAlarmRepository: IDisplayAlarmRedisRepository
@@ -79,25 +69,16 @@ namespace reexmonkey.xcal.service.repositories.concretes
             get { throw new NotImplementedException(); }
         }
 
-        public DISPLAY_ALARM Hydrate(DISPLAY_ALARM dry)
+        public DISPLAY_ALARM Find(string fkey, string pkey)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<DISPLAY_ALARM> Hydrate(IEnumerable<DISPLAY_ALARM> dry)
+        public IEnumerable<DISPLAY_ALARM> Find(IEnumerable<string> fkeys, IEnumerable<string> pkeys = null, int? page = null)
         {
             throw new NotImplementedException();
         }
 
-        public DISPLAY_ALARM Find(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<DISPLAY_ALARM> Find(IEnumerable<string> keys, int? page = null)
-        {
-            throw new NotImplementedException();
-        }
 
         public IEnumerable<DISPLAY_ALARM> Get(int? page = null)
         {
@@ -109,10 +90,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public void Patch(DISPLAY_ALARM patch, Expression<Func<DISPLAY_ALARM, object>> fields, Expression<Func<DISPLAY_ALARM, bool>> where = null)
-        {
-            throw new NotImplementedException();
-        }
 
         public void Erase(string key)
         {
@@ -138,6 +115,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             get { throw new NotImplementedException(); }
         }
+
     }
 
     public class EmailAlarmRepository: IEmailAlarmRedisRepository
@@ -158,15 +136,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public EMAIL_ALARM Find(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<EMAIL_ALARM> Find(IEnumerable<string> keys, int? page = null)
-        {
-            throw new NotImplementedException();
-        }
 
         public IEnumerable<EMAIL_ALARM> Get(int? page = null)
         {
@@ -206,6 +175,16 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public int? Pages
         {
             get { throw new NotImplementedException(); }
+        }
+
+        public EMAIL_ALARM Find(string fkey, string pkey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<EMAIL_ALARM> Find(IEnumerable<string> fkeys, IEnumerable<string> pkeys = null, int? page = null)
+        {
+            throw new NotImplementedException();
         }
     }
 }
