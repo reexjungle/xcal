@@ -116,6 +116,7 @@ namespace reexmonkey.xcal.domain.contracts
     public interface IPRIORITY: IPROPERTY
     {
         int Value { get; set; }
+        PriorityFormat Format { get; set; }
         PRIORITYLEVEL Level { get; set; }
         PRIORITYSCHEMA Schema { get; set; }
     }
@@ -199,7 +200,9 @@ namespace reexmonkey.xcal.domain.contracts
     }
 
     public interface ICONTACT : IPROPERTY
-    {        
+    {
+        string Value { get; set; }
+
         IALTREP AlternativeText { get; set; }
 
         ILANGUAGE Language { get; set; }

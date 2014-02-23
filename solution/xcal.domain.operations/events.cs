@@ -5,7 +5,7 @@ using ServiceStack.ServiceHost;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 
-namespace uniable.uview.domains.operations
+namespace reexmonkey.xcal.domain.operations
 {
 
     #region VEVENT operations based on RFC 5546
@@ -417,7 +417,7 @@ namespace uniable.uview.domains.operations
     [Route("/calendars/{ProductId}/events/page/{Page}", "GET")]
     [Route("/calendars/{ProductId}/events/uid/{Uid}/{Page}", "GET")]
     [Route("/calendars/{ProductId}/events/uid/{Uid}/page/{Page}", "GET")]
-    public class FindEvent: IReturn<VEVENT>
+    public class FindEvent: IReturn<VCALENDAR>
     {
         [DataMember]
         public string ProductId { get; set; }
@@ -431,7 +431,7 @@ namespace uniable.uview.domains.operations
     [Route("/calendars/{ProductId}/events/{Page}", "GET")]
     [Route("/calendars/{ProductId}/events/page/{Page}", "GET")]
     [Route("/calendars/{ProductId}/events/page/{Page}", "GET")]
-    public class FindEvents: IReturn<List<VEVENT>>
+    public class FindEvents: IReturn<List<VCALENDAR>>
     {
         [DataMember]
         public string ProductId { get; set; }
@@ -442,32 +442,6 @@ namespace uniable.uview.domains.operations
         [DataMember]
         public int? Page { get; set; }
     }
-
-    [Route("/calendars/{ProductId}/event/{Uid}/patch", "PATCH")]   
-    [DataContract]
-    public class PatchEvent : IReturn<VEVENT>
-    {
-        [DataMember]
-        public string ProductId{get; set;}
-
-        public string Uid { get; set; }
-
-        [DataMember]
-        public VEVENT Patch {get; set;}
-    }
-
-    [DataContract]
-    [Route("/calendars/{ProductId}/events/patch", "PATCH")]
-    public class PatchEvents : IReturn<List<VEVENT>>
-    {
-        [DataMember]
-        public string ProductId { get; set; }
-
-        [DataMember]
-        public IEnumerable<VEVENT> Patches { get; set; }
-
-    }
-
 
     [Route("/calendars/{ProductId}/event/{Uid}/delete", "DELETE")]
     [DataContract]

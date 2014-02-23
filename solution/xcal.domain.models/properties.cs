@@ -1051,7 +1051,6 @@ namespace reexmonkey.xcal.domain.models
         private int value;
         private PRIORITYLEVEL level;
         private PRIORITYSCHEMA schema;
-        private PriorityFormat format;
    
         private int LevelToValue(PRIORITYLEVEL level)
         {
@@ -1145,6 +1144,8 @@ namespace reexmonkey.xcal.domain.models
             return value;
         }
 
+        [DataMember]
+        public PriorityFormat Format { get; set; }
 
         [DataMember]
         public int Value 
@@ -1188,37 +1189,37 @@ namespace reexmonkey.xcal.domain.models
             return this.level == PRIORITYLEVEL.UNKNOWN && 
                 this.value == 0 && 
                 this.schema == PRIORITYSCHEMA.UNKNOWN && 
-                this.format == PriorityFormat.Integral;
+                this.Format == PriorityFormat.Integral;
         }
 
         public PRIORITY()
         {
             this.Value = 0;
-            this.format = PriorityFormat.Integral;
+            this.Format = PriorityFormat.Integral;
         }
 
         public PRIORITY(int value)
         {
             this.Value = value;
-            this.format = PriorityFormat.Integral;
+            this.Format = PriorityFormat.Integral;
         }
 
         public PRIORITY(PRIORITYLEVEL level)
         {
             this.Level = level;
-            this.format = PriorityFormat.Level;
+            this.Format = PriorityFormat.Level;
         }
 
         public PRIORITY(PRIORITYSCHEMA schema)
         {
             this.Schema = schema;
-            this.format = PriorityFormat.Schema;
+            this.Format = PriorityFormat.Schema;
         }
 
         public override string ToString()
         {
-            if (this.format == PriorityFormat.Integral) return string.Format("PRIORITY:{0}", this.value);
-            else if(this.format == PriorityFormat.Level) return string.Format("PRIORITY:{0}", this.LevelToValue(this.level));
+            if (this.Format == PriorityFormat.Integral) return string.Format("PRIORITY:{0}", this.value);
+            else if(this.Format == PriorityFormat.Level) return string.Format("PRIORITY:{0}", this.LevelToValue(this.level));
             else return string.Format("PRIORITY:{0}", this.SchemaToValue(this.schema));
         }
 
@@ -2394,13 +2395,14 @@ namespace reexmonkey.xcal.domain.models
     /// Represents the contact information or alternatively a reference to contact information associated with the calendar component
     /// </summary>
     [DataContract]
-    [Alias("CONTACTS")]
     [KnownType(typeof(ALTREP))]
+    [KnownType(typeof(LANGUAGE))]
     public class CONTACT : ICONTACT, IEquatable<CONTACT>, IContainsId<string>
     {
         /// <summary>
         /// ID of the Contact
         /// </summary>
+        [DataMember]
         public string Id{ get; set; }
 
         /// <summary>
@@ -2500,7 +2502,6 @@ namespace reexmonkey.xcal.domain.models
     /// Defines the Organizer for Calendar Component
     /// </summary>
     [DataContract]
-    [Alias("ORGANIZERS")]
     [KnownType(typeof(URI))]
     public class ORGANIZER : IORGANIZER, IEquatable<ORGANIZER>, IContainsId<string>
     {

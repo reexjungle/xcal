@@ -39,4 +39,14 @@ namespace reexmonkey.xcal.service.plugins.validators.concretes
             RuleFor(x => x.BYDAY).SetCollectionValidator(new WeekDayNumValidator()).When(x => !x.BYDAY.NullOrEmpty());
         }
     }
+
+    public class PeriodValidator: AbstractValidator<IPERIOD>
+    {
+        public PeriodValidator()
+        {
+            RuleFor(x => x.Start).NotNull();
+            RuleFor(x => x.End).NotNull().Unless(x => x.Duration != null);
+            RuleFor(x => x.Duration).NotNull().Unless(x => x.End != null);
+        }
+    }
 }

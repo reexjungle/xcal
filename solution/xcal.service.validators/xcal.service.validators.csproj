@@ -69,6 +69,7 @@
     <Compile Include="concretes\event_validator.cs" />
     <Compile Include="concretes\parameter_validators.cs" />
     <Compile Include="concretes\property_validators.cs" />
+    <Compile Include="concretes\request_validators.cs" />
     <Compile Include="concretes\value_validators.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -87,6 +88,10 @@
     <ProjectReference Include="..\xcal.domain.models\xcal.domain.models.csproj">
       <Project>{5b708e08-1f69-4fde-9d99-afa3784a49d7}</Project>
       <Name>xcal.domain.models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.domain.operations\xcal.domain.operations.csproj">
+      <Project>{06f6dd18-fe2b-47d1-9639-7926f29fb3a5}</Project>
+      <Name>xcal.domain.operations</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
