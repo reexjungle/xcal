@@ -2754,8 +2754,6 @@ namespace reexmonkey.xcal.domain.models
     [Alias("RELATEDTOS")]
     public class RELATEDTO : IRELATEDTO, IEquatable<RELATEDTO>, IContainsId<string>
     {
-        private string reference;
-
         /// <summary>
         /// ID of the Relationship or Reference between one calendar component and another
         /// </summary>
@@ -2765,15 +2763,7 @@ namespace reexmonkey.xcal.domain.models
         /// Description of the relationship or reference to another Calendar component
         /// </summary>
         [DataMember]
-        public string Reference 
-        {
-            get { return this.reference; }
-            set
-            {
-                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("Value MUST NOT be null!");
-                this.reference = value;
-            }
-        }
+        public string Reference { get; set; }
 
         /// <summary>
         /// Type of the relationship: dafault - PARENT, can be: CHILD and SIBLING

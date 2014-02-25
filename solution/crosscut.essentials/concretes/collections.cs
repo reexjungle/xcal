@@ -19,60 +19,32 @@ namespace reexmonkey.crosscut.essentials.concretes
             return (!(source != null && source.Count() != 0));
         }
 
-        public static bool AreDuplicatesOf<TValue>(this IEnumerable<TValue> source, IEnumerable<TValue> other, Expression<Func<IEnumerable<TValue>, IEnumerable<TValue>, bool>> comparer)
+        public static bool AreDuplicatesOf<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second, IEqualityComparer<TValue> comparer = null)
         {
-            return comparer.Compile()(source, other);
+            return (comparer == null)? first.Intersect(second).Count() == 0: first.Intersect(second, comparer).Count() == 0;
         }
 
-        public static bool AreDuplicatesOf<TValue>(this IEnumerable<TValue> source, IEnumerable<TValue> other, Func<IEnumerable<TValue>, IEnumerable<TValue>, bool> compare)
+        public static bool AreUnique<TValue>(this IEnumerable<TValue> source, IEqualityComparer<TValue> comparer = null)
         {
-            return compare(source, other);
+            return (comparer == null) ? source.Distinct().Count() == source.Count(): source.Distinct(comparer).Count() == source.Count();
         }
 
-        public static bool AreDuplicatesOf<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second)
+        public static bool AreDisjoint<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second, IEqualityComparer<TValue> comparer = null)
         {
-            return first.Intersect(second).Count() == 0;
+            return (comparer == null) ? first.Intersect(second).Count() == 0 : first.Intersect(second, comparer).Count() == 0;
         }
 
-        public static bool AreDuplicatesOf<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second, IEqualityComparer<TValue> comparer)
+
+        public static IEnumerable<TValue> Duplicates<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second, IEqualityComparer<TValue> comparer = null)
         {
-            return first.Intersect(second, comparer).Count() == 0;
+            return (comparer == null)? second.Intersect(first): second.Intersect(first, comparer);
         }
 
-        public static bool AreUnique<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second)
+        public static IEnumerable<TValue> NonDuplicates<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second, IEqualityComparer<TValue> comparer = null)
         {
-            return first.Intersect(second).Count() == 0;
-        }
-
-        public static bool AreUnique<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second, IEqualityComparer<TValue> comparer)
-        {
-            return first.Intersect(second, comparer).Count() == 0;
-        }
-
-        public static bool AreOfType<TValue>(this IEnumerable<object> values)
-        {
-            var equals = values.Select(x => x.GetType() == typeof(TValue)).ToArray();
-            return !equals.Contains(false);
-        }
-
-        public static IEnumerable<TValue> Duplicates<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second)
-        {
-            return second.Intersect(first);
-        }
-
-        public static IEnumerable<TValue> Duplicates<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second, IEqualityComparer<TValue> comparer)
-        {
-            return second.Intersect(first, comparer).ToList();
-        }
-
-        public static IEnumerable<TValue> NonDuplicates<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second)
-        {
-            return (second.Union(first)).Except(second.Intersect(first));
-        }
-
-        public static IEnumerable<TValue> NonDuplicates<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second, IEqualityComparer<TValue> comparer)
-        {
-            return (second.Union(first, comparer)).Except(second.Intersect(first, comparer), comparer);
+            return (comparer == null)? 
+                (second.Union(first)).Except(second.Intersect(first)):
+                (second.Union(first, comparer)).Except(second.Intersect(first, comparer), comparer);
         }
 
         public static void AddRange<TValue>(this List<TValue> list, IEnumerable<TValue> value, Expression<Func<TValue, bool>> predicate)

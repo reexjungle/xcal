@@ -104,6 +104,26 @@ namespace reexmonkey.xcal.service.plugins.validators.concretes
 
         }
     }
+
+    public class RelatedToValidator: AbstractValidator<IRELATEDTO>
+    {
+        public RelatedToValidator()
+        {
+            RuleFor(x => x.Reference).NotNull();
+            RuleFor(x => x.RelationshipType).NotEqual(RELTYPE.UNKNOWN);
+        }
+    }
+
+    public class ResourcesValidator: AbstractValidator<IRESOURCES>
+    {
+        public ResourcesValidator()
+        {
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x.Values).NotNull().NotEmpty();
+            RuleFor(x => x.AlternativeText).SetValidator(new AltrepValidator()).When(x => x.AlternativeText != null);
+            RuleFor(x => x.Language).SetValidator(new TextValidator()).When(x => x.Language != null);
+        }
+    }
    
 
 }
