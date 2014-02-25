@@ -1767,8 +1767,7 @@ namespace reexmonkey.xcal.domain.models
     /// </summary>
     [DataContract]
     [KnownType(typeof(LANGUAGE))]
-    [Alias("TimeZoneNames")]
-    public class TZNAME : ITZNAME, IEquatable<TZNAME>, IComparable<TZNAME>
+    public class TZNAME : ITZNAME, IEquatable<TZNAME>, IComparable<TZNAME>, IContainsId<string>
     {
         private ILANGUAGE language;
         private string text;

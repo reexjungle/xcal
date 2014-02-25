@@ -7,8 +7,8 @@ namespace reexmonkey.xcal.domain.contracts
 {
     public interface ITIMEZONE : ICOMPONENT
     {
-        ITZIDPROP TimeZoneIdProperty { get; set; }
-        ITZURL Url { get; set; }
+        ITZID TimeZoneId { get; set; }
+        IURI Url { get; set; }
         IDATE_TIME LastModified { get; set; }
         List<ISTANDARD> StandardTimes { get; set; }
         List<IDAYLIGHT> DaylightSaveTimes { get; set; }
@@ -17,8 +17,8 @@ namespace reexmonkey.xcal.domain.contracts
     public interface IObservance: ICOMPONENT
     { 
         IDATE_TIME StartDate { get; set; }
-        ITZOFFSETFROM TimeZoneOffsetFrom { get; set; }
-        ITZOFFSETTO TimeZoneOffsetTo { get; set; }
+        IUTC_OFFSET TimeZoneOffsetFrom { get; set; }
+        IUTC_OFFSET TimeZoneOffsetTo { get; set; }
         IRECUR RecurrenceRule { get; set; }
         List<ITEXT> Comments { get; set; }
         List<IRDATE> RecurrenceDates { get; set; }

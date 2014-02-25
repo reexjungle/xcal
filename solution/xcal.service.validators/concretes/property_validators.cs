@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ServiceStack.FluentValidation;
+using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 
@@ -25,7 +26,7 @@ namespace reexmonkey.xcal.service.plugins.validators.concretes
         {
             RuleFor(x => x.Value).NotNull().When(x => x != null);
             RuleFor(x => x.Range).NotEqual(RANGE.UNKNOWN).When(x => x != null);
-            RuleFor(x => x.TimeZoneId).SetValidator(new TzIdValidator()).When(x => x.TimeZoneId != null);
+            RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null);
         }
     }
 
@@ -78,7 +79,7 @@ namespace reexmonkey.xcal.service.plugins.validators.concretes
         public ExceptionDateValidator()
         {
             RuleFor(x => x.DateTimes).NotEmpty();
-            RuleFor(x => x.TimeZoneId).SetValidator(new TzIdValidator()).When(x => x.TimeZoneId != null);
+            RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null);
             RuleFor(x => x.Format).Must((x, y) => x.Format == ValueFormat.DATE_TIME || x.Format == ValueFormat.DATE);
         }
     }
@@ -89,7 +90,7 @@ namespace reexmonkey.xcal.service.plugins.validators.concretes
         {
             RuleFor(x => x.DateTimes).NotEmpty();
             RuleFor(x => x.Periods).SetCollectionValidator(new PeriodValidator());
-            RuleFor(x => x.TimeZoneId).SetValidator(new TzIdValidator()).When(x => x.TimeZoneId != null);
+            RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null);
             RuleFor(x => x.Format).Must((x, y) => x.Format == ValueFormat.DATE_TIME || x.Format == ValueFormat.DATE);
         }
     }
@@ -124,6 +125,37 @@ namespace reexmonkey.xcal.service.plugins.validators.concretes
             RuleFor(x => x.Language).SetValidator(new TextValidator()).When(x => x.Language != null);
         }
     }
-   
+
+    public class TimeZoneNameValidator: AbstractValidator<ITZNAME>
+    {
+        public TimeZoneNameValidator(): base()
+        {
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x.Text).NotNull().NotEmpty();
+            RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
+        }
+    }
+
+    public class ObservanceValidator: AbstractValidator<IObservance>
+    {
+        public ObservanceValidator(): base()
+        {
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x.StartDate).NotNull();
+            RuleFor(x => x.TimeZoneOffsetFrom).SetValidator(new UtcOffsetValidator()).When(x => x.TimeZoneOffsetFrom != null);
+            RuleFor(x => x.TimeZoneOffsetTo).SetValidator(new UtcOffsetValidator()).When(x => x.TimeZoneOffsetTo != null);
+            RuleFor(x => x.RecurrenceRule).SetValidator(new RecurrenceValidator()).When(x => x.RecurrenceRule != null);
+            RuleFor(x => x.RecurrenceDates).SetCollectionValidator(new RecurrenceDateValidator()).
+                Must((x, y) => y.OfType<RDATE>().AreUnique(new EqualByStringId<RDATE>())).
+                When(x => x.RecurrenceRule != null && !x.RecurrenceDates.NullOrEmpty());
+            RuleFor(x => x.Comments).SetCollectionValidator(new TextValidator()).
+                Must((x, y) => y.OfType<COMMENT>().AreUnique(new EqualByStringId<COMMENT>())).
+                When(x => !x.Comments.NullOrEmpty());
+            RuleFor(x => x.Names).SetCollectionValidator(new TimeZoneNameValidator()).
+                Must((x, y) => x.Names.OfType<TZNAME>().AreUnique(new EqualByStringId<TZNAME>())).
+                When(x => !x.Names.NullOrEmpty());
+            
+        }
+    }
 
 }

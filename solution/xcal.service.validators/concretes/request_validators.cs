@@ -17,11 +17,14 @@ namespace reexmonkey.xcal.service.plugins.validators.concretes
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.ProductId).NotNull().NotEmpty();
             RuleFor(x => x.Events).SetCollectionValidator(new PublishEventValidator());
+            RuleFor(x => x.TimeZones).SetCollectionValidator(new TimeZoneValidator()).
+                Must((x, y) => y.OfType<VTIMEZONE>().AreUnique(new EqualByStringId<VTIMEZONE>())).
+                When(x => !x.TimeZones.NullOrEmpty());
         }
     }
 
 
-    public class PublishEventValidator: AbstractValidator<VEVENT>
+    public class PublishEventValidator: AbstractValidator<IEVENT>
     {
         public PublishEventValidator()
         {

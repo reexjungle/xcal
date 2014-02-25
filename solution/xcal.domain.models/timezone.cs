@@ -10,19 +10,19 @@ using reexmonkey.xcal.domain.contracts;
 namespace reexmonkey.xcal.domain.models
 {
 
-    [KnownType(typeof(TZIDPROP))]
-    [KnownType(typeof(TZURL))]
+    [KnownType(typeof(TZID))]
+    [KnownType(typeof(URI))]
     [KnownType(typeof(DATE_TIME))]
     [DataContract]
     public class VTIMEZONE: ITIMEZONE, IEquatable<VTIMEZONE>, IContainsId<string>
     {
-        public string Id { get { return this.TimeZoneIdProperty.Value; } }
+        public string Id { get { return this.TimeZoneId.ToString() ; } }
 
         [DataMember]
-        public ITZIDPROP TimeZoneIdProperty { get; set; }
+        public ITZID TimeZoneId { get; set; }
 
         [DataMember]
-        public ITZURL Url { get; set; }
+        public IURI Url { get; set; }
 
         [DataMember]
         public IDATE_TIME LastModified { get; set; }
@@ -33,36 +33,37 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public List<IDAYLIGHT> DaylightSaveTimes { get; set; }
 
-        public VTIMEZONE(ITZIDPROP tzidprop, params ISTANDARD[] sts)
+        public VTIMEZONE(ITZID tzid, params ISTANDARD[] standards)
         {
-            this.TimeZoneIdProperty = tzidprop;
-            if (sts.NullOrEmpty()) throw new ArgumentException("At least one standard time must be provided");
-            this.StandardTimes = sts.ToList();
+            this.TimeZoneId = tzid;
+            if (standards.NullOrEmpty()) throw new ArgumentException("At least one standard time must be provided");
+            this.StandardTimes = standards.ToList();
         }
 
-        public VTIMEZONE(ITZIDPROP tzidprop, params IDAYLIGHT[] dsts)
+        public VTIMEZONE(ITZID tzid, params IDAYLIGHT[] daylights)
         {
-            this.TimeZoneIdProperty = tzidprop;
-            if (dsts.NullOrEmpty()) throw new ArgumentException("At least one standard time must be provided");
-            this.DaylightSaveTimes = dsts.ToList();
+            this.TimeZoneId = tzid;
+            if (daylights.NullOrEmpty()) throw new ArgumentException("At least one standard time must be provided");
+            this.DaylightSaveTimes = daylights.ToList();
         }
 
         public bool Equals(VTIMEZONE other)
         {
             if (other == null) return false;
-            return (this.TimeZoneIdProperty.Value
-                .Equals(other.TimeZoneIdProperty.Value, StringComparison.OrdinalIgnoreCase));
+            return (this.TimeZoneId == other.TimeZoneId);
         }
 
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            return this.Equals(obj as VTIMEZONE);
+            var other = obj as VTIMEZONE;
+            if (other == null) return false;
+            return this.Equals(other);
         }
 
         public override int GetHashCode()
         {
-            return this.TimeZoneIdProperty.GetHashCode();
+            return this.TimeZoneId.GetHashCode();
         }
 
         public static bool operator ==(VTIMEZONE a, VTIMEZONE b)
@@ -81,7 +82,7 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:VTIMEZONE").AppendLine();
-            sb.Append(this.TimeZoneIdProperty);
+            sb.AppendFormat("TZID={0}", this.TimeZoneId);
             if (!this.StandardTimes.NullOrEmpty()) this.StandardTimes.ForEach(x => sb.Append(x).AppendLine());
             else this.DaylightSaveTimes.ForEach(x => sb.Append(x).AppendLine());
             sb.Append("END:VTIMEZONE");
@@ -90,24 +91,24 @@ namespace reexmonkey.xcal.domain.models
     }
 
 
-    [KnownType(typeof(TZOFFSETFROM))]
-    [KnownType(typeof(TZOFFSETTO))]
+    [KnownType(typeof(UTC_OFFSET))]
     [KnownType(typeof(RECUR))]
     [KnownType(typeof(COMMENT))]
     [KnownType(typeof(RDATE))]
     [KnownType(typeof(TZNAME))]
     [DataContract]
-    public class STANDARD: ISTANDARD, IEquatable<STANDARD>
+    public class STANDARD: ISTANDARD, IEquatable<STANDARD>, IContainsId<string>
     {
+        public string Id { get; set; }
 
         [DataMember]
         public IDATE_TIME StartDate { get; set; }
 
         [DataMember]
-        public ITZOFFSETFROM TimeZoneOffsetFrom { get; set; }
+        public IUTC_OFFSET TimeZoneOffsetFrom { get; set; }
 
         [DataMember]
-        public ITZOFFSETTO TimeZoneOffsetTo { get; set; }
+        public IUTC_OFFSET TimeZoneOffsetTo { get; set; }
 
         [DataMember]
         public IRECUR RecurrenceRule { get; set; }
@@ -121,7 +122,7 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public List<ITZNAME> Names { get; set; }
 
-        public STANDARD(DATE_TIME sdate, ITZOFFSETFROM tzofrom, ITZOFFSETTO tzoto)
+        public STANDARD(IDATE_TIME sdate, IUTC_OFFSET tzofrom, IUTC_OFFSET tzoto)
         {
             this.StartDate = sdate;
             this.TimeZoneOffsetFrom = tzofrom;
@@ -173,8 +174,8 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             sb.Append("BEGIN:STANDARD").AppendLine();
             sb.Append(this.StartDate).AppendLine();
-            sb.Append(this.TimeZoneOffsetFrom).AppendLine();
-            sb.Append(this.TimeZoneOffsetTo).AppendLine();
+            sb.AppendFormat("TZOFFSETFROM", this.TimeZoneOffsetFrom).AppendLine();
+            sb.AppendFormat("TZOFFSETTO", this.TimeZoneOffsetTo).AppendLine();
             if(this.RecurrenceRule != null) sb.Append(this.RecurrenceRule).AppendLine();
             this.RecurrenceDates.ForEach(x => sb.Append(x).AppendLine());
             this.Comments.ForEach(x => sb.Append(x).AppendLine());
@@ -182,27 +183,29 @@ namespace reexmonkey.xcal.domain.models
             sb.Append("END:STANDARD");
             return sb.ToString();
         }
+
+
     }
 
 
-    [KnownType(typeof(TZOFFSETFROM))]
-    [KnownType(typeof(TZOFFSETTO))]
+    [KnownType(typeof(UTC_OFFSET))]
     [KnownType(typeof(RECUR))]
     [KnownType(typeof(COMMENT))]
     [KnownType(typeof(RDATE))]
     [KnownType(typeof(TZNAME))]
     [DataContract]
-    public class DAYLIGHT : IDAYLIGHT, IEquatable<DAYLIGHT>
+    public class DAYLIGHT : IDAYLIGHT, IEquatable<DAYLIGHT>, IContainsId<string>
     {
+        public string Id { get; set; }
 
         [DataMember]
         public IDATE_TIME StartDate { get; set; }
 
         [DataMember]
-        public ITZOFFSETFROM TimeZoneOffsetFrom { get; set; }
+        public IUTC_OFFSET TimeZoneOffsetFrom { get; set; }
 
         [DataMember]
-        public ITZOFFSETTO TimeZoneOffsetTo { get; set; }
+        public IUTC_OFFSET TimeZoneOffsetTo { get; set; }
 
         [DataMember]
         public IRECUR RecurrenceRule { get; set; }
@@ -216,7 +219,7 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public List<ITZNAME> Names { get; set; }
 
-        public DAYLIGHT(DATE_TIME sdate, ITZOFFSETFROM tzofrom, ITZOFFSETTO tzoto)
+        public DAYLIGHT(IDATE_TIME sdate, IUTC_OFFSET tzofrom, IUTC_OFFSET tzoto)
         {
             this.StartDate = sdate;
             this.TimeZoneOffsetFrom = tzofrom;
@@ -268,9 +271,9 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             sb.Append("BEGIN:DAYLIGHT").AppendLine();
             sb.Append(this.StartDate).AppendLine();
-            sb.Append(this.TimeZoneOffsetFrom).AppendLine();
-            sb.Append(this.TimeZoneOffsetTo).AppendLine();
-            if (this.RecurrenceRule != null) sb.Append(this.RecurrenceRule).AppendLine();
+            sb.AppendFormat("TZOFFSETFROM:{0}", this.TimeZoneOffsetFrom).AppendLine();
+            sb.AppendFormat("TZOFFSETTO:{0}", this.TimeZoneOffsetTo).AppendLine();
+            if (this.RecurrenceRule != null) sb.AppendFormat("RRULE:{0}",this.RecurrenceRule).AppendLine();
             this.RecurrenceDates.ForEach(x => sb.Append(x).AppendLine());
             this.Comments.ForEach(x => sb.Append(x).AppendLine());
             this.Names.ForEach(x => sb.Append(x).AppendLine());

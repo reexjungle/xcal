@@ -66,7 +66,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="concretes\event_validator.cs" />
+    <Compile Include="concretes\component_validators.cs" />
     <Compile Include="concretes\parameter_validators.cs" />
     <Compile Include="concretes\property_validators.cs" />
     <Compile Include="concretes\request_validators.cs" />
