@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using ServiceStack.Redis;
 using ServiceStack.Redis.Generic;
 using reexmonkey.xcal.domain.models;
+using reexmonkey.crosscut.essentials.contracts;
+using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.xcal.service.repositories.contracts;
 
 namespace reexmonkey.xcal.service.repositories.concretes
@@ -57,6 +59,16 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
 
         public IEnumerable<AUDIO_ALARM> Find(IEnumerable<string> fkeys, IEnumerable<string> pkeys = null, int? page = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IProvidesId<string> IdProvider
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public void Patch(AUDIO_ALARM entity, Expression<Func<AUDIO_ALARM, object>> fields, Expression<Func<AUDIO_ALARM, bool>> where = null)
         {
             throw new NotImplementedException();
         }
@@ -116,6 +128,16 @@ namespace reexmonkey.xcal.service.repositories.concretes
             get { throw new NotImplementedException(); }
         }
 
+
+        public IProvidesId<string> IdProvider
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public void Patch(DISPLAY_ALARM entity, Expression<Func<DISPLAY_ALARM, object>> fields, Expression<Func<DISPLAY_ALARM, bool>> where = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class EmailAlarmRepository: IEmailAlarmRedisRepository
@@ -135,7 +157,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             throw new NotImplementedException();
         }
-
 
         public IEnumerable<EMAIL_ALARM> Get(int? page = null)
         {
@@ -185,6 +206,11 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public IEnumerable<EMAIL_ALARM> Find(IEnumerable<string> fkeys, IEnumerable<string> pkeys = null, int? page = null)
         {
             throw new NotImplementedException();
+        }
+
+        public IProvidesId<string> IdProvider
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 }

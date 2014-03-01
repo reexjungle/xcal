@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Reflection;
@@ -35,11 +36,30 @@ namespace reexmonkey.crosscut.goodies.concretes
             return assembly;
         }
 
-        /// <summary>
-        /// Gets the name of assembly for the given object type
-        /// </summary>
-        /// <param name="type">The type of the object</param>
-        /// <returns>The full path to the assembly</returns>
+        public static Assembly GetAssembly<TValue>(this TValue value)
+        {
+            Assembly assembly = null;
+            try
+            {
+                assembly = Assembly.GetAssembly(typeof(TValue));
+            }
+            catch (ArgumentNullException) { throw; }
+            catch (Exception) { throw; }
+            return assembly;
+        }
+
+        public static Assembly GetAssembly<TValue>()
+        {
+            Assembly assembly = null;
+            try
+            {
+                assembly = Assembly.GetAssembly(typeof(TValue));
+            }
+            catch (ArgumentNullException) { throw; }
+            catch (Exception) { throw; }
+            return assembly;
+        }
+
         public static string GetAssemblyPath(this Type type)
         {
             string path = null;
@@ -49,25 +69,6 @@ namespace reexmonkey.crosscut.goodies.concretes
             }
             catch (ArgumentNullException) { throw; }
             catch (Exception) { throw; }
-            return path;
-        }
-
-        /// <summary>
-        /// Gets the name of assembly for the given object
-        /// </summary>
-        /// <param name="target">The object, whose assembly name is being sought</param>
-        /// <returns>The full path to the assembly</returns>
-        public static string GetAssemblyPath(this object target)
-        {
-            string path = string.Empty;
-            try
-            {
-                path = Assembly.GetAssembly(target.GetType()).Location;
-            }
-            catch (System.ArgumentNullException)
-            {
-                throw;
-            }
             return path;
         }
 
@@ -113,12 +114,12 @@ namespace reexmonkey.crosscut.goodies.concretes
             return paths.ToArray();
         }
 
-        public static string[] GetAssembyPaths(this object[] objects)
+        public static string[] GetAssembyPaths<TValue>(this TValue[] objects)
         {
             IEnumerable<string> paths = null;
             try
             {
-                paths = objects.Select(x => Assembly.GetAssembly(x.GetType()).Location);
+                paths = objects.Select(x => Assembly.GetAssembly(typeof(TValue)).Location);
 
             }
             catch (ArgumentNullException) { throw; }
@@ -127,13 +128,58 @@ namespace reexmonkey.crosscut.goodies.concretes
             return paths.ToArray();
         }
 
+        public static string[] GetReferencedAssemblyNames(this Assembly assembly)
+        {
+            string[] references = null;
+            try
+            {
+                references = assembly.GetReferencedAssemblies().Select(x => string.Format("{0}.dll", x.Name)).ToArray();
+            }
+            catch (ArgumentNullException) { throw; }
+            catch (Exception) { throw; }
+            return references;
+        }
+
+        public static string[] GetReferencedAssemblyNamesFromEntryAssembly()
+        {
+            string[] references = null;
+            try
+            {
+                references = Assembly.GetEntryAssembly().GetReferencedAssemblies().Select(x => string.Format("{0}.dll", x.Name)).ToArray();
+            }
+            catch (ArgumentNullException) { throw; }
+            catch (Exception) { throw; }
+            return references;
+        }
+
+        public static string[] GetReferencedAssemblyNamesFromExecutingAssembly()
+        {
+            string[] references = null;
+            try
+            {
+                references = Assembly.GetExecutingAssembly().GetReferencedAssemblies().Select(x => string.Format("{0}.dll", x.Name)).ToArray();
+            }
+            catch (ArgumentNullException) { throw; }
+            catch (Exception) { throw; }
+            return references;
+        }     
+
         /// <summary>
         /// Gets the application path of current executing application
         /// </summary>
         /// <returns>The application path</returns>
-        public static string GetApplicationPath()
+        public static string GetExecutingAssemblyApplicationPath()
         {
             return Assembly.GetExecutingAssembly().Location;
+        }
+
+        /// <summary>
+        /// Gets the application path of first executable
+        /// </summary>
+        /// <returns>The application path</returns>
+        public static string GetEntryAssemblyApplicationPath()
+        {
+            return Assembly.GetEntryAssembly().Location;
         }
 
         #endregion

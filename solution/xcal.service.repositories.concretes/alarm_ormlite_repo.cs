@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Collections.Generic;
 using ServiceStack.OrmLite;
 using reexmonkey.infrastructure.ormlite.extensions;
+using reexmonkey.crosscut.essentials.contracts;
 using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.service.repositories.contracts;
@@ -196,6 +198,16 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
+
+        public IProvidesId<string> IdProvider
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public void Patch(AUDIO_ALARM entity, Expression<Func<AUDIO_ALARM, object>> fields, Expression<Func<AUDIO_ALARM, bool>> where = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class DisplayAlarmOrmLiteRepository : IDisplayAlarmOrmLiteRepository
@@ -384,6 +396,16 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
+
+        public IProvidesId<string> IdProvider
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public void Patch(DISPLAY_ALARM entity, Expression<Func<DISPLAY_ALARM, object>> fields, Expression<Func<DISPLAY_ALARM, bool>> where = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class EmailAlarmOrmLiteRepository: IEmailAlarmOrmLiteRepository
@@ -706,6 +728,16 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
+
+        public IProvidesId<string> IdProvider
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public void Patch(EMAIL_ALARM entity, Expression<Func<EMAIL_ALARM, object>> fields, Expression<Func<EMAIL_ALARM, bool>> where = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

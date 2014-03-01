@@ -12,7 +12,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
     /// Specifies a general interface for a repository of events
     /// </summary>
     public interface IEventRepository: 
-        IReadRepository<VEVENT, string>,
+        IReadRepository<VEVENT, string, string>,
         IWriteRepository<VEVENT, string>,
         IPaged<int>
     {

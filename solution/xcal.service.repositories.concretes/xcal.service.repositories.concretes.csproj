@@ -67,6 +67,7 @@
     <Compile Include="alarm_ormlite_rels.cs" />
     <Compile Include="alarm_ormlite_repo.cs" />
     <Compile Include="alarm_redis_repo.cs" />
+    <Compile Include="calendar_ormlite_rels.cs" />
     <Compile Include="event_ormlite_rels.cs" />
     <Compile Include="event_ormlite_repo.cs" />
     <Compile Include="event_redis_repo.cs" />
@@ -79,6 +80,14 @@
     <ProjectReference Include="..\crosscut.essentials\crosscut.essentials.csproj">
       <Project>{eedf1367-a0fc-400a-a649-716261252b9e}</Project>
       <Name>crosscut.essentials</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\crosscut.goodies\crosscut.goodies.csproj">
+      <Project>{f21cb427-5dd9-41b2-a993-17cd8085535a}</Project>
+      <Name>crosscut.goodies</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\crosscut.io\crosscut.io.csproj">
+      <Project>{8c731af7-0991-4e6e-8049-9ef9d107a0b4}</Project>
+      <Name>crosscut.io</Name>
     </ProjectReference>
     <ProjectReference Include="..\technical.ormlite.extensions\technical.ormlite.extensions.csproj">
       <Project>{3346db20-5077-4fc8-93ee-e4a590bcc1d0}</Project>

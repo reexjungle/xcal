@@ -37,7 +37,7 @@ namespace reexmonkey.xcal.service.plugins.validators.concretes
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Value).NotNull().NotEmpty();
             RuleFor(x => x.AlternativeText).SetValidator(new AltrepValidator()).When(x => x.AlternativeText != null);
-            RuleFor(x => x.Language).SetValidator(new TextValidator()).When(x => x.Language != null);
+            RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
         }
     }
 
@@ -122,7 +122,7 @@ namespace reexmonkey.xcal.service.plugins.validators.concretes
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Values).NotNull().NotEmpty();
             RuleFor(x => x.AlternativeText).SetValidator(new AltrepValidator()).When(x => x.AlternativeText != null);
-            RuleFor(x => x.Language).SetValidator(new TextValidator()).When(x => x.Language != null);
+            RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
         }
     }
 

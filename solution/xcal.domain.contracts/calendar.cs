@@ -30,6 +30,12 @@ namespace reexmonkey.xcal.domain.contracts
         /// </summary>
         CALSCALE Calscale { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets the calendar method used for the calendar information specified in the iCalendar object.
+        /// </summary>
+        METHOD Method { get; set; }
+
         /// <summary>
         /// Gets or sets the components of the iCalendar core object
         /// </summary>

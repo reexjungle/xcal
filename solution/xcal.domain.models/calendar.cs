@@ -55,6 +55,12 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public CALSCALE Calscale { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataMember]
+        public METHOD Method { get; set; }
+
         [DataMember]
         [Ignore]
         public List<ICOMPONENT> Components { get; set; }

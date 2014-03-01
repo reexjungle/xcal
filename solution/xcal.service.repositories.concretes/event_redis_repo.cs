@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using ServiceStack.Redis;
 using ServiceStack.Redis.Generic;
 using reexmonkey.xcal.domain.models;
+using reexmonkey.crosscut.essentials.contracts;
+using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.xcal.service.repositories.contracts;
 
 namespace reexmonkey.xcal.service.repositories.concrete
@@ -60,16 +62,6 @@ namespace reexmonkey.xcal.service.repositories.concrete
             throw new NotImplementedException();
         }
 
-        public VEVENT Find(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<VEVENT> Find(IEnumerable<string> keys, int? page = null)
-        {
-            throw new NotImplementedException();
-        }
-
         public IEnumerable<VEVENT> Get(int? page = null)
         {
             throw new NotImplementedException();
@@ -101,5 +93,25 @@ namespace reexmonkey.xcal.service.repositories.concrete
             throw new NotImplementedException();
         }
 
+
+        public VEVENT Find(string fkey, string pkey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<VEVENT> Find(IEnumerable<string> fkeys, IEnumerable<string> pkeys = null, int? page = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IProvidesId<string> IdProvider
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public void Patch(VEVENT entity, Expression<Func<VEVENT, object>> fields, Expression<Func<VEVENT, bool>> where = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

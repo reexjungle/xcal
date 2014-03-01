@@ -16,6 +16,7 @@ namespace reexmonkey.crosscut.essentials.contracts
     /// <typeparam name="TEntity">Type of entity to read from repository</typeparam>
     /// <typeparam name="TKey">Type of unique identifier for for retrieving entities</typeparam>
     public interface IReadRepository<out TEntity, in TKey> : IRepository
+        where TKey: IEquatable<TKey>
     {
         /// <summary>
         /// Finds an entity in the repository based on a unique identifier
@@ -47,6 +48,9 @@ namespace reexmonkey.crosscut.essentials.contracts
     /// <typeparam name="TFKey">The unique identifier of the referenced parent-entity</typeparam>
     /// <typeparam name="TPKey"The unique identifier of the referencing child entity></typeparam>
     public interface IReadRepository<out TPEntity, in TPKey, in TFKey> : IRepository
+       where TPKey : IEquatable<TPKey>
+       where TFKey : IEquatable<TFKey>
+
     {
 
         /// <summary>
@@ -80,13 +84,27 @@ namespace reexmonkey.crosscut.essentials.contracts
     /// </summary>
     /// <typeparam name="TEntity">Type of entity to write to repository</typeparam>
     /// <typeparam name="TKey">Type of unique identifier for writing entities</typeparam>
-    public interface IWriteRepository<in TEntity, in TKey> : IRepository
+    public interface IWriteRepository<TEntity, TKey> : IRepository
+       where TKey : IEquatable<TKey>
     {
+        /// <summary>
+        /// Gets the provider of identifiers
+        /// </summary>
+        IProvidesId<TKey> IdProvider { get; }
+
         /// <summary>
         /// Inserts a new entity or updates an existing one in the repository
         /// </summary>
         /// <param name="entity">The entity to save</param>
         void Save(TEntity entity);
+
+        /// <summary>
+        /// Patches fields of an entity in the repository
+        /// </summary>
+        /// <param name="entity">The entity to be patched</param>
+        /// <param name="fields">Specfies which fields are used for the patching. The fields are specified in an anonymous variable</param>
+        /// <param name="where">Filters the entities to patch. No filter implies all entities are patched</param>
+        void Patch(TEntity entity, Expression<Func<TEntity, object>> fields, Expression<Func<TEntity, bool>> where = null);
 
         /// <summary>
         /// Erases an entity from the repository based on a unique identifier
@@ -104,11 +122,7 @@ namespace reexmonkey.crosscut.essentials.contracts
         /// Erases entities from the repository based on unique identifiers
         /// </summary>
         /// <param name="keys">The unique identifier of the entity</param>
-        void EraseAll(IEnumerable<TKey> keys);
+        void EraseAll(IEnumerable<TKey> keys = null);
 
-        /// <summary>
-        /// Erases all entities in the repository
-        /// </summary>
-        void EraseAll();
     }
 }

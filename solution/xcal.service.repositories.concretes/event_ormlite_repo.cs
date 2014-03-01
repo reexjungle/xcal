@@ -5,7 +5,10 @@ using System.Linq.Expressions;
 using System.Collections.Generic;
 using ServiceStack.OrmLite;
 using reexmonkey.infrastructure.ormlite.extensions;
+using reexmonkey.crosscut.goodies.concretes;
+using reexmonkey.crosscut.essentials.contracts;
 using reexmonkey.crosscut.essentials.concretes;
+using reexmonkey.crosscut.io.concretes;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.service.repositories.contracts;
 
@@ -19,6 +22,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
         private IDbConnection conn;
         private IDbConnectionFactory factory = null;
         private int? pages = null;
+
+        private IProvidesId<string> provid;
 
         private IDbConnection db
         {
@@ -46,6 +51,15 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public IAudioAlarmOrmLiteRepository AudioAlarmOrmLiteRepository { get; set; }
         public IDisplayAlarmOrmLiteRepository DisplayAlarmOrmLiteRepository { get; set; }
         public IEmailAlarmOrmLiteRepository EmailAlarmOrmLiteRepository { get; set; }
+        public IProvidesId<string> IdProvider
+        {
+            get { return this.provid; }
+            set 
+            { 
+                if (value == null) throw new ArgumentNullException("Id Provider");
+                this.provid = value;
+            }
+        }
 
         public EventOrmLiteRepository(IDbConnectionFactory factory, int? pages)
         {
@@ -53,7 +67,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
             this.Pages = pages;
             this.conn = this.factory.OpenDbConnection();
         }
-
         public EventOrmLiteRepository(IDbConnection connection, int? pages)
         {
             if (connection == null) throw new ArgumentNullException("connection");
@@ -67,12 +80,16 @@ namespace reexmonkey.xcal.service.repositories.concretes
             if (this.conn != null) this.conn.Dispose();
         }
 
-        public VEVENT Find(string key)
+        public VEVENT Find(string fkey, string pkey)
         {
             VEVENT dry = null;
             try
             {
-                dry = db.Select<VEVENT>(q => q.Uid == key).FirstOrDefault();
+                dry = db.Select<VEVENT, VCALENDAR, REL_CALENDARS_EVENTS>(
+                    r => r.Uid,
+                    e => e.Uid == pkey,
+                    r => r.ProdId,
+                    c => c.ProdId == fkey).FirstOrDefault();
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
@@ -86,6 +103,35 @@ namespace reexmonkey.xcal.service.repositories.concretes
             try
             {
                 dry = db.Select<VEVENT>(q => Sql.In(q.Uid, keys.ToArray()), page, pages);
+            }
+            catch (ArgumentNullException) { throw; }
+            catch (InvalidOperationException) { throw; }
+            catch (Exception) { throw; }
+            return (!dry.NullOrEmpty()) ? this.Hydrate(dry) : null;
+        }
+
+        public IEnumerable<VEVENT> Find(IEnumerable<string> fkeys, IEnumerable<string> pkeys = null, int? page = null)
+        {
+            IEnumerable<VEVENT> dry = null;
+            try
+            {
+                if (!pkeys.NullOrEmpty())
+                {
+                    dry = db.Select<VEVENT, VCALENDAR, REL_CALENDARS_EVENTS>(
+                    r => r.Uid,
+                    e => Sql.In(e.Uid, pkeys.ToArray()),
+                    r => r.ProdId,
+                    c => Sql.In(c.ProdId, fkeys.ToArray()),
+                    Conjunctor.AND, JoinMode.INNER, true, page, pages); 
+                }
+                else
+                {
+                    dry = db.Select<VEVENT, VCALENDAR, REL_CALENDARS_EVENTS>(
+                    r => r.Uid,
+                    r => r.ProdId,
+                    c => Sql.In(c.ProdId, fkeys.ToArray()),
+                    JoinMode.INNER, true, page, pages); 
+                }
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
@@ -151,37 +197,37 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                 //3. construct relations from entity details
                 var rorg = (entity.Organizer != null && entity.Organizer is ORGANIZER) ?
-                    (new REL_EVENTS_ORGANIZERS { Uid = entity.Id, OrganizerId = (entity.Organizer as ORGANIZER).Id }) : null;
+                    (new REL_EVENTS_ORGANIZERS {Id = this.IdProvider.NextId(),  Uid = entity.Id, OrganizerId = (entity.Organizer as ORGANIZER).Id }) : null;
                 var rrid = (entity.RecurrenceId != null && entity.RecurrenceId is RECURRENCE_ID) ?
-                    (new REL_EVENTS_RECURRENCE_IDS { Uid = entity.Id, RecurrenceId_Id = (entity.RecurrenceId as RECURRENCE_ID).Id }) : null;
+                    (new REL_EVENTS_RECURRENCE_IDS { Id = this.IdProvider.NextId(), Uid = entity.Id, RecurrenceId_Id = (entity.RecurrenceId as RECURRENCE_ID).Id }) : null;
                 var rrrule = (entity.RecurrenceRule != null && entity.RecurrenceRule is RECUR) ?
-                    (new REL_EVENTS_RRULES { Uid = entity.Id, RecurrenceRuleId = (entity.RecurrenceRule as RECUR).Id }) : null;
+                    (new REL_EVENTS_RRULES { Id = this.IdProvider.NextId(), Uid = entity.Id, RecurrenceRuleId = (entity.RecurrenceRule as RECUR).Id }) : null;
                 var rattends = (entity.Attendees.OfType<ATTENDEE>().Count() > 0) ? entity.Attendees.OfType<ATTENDEE>()
-                    .Select(x => new REL_EVENTS_ATTENDEES { Uid = entity.Id, AttendeeId = x.Id }) : null;
+                    .Select(x => new REL_EVENTS_ATTENDEES { Id = this.IdProvider.NextId(), Uid = entity.Id, AttendeeId = x.Id }) : null;
                 var rattachbins = (entity.Attachments.OfType<ATTACH_BINARY>().Count() > 0) ?
-                    (entity.Attachments.OfType<ATTACH_BINARY>().Select(x => new REL_EVENTS_ATTACHBINS { Uid = entity.Id, AttachmentId = x.Id })) : null;
+                    (entity.Attachments.OfType<ATTACH_BINARY>().Select(x => new REL_EVENTS_ATTACHBINS { Id = this.IdProvider.NextId(), Uid = entity.Id, AttachmentId = x.Id })) : null;
                 var rattachuris = (entity.Attachments.OfType<ATTACH_URI>().Count() > 0) ?
-                    (entity.Attachments.OfType<ATTACH_URI>().Select(x => new REL_EVENTS_ATTACHURIS { Uid = entity.Id, AttachmentId = x.Id })) : null;
+                    (entity.Attachments.OfType<ATTACH_URI>().Select(x => new REL_EVENTS_ATTACHURIS { Id = this.IdProvider.NextId(), Uid = entity.Id, AttachmentId = x.Id })) : null;
                 var rcontacts = (entity.Contacts.OfType<CONTACT>().Count() > 0) ?
-                    (entity.Contacts.OfType<CONTACT>().Select(x => new REL_EVENTS_CONTACTS { Uid = entity.Id, ContactId = x.Id })) : null;
+                    (entity.Contacts.OfType<CONTACT>().Select(x => new REL_EVENTS_CONTACTS { Id = this.IdProvider.NextId(), Uid = entity.Id, ContactId = x.Id })) : null;
                 var rcomments = (entity.Contacts.OfType<COMMENT>().Count() > 0) ?
-                    (entity.Contacts.OfType<COMMENT>().Select(x => new REL_EVENTS_COMMENTS { Uid = entity.Id, CommentId = x.Id })) : null;
+                    (entity.Contacts.OfType<COMMENT>().Select(x => new REL_EVENTS_COMMENTS { Id = this.IdProvider.NextId(), Uid = entity.Id, CommentId = x.Id })) : null;
                 var rrdates = (entity.RecurrenceDates.OfType<RDATE>().Count() > 0) ?
-                    (entity.RecurrenceDates.OfType<RDATE>().Select(x => new REL_EVENTS_RDATES { Uid = entity.Id, RecurrenceDateId = x.Id })) : null;
+                    (entity.RecurrenceDates.OfType<RDATE>().Select(x => new REL_EVENTS_RDATES { Id = this.IdProvider.NextId(), Uid = entity.Id, RecurrenceDateId = x.Id })) : null;
                 var rexdates = (entity.ExceptionDates.OfType<EXDATE>().Count() > 0) ?
-                    (entity.ExceptionDates.OfType<EXDATE>().Select(x => new REL_EVENTS_EXDATES { Uid = entity.Id, ExceptionDateId = x.Id })) : null;
+                    (entity.ExceptionDates.OfType<EXDATE>().Select(x => new REL_EVENTS_EXDATES { Id = this.IdProvider.NextId(), Uid = entity.Id, ExceptionDateId = x.Id })) : null;
                 var rrelateds = (entity.RelatedTos.OfType<RELATEDTO>().Count() > 0) ?
-                    (entity.RelatedTos.OfType<RELATEDTO>().Select(x => new REL_EVENTS_RELATEDTOS { Uid = entity.Id, RelatedToId = x.Id })) : null;
+                    (entity.RelatedTos.OfType<RELATEDTO>().Select(x => new REL_EVENTS_RELATEDTOS { Id = this.IdProvider.NextId(), Uid = entity.Id, RelatedToId = x.Id })) : null;
                 var rresources = (entity.Resources.OfType<RESOURCES>().Count() > 0) ?
-                    (entity.Resources.OfType<RESOURCES>().Select(x => new REL_EVENTS_RESOURCES { Uid = entity.Id, ResourcesId = x.Id })) : null;
+                    (entity.Resources.OfType<RESOURCES>().Select(x => new REL_EVENTS_RESOURCES { Id = this.IdProvider.NextId(), Uid = entity.Id, ResourcesId = x.Id })) : null;
                 var rreqstats = (entity.RequestStatuses.OfType<REQUEST_STATUS>().Count() > 0) ?
-                    (entity.RequestStatuses.OfType<REQUEST_STATUS>().Select(x => new REL_EVENTS_REQSTATS { Uid = entity.Id, ReqStatsId = x.Id })) : null;
+                    (entity.RequestStatuses.OfType<REQUEST_STATUS>().Select(x => new REL_EVENTS_REQSTATS { Id = this.IdProvider.NextId(), Uid = entity.Id, ReqStatsId = x.Id })) : null;
                 var raalarms = (entity.Alarms.OfType<AUDIO_ALARM>().Count() > 0) ?
-                    (entity.Alarms.OfType<AUDIO_ALARM>().Select(x => new REL_EVENTS_AUDIO_ALARMS { Uid = entity.Id, AlarmId = x.Id })) : null;
+                    (entity.Alarms.OfType<AUDIO_ALARM>().Select(x => new REL_EVENTS_AUDIO_ALARMS { Id = this.IdProvider.NextId(), Uid = entity.Id, AlarmId = x.Id })) : null;
                 var rdalarms = (entity.Alarms.OfType<DISPLAY_ALARM>().Count() > 0) ?
-                    (entity.Alarms.OfType<DISPLAY_ALARM>().Select(x => new REL_EVENTS_DISPLAY_ALARMS { Uid = entity.Id, AlarmId = x.Id })) : null;
+                    (entity.Alarms.OfType<DISPLAY_ALARM>().Select(x => new REL_EVENTS_DISPLAY_ALARMS { Id = this.IdProvider.NextId(), Uid = entity.Id, AlarmId = x.Id })) : null;
                 var realarms = (entity.Alarms.OfType<EMAIL_ALARM>().Count() > 0) ?
-                    (entity.Alarms.OfType<EMAIL_ALARM>().Select(x => new REL_EVENTS_EMAIL_ALARMS { Uid = entity.Id, AlarmId = x.Id })) : null;
+                    (entity.Alarms.OfType<EMAIL_ALARM>().Select(x => new REL_EVENTS_EMAIL_ALARMS { Id = this.IdProvider.NextId(), Uid = entity.Id, AlarmId = x.Id })) : null;
                 
                 //4. retrieve existing entity-details relations
                 var ororgs = (org != null) ?db.Select<REL_EVENTS_ORGANIZERS>(q => q.Uid == entity.Id && q.OrganizerId == org.Id) : null;
@@ -230,6 +276,194 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 if (!rdalarms.NullOrEmpty() && !rdalarms.Except(ordalarms).NullOrEmpty()) db.SaveAll(rdalarms.Except(ordalarms));
                 if (!realarms.NullOrEmpty() && !realarms.Except(orealarms).NullOrEmpty()) db.SaveAll(realarms.Except(orealarms));
             }
+            catch (ArgumentNullException) { throw; }
+            catch (InvalidOperationException) { throw; }
+            catch (Exception) { throw; }
+        }
+
+        public void Patch(VEVENT source, Expression<Func<VEVENT, object>> fields, Expression<Func<VEVENT, bool>> where = null)
+        {
+            try
+            {
+                //1. Get fields slected for patching
+                var selection = fields.GetMemberNames();
+
+                //2.Get list of all non-related event details (primitives)
+                Expression<Func<VEVENT, object>> primitives = x => new
+                {
+                    x.Uid,
+                    x.Start,
+                    x.Created,
+                    x.Description,
+                    x.Geo,
+                    x.LastModified,
+                    x.Location,
+                    x.Priority,
+                    x.Sequence,
+                    x.Status,
+                    x.Summary,
+                    x.Transparency,
+                    x.Url,
+                    x.End,
+                    x.Duration
+                };
+
+                //3.Get list of all related event details (relational)
+                Expression<Func<VEVENT, object>> relationals = x => new
+                {
+                    x.Organizer,
+                    x.RecurrenceRule,
+                    x.Attendees,
+                    x.Attachments,
+                    x.Contacts,
+                    x.Comments,
+                    x.RecurrenceDates,
+                    x.ExceptionDates,
+                    x.RelatedTos,
+                    x.Resources,
+                    x.RequestStatuses,
+                    x.Alarms
+                };
+
+                //4. Get list of selected relationals
+                var srelationals = relationals.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
+
+                //5. Patch relationals
+                if (!srelationals.NullOrEmpty())
+                {
+
+                    //5.1. Derive expression of each relational
+                    Expression<Func<VEVENT, object>> orgexpr = y => y.Organizer;
+                    Expression<Func<VEVENT, object>> rruleexpr = y => y.RecurrenceRule;
+                    Expression<Func<VEVENT, object>> attendsexpr = y => y.Attendees;
+                    Expression<Func<VEVENT, object>> attachsexpr = y => y.Attachments;
+                    Expression<Func<VEVENT, object>> contactsexpr = y => y.Contacts;
+                    Expression<Func<VEVENT, object>> commentsexpr = y => y.Comments;
+                    Expression<Func<VEVENT, object>> rdatesexpr = y => y.RecurrenceDates;
+                    Expression<Func<VEVENT, object>> exdatesexpr = y => y.ExceptionDates;
+                    Expression<Func<VEVENT, object>> relatedexpr = y => y.RelatedTos;
+                    Expression<Func<VEVENT, object>> resourcesexpr = y => y.Resources;
+                    Expression<Func<VEVENT, object>> reqstatsexpr = y => y.RequestStatuses;
+                    Expression<Func<VEVENT, object>> alarmresources = y => y.Alarms;
+
+                    var uids = (where != null) ? db.SelectParam<VEVENT>(q => q.Uid, where).ToArray(): db.SelectParam<VEVENT>(q => q.Uid).ToArray();
+                    if (selection.Contains(orgexpr.GetMemberName()))
+                    {
+                        //get events-organizers relations
+                        var org = (source.Organizer != null && source.Organizer is ORGANIZER) ? (source.Organizer as ORGANIZER) : null;
+                        if (org != null)
+                        {
+                            db.Save(org);
+                            if (!uids.NullOrEmpty())
+                            {
+                                var rorgs = uids.Select(x => new REL_EVENTS_ORGANIZERS { Id = this.IdProvider.NextId(), Uid = x, OrganizerId = org.Id });
+                                var ororgs = db.Select<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.Uid, uids) && q.OrganizerId == (source.Organizer as ORGANIZER).Id);
+                                if (!rorgs.NullOrEmpty() && !rorgs.Except(ororgs).NullOrEmpty()) db.SaveAll(rorgs.Except(ororgs));
+                            }
+                        }                                         
+                    }
+                    if (selection.Contains(rruleexpr.GetMemberName()))
+                    {
+                        //get events-rrules relations
+                        var rrule = (source.RecurrenceRule != null && source.RecurrenceRule is RECUR) ? (source.RecurrenceRule as RECUR) : null;
+                        if (rrule != null)
+                        {
+                            db.Save(rrule);
+                            if (!uids.NullOrEmpty())
+                            {
+                                var rrrules = uids.Select(x => new REL_EVENTS_RRULES { Id = this.IdProvider.NextId(), Uid = x, RecurrenceRuleId = rrule.Id });
+                                var orrrules = db.Select<REL_EVENTS_RRULES>(q => Sql.In(q.Uid, uids) && q.RecurrenceRuleId == (source.RecurrenceRule as RECUR).Id);
+                                if (!rrrules.NullOrEmpty() && !rrrules.Except(orrrules).NullOrEmpty()) db.SaveAll(rrrules.Except(orrrules));
+                            }
+                        } 
+                    }
+
+                    if (selection.Contains(attendsexpr.GetMemberName()))
+                    {
+                        //get events-rrules relations
+                        var attends = (!source.Attendees.OfType<ATTENDEE>().NullOrEmpty()) ? source.Attendees.OfType<ATTENDEE>() : null;
+                        if (!attends.NullOrEmpty())
+                        {
+                            db.SaveAll(attends);
+                            if (!uids.NullOrEmpty())
+                            {
+                                var rattends = uids.SelectMany(x => attends.Select(y => new REL_EVENTS_ATTENDEES { Id = this.IdProvider.NextId(), Uid = x, AttendeeId = y.Id }));
+                                var orattends = db.Select<REL_EVENTS_ATTENDEES>(q => Sql.In(q.Uid, uids) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
+                                if (!rattends.NullOrEmpty() && !rattends.Except(orattends).NullOrEmpty()) db.SaveAll(rattends.Except(orattends));
+                            }
+                        } 
+                    }
+
+                    if(selection.Contains(attachsexpr.GetMemberName()))
+                    {
+                        var attachbins = (!source.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty()) ? source.Attachments.OfType<ATTACH_BINARY>() : null;
+                        if(! attachbins.NullOrEmpty())
+                        {
+                            db.SaveAll(attachbins);
+                            if(!uids.NullOrEmpty())
+                            {
+                                var rattachbins = uids.SelectMany(x => attachbins.Select(y => new REL_EVENTS_ATTACHBINS { Id = this.IdProvider.NextId(), Uid = x, AttachmentId = y.Id }));
+                                var orattachbins = db.Select<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.Uid, uids) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
+                                if (!rattachbins.NullOrEmpty() && !rattachbins.Except(orattachbins).NullOrEmpty()) db.SaveAll(rattachbins.Except(orattachbins));
+
+                            }
+                        }                   
+
+                        var attachuris = (!source.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty()) ? source.Attachments.OfType<ATTACH_BINARY>() : null;
+                        if (!attachuris.NullOrEmpty())
+                        {
+                            db.SaveAll(attachuris);
+                            if (!uids.NullOrEmpty())
+                            {
+                                var rattachuris = uids.SelectMany(x => attachuris.Select(y => new REL_EVENTS_ATTACHURIS { Id = this.IdProvider.NextId(), Uid = x, AttachmentId = y.Id }));
+                                var orattachuris = db.Select<REL_EVENTS_ATTACHURIS>(q => Sql.In(q.Uid, uids) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray()));
+                                if (!rattachuris.NullOrEmpty() && !rattachuris.Except(orattachuris).NullOrEmpty()) db.SaveAll(rattachuris.Except(orattachuris));
+
+                            }
+                        }
+                    }
+
+                    if (selection.Contains(contactsexpr.GetMemberName()))
+                    {
+                        //get events-rrules relations
+                        var contacts = (!source.Contacts.OfType<CONTACT>().NullOrEmpty()) ? source.Contacts.OfType<CONTACT>() : null;
+                        if (!contacts.NullOrEmpty())
+                        {
+                            db.SaveAll(contacts);
+                            if (!uids.NullOrEmpty())
+                            {
+                                var rcontacts = uids.SelectMany(x => contacts.Select(y => new REL_EVENTS_CONTACTS { Id = this.IdProvider.NextId(), Uid = x, ContactId = y.Id }));
+                                var orcontacts = db.Select<REL_EVENTS_CONTACTS>(q => Sql.In(q.Uid, uids) && Sql.In(q.ContactId, contacts.Select(x => x.Id).ToArray()));
+                                if (!rcontacts.NullOrEmpty() && !rcontacts.Except(orcontacts).NullOrEmpty()) db.SaveAll(rcontacts.Except(orcontacts));
+                            }
+                        }
+                    } 
+                    
+                    var comments = (!source.Comments.OfType<COMMENT>().Empty()) ? (source.Comments.OfType<COMMENT>()) : null;
+                    var rdates = (!source.RecurrenceDates.OfType<RDATE>().Empty()) ? (source.RecurrenceDates.OfType<RDATE>()) : null;
+                    var exdates = (!source.ExceptionDates.OfType<EXDATE>().Empty()) ? (source.ExceptionDates.OfType<EXDATE>()) : null;
+                    var relateds = (!source.RelatedTos.OfType<RELATEDTO>().Empty()) ? (source.RelatedTos.OfType<RELATEDTO>()) : null;
+                    var resources = (!source.Resources.OfType<RESOURCES>().Empty()) ? (source.Resources.OfType<RESOURCES>()) : null;
+                    var reqstats = (!source.RequestStatuses.OfType<REQUEST_STATUS>().Empty()) ? (source.RequestStatuses.OfType<REQUEST_STATUS>()) : null;
+                    var aalarms = (!source.Alarms.OfType<AUDIO_ALARM>().Empty()) ? (source.Alarms.OfType<AUDIO_ALARM>()) : null;
+                    var dalarms = (!source.Alarms.OfType<DISPLAY_ALARM>().Empty()) ? (source.Alarms.OfType<DISPLAY_ALARM>()) : null;
+                    var ealarms = (!source.Alarms.OfType<EMAIL_ALARM>().Empty()) ? (source.Alarms.OfType<EMAIL_ALARM>()) : null;
+                }
+
+                //6. Get list of selected primitives
+                var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
+
+                //7. Update matching event primitives
+                if(!sprimitives.NullOrEmpty())
+                {
+                    var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
+                    var patchexpr = patchstr.CompileToExpressionFunc<VEVENT, object>(CodeDomLanguage.csharp, Utilities.GetReferencedAssemblyNamesFromEntryAssembly());
+                    db.UpdateOnly<VEVENT, object>(source, patchexpr, where);
+                }
+
+            }
+            catch (NotImplementedException) { throw; }
+            catch (System.Security.SecurityException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
         }
@@ -289,38 +523,38 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                     //3. construct available relations
                     var rorgs = entities.Where(x => x.Organizer != null && x.Organizer is ORGANIZER)
-                        .Select(e => new REL_EVENTS_ORGANIZERS { Uid = e.Id, OrganizerId = (e.Organizer as ORGANIZER).Id });
+                        .Select(e => new REL_EVENTS_ORGANIZERS { Id = this.IdProvider.NextId(), Uid = e.Id, OrganizerId = (e.Organizer as ORGANIZER).Id });
                     var rrids = entities.Where(x => x.RecurrenceId != null && x.RecurrenceId is ORGANIZER)
-                        .Select(e => new REL_EVENTS_RECURRENCE_IDS { Uid = e.Id, RecurrenceId_Id = (e.RecurrenceId as RECURRENCE_ID).Id });
+                        .Select(e => new REL_EVENTS_RECURRENCE_IDS { Id = this.IdProvider.NextId(), Uid = e.Id, RecurrenceId_Id = (e.RecurrenceId as RECURRENCE_ID).Id });
                     var rrrules = entities.Where(x => x.RecurrenceRule != null && x.RecurrenceRule is RECUR)
-                        .Select(e => new REL_EVENTS_RRULES { Uid = e.Id, RecurrenceRuleId = (e.RecurrenceRule as RECUR).Id });
+                        .Select(e => new REL_EVENTS_RRULES { Id = this.IdProvider.NextId(), Uid = e.Id, RecurrenceRuleId = (e.RecurrenceRule as RECUR).Id });
                     var rattends = entities.Where(x => x.Attendees.OfType<ATTENDEE>().Count() > 0)
-                        .SelectMany(e => e.Attendees.OfType<ATTENDEE>().Select(x => new REL_EVENTS_ATTENDEES { Uid = e.Id, AttendeeId = x.Id }));
+                        .SelectMany(e => e.Attendees.OfType<ATTENDEE>().Select(x => new REL_EVENTS_ATTENDEES { Id = this.IdProvider.NextId(), Uid = e.Id, AttendeeId = x.Id }));
                     var rattachbins = entities.Where(x => x.Attachments.OfType<ATTACH_BINARY>().Count() > 0)
-                        .SelectMany(e => e.Attachments.OfType<ATTACH_BINARY>().Select(x => new REL_EVENTS_ATTACHBINS { Uid = e.Id, AttachmentId = x.Id }));
+                        .SelectMany(e => e.Attachments.OfType<ATTACH_BINARY>().Select(x => new REL_EVENTS_ATTACHBINS { Id = this.IdProvider.NextId(), Uid = e.Id, AttachmentId = x.Id }));
                     var rattachuris = entities.Where(x => x.Attachments.OfType<ATTACH_URI>().Count() > 0)
-                        .SelectMany(e => e.Attachments.OfType<ATTACH_URI>().Select(x => new REL_EVENTS_ATTACHURIS { Uid = e.Id, AttachmentId = x.Id }));
+                        .SelectMany(e => e.Attachments.OfType<ATTACH_URI>().Select(x => new REL_EVENTS_ATTACHURIS { Id = this.IdProvider.NextId(), Uid = e.Id, AttachmentId = x.Id }));
                     var rcontacts = entities.Where(x => x.Contacts.OfType<CONTACT>().Count() > 0)
-                        .SelectMany(e => e.Contacts.OfType<CONTACT>().Select(x => new REL_EVENTS_CONTACTS { Uid = e.Id, ContactId = x.Id }));
+                        .SelectMany(e => e.Contacts.OfType<CONTACT>().Select(x => new REL_EVENTS_CONTACTS { Id = this.IdProvider.NextId(), Uid = e.Id, ContactId = x.Id }));
                     var rcomments = entities.Where(x => x.Contacts.OfType<COMMENT>().Count() > 0)
-                        .SelectMany(e => e.Contacts.OfType<COMMENT>().Select(x => new REL_EVENTS_COMMENTS { Uid = e.Id, CommentId = x.Id })); 
+                        .SelectMany(e => e.Contacts.OfType<COMMENT>().Select(x => new REL_EVENTS_COMMENTS { Id = this.IdProvider.NextId(), Uid = e.Id, CommentId = x.Id })); 
                     var rrdates = entities.Where(x => x.RecurrenceDates.OfType<RDATE>().Count() > 0)
                         .SelectMany(e => e.RecurrenceDates.OfType<RDATE>().Distinct(new EqualByStringId<RDATE>())
-                        .Select(x => new REL_EVENTS_RDATES { Uid = e.Id, RecurrenceDateId = x.Id })); 
+                        .Select(x => new REL_EVENTS_RDATES { Id = this.IdProvider.NextId(), Uid = e.Id, RecurrenceDateId = x.Id })); 
                     var rexdates = entities.Where(x => x.ExceptionDates.OfType<EXDATE>().Count() > 0)
-                        .SelectMany(e => e.ExceptionDates.OfType<EXDATE>().Select(x => new REL_EVENTS_EXDATES { Uid = e.Id, ExceptionDateId = x.Id })); 
+                        .SelectMany(e => e.ExceptionDates.OfType<EXDATE>().Select(x => new REL_EVENTS_EXDATES { Id = this.IdProvider.NextId(), Uid = e.Id, ExceptionDateId = x.Id })); 
                     var rrelateds = entities.Where(x => x.RelatedTos.OfType<RELATEDTO>().Count() > 0)
-                        .SelectMany(e => e.RelatedTos.OfType<RELATEDTO>().Select(x => new REL_EVENTS_RELATEDTOS { Uid = e.Id, RelatedToId = x.Id }));
+                        .SelectMany(e => e.RelatedTos.OfType<RELATEDTO>().Select(x => new REL_EVENTS_RELATEDTOS { Id = this.IdProvider.NextId(), Uid = e.Id, RelatedToId = x.Id }));
                     var rresources = entities.Where(x => x.Resources.OfType<RESOURCES>().Count() > 0)
-                        .SelectMany(e => e.Resources.OfType<RESOURCES>().Select(x => new REL_EVENTS_RESOURCES { Uid = e.Id, ResourcesId = x.Id }));
+                        .SelectMany(e => e.Resources.OfType<RESOURCES>().Select(x => new REL_EVENTS_RESOURCES { Id = this.IdProvider.NextId(), Uid = e.Id, ResourcesId = x.Id }));
                     var rreqstats = entities.Where(x => x.RequestStatuses.OfType<REQUEST_STATUS>().Count() > 0)
-                        .SelectMany(e => e.RequestStatuses.OfType<REQUEST_STATUS>().Select(x => new REL_EVENTS_REQSTATS { Uid = e.Id, ReqStatsId = x.Id }));
+                        .SelectMany(e => e.RequestStatuses.OfType<REQUEST_STATUS>().Select(x => new REL_EVENTS_REQSTATS { Id = this.IdProvider.NextId(), Uid = e.Id, ReqStatsId = x.Id }));
                     var raalarms = entities.Where(x => x.Alarms.OfType<AUDIO_ALARM>().Count() > 0)
-                        .SelectMany(e => e.RequestStatuses.OfType<AUDIO_ALARM>().Select(x => new REL_EVENTS_AUDIO_ALARMS { Uid = e.Id, AlarmId = x.Id }));
+                        .SelectMany(e => e.RequestStatuses.OfType<AUDIO_ALARM>().Select(x => new REL_EVENTS_AUDIO_ALARMS { Id = this.IdProvider.NextId(), Uid = e.Id, AlarmId = x.Id }));
                     var rdalarms = entities.Where(x => x.Alarms.OfType<DISPLAY_ALARM>().Count() > 0)
-                        .SelectMany(e => e.RequestStatuses.OfType<DISPLAY_ALARM>().Select(x => new REL_EVENTS_DISPLAY_ALARMS { Uid = e.Id, AlarmId = x.Id }));
+                        .SelectMany(e => e.RequestStatuses.OfType<DISPLAY_ALARM>().Select(x => new REL_EVENTS_DISPLAY_ALARMS {Id = this.IdProvider.NextId(), Uid = e.Id, AlarmId = x.Id }));
                     var realarms = entities.Where(x => x.Alarms.OfType<EMAIL_ALARM>().Count() > 0)
-                        .SelectMany(e => e.RequestStatuses.OfType<EMAIL_ALARM>().Select(x => new REL_EVENTS_EMAIL_ALARMS { Uid = e.Id, AlarmId = x.Id }));
+                        .SelectMany(e => e.RequestStatuses.OfType<EMAIL_ALARM>().Select(x => new REL_EVENTS_EMAIL_ALARMS { Id = this.IdProvider.NextId(), Uid = e.Id, AlarmId = x.Id }));
 
                     //4. retrieve existing relations
                     var ororgs = (!orgs.NullOrEmpty()) ?  
@@ -603,6 +837,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
             return full;
         }
+
+
 
     }
 }

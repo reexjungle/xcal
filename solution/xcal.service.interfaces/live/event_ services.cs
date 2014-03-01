@@ -16,6 +16,7 @@ namespace reexmonkey.xcal.service.interfaces.live
     {
         public ILog Logger { get; set; }
         public IEventRepository Repository { get; set; }
+
         public EventService(): base()
         {
             //this.Logger = LogManager.GetLogger(typeof(EventService));
@@ -35,10 +36,12 @@ namespace reexmonkey.xcal.service.interfaces.live
         public VCALENDAR Post(PublishEvents request)
         {
             VCALENDAR calendar = null;
-
             try
             {
+                calendar = new VCALENDAR { ProdId = request.ProductId, Method = METHOD.PUBLISH };
 
+                calendar.Components.AddRange(request.Events);
+                
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
