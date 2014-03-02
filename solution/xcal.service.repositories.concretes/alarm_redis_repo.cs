@@ -63,7 +63,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public IProvidesId<string> IdProvider { get; set, }
+        public IProvidesId<string> IdProvider { get; set; }
 
         public void Patch(AUDIO_ALARM entity, Expression<Func<AUDIO_ALARM, object>> fields, Expression<Func<AUDIO_ALARM, bool>> where = null)
         {

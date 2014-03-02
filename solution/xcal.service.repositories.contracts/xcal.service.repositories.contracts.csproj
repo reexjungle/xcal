@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="alarm_repo.cs" />
+    <Compile Include="calendar_repo.cs" />
     <Compile Include="event_repo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
