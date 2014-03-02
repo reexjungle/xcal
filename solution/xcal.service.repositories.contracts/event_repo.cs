@@ -50,7 +50,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
     public interface IEventRedisRepository : IEventRepository
     {
         /// <summary>
-        /// Gets the connection factory of ORMLite datasources
+        /// Gets the Redis Client manager
         /// </summary>
         IRedisClientsManager RedisClientsManager { get; }
     }
