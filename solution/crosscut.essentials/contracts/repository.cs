@@ -101,10 +101,10 @@ namespace reexmonkey.crosscut.essentials.contracts
         /// <summary>
         /// Patches fields of an entity in the repository
         /// </summary>
-        /// <param name="entity">The entity to be patched</param>
+        /// <param name="source">The source containing patch details</param>
         /// <param name="fields">Specfies which fields are used for the patching. The fields are specified in an anonymous variable</param>
         /// <param name="where">Filters the entities to patch. No filter implies all entities are patched</param>
-        void Patch(TEntity entity, Expression<Func<TEntity, object>> fields, Expression<Func<TEntity, bool>> where = null);
+        void Patch(TEntity source, Expression<Func<TEntity, object>> fields, Expression<Func<TEntity, bool>> where = null);
 
         /// <summary>
         /// Erases an entity from the repository based on a unique identifier

@@ -7,6 +7,8 @@ using ServiceStack.OrmLite;
 using reexmonkey.infrastructure.ormlite.extensions;
 using reexmonkey.crosscut.essentials.contracts;
 using reexmonkey.crosscut.essentials.concretes;
+using reexmonkey.crosscut.goodies.concretes;
+using reexmonkey.crosscut.io.concretes;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.service.repositories.contracts;
 
@@ -41,7 +43,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 this.pages = value;
             }
         }
-
+        public IProvidesId<string> IdProvider { get; set; }
 
         public AudioAlarmOrmLiteRepository(IDbConnectionFactory factory, int? pages)
         {
@@ -61,32 +63,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public virtual void Dispose()
         {
             if (this.conn != null) this.conn.Dispose();
-        }
-
-        public AUDIO_ALARM Find(string key)
-        {
-            AUDIO_ALARM dry = null;
-            try
-            {
-                dry = db.Select<AUDIO_ALARM>(q => q.Id == key).FirstOrDefault();
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
-            return dry;
-        }
-
-        public IEnumerable<AUDIO_ALARM> Find(IEnumerable<string> keys, int? page = null)
-        {
-            IEnumerable<AUDIO_ALARM> dry = null;
-            try
-            {
-                dry = db.Select<AUDIO_ALARM>(q => Sql.In(q.Id, keys.ToArray()), page, pages);
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
-            return dry;
         }
 
         public AUDIO_ALARM Find(string fkey, string pkey)
@@ -178,35 +154,42 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public void EraseAll(IEnumerable<string> keys)
+        public void Patch(AUDIO_ALARM source, Expression<Func<AUDIO_ALARM, object>> fields, Expression<Func<AUDIO_ALARM, bool>> where = null)
+        {
+            //1. Get fields slected for patching
+            var selection = fields.GetMemberNames();
+
+            //2.Get list of all non-related event details (primitives)
+            Expression<Func<AUDIO_ALARM, object>> primitives = x => new
+            {
+                x.Id,
+                x.Action,
+                x.Trigger,
+                x.Duration,
+                x.Attachment
+            };
+
+            //3. Get list of selected primitives
+            var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
+
+            //4. Update matching event primitives
+            if (!sprimitives.NullOrEmpty())
+            {
+                var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
+                var patchexpr = patchstr.CompileToExpressionFunc<AUDIO_ALARM, object>(CodeDomLanguage.csharp, Utilities.GetReferencedAssemblyNamesFromEntryAssembly());
+                db.UpdateOnly<AUDIO_ALARM, object>(source, patchexpr, where);
+            }
+        }
+
+        public void EraseAll(IEnumerable<string> keys = null)
         {
             try
             {
-                db.Delete<AUDIO_ALARM>(q => Sql.In(q.Id, keys.ToArray()));
+                if (!keys.NullOrEmpty()) db.Delete<AUDIO_ALARM>(q => Sql.In(q.Id, keys.ToArray()));
+                else db.DeleteAll<AUDIO_ALARM>();
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
-        }
-
-        public void EraseAll()
-        {
-            try
-            {
-                db.DeleteAll<AUDIO_ALARM>();
-            }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
-        }
-
-
-        public IProvidesId<string> IdProvider
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public void Patch(AUDIO_ALARM entity, Expression<Func<AUDIO_ALARM, object>> fields, Expression<Func<AUDIO_ALARM, bool>> where = null)
-        {
-            throw new NotImplementedException();
         }
     }
 
@@ -216,6 +199,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         private IDbConnection conn;
         private IDbConnectionFactory factory = null;
         private int? pages = null;
+        public IProvidesId<string> IdProvider { get; set; }
 
         private IDbConnection db
         {
@@ -259,32 +243,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public virtual void Dispose()
         {
             if (this.conn != null) this.conn.Dispose();
-        }
-
-        public DISPLAY_ALARM Find(string key)
-        {
-            DISPLAY_ALARM dry = null;
-            try
-            {
-                dry = db.Select<DISPLAY_ALARM>(q => q.Id == key).FirstOrDefault();
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
-            return dry;
-        }
-
-        public IEnumerable<DISPLAY_ALARM> Find(IEnumerable<string> keys, int? page = null)
-        {
-            IEnumerable<DISPLAY_ALARM> dry = null;
-            try
-            {
-                dry = db.Select<DISPLAY_ALARM>(q => Sql.In(q.Id, keys.ToArray()), page, pages);
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
-            return dry;
         }
 
         public DISPLAY_ALARM Find(string fkey, string pkey)
@@ -356,16 +314,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public void Erase(string key)
-        {
-            try
-            {
-                db.Delete<DISPLAY_ALARM>(q => q.Id.ToUpper() == key.ToUpper());
-            }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
-        }
-
         public void SaveAll(IEnumerable<DISPLAY_ALARM> entities)
         {
             try
@@ -376,35 +324,52 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public void EraseAll(IEnumerable<string> keys)
+        public void Patch(DISPLAY_ALARM source, Expression<Func<DISPLAY_ALARM, object>> fields, Expression<Func<DISPLAY_ALARM, bool>> where = null)
+        {
+            //1. Get fields slected for patching
+            var selection = fields.GetMemberNames();
+
+            //2.Get list of all non-related event details (primitives)
+            Expression<Func<DISPLAY_ALARM, object>> primitives = x => new
+            {
+                x.Id,
+                x.Action,
+                x.Trigger,
+                x.Duration,
+                x.Description
+            };
+
+            //3. Get list of selected primitives
+            var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
+
+            //4. Update matching event primitives
+            if (!sprimitives.NullOrEmpty())
+            {
+                var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
+                var patchexpr = patchstr.CompileToExpressionFunc<DISPLAY_ALARM, object>(CodeDomLanguage.csharp, Utilities.GetReferencedAssemblyNamesFromEntryAssembly());
+                db.UpdateOnly<DISPLAY_ALARM, object>(source, patchexpr, where);
+            }
+        }
+
+        public void Erase(string key)
         {
             try
             {
-                db.Delete<DISPLAY_ALARM>(q => Sql.In(q.Id, keys.ToArray()));
+                db.Delete<DISPLAY_ALARM>(q => q.Id.ToUpper() == key.ToUpper());
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
         }
 
-        public void EraseAll()
+        public void EraseAll(IEnumerable<string> keys = null)
         {
             try
             {
-                db.DeleteAll<DISPLAY_ALARM>();
+                if (!keys.NullOrEmpty()) db.Delete<DISPLAY_ALARM>(q => Sql.In(q.Id, keys.ToArray()));
+                else db.DeleteAll<DISPLAY_ALARM>();
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
-        }
-
-
-        public IProvidesId<string> IdProvider
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public void Patch(DISPLAY_ALARM entity, Expression<Func<DISPLAY_ALARM, object>> fields, Expression<Func<DISPLAY_ALARM, bool>> where = null)
-        {
-            throw new NotImplementedException();
         }
     }
 
@@ -437,7 +402,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 this.pages = value; 
             }
         }
-
+        public IProvidesId<string> IdProvider { get; set; }
 
         public EmailAlarmOrmLiteRepository(IDbConnectionFactory factory, int? pages)
         {
@@ -523,32 +488,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
 
             return full;
-        }
-
-        public EMAIL_ALARM Find(string key)
-        {
-            EMAIL_ALARM dry = null;
-            try
-            {
-                dry = db.Select<EMAIL_ALARM>(q => q.Id == key).FirstOrDefault();
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
-            return (dry != null) ? this.Hydrate(dry) : null;
-        }
-
-        public IEnumerable<EMAIL_ALARM> Find(IEnumerable<string> keys, int? page = null)
-        {
-            IEnumerable<EMAIL_ALARM> dry = null;
-            try
-            {
-                dry = db.Select<EMAIL_ALARM>(q => Sql.In(q.Id, keys.ToArray()), page, pages);
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
-            return (!dry.NullOrEmpty()) ? this.Hydrate(dry) : null;
         }
 
         public EMAIL_ALARM Find(string fkey, string pkey )
@@ -728,15 +667,87 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-
-        public IProvidesId<string> IdProvider
+        public void Patch(EMAIL_ALARM source, Expression<Func<EMAIL_ALARM, object>> fields, Expression<Func<EMAIL_ALARM, bool>> where = null)
         {
-            get { throw new NotImplementedException(); }
-        }
+            //1. Get fields slected for patching
+            var selection = fields.GetMemberNames();
 
-        public void Patch(EMAIL_ALARM entity, Expression<Func<EMAIL_ALARM, object>> fields, Expression<Func<EMAIL_ALARM, bool>> where = null)
-        {
-            throw new NotImplementedException();
+            //2.Get list of all non-related event details (primitives)
+            Expression<Func<EMAIL_ALARM, object>> primitives = x => new
+            {
+                x.Id,
+                x.Action,
+                x.Trigger,
+                x.Duration,
+                x.Description,
+                x.Summary
+            };
+
+
+            //3.Get list of all related event details (relation)
+            Expression<Func<EMAIL_ALARM, object>> relations = x => new
+            {
+                x.Attendees,
+                x.Attachments
+            };
+
+            //4. Get list of selected relations
+            var srelation = relations.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
+
+            //5. Patch relations
+            if (!srelation.NullOrEmpty())
+            {
+                Expression<Func<EMAIL_ALARM, object>> attendsexpr = y => y.Attendees;
+                Expression<Func<EMAIL_ALARM, object>> attachsexpr = y => y.Attachments;
+
+                var ids = (where != null) ? db.SelectParam<EMAIL_ALARM>(q => q.Id, where).ToArray() : db.SelectParam<EMAIL_ALARM>(q => q.Id).ToArray();
+
+                if (selection.Contains(attendsexpr.GetMemberName()))
+                {
+                    var attends = (!source.Attendees.OfType<ATTENDEE>().NullOrEmpty()) ? source.Attendees.OfType<ATTENDEE>() : null;
+                    if (!attends.NullOrEmpty() && !ids.NullOrEmpty())
+                    {
+                        db.SaveAll(attends);
+                        var rattends = ids.SelectMany(x => attends.Select(y => new RELS_EMAIL_ALARMS_ATTENDEES { Id = this.IdProvider.NextId(), AlarmId = x, AttendeeId = y.Id }));
+                        var orattends = db.Select<RELS_EMAIL_ALARMS_ATTENDEES>(q => Sql.In(q.Id, ids) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
+                        if (!rattends.NullOrEmpty() && !rattends.Except(orattends).NullOrEmpty()) db.SaveAll(rattends.Except(orattends));
+
+                    }
+                }
+
+                if (selection.Contains(attachsexpr.GetMemberName()))
+                {
+                    var attachbins = (!source.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty()) ? source.Attachments.OfType<ATTACH_BINARY>() : null;
+                    if (!attachbins.NullOrEmpty() && !ids.NullOrEmpty())
+                    {
+                        db.SaveAll(attachbins);
+                        var rattachbins = ids.SelectMany(x => attachbins.Select(y => new RELS_EMAIL_ALARMS_ATTACHBINS { Id = this.IdProvider.NextId(), AlarmId = x, AttachmentId = y.Id }));
+                        var orattachbins = db.Select<RELS_EMAIL_ALARMS_ATTACHBINS>(q => Sql.In(q.Id, ids) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
+                        if (!rattachbins.NullOrEmpty() && !rattachbins.Except(orattachbins).NullOrEmpty()) db.SaveAll(rattachbins.Except(orattachbins));
+                    }
+
+                    var attachuris = (!source.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty()) ? source.Attachments.OfType<ATTACH_URI>() : null;
+                    if (!attachuris.NullOrEmpty() && !ids.NullOrEmpty())
+                    {
+                        db.SaveAll(attachuris);
+                        var rattachuris = ids.SelectMany(x => attachuris.Select(y => new RELS_EMAIL_ALARMS_ATTACHURIS { Id = this.IdProvider.NextId(), AlarmId = x, AttachmentId = y.Id }));
+                        var orattachuris = db.Select<RELS_EMAIL_ALARMS_ATTACHURIS>(q => Sql.In(q.Id, ids) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray()));
+                        if (!rattachuris.NullOrEmpty() && !rattachuris.Except(orattachuris).NullOrEmpty()) db.SaveAll(rattachuris.Except(orattachuris));
+                    }
+                }
+            }
+
+
+            //6. Get list of selected primitives
+            var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
+
+            //7. Update matching event primitives
+            if (!sprimitives.NullOrEmpty())
+            {
+                var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
+                var patchexpr = patchstr.CompileToExpressionFunc<EMAIL_ALARM, object>(CodeDomLanguage.csharp, Utilities.GetReferencedAssemblyNamesFromEntryAssembly());
+                db.UpdateOnly<EMAIL_ALARM, object>(source, patchexpr, where);
+            }
         }
     }
 
