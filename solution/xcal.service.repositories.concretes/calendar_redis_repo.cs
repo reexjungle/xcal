@@ -12,7 +12,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
 {
     public class CalendarRedisRepository : ICalendarRedisRepository
     {
-
         public IRedisClientsManager RedisClientsManager
         {
             get { throw new NotImplementedException(); }
