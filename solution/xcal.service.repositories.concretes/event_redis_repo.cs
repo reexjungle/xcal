@@ -24,11 +24,17 @@ namespace reexmonkey.xcal.service.repositories.concrete
         public IRedisClientsManager RedisClientsManager
         {
             get { return this.manager; }
+            set
+            {
+                if (value == null) throw new ArgumentNullException("RedisClientsManager");
+                this.manager = value;
+            }
         }
 
         public int? Pages
         {
             get { return this.pages; }
+            set { this.pages = value;}
         }
 
         public EventRedisRepository(IRedisClientsManager manager, int? pages = null)

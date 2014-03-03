@@ -19,6 +19,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public IDbConnectionFactory DbConnectionFactory
         {
             get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
         }
 
         public VCALENDAR Hydrate(VCALENDAR dry)
@@ -76,9 +77,18 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public int? Pages
+        public int? Pages { get; set; }
+
+        public IEventRepository EventRepository
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

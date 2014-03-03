@@ -5,6 +5,7 @@ using System.Text;
 using ServiceStack.Logging;
 using ServiceStack.ServiceInterface;
 using ServiceStack.FluentValidation;
+using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.domain.operations;
@@ -15,7 +16,7 @@ namespace reexmonkey.xcal.service.interfaces.live
     public class EventService: Service
     {
         public ILog Logger { get; set; }
-        public IEventRepository Repository { get; set; }
+        public ICalendarRepository CalendarRepository { get; set; }
 
         public EventService(): base()
         {
@@ -23,11 +24,11 @@ namespace reexmonkey.xcal.service.interfaces.live
             //this.Repository = this.ResolveService<IEventRepository>();
         }
 
-        public EventService(IEventRepository repository, ILog logger): base()
+        public EventService(ICalendarRepository repository, ILog logger): base()
         {
             if (repository == null) throw new ArgumentNullException("repository");
             if (logger == null) throw new ArgumentNullException("logger");
-            this.Repository = repository;
+            this.CalendarRepository = repository;
             this.Logger = logger;
         }
 
@@ -39,19 +40,30 @@ namespace reexmonkey.xcal.service.interfaces.live
             try
             {
                 calendar = new VCALENDAR { ProdId = request.ProductId, Method = METHOD.PUBLISH };
-
-                calendar.Components.AddRange(request.Events);
-                
+                var oevents = calendar.Components.OfType<VEVENT>();
+                var toadd = request.Events.Except(oevents, new EqualByStringId<VEVENT>());
+                if (!toadd.NullOrEmpty()) calendar.Components.AddRange(toadd);
+                this.CalendarRepository.Save(calendar);
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
-
             return calendar;
         }
 
-        public VCALENDAR Post(RescheduleEvents request)
+        public VCALENDAR Put(RescheduleEvents request)
         {
-            throw new NotImplementedException();
+            VCALENDAR calendar = null;
+            try
+            {
+                calendar = new VCALENDAR { ProdId = request.ProductId, Method = METHOD.REQUEST };
+                var oevents = calendar.Components.OfType<VEVENT>();
+                var toadd = request.Events.Except(oevents, new EqualByStringId<VEVENT>());
+                if (!toadd.NullOrEmpty()) calendar.Components.AddRange(toadd);
+                this.CalendarRepository.Save(calendar);
+            }
+            catch (InvalidOperationException) { throw; }
+            catch (Exception) { throw; }
+            return calendar;
         }
 
         public VCALENDAR Put(UpdateEvent request)

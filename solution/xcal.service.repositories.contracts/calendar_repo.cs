@@ -12,6 +12,8 @@ namespace reexmonkey.xcal.service.repositories.contracts
         IWriteRepository<VCALENDAR, string>,
         IPaged<int>
     {
+        IEventRepository EventRepository { get; set; }
+
         /// <summary>
         /// Populates a sparse calendar entity with details from its consitutent entities
         /// </summary>

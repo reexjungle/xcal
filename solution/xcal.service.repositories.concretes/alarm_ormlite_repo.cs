@@ -45,13 +45,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
         public IProvidesId<string> IdProvider { get; set; }
 
+
+        public AudioAlarmOrmLiteRepository() { }
         public AudioAlarmOrmLiteRepository(IDbConnectionFactory factory, int? pages)
         {
             this.DbConnectionFactory = factory;
             this.Pages = pages;
             this.conn = this.factory.OpenDbConnection();
         }
-
         public AudioAlarmOrmLiteRepository(IDbConnection connection, int? pages)
         {
             if (connection == null) throw new ArgumentNullException("connection");
@@ -224,14 +225,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
             }
         }
 
-
+        public DisplayAlarmOrmLiteRepository() { }
         public DisplayAlarmOrmLiteRepository(IDbConnectionFactory factory, int? pages)
         {
             this.DbConnectionFactory = factory;
             this.Pages = pages;
             this.conn = this.factory.OpenDbConnection();
         }
-
         public DisplayAlarmOrmLiteRepository(IDbConnection connection, int? pages)
         {
             if (connection == null) throw new ArgumentNullException("connection");
@@ -404,13 +404,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
         public IProvidesId<string> IdProvider { get; set; }
 
+        public EmailAlarmOrmLiteRepository() { }
         public EmailAlarmOrmLiteRepository(IDbConnectionFactory factory, int? pages)
         {
             this.DbConnectionFactory = factory;
             this.Pages = pages;
             this.conn = this.factory.OpenDbConnection();
         }
-
         public EmailAlarmOrmLiteRepository(IDbConnection connection, int? pages)
         {
             if (connection == null) throw new ArgumentNullException("connection");

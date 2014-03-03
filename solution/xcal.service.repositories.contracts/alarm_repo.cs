@@ -23,9 +23,9 @@ namespace reexmonkey.xcal.service.repositories.contracts
     public interface IAudioAlarmOrmLiteRepository : IAudioAlarmRepository
     {
         /// <summary>
-        /// Gets the connection factory of ORMLite datasources
+        /// Gets or sets the connection factory of ORMLite datasources
         /// </summary>
-        IDbConnectionFactory DbConnectionFactory { get; }
+        IDbConnectionFactory DbConnectionFactory { get; set; }
     }
 
 
@@ -35,9 +35,9 @@ namespace reexmonkey.xcal.service.repositories.contracts
     public interface IAudioAlarmRedisRepository : IAudioAlarmRepository
     {
         /// <summary>
-        /// Gets the connection factory of ORMLite datasources
+        /// Gets or sets the connection factory of ORMLite datasources
         /// </summary>
-        IRedisClientsManager RedisClientsManager { get; }
+        IRedisClientsManager RedisClientsManager { get; set; }
     } 
 
     #endregion

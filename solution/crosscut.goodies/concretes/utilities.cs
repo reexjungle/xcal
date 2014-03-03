@@ -8,6 +8,13 @@ using System.Reflection;
 
 namespace reexmonkey.crosscut.goodies.concretes
 {
+    public enum DataProviderType
+    { 
+        rdbms = 0x1,
+        nosql = 0x2,
+        unknown = 0xf
+    }
+
     /// <summary>
     /// Specifies a helper class providing common IO functionalities
     /// </summary>

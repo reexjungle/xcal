@@ -11,7 +11,7 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>xcal.application.server.web.local</RootNamespace>
+    <RootNamespace>reexmonkey.xcal.application.server.web.local</RootNamespace>
     <AssemblyName>xcal.application.server.web.local</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
@@ -39,6 +39,47 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MySql.Data">
+      <HintPath>..\packages\MySql.Data.6.8.3\lib\net40\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.2.1.0\lib\net40\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ServiceStack.3.9.71\lib\net35\ServiceStack.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Common, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ServiceStack.Common.3.9.71\lib\net35\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ServiceStack.Common.3.9.71\lib\net35\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Logging.NLog">
+      <HintPath>..\packages\ServiceStack.Logging.NLog.3.9.71\lib\net35\ServiceStack.Logging.NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite">
+      <HintPath>..\packages\ServiceStack.OrmLite.SqlServer.3.9.14\lib\ServiceStack.OrmLite.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite.MySql">
+      <HintPath>..\packages\ServiceStack.OrmLite.MySql.3.9.71\lib\net35\ServiceStack.OrmLite.MySql.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite.SqlServer">
+      <HintPath>..\packages\ServiceStack.OrmLite.SqlServer.3.9.14\lib\ServiceStack.OrmLite.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Redis">
+      <HintPath>..\packages\ServiceStack.Redis.3.9.11\lib\net35\ServiceStack.Redis.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.ServiceInterface, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ServiceStack.3.9.71\lib\net35\ServiceStack.ServiceInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ServiceStack.Text.3.9.71\lib\net35\ServiceStack.Text.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -57,18 +98,75 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="global.asax" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="application.cs" />
+    <Compile Include="global.asax.cs">
+      <DependentUpon>global.asax</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\crosscut.essentials\crosscut.essentials.csproj">
+      <Project>{eedf1367-a0fc-400a-a649-716261252b9e}</Project>
+      <Name>crosscut.essentials</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\crosscut.goodies\crosscut.goodies.csproj">
+      <Project>{f21cb427-5dd9-41b2-a993-17cd8085535a}</Project>
+      <Name>crosscut.goodies</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\crosscut.security\crosscut.security.csproj">
+      <Project>{e307c223-9021-45be-a261-daf43f31b354}</Project>
+      <Name>crosscut.security</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.domain.contracts\xcal.domain.contracts.csproj">
+      <Project>{5cc7e3d9-702b-45a3-a413-a07d010c2651}</Project>
+      <Name>xcal.domain.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.domain.models\xcal.domain.models.csproj">
+      <Project>{5b708e08-1f69-4fde-9d99-afa3784a49d7}</Project>
+      <Name>xcal.domain.models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.service.formats\xcal.service.formats.csproj">
+      <Project>{7496b2c6-bd7e-44a9-9c33-02cd399f0de0}</Project>
+      <Name>xcal.service.formats</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.service.interfaces\xcal.service.interfaces.csproj">
+      <Project>{0b922294-6a3f-4232-a150-cac6bfc7bcfd}</Project>
+      <Name>xcal.service.interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.service.repositories.concretes\xcal.service.repositories.concretes.csproj">
+      <Project>{17322a2e-e311-41bd-9070-6146842a46c3}</Project>
+      <Name>xcal.service.repositories.concretes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.service.repositories.contracts\xcal.service.repositories.contracts.csproj">
+      <Project>{1898784a-99b2-4226-8c33-689ea6558cfa}</Project>
+      <Name>xcal.service.repositories.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.service.validators\xcal.service.validators.csproj">
+      <Project>{2ccd1317-b13c-4372-b14f-ce7128103f5c}</Project>
+      <Name>xcal.service.validators</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -85,7 +183,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>56686</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:56686/</IISUrl>
+          <IISUrl>http://localhost:3005/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

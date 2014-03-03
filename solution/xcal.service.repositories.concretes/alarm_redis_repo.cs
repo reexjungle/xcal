@@ -16,6 +16,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public IRedisClientsManager RedisClientsManager
         {
             get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
         }
 
         public IEnumerable<AUDIO_ALARM> Get(int? page = null)

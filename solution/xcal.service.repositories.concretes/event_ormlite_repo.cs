@@ -19,7 +19,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
     /// </summary>
     public class EventOrmLiteRepository: IEventOrmLiteRepository
     {
-        private IDbConnection conn;
+        private IDbConnection conn = null;
         private IDbConnectionFactory factory = null;
         private int? pages = null;
 
@@ -45,12 +45,42 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 this.pages = value; 
             }
         }
-
-        public IAudioAlarmOrmLiteRepository AudioAlarmOrmLiteRepository { get; set; }
-        public IDisplayAlarmOrmLiteRepository DisplayAlarmOrmLiteRepository { get; set; }
-        public IEmailAlarmOrmLiteRepository EmailAlarmOrmLiteRepository { get; set; }
         public IProvidesId<string> IdProvider { get; set; }
 
+
+        private IAudioAlarmOrmLiteRepository aalarmrepository = null;
+        private IDisplayAlarmOrmLiteRepository dalarmrepository = null;
+        private IEmailAlarmOrmLiteRepository ealarmrepository = null;
+
+        public IAudioAlarmOrmLiteRepository AudioAlarmOrmLiteRepository 
+        {
+            get { return this.aalarmrepository; }
+            set
+            {
+                if (value == null) throw new ArgumentNullException("AudioAlarmOrmLiteRepository");
+                this.aalarmrepository = value;
+            }
+        }
+        public IDisplayAlarmOrmLiteRepository DisplayAlarmOrmLiteRepository 
+        {
+            get { return this.dalarmrepository; }
+            set 
+            {
+                if (value == null) throw new ArgumentNullException("DisplayAlarmOrmLiteRepository");
+                this.dalarmrepository = value;
+            } 
+        }
+        public IEmailAlarmOrmLiteRepository EmailAlarmOrmLiteRepository 
+        {
+            get { return this.ealarmrepository; } 
+            set
+            {
+                if (value == null) throw new ArgumentNullException("EmailAlarmOrmLiteRepository");
+                this.ealarmrepository = value;
+            }
+        }
+
+        public EventOrmLiteRepository() { }
         public EventOrmLiteRepository(IDbConnectionFactory factory, int? pages)
         {
             this.DbConnectionFactory = factory;
@@ -738,7 +768,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                dry.Attachments.AddRange(db.Select<ATTACH_BINARY, VEVENT, REL_EVENTS_ATTACHBINS>(
                    r => r.AttachmentId,
                    r => r.Uid,
-                   e => e.Id == dry.Uid).Except(dry.Attachments.OfType<ATTACH_BINARY>()));
+                   e => e.Id == dry.Uid).Except(dry.Attachments.OfType<ATTACH_BINARY>(), new EqualByStringId<ATTACH_BINARY>()));
 
                dry.Attachments.AddRange(db.Select<ATTACH_URI, VEVENT, REL_EVENTS_ATTACHBINS>(
                    r => r.AttachmentId,
@@ -748,7 +778,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 dry.Attendees.AddRange(db.Select<ATTENDEE, VEVENT, REL_EVENTS_ATTENDEES>(
                     r => r.AttendeeId,
                     r => r.Uid,
-                    e => e.Id == dry.Uid).Except(dry.Attendees.OfType<ATTENDEE>()));
+                    e => e.Id == dry.Uid).Except(dry.Attendees.OfType<ATTENDEE>(), new EqualByStringId<ATTENDEE>()));
 
                 dry.Comments.AddRange(db.Select<COMMENT, VEVENT, REL_EVENTS_COMMENTS>(
                     r => r.CommentId,
@@ -758,7 +788,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 dry.Contacts.AddRange(db.Select<CONTACT, VEVENT, REL_EVENTS_CONTACTS >(
                     r => r.ContactId,
                     r => r.Uid,
-                    e => e.Id == dry.Uid).Except(dry.Contacts.OfType<CONTACT>()));
+                    e => e.Id == dry.Uid).Except(dry.Contacts.OfType<CONTACT>(), new EqualByStringId<CONTACT>()));
 
                 dry.RecurrenceDates.AddRange(db.Select<RDATE, VEVENT, REL_EVENTS_RDATES>(
                     r => r.RecurrenceDateId, 
@@ -768,22 +798,22 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 dry.ExceptionDates.AddRange(db.Select<EXDATE, VEVENT, REL_EVENTS_EXDATES>(
                     r => r.ExceptionDateId, 
                     r => r.Uid,
-                    e => e.Id == dry.Uid).Except(dry.ExceptionDates.OfType<EXDATE>()));
+                    e => e.Id == dry.Uid).Except(dry.ExceptionDates.OfType<EXDATE>(), new EqualByStringId<EXDATE>()));
 
                 dry.RelatedTos.AddRange(db.Select<RELATEDTO, VEVENT, REL_EVENTS_RELATEDTOS>(
                     r => r.RelatedToId, 
                     r => r.Uid,
-                    e => e.Id == dry.Uid).Except(dry.RelatedTos.OfType<RELATEDTO>()));
+                    e => e.Id == dry.Uid).Except(dry.RelatedTos.OfType<RELATEDTO>(), new EqualByStringId<RELATEDTO>()));
 
                 dry.RequestStatuses.AddRange(db.Select<REQUEST_STATUS, VEVENT, REL_EVENTS_REQSTATS>(
                     r => r.ReqStatsId, 
                     r => r.Uid, 
-                    e => e.Id == dry.Uid).Except(dry.RequestStatuses.OfType<REQUEST_STATUS>()));
+                    e => e.Id == dry.Uid).Except(dry.RequestStatuses.OfType<REQUEST_STATUS>(), new EqualByStringId<REQUEST_STATUS>()));
 
                 dry.Resources.AddRange(db.Select<RESOURCES, VEVENT, REL_EVENTS_RESOURCES>(
                     r => r.ResourcesId,
                     r => r.Uid,
-                    e => e.Id == dry.Uid).Except(dry.Resources.OfType<RESOURCES>()));
+                    e => e.Id == dry.Uid).Except(dry.Resources.OfType<RESOURCES>(), new EqualByStringId<RESOURCES>()));
 
 
                 dry.Alarms.AddRange(this.AudioAlarmOrmLiteRepository.Find(dry.Uid.ToSingleton()));
@@ -818,9 +848,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 var rrelateds = db.Select<REL_EVENTS_RELATEDTOS>(q => Sql.In(q.Uid, uids));
                 var rrstats = db.Select<REL_EVENTS_REQSTATS>(q => Sql.In(q.Uid, uids));
                 var rresources = db.Select<REL_EVENTS_RESOURCES>(q => Sql.In(q.Uid, uids));
-                var raalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.Uid, uids));
-                var rdalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.Uid, uids));
-                var realarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.Uid, uids));
 
                 //2. retrieve secondary entities
                 var orgs = (!rorgs.Empty())? db.Select<ORGANIZER>(q => Sql.In(q.Id, rorgs.Select(r => r.OrganizerId).ToArray())): null;
@@ -836,9 +863,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 var relatedtos = (!rrelateds.Empty()) ? db.Select<RELATEDTO>(q => Sql.In(q.Id, rrelateds.Select(r => r.RelatedToId).ToArray())) : null;
                 var reqstats = (!rrstats.Empty()) ? db.Select<REQUEST_STATUS>(q => Sql.In(q.Id, rrstats.Select(r => r.ReqStatsId).ToArray())) : null;
                 var resources = (!rresources.Empty()) ? db.Select<RESOURCES>(q => Sql.In(q.Id, rresources.Select(r => r.ResourcesId).ToArray())) : null;
-                var aalarms = (!raalarms.Empty()) ? this.AudioAlarmOrmLiteRepository.Find(uids, raalarms.Select(r => r.AlarmId)).ToList() : null;
-                var dalarms = (!rdalarms.Empty()) ? this.DisplayAlarmOrmLiteRepository.Find(uids, rdalarms.Select(r => r.AlarmId)).ToList() : null;
-                var ealarms = (!realarms.Empty()) ? this.EmailAlarmOrmLiteRepository.Find(uids, realarms.Select(r => r.AlarmId)).ToList() : null;
 
                 //3. Use Linq to stitch secondary entities to primary entities
                 full = dry.Select(x =>
@@ -861,38 +885,34 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     var xattachbins = (!attachbins.NullOrEmpty())?(from y in attachbins join r in rattachs on y.Id equals r.AttachmentId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y): null;
                     var xattachuris = (!attachuris.NullOrEmpty())?(from y in attachuris join r in rattachs on y.Id equals r.AttachmentId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y): null;
 
-                    if(!xattachbins.NullOrEmpty()) x.Attachments.AddRange(xattachbins.Except(x.Attachments.OfType<ATTACH_BINARY>()));
-                    if(!xattachuris.NullOrEmpty()) x.Attachments.AddRange(xattachuris.Except(x.Attachments.OfType<ATTACH_URI>()));
+                    if(!xattachbins.NullOrEmpty()) x.Attachments.AddRange(xattachbins.Except(x.Attachments.OfType<ATTACH_BINARY>(), new EqualByStringId<ATTACH_BINARY>()));
+                    if(!xattachuris.NullOrEmpty()) x.Attachments.AddRange(xattachuris.Except(x.Attachments.OfType<ATTACH_URI>(), new EqualByStringId<ATTACH_URI>()));
 
                     var xcontacts = (!contacts.NullOrEmpty())? (from y in contacts join r in rcontacts on y.Id equals r.ContactId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y): null;
-                    if(!xcontacts.NullOrEmpty()) x.Contacts.AddRange(xcontacts.Except(x.Contacts.OfType<CONTACT>()));
+                    if(!xcontacts.NullOrEmpty()) x.Contacts.AddRange(xcontacts.Except(x.Contacts.OfType<CONTACT>(), new EqualByStringId<CONTACT>()));
 
                     var xrdates = (!rdates.NullOrEmpty())?(from y in rdates join r in rrdates on y.Id equals r.RecurrenceDateId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y): null;
-                    if(!xrdates.NullOrEmpty())x.RecurrenceDates.AddRange(xrdates.Except(x.RecurrenceDates.OfType<RDATE>()));
+                    if(!xrdates.NullOrEmpty())x.RecurrenceDates.AddRange(xrdates.Except(x.RecurrenceDates.OfType<RDATE>(), new EqualByStringId<RDATE>()));
 
                     var xexdates = (!exdates.NullOrEmpty())?(from y in exdates join r in rexdates on y.Id equals r.ExceptionDateId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y): null;
-                    if(!xexdates.NullOrEmpty())x.ExceptionDates.AddRange(xexdates.Except(x.ExceptionDates.OfType<EXDATE>()));
+                    if(!xexdates.NullOrEmpty())x.ExceptionDates.AddRange(xexdates.Except(x.ExceptionDates.OfType<EXDATE>(), new EqualByStringId<EXDATE>()));
 
                     var xrelatedtos = (!relatedtos.NullOrEmpty())?(from y in relatedtos join r in rrelateds on y.Id equals r.RelatedToId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y): null;
-                    if(!xrelatedtos.NullOrEmpty())x.RelatedTos.AddRange(xrelatedtos.Except(x.RelatedTos.OfType<RELATEDTO>()));
+                    if(!xrelatedtos.NullOrEmpty())x.RelatedTos.AddRange(xrelatedtos.Except(x.RelatedTos.OfType<RELATEDTO>(), new EqualByStringId<RELATEDTO>()));
 
                     var xreqstats = (!reqstats.NullOrEmpty())?(from y in reqstats join r in rrstats on y.Id equals r.ReqStatsId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y): null;
-                    if(!xreqstats.NullOrEmpty())x.RequestStatuses.AddRange(xreqstats.Except(x.RequestStatuses.OfType<REQUEST_STATUS>()));
+                    if(!xreqstats.NullOrEmpty())x.RequestStatuses.AddRange(xreqstats.Except(x.RequestStatuses.OfType<REQUEST_STATUS>(), new EqualByStringId<REQUEST_STATUS>()));
 
                     var xresources = (!resources.NullOrEmpty()) ? (from y in resources join r in rresources on y.Id equals r.ResourcesId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y) : null;
-                    if (!xresources.NullOrEmpty()) x.Resources.AddRange(xresources.Except(x.Resources.OfType<RESOURCES>()));
+                    if (!xresources.NullOrEmpty()) x.Resources.AddRange(xresources.Except(x.Resources.OfType<RESOURCES>(), new EqualByStringId<RESOURCES>()));
 
-                    var xaalarms = (!aalarms.NullOrEmpty())?(from y in aalarms join r in raalarms on y.Id equals r.AlarmId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y): null;
-                    if (!xaalarms.NullOrEmpty()) x.Alarms.AddRange(xaalarms.Except(x.Alarms.OfType<AUDIO_ALARM>()));
-
-                    var xdalarms = (!dalarms.NullOrEmpty()) ? (from y in dalarms join r in raalarms on y.Id equals r.AlarmId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y) : null;
-                    if (!xdalarms.NullOrEmpty()) x.Alarms.AddRange(xdalarms.Except(x.Alarms.OfType<DISPLAY_ALARM>()));
-
-                    var xealarms = (!ealarms.NullOrEmpty()) ? (from y in ealarms join r in raalarms on y.Id equals r.AlarmId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y) : null;
-                    if (!xealarms.NullOrEmpty()) x.Alarms.AddRange(xealarms.Except(x.Alarms.OfType<EMAIL_ALARM>()));
+                    x.Alarms.AddRange(this.AudioAlarmOrmLiteRepository.Find(uids));
+                    x.Alarms.AddRange(this.DisplayAlarmOrmLiteRepository.Find(uids));
+                    x.Alarms.AddRange(this.EmailAlarmOrmLiteRepository.Find(uids));
 
                     return x;
                 });
+
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
