@@ -87,8 +87,8 @@ namespace reexmonkey.xcal.application.server.web.local
 
                 //register cache client to redis server running on linux. 
                 //NOTE: Redis Server must already be installed on the remote machine and must be running
-                container.Register<IRedisClientsManager>(x => new PooledRedisClientManager(Properties.Settings.Default.redis_server));
-                container.Register<ICacheClient>(x => (ICacheClient)x.Resolve<IRedisClientsManager>().GetCacheClient());
+                //container.Register<IRedisClientsManager>(x => new PooledRedisClientManager(Properties.Settings.Default.redis_server));
+                //container.Register<ICacheClient>(x => (ICacheClient)x.Resolve<IRedisClientsManager>().GetCacheClient());
 
                 #endregion
 
