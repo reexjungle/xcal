@@ -41,8 +41,9 @@ namespace reexmonkey.xcal.domain.models
     [KnownType(typeof(AUDIO_ALARM))]
     [KnownType(typeof(DISPLAY_ALARM))]
     [KnownType(typeof(EMAIL_ALARM))]
-    public class VEVENT : IEVENT, IEquatable<VEVENT>, IComparable<VEVENT>, IContainsId<string>
+    public class VEVENT : IEVENT, IEquatable<VEVENT>, IComparable<VEVENT>, IContainsKey<string>
     {
+        private string uid;
         private IDATE_TIME dtstamp;
         private IDATE_TIME start;
         private IDATE_TIME end;
@@ -55,8 +56,12 @@ namespace reexmonkey.xcal.domain.models
         [Index(Unique = true)] 
         public string Id
         {
-            get { return this.Uid; }
-            set { this.Uid = value; }
+            get { return (this.RecurrenceId != null)? string.Format("{0}-{1}", this.Uid, this.RecurrenceId.Value): this.Uid; }
+            set 
+            {
+                //var pattern = @"^(?<uid>(\p{L})+)+(?<hyphen>-)?(?<recurid>(\p{L}+\p{P}*\s*)+)$";
+                this.Uid = value; 
+            }
         }
 
         /// <summary>
@@ -65,19 +70,15 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public string Uid 
         {
-            get { return this.Id; }
-            set { this.Id = value; }
+            get { return this.uid; }
+            set { this.uid = value; }
         }
 
         [DataMember]
         public IDATE_TIME Datestamp 
         {
             get { return dtstamp; }
-            set 
-            {
-                if (value == null) throw new ArgumentNullException("Datestamp must not be null!");
-                this.dtstamp = value; 
-            } 
+            set { this.dtstamp = value;  } 
         }
 
         [DataMember]

@@ -14,7 +14,7 @@ namespace reexmonkey.xcal.domain.models
     [KnownType(typeof(URI))]
     [KnownType(typeof(DATE_TIME))]
     [DataContract]
-    public class VTIMEZONE: ITIMEZONE, IEquatable<VTIMEZONE>, IContainsId<string>
+    public class VTIMEZONE: ITIMEZONE, IEquatable<VTIMEZONE>, IContainsKey<string>
     {
         public string Id { get { return this.TimeZoneId.ToString() ; } }
 
@@ -97,7 +97,7 @@ namespace reexmonkey.xcal.domain.models
     [KnownType(typeof(RDATE))]
     [KnownType(typeof(TZNAME))]
     [DataContract]
-    public class STANDARD: ISTANDARD, IEquatable<STANDARD>, IContainsId<string>
+    public class STANDARD: ISTANDARD, IEquatable<STANDARD>, IContainsKey<string>
     {
         public string Id { get; set; }
 
@@ -194,7 +194,7 @@ namespace reexmonkey.xcal.domain.models
     [KnownType(typeof(RDATE))]
     [KnownType(typeof(TZNAME))]
     [DataContract]
-    public class DAYLIGHT : IDAYLIGHT, IEquatable<DAYLIGHT>, IContainsId<string>
+    public class DAYLIGHT : IDAYLIGHT, IEquatable<DAYLIGHT>, IContainsKey<string>
     {
         public string Id { get; set; }
 

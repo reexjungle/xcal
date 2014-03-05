@@ -17,7 +17,7 @@ namespace reexmonkey.xcal.domain.models
     /// Specifies a contract for attaching an inline binary encooded content information.
     /// </summary>
     [DataContract]
-    public class ATTACH_BINARY : IATTACH<BINARY>, IEquatable<ATTACH_BINARY>, IContainsId<string>
+    public class ATTACH_BINARY : IATTACH<BINARY>, IEquatable<ATTACH_BINARY>, IContainsKey<string>
     {
         private FMTTYPE format;
         private BINARY content;
@@ -148,7 +148,7 @@ namespace reexmonkey.xcal.domain.models
     /// Capability to associate a document or another resource given by it's URI with a calendar component
     /// </summary>
     [DataContract]
-    public class ATTACH_URI : IATTACH<URI>, IEquatable<ATTACH_URI>, IComparable<ATTACH_URI>, IContainsId<string>
+    public class ATTACH_URI : IATTACH<URI>, IEquatable<ATTACH_URI>, IComparable<ATTACH_URI>, IContainsKey<string>
     {
         private IFMTTYPE format;
 
@@ -270,7 +270,7 @@ namespace reexmonkey.xcal.domain.models
     /// Defines the categories or subtypes for a calendar component
     /// </summary>
     [DataContract]
-    public class CATEGORIES : ICATEGORIES, IEquatable<CATEGORIES>, IContainsId<string>
+    public class CATEGORIES : ICATEGORIES, IEquatable<CATEGORIES>, IContainsKey<string>
     {
         /// <summary>
         /// ID of the category
@@ -367,7 +367,7 @@ namespace reexmonkey.xcal.domain.models
     /// Specify non-processing information intended to provide a comment to the calendar user
     /// </summary>
     [DataContract]
-    public class COMMENT : ITEXT, IEquatable<COMMENT>, IComparable<COMMENT>, IContainsId<string>
+    public class COMMENT : ITEXT, IEquatable<COMMENT>, IComparable<COMMENT>, IContainsKey<string>
     {
         /// <summary>
         /// ID of the Comment to the Calendar Component
@@ -601,7 +601,7 @@ namespace reexmonkey.xcal.domain.models
     /// Specifies the information related to the global position for the activity spiecified by a calendar component
     /// </summary>
     [DataContract]
-    public class GEO : IGEO, IEquatable<GEO>, IContainsId<string>
+    public class GEO : IGEO, IEquatable<GEO>, IContainsKey<string>
     {
         /// <summary>
         /// ID of the Geographical Position
@@ -820,7 +820,7 @@ namespace reexmonkey.xcal.domain.models
     /// </summary>
     [DataContract]
     [Alias("Resources")]
-    public class RESOURCES : IRESOURCES, IEquatable<RESOURCES>, IContainsId<string>
+    public class RESOURCES : IRESOURCES, IEquatable<RESOURCES>, IContainsKey<string>
     {
         /// <summary>
         /// ID of a particular Resource
@@ -929,7 +929,7 @@ namespace reexmonkey.xcal.domain.models
     /// Defines the short summary or subject for the calendar component
     /// </summary>
     [DataContract]
-    public class SUMMARY : ITEXT, IEquatable<SUMMARY>, IComparable<SUMMARY>, IContainsId<string>
+    public class SUMMARY : ITEXT, IEquatable<SUMMARY>, IComparable<SUMMARY>, IContainsKey<string>
     {
         /// <summary>
         /// ID of the current Summary (autoicrease)
@@ -1767,7 +1767,7 @@ namespace reexmonkey.xcal.domain.models
     /// </summary>
     [DataContract]
     [KnownType(typeof(LANGUAGE))]
-    public class TZNAME : ITZNAME, IEquatable<TZNAME>, IComparable<TZNAME>, IContainsId<string>
+    public class TZNAME : ITZNAME, IEquatable<TZNAME>, IComparable<TZNAME>, IContainsKey<string>
     {
         private ILANGUAGE language;
         private string text;
@@ -2164,7 +2164,7 @@ namespace reexmonkey.xcal.domain.models
     [KnownType(typeof(DELEGATED_FROM))]
     [KnownType(typeof(DELEGATED_TO))]
     [KnownType(typeof(URI))]
-    public class ATTENDEE : IATTENDEE, IEquatable<ATTENDEE>, IContainsId<string>
+    public class ATTENDEE : IATTENDEE, IEquatable<ATTENDEE>, IContainsKey<string>
     {
 
         /// <summary>
@@ -2396,7 +2396,7 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     [KnownType(typeof(ALTREP))]
     [KnownType(typeof(LANGUAGE))]
-    public class CONTACT : ICONTACT, IEquatable<CONTACT>, IContainsId<string>
+    public class CONTACT : ICONTACT, IEquatable<CONTACT>, IContainsKey<string>
     {
         /// <summary>
         /// ID of the Contact
@@ -2502,7 +2502,7 @@ namespace reexmonkey.xcal.domain.models
     /// </summary>
     [DataContract]
     [KnownType(typeof(URI))]
-    public class ORGANIZER : IORGANIZER, IEquatable<ORGANIZER>, IContainsId<string>
+    public class ORGANIZER : IORGANIZER, IEquatable<ORGANIZER>, IContainsKey<string>
     {
         /// <summary>
         /// ID of the Organizer
@@ -2633,7 +2633,7 @@ namespace reexmonkey.xcal.domain.models
     [Alias("RECURRENCE_IDS")]
     [KnownType(typeof(DATE_TIME))]
     [KnownType(typeof(TZID))]
-    public class RECURRENCE_ID : IRECURRENCE_ID, IEquatable<RECURRENCE_ID>, IContainsId<string>
+    public class RECURRENCE_ID : IRECURRENCE_ID, IEquatable<RECURRENCE_ID>, IContainsKey<string>
     {        
         /// <summary>
         /// Original date time: settable only once
@@ -2751,7 +2751,7 @@ namespace reexmonkey.xcal.domain.models
     /// </summary>
     [DataContract]
     [Alias("RELATEDTOS")]
-    public class RELATEDTO : IRELATEDTO, IEquatable<RELATEDTO>, IContainsId<string>
+    public class RELATEDTO : IRELATEDTO, IEquatable<RELATEDTO>, IContainsKey<string>
     {
         /// <summary>
         /// ID of the Relationship or Reference between one calendar component and another
@@ -2994,7 +2994,7 @@ namespace reexmonkey.xcal.domain.models
     [Alias("EXDATES")]
     [KnownType(typeof(TZID))]
     [KnownType(typeof(PERIOD))]
-    public class EXDATE : IEXDATE, IEquatable<EXDATE>, IContainsId<string>
+    public class EXDATE : IEXDATE, IEquatable<EXDATE>, IContainsKey<string>
     {
         private TZID tzid;
 
@@ -3113,7 +3113,7 @@ namespace reexmonkey.xcal.domain.models
     [Alias("RDATES")]
     [KnownType(typeof(TZID))]
     [KnownType(typeof(PERIOD))]
-    public class RDATE : IRDATE, IEquatable<RDATE>, IContainsId<string>
+    public class RDATE : IRDATE, IEquatable<RDATE>, IContainsKey<string>
     {
         private TZID tzid;
         private IEnumerable<IDATE_TIME> datetimes;
@@ -3287,7 +3287,7 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     [Alias("RecurrenceRules")]
     [KnownType(typeof(RECUR))]
-    public class RRULE: IRRULE, IEquatable<RRULE>, IContainsId<string>
+    public class RRULE: IRRULE, IEquatable<RRULE>, IContainsKey<string>
     {
         private IRECUR value;
 
@@ -3360,7 +3360,7 @@ namespace reexmonkey.xcal.domain.models
     [Alias("Triggers")]
     [KnownType(typeof(DURATION))]
     [KnownType(typeof(DATE_TIME))]
-    public class TRIGGER : ITRIGGER, IEquatable<TRIGGER>, IContainsId<string>
+    public class TRIGGER : ITRIGGER, IEquatable<TRIGGER>, IContainsKey<string>
     {
         private IDURATION duration;
         private RELATED related;
@@ -4151,7 +4151,7 @@ namespace reexmonkey.xcal.domain.models
     /// </summary>
     [DataContract]
     [Alias("RequestStatuses")]
-    public class REQUEST_STATUS : IREQUEST_STATUS, IEquatable<REQUEST_STATUS>, IContainsId<string>
+    public class REQUEST_STATUS : IREQUEST_STATUS, IEquatable<REQUEST_STATUS>, IContainsKey<string>
     {
         /// <summary>
         /// ID of the status code

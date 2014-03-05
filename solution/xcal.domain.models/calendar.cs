@@ -15,7 +15,7 @@ namespace reexmonkey.xcal.domain.models
     /// </summary>
     [DataContract]
     [KnownType(typeof(VEVENT))]
-    public class VCALENDAR : ICALENDAR, IEquatable<VCALENDAR>, IContainsId<string>
+    public class VCALENDAR : ICALENDAR, IEquatable<VCALENDAR>, IContainsKey<string>
     {
         private string prodid;
 

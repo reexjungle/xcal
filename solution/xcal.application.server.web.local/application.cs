@@ -5,7 +5,11 @@ using ServiceStack.OrmLite;
 using ServiceStack.WebHost.Endpoints;
 using ServiceStack.Redis;
 using ServiceStack.Logging;
+using ServiceStack.ServiceInterface.Validation;
+using reexmonkey.xcal.service.plugins.validators.concretes;
 using reexmonkey.xcal.service.interfaces.live;
+using reexmonkey.crosscut.essentials.contracts;
+using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.crosscut.goodies.concretes;
 using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.xcal.service.repositories.concretes;
@@ -37,65 +41,86 @@ namespace reexmonkey.xcal.application.server.web.local
 
             #endregion
 
+            #region configure plugins
+
+            //activate validation feature
+            Plugins.Add(new ValidationFeature());
+
+            #endregion
+
             #region inject plugins
-            
+
+            //register all validators defined in the assembly of EventValidator
+            container.RegisterValidators(typeof(EventValidator).Assembly);
+
             #endregion
 
             #region inject database provider
             
             if(Properties.Settings.Default.db_provider_type == DataProviderType.rdbms)
             {
-                #region inject orm repositories
-
-                container.Register<ICalendarRepository>(x => new CalendarOrmLiteRepository
+                try
                 {
-                    DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
-                    EventRepository = x.Resolve<IEventRepository>(),
-                    Pages = Properties.Settings.Default.calendars_page_count
-                });
+                    #region inject orm repositories
 
-                container.Register<IEventRepository>(x => new EventOrmLiteRepository
+                    container.Register<ICalendarRepository>(x => new CalendarOrmLiteRepository
+                    {
+                        DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
+                        EventRepository = x.Resolve<IEventRepository>(),
+                        Pages = Properties.Settings.Default.calendars_page_count
+                    });
+
+                    container.Register<IEventRepository>(x => new EventOrmLiteRepository
+                    {
+                        DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
+                        AudioAlarmOrmLiteRepository = x.Resolve<IAudioAlarmOrmLiteRepository>(),
+                        DisplayAlarmOrmLiteRepository = x.Resolve<IDisplayAlarmOrmLiteRepository>(),
+                        EmailAlarmOrmLiteRepository = x.Resolve<IEmailAlarmOrmLiteRepository>(),
+                        Pages = Properties.Settings.Default.events_page_count
+                    });
+
+                    container.Register<IAudioAlarmOrmLiteRepository>(x => new AudioAlarmOrmLiteRepository
+                    {
+                        DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
+                        Pages = Properties.Settings.Default.alarms_page_count
+                    });
+
+                    container.Register<IDisplayAlarmOrmLiteRepository>(x => new DisplayAlarmOrmLiteRepository
+                    {
+                        DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
+                        Pages = Properties.Settings.Default.alarms_page_count
+                    });
+
+                    container.Register<IEmailAlarmOrmLiteRepository>(x => new EmailAlarmOrmLiteRepository
+                    {
+                        DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
+                        Pages = Properties.Settings.Default.alarms_page_count
+                    });
+
+                    #endregion
+
+                    #region inject cached providers
+
+                    //register cache client to redis server running on linux. 
+                    //NOTE: Redis Server must already be installed on the remote machine and must be running
+                    //container.Register<IRedisClientsManager>(x => new PooledRedisClientManager(Properties.Settings.Default.redis_server));
+                    //container.Register<ICacheClient>(x => (ICacheClient)x.Resolve<IRedisClientsManager>().GetCacheClient());
+
+                    #endregion
+
+                    #region inject db provider
+
+
+                    #endregion
+                }
+                catch (Funq.ResolutionException ex)
                 {
-                    DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
-                    AudioAlarmOrmLiteRepository = x.Resolve<IAudioAlarmOrmLiteRepository>(),
-                    DisplayAlarmOrmLiteRepository = x.Resolve<IDisplayAlarmOrmLiteRepository>(),
-                    EmailAlarmOrmLiteRepository = x.Resolve<IEmailAlarmOrmLiteRepository>(),
-                    Pages = Properties.Settings.Default.events_page_count
-                });
-
-                container.Register<IAudioAlarmOrmLiteRepository>(x => new AudioAlarmOrmLiteRepository
+                    Console.WriteLine(ex.Message); 
+                }
+                catch (Exception ex) 
                 {
-                    DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
-                    Pages = Properties.Settings.Default.alarms_page_count
-                });
-
-                container.Register<IDisplayAlarmOrmLiteRepository>(x => new DisplayAlarmOrmLiteRepository
-                {
-                    DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
-                    Pages = Properties.Settings.Default.alarms_page_count
-                });
-
-                container.Register<IEmailAlarmOrmLiteRepository>(x => new EmailAlarmOrmLiteRepository
-                {
-                    DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
-                    Pages = Properties.Settings.Default.alarms_page_count
-                });
-
-                #endregion
-
-                #region inject cached providers
-
-                //register cache client to redis server running on linux. 
-                //NOTE: Redis Server must already be installed on the remote machine and must be running
-                //container.Register<IRedisClientsManager>(x => new PooledRedisClientManager(Properties.Settings.Default.redis_server));
-                //container.Register<ICacheClient>(x => (ICacheClient)x.Resolve<IRedisClientsManager>().GetCacheClient());
-
-                #endregion
-
-                #region inject db provider
-
-
-                #endregion
+                    Console.WriteLine(ex.Message); 
+                }
             }
             else if(Properties.Settings.Default.db_provider_type == DataProviderType.nosql)
             {
@@ -122,8 +147,14 @@ namespace reexmonkey.xcal.application.server.web.local
 
             #endregion
 
-        }
+            #region inject key generators
 
+            container.Register<IKeyGenerator<string>>(new GuidKeyGenerator());
+            container.Register<IKeyGenerator<long>>(new LongKeyGenerator());
+
+            #endregion
+
+        }
 
         public ApplicationHost() : base(Properties.Settings.Default.service_name, typeof(EventService).Assembly)
         {

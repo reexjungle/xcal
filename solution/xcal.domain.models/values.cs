@@ -113,46 +113,31 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// Gets or sets the 4-digit representation of a full year e.g. 2013 
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the value &lt;1 and value &gt;9999 </exception>
         [DataMember]
         public uint FULLYEAR
         {
             get { return fullyear; }
-            set
-            {
-                if (value >= 1 && value < 10000) this.fullyear = value;
-                else throw new ArgumentOutOfRangeException("fullyear");
-            }
+            set { this.fullyear = value; }
         }
 
         /// <summary>
         /// Gets or sets the 2-digit representation of a month
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the value &lt;1 and value &gt;12 </exception>
         [DataMember]
         public uint MONTH
         {
             get { return month; }
-            set
-            {
-                if (value >= 1 && value <= 12) this.month = value;
-                else throw new ArgumentOutOfRangeException("month");
-            }
+            set { this.month = value; }
         }
 
         /// <summary>
         /// Gets or sets the 2-digit representation of a month-day
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the value &lt;1 and value &gt;31 </exception>
         [DataMember]
         public uint MDAY
         {
             get { return mday; }
-            set
-            {
-                if (value >= 1 && value <= 31) this.mday = value;
-                else throw new ArgumentOutOfRangeException("mday");
-            }
+            set { this.mday = value; }
         }
 
         public bool IsDefault()
@@ -174,9 +159,8 @@ namespace reexmonkey.xcal.domain.models
             this.MDAY = mday;
         }
 
-        public DATE(DATE_TIME datetime)
+        public DATE(IDATE_TIME datetime)
         {
-            if (datetime == null) throw new ArgumentNullException("Date time value must be non-null");
             this.FULLYEAR = datetime.FULLYEAR;
             this.MONTH = datetime.MONTH;
             this.MDAY = datetime.MDAY;
@@ -342,11 +326,7 @@ namespace reexmonkey.xcal.domain.models
         public uint FULLYEAR
         {
             get { return fullyear; }
-            set
-            {
-                if (value >= 1 && value <= 9999) this.fullyear = value;
-                else throw new ArgumentOutOfRangeException();
-            }
+            set { this.fullyear = value; }
         }
 
         /// <summary>
@@ -358,8 +338,7 @@ namespace reexmonkey.xcal.domain.models
             get { return month; }
             set
             {
-                if (value >= 1 && value <= 12) this.month = value;
-                else throw new ArgumentOutOfRangeException();
+                this.month = value;
             }
         }
 
@@ -372,38 +351,33 @@ namespace reexmonkey.xcal.domain.models
             get { return mday; }
             set
             {
-                if (value >= 1 && value <= 31) this.mday = value;
-                else throw new ArgumentOutOfRangeException();
+                 this.mday = value;
             }
         }
 
         /// <summary>
         /// Gets or sets the value of the hours
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the value &lt;0 and value &gt;23 </exception>
         [DataMember]
         public uint HOUR
         {
             get { return this.hour; }
             set
             {
-                if (value >= 0 && value < 24) this.hour = value;
-                else throw new ArgumentOutOfRangeException();
+                this.hour = value;
             }
         }
 
         /// <summary>
         /// Gets or sets the value of the minutes
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the value &lt;0 and value &gt;59 </exception>
         [DataMember]
         public uint MINUTE
         {
             get { return this.minute; }
             set
             {
-                if (value >= 0 && value <= 59) this.minute = value;
-                else throw new ArgumentOutOfRangeException();
+               this.minute = value;
             }
         }
 
@@ -417,9 +391,7 @@ namespace reexmonkey.xcal.domain.models
             get { return this.second; }
             set
             {
-                //Note the exceptional case of iCalendar specification that allows for the &quot;6oth&quot; second.
-                if (value >= 0 && value < 61) this.second = value;
-                else throw new ArgumentOutOfRangeException();
+                this.second = value;
             }
         }
 
@@ -427,26 +399,14 @@ namespace reexmonkey.xcal.domain.models
         public TimeFormat TimeFormat
         {
             get { return this.tformat; }
-            set
-            {
-                if (this.tzid == null && value != TimeFormat.Utc) throw new ArgumentException("A Time Zone Reference is required for this date time format");
-                if (this.tzid != null && value == TimeFormat.Utc) throw new ArgumentException("Time Zone References MUST NOT be applied to UTC times!");
-                this.tformat = value;
-            }
+            set  { this.tformat = value; }
         }
 
         [DataMember]
         public ITZID TimeZoneId
         {
             get { return this.tzid; }
-            set
-            {
-                if (this.tformat == TimeFormat.LocalAndTimeZone && value == null) throw new ArgumentException("Null Time Zone References are not allowed for the Local and Time Zone format");
-                if (this.tformat == TimeFormat.Utc) throw new ArgumentException("Time Zone References MUST NOT be applied to UTC times!");
-                if (this.tzid == null) throw new ArgumentNullException("value");
-                this.tzid.Suffix = value.Suffix;
-                this.tzid.GloballyUnique = value.GloballyUnique;
-            }
+            set {  this.tzid = value; }
         }
 
         [DataMember]
@@ -1042,11 +1002,7 @@ namespace reexmonkey.xcal.domain.models
         public SignType Sign
         {
             get { return this.sign; }
-            set 
-            {
-                if (this.sign == SignType.Neutral) throw new ArgumentException("Duration MUST EITHER be positive or negative");
-                this.sign = value; 
-            }
+            set { this.sign = value; }
         }
 
         public DURATION()
@@ -1522,7 +1478,7 @@ namespace reexmonkey.xcal.domain.models
 
     [DataContract]
     [KnownType(typeof(WEEKDAYNUM))]
-    public class RECUR : IRECUR, IEquatable<RECUR>, IContainsId<string>
+    public class RECUR : IRECUR, IEquatable<RECUR>, IContainsKey<string>
     {
         [DataMember]
         public string Id { get; set; }

@@ -165,7 +165,7 @@ namespace reexmonkey.xcal.domain.models
         /// Gets or sets the calendar addresses of the participation delegators
         /// </summary>
         [DataMember]
-        public IEnumerable<IURI> Addresses { get; set; }
+        public List<IURI> Addresses { get; set; }
 
         public bool IsDefault()
         {
@@ -183,7 +183,7 @@ namespace reexmonkey.xcal.domain.models
         /// Overloaded Constructor
         /// </summary>
         /// <param name="addresses">The enumerable collection of calendar addresses, which represent the delegators</param>
-        public DELEGATED_FROM (IEnumerable<IURI> addresses)
+        public DELEGATED_FROM (List<IURI> addresses)
         {
             this.Addresses = addresses;
         }
@@ -238,7 +238,7 @@ namespace reexmonkey.xcal.domain.models
         /// Gets or sets the calendar addresses of the participation delegators
         /// </summary>
         [DataMember]
-        public IEnumerable<IURI> Addresses { get; set; }
+        public List<IURI> Addresses { get; set; }
 
         public bool IsDefault()
         {
@@ -257,7 +257,7 @@ namespace reexmonkey.xcal.domain.models
         /// Overloaded Constructor
         /// </summary>
         /// <param name="addresses">The enumerable collection of calendar addresses, which represent the delegators</param>
-        public DELEGATED_TO(IEnumerable<IURI> addresses)
+        public DELEGATED_TO(List<IURI> addresses)
         {
             this.Addresses = addresses;
         }

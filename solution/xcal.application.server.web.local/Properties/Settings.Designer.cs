@@ -43,7 +43,7 @@ namespace reexmonkey.xcal.application.server.web.local.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("localhost:6379")]
         public string redis_server {
             get {
                 return ((string)(this["redis_server"]));

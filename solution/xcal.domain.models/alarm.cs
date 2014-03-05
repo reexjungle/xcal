@@ -18,7 +18,7 @@ namespace reexmonkey.xcal.domain.models
     [KnownType(typeof(AUDIO_ALARM))]
     [KnownType(typeof(DISPLAY_ALARM))]
     [KnownType(typeof(EMAIL_ALARM))]
-    public abstract class VALARM: IALARM, IEquatable<VALARM>, IContainsId<string>
+    public abstract class VALARM: IALARM, IEquatable<VALARM>, IContainsKey<string>
     {     
         protected ITRIGGER trigger;
         protected IDURATION duration;
@@ -36,7 +36,7 @@ namespace reexmonkey.xcal.domain.models
             get { return this.trigger; }
             set 
             {
-                if (value == null) throw new ArgumentNullException("Trigger MUST not be null");
+                //if (value == null) throw new ArgumentNullException("Trigger MUST not be null");
                 this.trigger = value; 
             }
         }
@@ -47,8 +47,7 @@ namespace reexmonkey.xcal.domain.models
             get { return duration; }
             set
             {
-                if (value == null && this.repeat != -1) 
-                    throw new ArgumentException("The Repeat and Duration properties are optional but MUST occur together"); 
+                //if (value == null && this.repeat != -1) throw new ArgumentException("The Repeat and Duration properties are optional but MUST occur together"); 
                 this.duration = value;
             }
         }
@@ -59,8 +58,7 @@ namespace reexmonkey.xcal.domain.models
             get { return this.repeat; }
             set
             {
-                if (value != -1 && this.duration != null) 
-                    throw new ArgumentException("The Repeat and Duration properties are optional but MUST occur together"); 
+                //if (value != -1 && this.duration != null) throw new ArgumentException("The Repeat and Duration properties are optional but MUST occur together"); 
                 this.repeat = value;
             }
         }
@@ -188,7 +186,7 @@ namespace reexmonkey.xcal.domain.models
             get { return this.description; }
             set 
             {
-                if (value == null) throw new ArgumentNullException("Description MUST not be null");
+                //if (value == null) throw new ArgumentNullException("Description MUST not be null");
                 this.description = value;
             }
         }
@@ -284,7 +282,7 @@ namespace reexmonkey.xcal.domain.models
             get { return this.description; }
             set
             {
-                if (value == null) throw new ArgumentNullException("Description MUST be null");
+                //if (value == null) throw new ArgumentNullException("Description MUST be null");
                 this.description = value;
             }
         }
@@ -295,7 +293,7 @@ namespace reexmonkey.xcal.domain.models
             get { return this.summary; }
             set
             {
-                if (value == null) throw new ArgumentNullException("Summary MUST be null");
+                //if (value == null) throw new ArgumentNullException("Summary MUST be null");
                 this.summary = value;
             }
         }

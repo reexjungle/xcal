@@ -7,7 +7,7 @@ using reexmonkey.crosscut.essentials.contracts;
 namespace reexmonkey.crosscut.essentials.concretes
 {
     public abstract class EqualByTId<TPrimary, TId> : IEqualityComparer<TPrimary>
-        where TPrimary : IContainsId<TId>
+        where TPrimary : IContainsKey<TId>
         where TId : IEquatable<TId>
     {
 
@@ -25,7 +25,7 @@ namespace reexmonkey.crosscut.essentials.concretes
     }
 
     public class EqualByStringId<TPrimary> : EqualByTId<TPrimary, string>
-        where TPrimary : IContainsId<string>
+        where TPrimary : IContainsKey<string>
     {
         public override bool Equals(TPrimary x, TPrimary y)
         {
@@ -34,10 +34,10 @@ namespace reexmonkey.crosscut.essentials.concretes
     }
 
     public class EqualByIntId<TPrimary> : EqualByTId<TPrimary, int>
-        where TPrimary : IContainsId<int>
+        where TPrimary : IContainsKey<int>
     { }
 
     public class EqualByLongId<TPrimary> : EqualByTId<TPrimary, long>
-        where TPrimary : IContainsId<long>
+        where TPrimary : IContainsKey<long>
     { }
 }

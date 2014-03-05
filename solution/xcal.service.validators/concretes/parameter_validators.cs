@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ServiceStack.FluentValidation;
+using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
 
 namespace reexmonkey.xcal.service.plugins.validators.concretes
@@ -33,18 +34,14 @@ namespace reexmonkey.xcal.service.plugins.validators.concretes
         }
     }
 
-    public class UtcOffsetValidator: AbstractValidator<IUTC_OFFSET>
+    public class DelegateValidator: AbstractValidator<IDELEGATE>
     {
-        public UtcOffsetValidator()
+        public DelegateValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.Continue;
-            RuleFor(x => x.HOUR).InclusiveBetween(0u, 23u);
-            RuleFor(x => x.MINUTE).InclusiveBetween(0u, 59u);
-            RuleFor(x => x.SECOND).InclusiveBetween(0u, 59u);
-            RuleFor(x => x.Sign).NotEqual(SignType.Neutral);
-            RuleFor(x => x.HOUR).NotEqual(0u).When(x => x.MINUTE == 0u && x.SECOND == 0u);
-            RuleFor(x => x.MINUTE).NotEqual(0u).When(x => x.HOUR == 0u && x.SECOND == 0u);
-            RuleFor(x => x.SECOND).NotEqual(0u).When(x => x.MINUTE == 0u && x.SECOND == 0u);
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x.Addresses).SetCollectionValidator(new UriValidator()).When(x => !x.Addresses.NullOrEmpty());
+            RuleFor(x => x.Addresses.Select(y => y.Path)).SetCollectionValidator(new EmailAddressValidator()).When(x => !x.Addresses.NullOrEmpty());
         }
     }
+
 }

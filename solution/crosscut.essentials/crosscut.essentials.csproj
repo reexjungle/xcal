@@ -45,10 +45,11 @@
     <Compile Include="concretes\encoders.cs" />
     <Compile Include="concretes\exceptions.cs" />
     <Compile Include="concretes\expressions.cs" />
+    <Compile Include="concretes\generators.cs" />
     <Compile Include="concretes\math.cs" />
     <Compile Include="concretes\numerical.cs" />
     <Compile Include="concretes\strings.cs" />
-    <Compile Include="contracts\identifier.cs" />
+    <Compile Include="contracts\key.cs" />
     <Compile Include="contracts\paging.cs" />
     <Compile Include="contracts\repository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

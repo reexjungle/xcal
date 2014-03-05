@@ -39,7 +39,7 @@ namespace reexmonkey.xcal.domain.contracts
         /// <summary>
         /// Gets or sets the calendar addresses of the participation delegators
         /// </summary>
-        IEnumerable<IURI> Addresses { get; set; }
+        List<IURI> Addresses { get; set; }
     }
 
     /// <summary>
