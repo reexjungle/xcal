@@ -90,7 +90,7 @@ namespace reexmonkey.crosscut.essentials.contracts
         /// <summary>
         /// Gets the provider of identifiers
         /// </summary>
-        IKeyGenerator<TKey> IdProvider { get; }
+        IKeyGenerator<TKey> KeyGenerator { get; }
 
         /// <summary>
         /// Inserts a new entity or updates an existing one in the repository

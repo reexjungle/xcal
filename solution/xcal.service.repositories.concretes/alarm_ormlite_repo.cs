@@ -43,7 +43,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 this.pages = value;
             }
         }
-        public IKeyGenerator<string> IdProvider { get; set; }
+        public IKeyGenerator<string> KeyGenerator { get; set; }
 
 
         public AudioAlarmOrmLiteRepository() { }
@@ -200,7 +200,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         private IDbConnection conn;
         private IDbConnectionFactory factory = null;
         private int? pages = null;
-        public IKeyGenerator<string> IdProvider { get; set; }
+        public IKeyGenerator<string> KeyGenerator { get; set; }
 
         private IDbConnection db
         {
@@ -402,7 +402,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 this.pages = value; 
             }
         }
-        public IKeyGenerator<string> IdProvider { get; set; }
+        public IKeyGenerator<string> KeyGenerator { get; set; }
 
         public EmailAlarmOrmLiteRepository() { }
         public EmailAlarmOrmLiteRepository(IDbConnectionFactory factory, int? pages)
@@ -708,7 +708,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!attends.NullOrEmpty() && !ids.NullOrEmpty())
                     {
                         db.SaveAll(attends);
-                        var rattends = ids.SelectMany(x => attends.Select(y => new RELS_EMAIL_ALARMS_ATTENDEES { Id = this.IdProvider.GetNextKey(), AlarmId = x, AttendeeId = y.Id }));
+                        var rattends = ids.SelectMany(x => attends.Select(y => new RELS_EMAIL_ALARMS_ATTENDEES { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttendeeId = y.Id }));
                         var orattends = db.Select<RELS_EMAIL_ALARMS_ATTENDEES>(q => Sql.In(q.Id, ids) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
                         if (!rattends.NullOrEmpty() && !rattends.Except(orattends).NullOrEmpty()) db.SaveAll(rattends.Except(orattends));
 
@@ -721,7 +721,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!attachbins.NullOrEmpty() && !ids.NullOrEmpty())
                     {
                         db.SaveAll(attachbins);
-                        var rattachbins = ids.SelectMany(x => attachbins.Select(y => new RELS_EMAIL_ALARMS_ATTACHBINS { Id = this.IdProvider.GetNextKey(), AlarmId = x, AttachmentId = y.Id }));
+                        var rattachbins = ids.SelectMany(x => attachbins.Select(y => new RELS_EMAIL_ALARMS_ATTACHBINS { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttachmentId = y.Id }));
                         var orattachbins = db.Select<RELS_EMAIL_ALARMS_ATTACHBINS>(q => Sql.In(q.Id, ids) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
                         if (!rattachbins.NullOrEmpty() && !rattachbins.Except(orattachbins).NullOrEmpty()) db.SaveAll(rattachbins.Except(orattachbins));
                     }
@@ -730,7 +730,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!attachuris.NullOrEmpty() && !ids.NullOrEmpty())
                     {
                         db.SaveAll(attachuris);
-                        var rattachuris = ids.SelectMany(x => attachuris.Select(y => new RELS_EMAIL_ALARMS_ATTACHURIS { Id = this.IdProvider.GetNextKey(), AlarmId = x, AttachmentId = y.Id }));
+                        var rattachuris = ids.SelectMany(x => attachuris.Select(y => new RELS_EMAIL_ALARMS_ATTACHURIS { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttachmentId = y.Id }));
                         var orattachuris = db.Select<RELS_EMAIL_ALARMS_ATTACHURIS>(q => Sql.In(q.Id, ids) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray()));
                         if (!rattachuris.NullOrEmpty() && !rattachuris.Except(orattachuris).NullOrEmpty()) db.SaveAll(rattachuris.Except(orattachuris));
                     }

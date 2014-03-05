@@ -64,7 +64,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public IKeyGenerator<string> IdProvider { get; set; }
+        public IKeyGenerator<string> KeyGenerator { get; set; }
 
         public void Patch(AUDIO_ALARM entity, Expression<Func<AUDIO_ALARM, object>> fields, Expression<Func<AUDIO_ALARM, bool>> where = null)
         {
@@ -127,7 +127,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
 
 
-        public IKeyGenerator<string> IdProvider
+        public IKeyGenerator<string> KeyGenerator
         {
             get { throw new NotImplementedException(); }
         }
@@ -206,7 +206,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public IKeyGenerator<string> IdProvider
+        public IKeyGenerator<string> KeyGenerator
         {
             get { throw new NotImplementedException(); }
         }

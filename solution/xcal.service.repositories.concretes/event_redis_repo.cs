@@ -110,7 +110,7 @@ namespace reexmonkey.xcal.service.repositories.concrete
             throw new NotImplementedException();
         }
 
-        public IKeyGenerator<string> IdProvider
+        public IKeyGenerator<string> KeyGenerator
         {
             get { throw new NotImplementedException(); }
         }
