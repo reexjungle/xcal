@@ -127,17 +127,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\crosscut.essentials\crosscut.essentials.csproj">
+    <ProjectReference Include="..\crosscut.essentials.concretes\crosscut.essentials.concretes.csproj">
       <Project>{eedf1367-a0fc-400a-a649-716261252b9e}</Project>
-      <Name>crosscut.essentials</Name>
+      <Name>crosscut.essentials.concretes</Name>
     </ProjectReference>
-    <ProjectReference Include="..\crosscut.goodies\crosscut.goodies.csproj">
+    <ProjectReference Include="..\crosscut.essentials.contracts\crosscut.essentials.contracts.csproj">
+      <Project>{0188be5c-bafa-4fac-b068-11dcf7cd918e}</Project>
+      <Name>crosscut.essentials.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\crosscut.goodies.concretes\crosscut.goodies.concretes.csproj">
       <Project>{f21cb427-5dd9-41b2-a993-17cd8085535a}</Project>
-      <Name>crosscut.goodies</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\crosscut.security\crosscut.security.csproj">
-      <Project>{e307c223-9021-45be-a261-daf43f31b354}</Project>
-      <Name>crosscut.security</Name>
+      <Name>crosscut.goodies.concretes</Name>
     </ProjectReference>
     <ProjectReference Include="..\xcal.domain.contracts\xcal.domain.contracts.csproj">
       <Project>{5cc7e3d9-702b-45a3-a413-a07d010c2651}</Project>
@@ -163,9 +163,9 @@
       <Project>{1898784a-99b2-4226-8c33-689ea6558cfa}</Project>
       <Name>xcal.service.repositories.contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\xcal.service.validators\xcal.service.validators.csproj">
+    <ProjectReference Include="..\xcal.service.validators.concretes\xcal.service.validators.concretes.csproj">
       <Project>{2ccd1317-b13c-4372-b14f-ce7128103f5c}</Project>
-      <Name>xcal.service.validators</Name>
+      <Name>xcal.service.validators.concretes</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
@@ -183,7 +183,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>56686</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:3005/</IISUrl>
+          <IISUrl>http://localhost:3105/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

@@ -7,8 +7,8 @@
     <ProjectGuid>{2CCD1317-B13C-4372-B14F-CE7128103F5C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.xcal.service.plugins.validators</RootNamespace>
-    <AssemblyName>xcal.service.plugins.validators</AssemblyName>
+    <RootNamespace>reexmonkey.xcal.service.validators.concretes</RootNamespace>
+    <AssemblyName>xcal.service.validators.concretes</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -66,20 +66,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="concretes\component_validators.cs" />
-    <Compile Include="concretes\parameter_validators.cs" />
-    <Compile Include="concretes\property_validators.cs" />
-    <Compile Include="concretes\request_validators.cs" />
-    <Compile Include="concretes\value_validators.cs" />
+    <Compile Include="component_validators.cs" />
+    <Compile Include="parameter_validators.cs" />
+    <Compile Include="property_validators.cs" />
+    <Compile Include="request_validators.cs" />
+    <Compile Include="value_validators.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\crosscut.essentials\crosscut.essentials.csproj">
+    <ProjectReference Include="..\crosscut.essentials.concretes\crosscut.essentials.concretes.csproj">
       <Project>{eedf1367-a0fc-400a-a649-716261252b9e}</Project>
-      <Name>crosscut.essentials</Name>
+      <Name>crosscut.essentials.concretes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\crosscut.essentials.contracts\crosscut.essentials.contracts.csproj">
+      <Project>{0188be5c-bafa-4fac-b068-11dcf7cd918e}</Project>
+      <Name>crosscut.essentials.contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\xcal.domain.contracts\xcal.domain.contracts.csproj">
       <Project>{5cc7e3d9-702b-45a3-a413-a07d010c2651}</Project>

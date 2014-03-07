@@ -125,4 +125,5 @@ namespace reexmonkey.crosscut.essentials.contracts
         void EraseAll(IEnumerable<TKey> keys = null);
 
     }
+
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 using ServiceStack.OrmLite;
-using reexmonkey.infrastructure.ormlite.extensions;
+using reexmonkey.technical.ormlite.extensions;
 using reexmonkey.crosscut.essentials.contracts;
 using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.crosscut.goodies.concretes;

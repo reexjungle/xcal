@@ -5,8 +5,9 @@ using ServiceStack.OrmLite;
 using ServiceStack.WebHost.Endpoints;
 using ServiceStack.Redis;
 using ServiceStack.Logging;
+using ServiceStack.Logging.NLogger;
 using ServiceStack.ServiceInterface.Validation;
-using reexmonkey.xcal.service.plugins.validators.concretes;
+using reexmonkey.xcal.service.validators.concretes;
 using reexmonkey.xcal.service.interfaces.live;
 using reexmonkey.crosscut.essentials.contracts;
 using reexmonkey.crosscut.essentials.concretes;
@@ -55,11 +56,23 @@ namespace reexmonkey.xcal.application.server.web.local
 
             #endregion
 
-            #region inject database provider
+            #region configure loggers
+
             
-            if(Properties.Settings.Default.db_provider_type == DataProviderType.rdbms)
+
+            #endregion
+
+            #region inject loggers
+
+            container.Register<ILogFactory>(new NLogFactory());
+
+            #endregion
+
+            #region inject database provider
+
+            try
             {
-                try
+                if (Properties.Settings.Default.db_provider_type == DataProviderType.ormlite)
                 {
                     #region inject orm repositories
 
@@ -113,44 +126,38 @@ namespace reexmonkey.xcal.application.server.web.local
 
                     #endregion
                 }
-                catch (Funq.ResolutionException ex)
+                else if (Properties.Settings.Default.db_provider_type == DataProviderType.redis)
                 {
-                    Console.WriteLine(ex.Message); 
-                }
-                catch (Exception ex) 
-                {
-                    Console.WriteLine(ex.Message); 
+                    #region inject redis repositories
+
+                    #endregion
+
+                    #region inject redis provider
+
+                    //register cache client to redis server running on linux. 
+                    //NOTE: Redis Server must already be installed on the remote machine and must be running
+                    container.Register<IRedisClientsManager>(x => new PooledRedisClientManager(Properties.Settings.Default.redis_server));
+                    container.Register<IRedisClient>(x => x.Resolve<IRedisClientsManager>().GetClient());
+
+
+                    #endregion
                 }
             }
-            else if(Properties.Settings.Default.db_provider_type == DataProviderType.nosql)
+            catch (Funq.ResolutionException ex)
             {
-                #region inject redis repositories
-
-                #endregion
-
-                #region inject redis provider
-
-                //register cache client to redis server running on linux. 
-                //NOTE: Redis Server must already be installed on the remote machine and must be running
-                container.Register<IRedisClientsManager>(x => new PooledRedisClientManager(Properties.Settings.Default.redis_server));
-                container.Register<IRedisClient>(x => x.Resolve<IRedisClientsManager>().GetClient());
-
-
-                #endregion
+                Console.WriteLine(ex.Message);
             }
-
-            #endregion
-
-            #region inject loggers
-
-
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
             #endregion
 
             #region inject key generators
 
-            container.Register<IKeyGenerator<string>>(new GuidKeyGenerator());
-            container.Register<IKeyGenerator<long>>(new LongKeyGenerator());
+            container.RegisterAutoWiredAs<GuidKeyGenerator, IKeyGenerator<string>>();
+            container.RegisterAutoWiredAs<LongKeyGenerator, IKeyGenerator<long>>();
 
             #endregion
 

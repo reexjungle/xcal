@@ -76,7 +76,7 @@ namespace reexmonkey.xcal.domain.contracts
     /// <summary>
     /// 
     /// </summary>
-    public enum TRANSP { UNKNWON, OPAQUE, TRANSPARENT}
+    public enum TRANSP { UNKNOWN, OPAQUE, TRANSPARENT}
 
 
     public enum STATUS {UNKNOWN, TENTATIVE, CONFIRMED, CANCELLED, NEEDS_ACTION, COMPLETED, IN_PROCESS, DRAFT, FINAL }

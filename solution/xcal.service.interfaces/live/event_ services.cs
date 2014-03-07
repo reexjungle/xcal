@@ -18,11 +18,7 @@ namespace reexmonkey.xcal.service.interfaces.live
         public ILog Logger { get; set; }
         public ICalendarRepository CalendarRepository { get; set; }
 
-        public EventService(): base()
-        {
-            //this.Logger = LogManager.GetLogger(typeof(EventService));
-            //this.Repository = this.ResolveService<IEventRepository>();
-        }
+        public EventService() : base() { }
 
         public EventService(ICalendarRepository repository, ILog logger): base()
         {

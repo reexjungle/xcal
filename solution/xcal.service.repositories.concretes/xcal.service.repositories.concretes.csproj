@@ -79,17 +79,25 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\crosscut.essentials\crosscut.essentials.csproj">
+    <ProjectReference Include="..\crosscut.essentials.concretes\crosscut.essentials.concretes.csproj">
       <Project>{eedf1367-a0fc-400a-a649-716261252b9e}</Project>
-      <Name>crosscut.essentials</Name>
+      <Name>crosscut.essentials.concretes</Name>
     </ProjectReference>
-    <ProjectReference Include="..\crosscut.goodies\crosscut.goodies.csproj">
+    <ProjectReference Include="..\crosscut.essentials.contracts\crosscut.essentials.contracts.csproj">
+      <Project>{0188be5c-bafa-4fac-b068-11dcf7cd918e}</Project>
+      <Name>crosscut.essentials.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\crosscut.goodies.concretes\crosscut.goodies.concretes.csproj">
       <Project>{f21cb427-5dd9-41b2-a993-17cd8085535a}</Project>
-      <Name>crosscut.goodies</Name>
+      <Name>crosscut.goodies.concretes</Name>
     </ProjectReference>
-    <ProjectReference Include="..\crosscut.io\crosscut.io.csproj">
+    <ProjectReference Include="..\crosscut.goodies.contracts\crosscut.goodies.contracts.csproj">
+      <Project>{4117dc99-ea03-4b8f-a808-368feaa3c5f2}</Project>
+      <Name>crosscut.goodies.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\crosscut.io.concretes\crosscut.io.concretes.csproj">
       <Project>{8c731af7-0991-4e6e-8049-9ef9d107a0b4}</Project>
-      <Name>crosscut.io</Name>
+      <Name>crosscut.io.concretes</Name>
     </ProjectReference>
     <ProjectReference Include="..\technical.ormlite.extensions\technical.ormlite.extensions.csproj">
       <Project>{3346db20-5077-4fc8-93ee-e4a590bcc1d0}</Project>

@@ -342,7 +342,7 @@ namespace reexmonkey.xcal.domain.models
             sb.AppendFormat("SEQUENCE:{0}", this.Sequence).AppendLine();
             if (this.Status != STATUS.UNKNOWN) sb.AppendFormat("STATUS:{0}",this.Status).AppendLine();
             if (this.Summary != null) sb.AppendFormat("SUMMARY:{0}", this.Summary).AppendLine();
-            if (this.Transparency != TRANSP.UNKNWON) sb.AppendFormat("TRANSP:{0}", this.Transparency);
+            if (this.Transparency != TRANSP.UNKNOWN) sb.AppendFormat("TRANSP:{0}", this.Transparency);
             if (this.Url != null) sb.Append(this.Url).AppendLine();
             if (this.RecurrenceId != null) sb.Append(this.RecurrenceId).AppendLine();
             if (this.RecurrenceRule != null) sb.AppendFormat("RRULE:{0}", this.RecurrenceRule).AppendLine();

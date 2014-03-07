@@ -6,7 +6,7 @@ using System.Data;
 using ServiceStack.OrmLite;
 using reexmonkey.crosscut.essentials.concretes;
 
-namespace reexmonkey.infrastructure.ormlite.extensions
+namespace reexmonkey.technical.ormlite.extensions
 {
     public static class OrmLiteWriteExtensions
     {

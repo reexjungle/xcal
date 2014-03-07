@@ -7,7 +7,7 @@ using ServiceStack.FluentValidation;
 using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
 
-namespace reexmonkey.xcal.service.plugins.validators.concretes
+namespace reexmonkey.xcal.service.validators.concretes
 {
     public class EmailAddressValidator : AbstractValidator<string>
     {

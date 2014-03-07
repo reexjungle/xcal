@@ -8,7 +8,7 @@ using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.domain.operations;
 
-namespace reexmonkey.xcal.service.plugins.validators.concretes
+namespace reexmonkey.xcal.service.validators.concretes
 {
     public class PublishEventsValidator: AbstractValidator<PublishEvents>
     {
