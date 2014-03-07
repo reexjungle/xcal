@@ -8,7 +8,7 @@ using reexmonkey.xcal.domain.models;
 namespace reexmonkey.xcal.domain.operations
 {
 
-    #region VEVENT operations based on RFC 5546
+    #region VEVENT RFC 5546 operations
 
     /// <summary>
     /// Represents class to request for the publishing of events
@@ -431,7 +431,7 @@ namespace reexmonkey.xcal.domain.operations
 
     #endregion
 
-    #region Other VEVENT operations
+    #region VEVENT general operations
 
     [DataContract]
     [Route("/calendars/{ProductId}/events/{Uid}/{Page}", "GET")]

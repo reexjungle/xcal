@@ -42,10 +42,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public IKeyGenerator<string> KeyGenerator
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public IKeyGenerator<string> KeyGenerator { get; set; }
 
         public void Save(VEVENT entity)
         {

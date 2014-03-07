@@ -110,10 +110,7 @@ namespace reexmonkey.xcal.service.repositories.concrete
             throw new NotImplementedException();
         }
 
-        public IKeyGenerator<string> KeyGenerator
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public IKeyGenerator<string> KeyGenerator { get; set; }
 
         public void Patch(VEVENT entity, Expression<Func<VEVENT, object>> fields, Expression<Func<VEVENT, bool>> where = null)
         {

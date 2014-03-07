@@ -10,12 +10,14 @@ using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.domain.operations;
 using reexmonkey.xcal.service.repositories.contracts;
+using reexmonkey.xcal.service.interfaces.contracts.live;
 
-namespace reexmonkey.xcal.service.interfaces.live
+namespace reexmonkey.xcal.service.interfaces.concretes.live
 {
-    public class EventService: Service
+    public class EventService: Service, IEventService
     {
         public ILog Logger { get; set; }
+
         public ICalendarRepository CalendarRepository { get; set; }
 
         public EventService() : base() { }
@@ -125,6 +127,59 @@ namespace reexmonkey.xcal.service.interfaces.live
 
         #endregion
 
+        #region VEVENT general services
+
+        public VCALENDAR Put(DelegateEvent request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public VCALENDAR Patch(ChangeOrganizer request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public VCALENDAR Put(SendOnBehalf request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public VCALENDAR Put(ForwardEvent request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public VCALENDAR Put(ReplyToEvent request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public VCALENDAR Delete(CancelEvent request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public VCALENDAR Get(FindEvent request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public VCALENDAR Get(FindEvents request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public VCALENDAR Get(DeleteEvent request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public VCALENDAR Get(DeleteEvents request)
+        {
+            throw new NotImplementedException();
+        } 
+
+        #endregion
 
     }
 }

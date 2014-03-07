@@ -127,10 +127,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
 
 
-        public IKeyGenerator<string> KeyGenerator
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public IKeyGenerator<string> KeyGenerator { get; set; }
 
         public void Patch(DISPLAY_ALARM entity, Expression<Func<DISPLAY_ALARM, object>> fields, Expression<Func<DISPLAY_ALARM, bool>> where = null)
         {
@@ -206,9 +203,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public IKeyGenerator<string> KeyGenerator
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public IKeyGenerator<string> KeyGenerator { get; set; }
     }
 }

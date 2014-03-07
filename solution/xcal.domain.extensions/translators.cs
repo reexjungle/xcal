@@ -9,10 +9,9 @@ namespace reexmonkey.xcal.domain.extensions
     /// <summary>
     /// Helper class that provides support functionality related to the ICalendar interface 
     /// </summary>
-    public static class Converters
+    public static class TranslateExtensions
     {
-
-        #region specialized enumeration converters for iCalendar
+        #region specialized enumeration translators for iCalendar
 
         /// <summary>
         /// Converts a given string value to an equivalent CalendarScale representation
@@ -20,8 +19,9 @@ namespace reexmonkey.xcal.domain.extensions
         /// <param name="value">The given input string value</param>
         /// <returns>An equivalent CalendarScale value if the conversion succeeds, otherwise an exception is thrown</returns>
         /// <exception cref="ArgumentException"> Thrown when the string value cannot be converted to CalendarScale</exception>
-        public static CALSCALE ToCALSCALE(this string value)
+        public static CALSCALE TranslateToCALSCALE(this string value)
         {
+            
             if (value.ToUpper().Equals("GREGORIAN")) return CALSCALE.GREGORIAN;
             else if (value.ToUpper().Equals("CHINESE")) return CALSCALE.CHINESE;
             else if (value.ToUpper().Equals("HEBREW")) return CALSCALE.HEBREW;
@@ -37,7 +37,7 @@ namespace reexmonkey.xcal.domain.extensions
         /// <param name="value">The given input string value</param>
         /// <returns>An equivalent CalendarScale value if the conversion succeeds, otherwise an exception is thrown</returns>
         /// <exception cref="ArgumentException"> Thrown when the string value cannot be converted to CalendarScale</exception>
-        public static ENCODING ToENCODING(this string value)
+        public static ENCODING TranslateToENCODING(this string value)
         {
             if (value.Equals("BIT8", StringComparison.OrdinalIgnoreCase) || value.Equals("8BIT", StringComparison.OrdinalIgnoreCase)) return ENCODING.BIT8;
             else if (value.Equals("BASE64", StringComparison.OrdinalIgnoreCase)) return ENCODING.BASE64;
@@ -50,7 +50,7 @@ namespace reexmonkey.xcal.domain.extensions
         /// <param name="type">The given input EncodingType value</param>
         /// <returns>The equivalent string representation of the EncodingType value</returns>
         /// <remarks>This function is similar to the ToString() with the only exception for returning the BIT8 value as 8BIT in its string representation </remarks>
-        public static string ToStringValue(this ENCODING type)
+        public static string TranslateToString(this ENCODING type)
         {
             if (type == ENCODING.BIT8) return "8BIT";
             else return ENCODING.BASE64.ToString();
@@ -62,7 +62,7 @@ namespace reexmonkey.xcal.domain.extensions
         /// <param name="value">The given input string value</param>
         /// <returns>An equivalent CalendarUserType value if the conversion succeeds, otherwise an exception is thrown</returns>
         /// <exception cref="TException&lt;ICalendar&gt;"> Thrown when the string value cannot be converted to CalendarUserType</exception>
-        public static CUTYPE ToCUTYPE(this string value)
+        public static CUTYPE TranslateToCUTYPE(this string value)
         {
             if (value.ToUpper().Equals("GROUP")) return CUTYPE.GROUP;
             else if (value.ToUpper().Equals("INDIVIDUAL")) return CUTYPE.INDIVIDUAL;
@@ -77,7 +77,7 @@ namespace reexmonkey.xcal.domain.extensions
         /// <param name="value">The given input string value</param>
         /// <returns>An equivalent ToleType value if the conversion succeeds, otherwise an exception is thrown</returns>
         /// <exception cref="ArgumentException"> Thrown when the string value cannot be converted to RoleType</exception>
-        public static ROLE ToROLE(this string value)
+        public static ROLE TranslateToROLE(this string value)
         {
             if (value.ToUpper().Equals("CHAIR")) return ROLE.CHAIR;
             else if (value.ToUpper().Equals("NON_PARTICIPANT")) return ROLE.NON_PARTICIPANT;
@@ -92,7 +92,7 @@ namespace reexmonkey.xcal.domain.extensions
         /// <param name="value">The given input string value</param>
         /// <returns>An equivalent Participation value if the conversion succeeds, otherwise an exception is thrown</returns>
         /// <exception cref="ArgumentException"> Thrown when the string value cannot be converted to ParticipationStatusType</exception>
-        public static PARTSTAT ToPARTSTAT(this string value)
+        public static PARTSTAT TranslateToPARTSTAT(this string value)
         {
             if (value.ToUpper().Equals(PARTSTAT.ACCEPTED.ToString())) return PARTSTAT.ACCEPTED;
             else if (value.ToUpper().Equals("COMPLETED.ToString")) return PARTSTAT.COMPLETED;
@@ -110,7 +110,7 @@ namespace reexmonkey.xcal.domain.extensions
         /// <param name="value">The given input string value</param>
         /// <returns>An equivalent RangeType value if the conversion succeeds, otherwise an exception is thrown</returns>
         /// <exception cref="ArgumentException"> Thrown when the string value cannot be converted to RangeType</exception>
-        public static RANGE ToRANGE(this string value)
+        public static RANGE TranslateToRANGE(this string value)
         {
             if (value.ToUpper().Equals("THISANDFUTURE")) return RANGE.THISANDFUTURE;
             else if(value.ToUpper().Equals("THIS")) return RANGE.THIS;
@@ -124,7 +124,7 @@ namespace reexmonkey.xcal.domain.extensions
         /// <param name="value">The given input string value</param>
         /// <returns>An equivalent FrequencyType value if the conversion succeeds, otherwise an exception is thrown</returns>
         /// <exception cref="ArgumentException"> Thrown when the string value cannot be converted to FrequencyType</exception>
-        public static FREQ ToFREQ(this string value)
+        public static FREQ TranslateToFREQ(this string value)
         {
             if (value.ToUpper().Equals("DAILY")) return FREQ.DAILY;
             else if (value.ToUpper().Equals("HOURLY")) return FREQ.HOURLY;
@@ -142,7 +142,7 @@ namespace reexmonkey.xcal.domain.extensions
         /// <param name="value">The given input string value</param>
         /// <returns>An equivalent WeekDayType value if the conversion succeeds, otherwise an exception is thrown</returns>
         /// <exception cref="ArgumentException"> Thrown when the string value cannot be converted to WeekDayType</exception>
-        public static WEEKDAY ToWEEKDAY(this string value)
+        public static WEEKDAY TranslateToWEEKDAY(this string value)
         {
             if (value.ToUpper().Equals("SU")) return WEEKDAY.SU;
             else if (value.ToUpper().Equals("MO")) return WEEKDAY.MO;
@@ -160,7 +160,7 @@ namespace reexmonkey.xcal.domain.extensions
         /// <param name="value">The given input string value</param>
         /// <returns>An equivalent RelationshipType value if the conversion succeeds, otherwise an exception is thrown</returns>
         /// <exception cref="ArgumentException"> Thrown when the string value cannot be converted to RelationshipType</exception>
-        public static RELTYPE ToRELTYPE(this string value)
+        public static RELTYPE TranslateToRELTYPE(this string value)
         {
             if (value.ToUpper().Equals("CHILD")) return RELTYPE.CHILD;
             else if (value.ToUpper().Equals("PARENT")) return RELTYPE.PARENT;
@@ -179,7 +179,7 @@ namespace reexmonkey.xcal.domain.extensions
         /// <typeparam name="T">The type of IDATE entity</typeparam>
         /// <param name="value">The IDATE_TIME entity to be converted</param>
         /// <returns>The equuivalent IDATE entity</returns>
-        public static T ToDate<T>(this IDATE_TIME value)
+        public static T TranslateToDATE<T>(this IDATE_TIME value)
             where T: IDATE, new()
         {
             if (value == null) return default(T);
@@ -646,7 +646,7 @@ namespace reexmonkey.xcal.domain.extensions
                         if (match.Groups["sign"].Value == "-") mulitplier *= -1;
                     }
                     if (match.Groups["ordwk"].Success) weekdaynum.OrdinalWeek = mulitplier * int.Parse( match.Groups["ordwk"].Value);
-                    if (match.Groups["weekday"].Success) weekdaynum.Weekday = match.Groups["weekday"].Value.ToWEEKDAY();
+                    if (match.Groups["weekday"].Success) weekdaynum.Weekday = match.Groups["weekday"].Value.TranslateToWEEKDAY();
                 }
             }
             else throw new FormatException("Invalid WeekDayNum format. Please consult the definition of WeekDayNum in ICalendar Protocol RFC5545");
@@ -668,7 +668,7 @@ namespace reexmonkey.xcal.domain.extensions
                         if (match.Groups["sign"].Value == "-") mulitplier *= -1;
                     }
                     if (match.Groups["ordwk"].Success) weekdaynum.OrdinalWeek = mulitplier * int.Parse(match.Groups["ordwk"].Value);
-                    if (match.Groups["weekday"].Success) weekdaynum.Weekday = match.Groups["weekday"].Value.ToWEEKDAY();
+                    if (match.Groups["weekday"].Success) weekdaynum.Weekday = match.Groups["weekday"].Value.TranslateToWEEKDAY();
                 }
             }
             else return default(T);
@@ -695,7 +695,7 @@ namespace reexmonkey.xcal.domain.extensions
                     var pair = token.Split(new string[]{"="}, StringSplitOptions.RemoveEmptyEntries);
 
                     //check FREQ
-                    if (pair[0].Equals("FREQ", StringComparison.OrdinalIgnoreCase))  recur.FREQ = pair[1].ToFREQ();
+                    if (pair[0].Equals("FREQ", StringComparison.OrdinalIgnoreCase))  recur.FREQ = pair[1].TranslateToFREQ();
                     if (pair[0].Equals("UNTIL", StringComparison.OrdinalIgnoreCase)) recur.UNTIL = pair[1].ParseDateTime<U>();
                     if (pair[0].Equals("COUNT", StringComparison.OrdinalIgnoreCase)) recur.COUNT = uint.Parse(pair[1]);
                     if (pair[0].Equals("INTERVAL", StringComparison.OrdinalIgnoreCase)) recur.COUNT = uint.Parse(pair[1]);
@@ -753,7 +753,7 @@ namespace reexmonkey.xcal.domain.extensions
                         recur.BYMONTH = parts.Select(x => uint.Parse(x));
                     }
 
-                    if (pair[0].Equals("WKST", StringComparison.OrdinalIgnoreCase)) recur.WKST = pair[1].ToWEEKDAY();
+                    if (pair[0].Equals("WKST", StringComparison.OrdinalIgnoreCase)) recur.WKST = pair[1].TranslateToWEEKDAY();
 
                     if (pair[0].Equals("BYSETPOS", StringComparison.OrdinalIgnoreCase))
                     {
@@ -791,7 +791,7 @@ namespace reexmonkey.xcal.domain.extensions
                     var pair = token.Split(new string[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
 
                     //check FREQ
-                    if (pair[0].Equals("FREQ", StringComparison.OrdinalIgnoreCase)) recur.FREQ = pair[1].ToFREQ();
+                    if (pair[0].Equals("FREQ", StringComparison.OrdinalIgnoreCase)) recur.FREQ = pair[1].TranslateToFREQ();
                     if (pair[0].Equals("UNTIL", StringComparison.OrdinalIgnoreCase)) recur.UNTIL = pair[1].ParseDateTime<U>();
                     if (pair[0].Equals("COUNT", StringComparison.OrdinalIgnoreCase)) recur.COUNT = uint.Parse(pair[1]);
                     if (pair[0].Equals("INTERVAL", StringComparison.OrdinalIgnoreCase)) recur.COUNT = uint.Parse(pair[1]);
@@ -849,7 +849,7 @@ namespace reexmonkey.xcal.domain.extensions
                         recur.BYMONTH = parts.Select(x => uint.Parse(x));
                     }
 
-                    if (pair[0].Equals("WKST", StringComparison.OrdinalIgnoreCase)) recur.WKST = pair[1].ToWEEKDAY();
+                    if (pair[0].Equals("WKST", StringComparison.OrdinalIgnoreCase)) recur.WKST = pair[1].TranslateToWEEKDAY();
 
                     if (pair[0].Equals("BYSETPOS", StringComparison.OrdinalIgnoreCase))
                     {
