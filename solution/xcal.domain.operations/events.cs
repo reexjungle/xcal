@@ -120,7 +120,6 @@ namespace reexmonkey.xcal.domain.operations
     [Route("/calendars/{ProductId}/event/organizers/change", "PUT")]
     public class ChangeOrganizer : IReturn<VCALENDAR>
     {
-
         [DataMember]
         public List<VEVENT> Events { get; set; }
 
@@ -129,6 +128,11 @@ namespace reexmonkey.xcal.domain.operations
         /// </summary>
         [DataMember]
         public string ProductId { get; set; }
+
+        public ChangeOrganizer()
+        {
+            this.Events = new List<VEVENT>();
+        }
     }
 
     [DataContract]
@@ -143,6 +147,11 @@ namespace reexmonkey.xcal.domain.operations
         /// </summary>
         [DataMember]
         public string ProductId { get; set; }
+
+        public SendOnBehalf()
+        {
+            this.Events = new List<VEVENT>();
+        }
     }
 
     [DataContract]
@@ -159,7 +168,13 @@ namespace reexmonkey.xcal.domain.operations
         /// Gets or sets the Product Id of the calendar
         /// </summary>
         [DataMember]
-        public string ProductId { get; set; }   
+        public string ProductId { get; set; }  
+ 
+        public ForwardEvent()
+        {
+            this.Events = new List<VEVENT>();
+            this.Invited = new Dictionary<UID, List<ATTENDEE>>();
+        }
     }
 
     [DataContract]
@@ -177,6 +192,12 @@ namespace reexmonkey.xcal.domain.operations
         /// </summary>
         [DataMember]
         public string ProductId { get; set; }
+
+        public UpdateAttendeesStatus()
+        {
+            this.Events = new List<VEVENT>();
+            this.Updates = new Dictionary<UID, List<ATTENDEE>>();
+        }
 
     }
 
