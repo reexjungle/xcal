@@ -47,7 +47,7 @@ namespace reexmonkey.xcal.domain.models
             get { return duration; }
             set
             {
-                //if (value == null && this.repeat != -1) throw new ArgumentException("The Repeat and Duration properties are optional but MUST occur together"); 
+                ////if (value == null && this.repeat != -1) throw new ArgumentException("The Repeat and Duration properties are optional but MUST occur together"); 
                 this.duration = value;
             }
         }
