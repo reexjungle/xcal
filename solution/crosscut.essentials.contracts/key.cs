@@ -33,4 +33,19 @@ namespace reexmonkey.crosscut.essentials.contracts
         /// <returns>The created identifier</returns>
         TId GetNextKey();
     }
+
+    public interface IIntegralKeyGenerator : IKeyGenerator<int> { }
+
+    public interface ILongKeyGenerator : IKeyGenerator<long> { }
+
+    public interface IGuidKeyGenerator: IKeyGenerator<string> { }
+
+    public interface IFPIKeyGenerator: IKeyGenerator<string> 
+    {
+        string ISO { get; set; }
+        string Owner { get; set; }
+        string Description { get; set; }
+        string LanguageId { get; set; }
+        Authority Authority { get; set; }
+    }
 }

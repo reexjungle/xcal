@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace reexmonkey.crosscut.goodies.concretes
 {
@@ -170,6 +171,11 @@ namespace reexmonkey.crosscut.goodies.concretes
             catch (Exception) { throw; }
             return references;
         }     
+
+        public static FileVersionInfo GetVersionInfo(this Assembly assembly)
+        {
+            return FileVersionInfo.GetVersionInfo(assembly.Location); 
+        }
 
         /// <summary>
         /// Gets the application path of current executing application
