@@ -19,17 +19,17 @@ namespace reexmonkey.xcal.domain.contracts
 
     }
 
-    public interface IAUDIO_ALARM
+    public interface IAUDIO_ALARM: IALARM
     {
         IATTACH Attachment { get; set; }
     }
 
-    public interface IDALARM: IALARM
+    public interface IDISPLAY_ALARM: IALARM
     {
         ITEXT Description { get; set; }
     }
 
-    public interface IEMAIL_ALARM
+    public interface IEMAIL_ALARM: IALARM
     {
         ITEXT Description { get; set; }
         ITEXT Summary { get; set; }

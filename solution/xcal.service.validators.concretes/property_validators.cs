@@ -62,7 +62,10 @@ namespace reexmonkey.xcal.service.validators.concretes
     {
         public AttachmentBinaryValidator()
         {
-
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x.Content).NotNull().SetValidator(new BinaryValidator());
+            RuleFor(x => x.Encoding).NotEqual(ENCODING.UNKNOWN);
+            RuleFor(x => x.FormatType).SetValidator(new FormatTypeValidator()).When(x => x.FormatType != null);
         }
     }
 
@@ -70,7 +73,9 @@ namespace reexmonkey.xcal.service.validators.concretes
     {
         public AttachmentUriValidator()
         {
-
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x.Content).NotNull().SetValidator(new UriValidator());
+            RuleFor(x => x.FormatType).SetValidator(new FormatTypeValidator()).When(x => x.FormatType != null);
         }
     }
 
@@ -155,6 +160,17 @@ namespace reexmonkey.xcal.service.validators.concretes
                 Must((x, y) => x.Names.OfType<TZNAME>().AreUnique(new EqualByStringId<TZNAME>())).
                 When(x => !x.Names.NullOrEmpty());
             
+        }
+    }
+
+    public class TriggerValidator: AbstractValidator<ITRIGGER>
+    {
+        public TriggerValidator()
+        {
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x.Duration).SetValidator(new DurationValidator()).When(x => x.Duration != null);
+            RuleFor(x => x.DateTime).SetValidator(new DateTimeValidator()).When(x => x.DateTime != null);
+            RuleFor(x => x.Format).NotEqual(ValueFormat.UNKNOWN);
         }
     }
 

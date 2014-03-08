@@ -385,8 +385,6 @@ namespace reexmonkey.xcal.domain.models
 
         public FMTTYPE(string name, string subname)
         {
-            if(string.IsNullOrEmpty(name)) throw new ArgumentException("typename");
-            if(string.IsNullOrEmpty(subname)) throw new ArgumentException("stypename"); 
             this.TypeName = name;
             this.SubTypeName = subname;
         }

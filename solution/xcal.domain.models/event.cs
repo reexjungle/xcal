@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Text.RegularExpressions;
 using ServiceStack.DataAnnotations;
 using reexmonkey.crosscut.essentials.contracts;
 using reexmonkey.crosscut.essentials.concretes;
@@ -44,10 +45,8 @@ namespace reexmonkey.xcal.domain.models
     public class VEVENT : IEVENT, IEquatable<VEVENT>, IComparable<VEVENT>, IContainsKey<string>
     {
         private string uid;
-        private IDATE_TIME dtstamp;
         private IDATE_TIME start;
         private IDATE_TIME end;
-        private IDURATION duration;
 
         /// <summary>
         /// Gets or sets the unique identifier of the event. It is synonymous to the &quot;Uid&quot; property of the event. 
@@ -59,8 +58,22 @@ namespace reexmonkey.xcal.domain.models
             get { return (this.RecurrenceId != null)? string.Format("{0}-{1}", this.Uid, this.RecurrenceId.Value): this.Uid; }
             set 
             {
-                //var pattern = @"^(?<uid>(\p{L})+)+(?<hyphen>-)?(?<recurid>(\p{L}+\p{P}*\s*)+)$";
-                this.Uid = value; 
+                var pattern = @"^(?<uid>(\p{L})+)+(?<hyphen>-)?(?<recurid>(\p{L}+\p{P}*\s*)+)$";
+                if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
+                {
+                    foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
+                    {
+                        if (match.Groups["uid"].Success) this.Uid = match.Groups["uid"].Value;
+                        if (match.Groups["recurid"].Success) 
+                        {
+                           var recurid = match.Groups["recurid"].Value.TryParse_IDATETIME<DATE_TIME>();
+                           if (this.RecurrenceId != null)
+                               this.RecurrenceId = (string.IsNullOrEmpty(recurid.ToString())) ? new RECURRENCE_ID(recurid) : new RECURRENCE_ID(this.Start);
+                           else this.RecurrenceId.Value = (string.IsNullOrEmpty(recurid.ToString())) ? recurid : this.Start;
+
+                        };
+                    }
+                }
             }
         }
 
@@ -75,11 +88,7 @@ namespace reexmonkey.xcal.domain.models
         }
 
         [DataMember]
-        public IDATE_TIME Datestamp 
-        {
-            get { return dtstamp; }
-            set { this.dtstamp = value;  } 
-        }
+        public IDATE_TIME Datestamp { get; set; }
 
         [DataMember]
         public IDATE_TIME Start
@@ -148,11 +157,7 @@ namespace reexmonkey.xcal.domain.models
         }
 
         [DataMember]
-        public IDURATION Duration
-        {
-            get { return this.duration; }
-            set { this.duration = value; }
-        }
+        public IDURATION Duration { get; set; }
 
         [DataMember]
         [Ignore]

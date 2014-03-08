@@ -295,14 +295,14 @@ namespace reexmonkey.xcal.domain.models
                 return start - duration;
             }
             var fdate = start.ToDateTime().Add(duration.ToTimeSpan());
-            return fdate.ToDate<DATE>();
+            return fdate.To_IDATE<DATE>();
         }
 
         public static DATE operator -(DATE end, DURATION duration)
         {
             if (duration.Sign == SignType.Negative) return end + duration;
             var fdate = end.ToDateTime().Subtract(duration.ToTimeSpan());
-            return fdate.ToDate<DATE>();
+            return fdate.To_IDATE<DATE>();
         }
     }
 
@@ -586,7 +586,7 @@ namespace reexmonkey.xcal.domain.models
             }
             if (duration.IsDefault()) return start;
             var fdate = start.ToDateTime().Add(duration.ToTimeSpan());
-            return fdate.ToDateTime<DATE_TIME>();
+            return fdate.To_IDATE_TIME<DATE_TIME>();
         }
 
         public static DATE_TIME operator -(DATE_TIME end, DURATION duration)
@@ -595,7 +595,7 @@ namespace reexmonkey.xcal.domain.models
             if (duration.IsDefault()) return end;
 
             var fdate = end.ToDateTime().Subtract(duration.ToTimeSpan());
-            return fdate.ToDateTime<DATE_TIME>();
+            return fdate.To_IDATE_TIME<DATE_TIME>();
         }
 
         public static DURATION operator -(DATE_TIME start, DATE_TIME end)
@@ -1266,8 +1266,8 @@ namespace reexmonkey.xcal.domain.models
 
         public PERIOD(DateTime start, DateTime end, TimeZoneInfo stzinfo=null, TimeZoneInfo etzinfo= null)
         {
-            this.Start = start.ToDateTime<DATE_TIME, TZID>(stzinfo);
-            this.End = end.ToDateTime<DATE_TIME, TZID>(etzinfo);
+            this.Start = start.To_IDATE_TIME<DATE_TIME, TZID>(stzinfo);
+            this.End = end.To_IDATE_TIME<DATE_TIME, TZID>(etzinfo);
             this.format = PeriodFormat.Explicit;
         }
 
@@ -1280,8 +1280,8 @@ namespace reexmonkey.xcal.domain.models
 
         public PERIOD(DateTime start, TimeSpan span, TimeZoneInfo stzinfo=null)
         {
-            this.Start = start.ToDateTime<DATE_TIME, TZID>(stzinfo);
-            this.Duration = span.ToDuration<DURATION>();
+            this.Start = start.To_IDATE_TIME<DATE_TIME, TZID>(stzinfo);
+            this.Duration = span.To_IDURATION<DURATION>();
             this.format = PeriodFormat.Start;
         }
 

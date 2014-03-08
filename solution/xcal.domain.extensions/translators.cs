@@ -173,20 +173,22 @@ namespace reexmonkey.xcal.domain.extensions
 
         #region specialized type converters for iCalendar Value types
 
+        #region  date-time translators
+
         /// <summary>
         /// Converts an IDATE_TIME entity to its IDATE equivalent
         /// </summary>
         /// <typeparam name="T">The type of IDATE entity</typeparam>
         /// <param name="value">The IDATE_TIME entity to be converted</param>
         /// <returns>The equuivalent IDATE entity</returns>
-        public static T TranslateToDATE<T>(this IDATE_TIME value)
-            where T: IDATE, new()
+        public static T To_IDATE<T>(this IDATE_TIME value)
+            where T : IDATE, new()
         {
             if (value == null) return default(T);
             var date = Activator.CreateInstance<T>();
             date.FULLYEAR = value.FULLYEAR;
             date.MONTH = value.MONTH;
-            date.MDAY = value.MDAY; 
+            date.MDAY = value.MDAY;
             return date;
         }
 
@@ -197,8 +199,8 @@ namespace reexmonkey.xcal.domain.extensions
         /// <param name="value">The IDATE entity to be converted</param>
         /// <param name="tzid">An optional Time Zone ID for the conversion</param>
         /// <returns>The equivalent IDATE_TIME entity</returns>
-        public static T To<T>(this IDATE value, ITZID tzid = null)
-            where T: IDATE_TIME, new()
+        public static T To_IDATE_TIME<T>(this IDATE value, ITZID tzid = null)
+            where T : IDATE_TIME, new()
         {
             if (value == null) return default(T);
             var datetime = Activator.CreateInstance<T>();
@@ -215,8 +217,8 @@ namespace reexmonkey.xcal.domain.extensions
         /// <typeparam name="T">The type of ITIME entity</typeparam>
         /// <param name="value">The IDATE_TIME entity to be converted</param>
         /// <returns>The equivalent ITIME entity</returns>
-        public static T ToTime<T>(this IDATE_TIME value)
-            where T: ITIME, new()
+        public static T To_ITIME<T>(this IDATE_TIME value)
+            where T : ITIME, new()
         {
             if (value == null) return default(T);
             var time = Activator.CreateInstance<T>();
@@ -233,7 +235,7 @@ namespace reexmonkey.xcal.domain.extensions
         /// <typeparam name="T">The type of IDATE_TIME entity</typeparam>
         /// <param name="value">The ITIME entity to be converted</param>
         /// <returns>The equivalent IDATE_TIME entity</returns>
-        public static T ToDateTime<T>(this ITIME value)
+        public static T To_IDATE_TIME<T>(this ITIME value)
             where T : IDATE_TIME, new()
         {
             if (value == null) return default(T);
@@ -245,7 +247,7 @@ namespace reexmonkey.xcal.domain.extensions
             return datetime;
         }
 
-        public static T ToDate<T>(this DateTime value)
+        public static T To_IDATE<T>(this DateTime value)
     where T : IDATE, new()
         {
             var date = Activator.CreateInstance<T>();
@@ -255,7 +257,7 @@ namespace reexmonkey.xcal.domain.extensions
             return date;
         }
 
-        public static T ToDateTime<T>(this DateTime value)
+        public static T To_IDATE_TIME<T>(this DateTime value)
             where T : IDATE_TIME, new()
         {
             if (value == null) return default(T);
@@ -270,9 +272,9 @@ namespace reexmonkey.xcal.domain.extensions
             return datetime;
         }
 
-        public static T ToDateTime<T, U>(this DateTime value, TimeZoneInfo tzinfo = null)
-            where T: IDATE_TIME, new()
-            where U: ITZID, new()
+        public static T To_IDATE_TIME<T, U>(this DateTime value, TimeZoneInfo tzinfo)
+            where T : IDATE_TIME, new()
+            where U : ITZID, new()
         {
             if (value == null) return default(T);
             var datetime = Activator.CreateInstance<T>();
@@ -284,14 +286,14 @@ namespace reexmonkey.xcal.domain.extensions
             datetime.SECOND = (uint)value.Second;
             if (tzinfo != null)
             {
-                datetime.TimeZoneId = tzinfo.ToTimeZoneId<U>();
+                datetime.TimeZoneId = tzinfo.To_ITZID<U>();
                 datetime.TimeFormat = TimeFormat.LocalAndTimeZone;
             }
             else if (value.Kind == DateTimeKind.Utc) datetime.TimeFormat = TimeFormat.Utc;
-            return datetime;   
+            return datetime;
         }
 
-        public static T ToTime<T>(this DateTime value)
+        public static T To_ITIME<T>(this DateTime value)
             where T : ITIME, new()
         {
             if (value == null) return default(T);
@@ -303,9 +305,9 @@ namespace reexmonkey.xcal.domain.extensions
             return time;
         }
 
-        public static T ToTime<T, U>(this DateTime value, TimeZoneInfo tzinfo = null)
-            where T: ITIME, new()
-            where U: ITZID, new()
+        public static T To_ITIME<T, U>(this DateTime value, TimeZoneInfo tzinfo)
+            where T : ITIME, new()
+            where U : ITZID, new()
         {
             if (value == null) return default(T);
             var time = Activator.CreateInstance<T>();
@@ -314,14 +316,14 @@ namespace reexmonkey.xcal.domain.extensions
             time.SECOND = (uint)value.Second;
             if (tzinfo != null)
             {
-                time.TimeZoneId = tzinfo.ToTimeZoneId<U>();
+                time.TimeZoneId = tzinfo.To_ITZID<U>();
                 time.TimeFormat = TimeFormat.LocalAndTimeZone;
             }
             else if (value.Kind == DateTimeKind.Utc) time.TimeFormat = TimeFormat.Utc;
-            return time;   
+            return time;
         }
 
-        public static T ToTimeZoneId<T>(this TimeZoneInfo tzinfo)
+        public static T To_ITZID<T>(this TimeZoneInfo tzinfo)
             where T : ITZID, new()
         {
             var tzid = Activator.CreateInstance<T>();
@@ -354,8 +356,8 @@ namespace reexmonkey.xcal.domain.extensions
             return new TimeSpan((int)value.HOUR, (int)value.MINUTE, (int)value.SECOND);
         }
 
-        public static T ToDuration<T>(this TimeSpan span)
-            where T: IDURATION, new()
+        public static T To_IDURATION<T>(this TimeSpan span)
+            where T : IDURATION, new()
         {
             var duration = Activator.CreateInstance<T>();
             duration.DAYS = (uint)span.Days;
@@ -369,10 +371,10 @@ namespace reexmonkey.xcal.domain.extensions
         }
 
         public static T ToTime<T>(this TimeSpan span)
-            where T:ITIME, new()
+            where T : ITIME, new()
         {
             var time = Activator.CreateInstance<T>();
-            time.HOUR = (uint) span.Hours;
+            time.HOUR = (uint)span.Hours;
             time.MINUTE = (uint)span.Minutes;
             time.SECOND = (uint)span.Seconds;
             return time;
@@ -383,18 +385,21 @@ namespace reexmonkey.xcal.domain.extensions
             if (duration == null) throw new ArgumentNullException("Duration must not be null");
             var ts = new TimeSpan((int)duration.DAYS, (int)duration.HOURS, (int)duration.MINUTES, (int)duration.SECONDS);
             return ts;
-        }
+        } 
+        #endregion
 
-        public static T ParseBinary<T>(this string value)
-            where T: IBINARY, new()
+        #region string parsers
+
+        public static T Parse_IBINARY<T>(this string value)
+    where T : IBINARY, new()
         {
             var binary = Activator.CreateInstance<T>();
             binary.Value = value;
             return binary;
         }
 
-        public static T ParseDate<T>(this string value)
-            where T: IDATE, new()
+        public static T Parse_IDATE<T>(this string value)
+            where T : IDATE, new()
         {
             var date = Activator.CreateInstance<T>();
             var pattern = @"^(?<year>\d{2,4})(?<month>\d{1,2})(?<day>\d{1,2})$";
@@ -411,7 +416,7 @@ namespace reexmonkey.xcal.domain.extensions
             return date;
         }
 
-        public static T TryParseDate<T>(this string value)
+        public static T TryParse_IDATE<T>(this string value)
     where T : IDATE, new()
         {
             var date = Activator.CreateInstance<T>();
@@ -429,7 +434,7 @@ namespace reexmonkey.xcal.domain.extensions
             return date;
         }
 
-        public static T ParseDateTime<T>(this string value, ITZID tzid = null)
+        public static T Parse_IDATETIME<T>(this string value, ITZID tzid = null)
     where T : IDATE_TIME, new()
         {
             var date = Activator.CreateInstance<T>();
@@ -444,10 +449,10 @@ namespace reexmonkey.xcal.domain.extensions
                     if (match.Groups["hour"].Success) date.HOUR = uint.Parse(match.Groups["hour"].Value);
                     if (match.Groups["min"].Success) date.MINUTE = uint.Parse(match.Groups["min"].Value);
                     if (match.Groups["sec"].Success) date.SECOND = uint.Parse(match.Groups["sec"].Value);
-                    if (match.Groups["utc"].Success) 
+                    if (match.Groups["utc"].Success)
                     {
-                        if (match.Groups["utc"].Value.Equals("Z", StringComparison.OrdinalIgnoreCase)) 
-                            date.TimeFormat = TimeFormat.Utc; 
+                        if (match.Groups["utc"].Value.Equals("Z", StringComparison.OrdinalIgnoreCase))
+                            date.TimeFormat = TimeFormat.Utc;
                     }
                 }
             }
@@ -456,7 +461,7 @@ namespace reexmonkey.xcal.domain.extensions
             return date;
         }
 
-        public static T TryParseDateTime<T>(this string value, ITZID tzid = null)
+        public static T TryParse_IDATETIME<T>(this string value, ITZID tzid = null)
             where T : IDATE_TIME, new()
         {
             var date = Activator.CreateInstance<T>();
@@ -471,10 +476,10 @@ namespace reexmonkey.xcal.domain.extensions
                     if (match.Groups["hour"].Success) date.HOUR = uint.Parse(match.Groups["hour"].Value);
                     if (match.Groups["min"].Success) date.MINUTE = uint.Parse(match.Groups["min"].Value);
                     if (match.Groups["sec"].Success) date.SECOND = uint.Parse(match.Groups["sec"].Value);
-                    if (match.Groups["utc"].Success) 
+                    if (match.Groups["utc"].Success)
                     {
-                        if (match.Groups["utc"].Value.Equals("Z", StringComparison.OrdinalIgnoreCase)) 
-                            date.TimeFormat = TimeFormat.Utc; 
+                        if (match.Groups["utc"].Value.Equals("Z", StringComparison.OrdinalIgnoreCase))
+                            date.TimeFormat = TimeFormat.Utc;
                     }
                 }
             }
@@ -483,7 +488,7 @@ namespace reexmonkey.xcal.domain.extensions
             return date;
         }
 
-        public static T ParseTime<T>(this string value, ITZID tzid)
+        public static T Parse_ITIME<T>(this string value, ITZID tzid)
             where T : ITIME, new()
         {
             var time = Activator.CreateInstance<T>();
@@ -507,7 +512,7 @@ namespace reexmonkey.xcal.domain.extensions
             return time;
         }
 
-        public static T TryParseTime<T>(this string value, ITZID tzid)
+        public static T TryParse_ITME<T>(this string value, ITZID tzid)
             where T : ITIME, new()
         {
             var time = Activator.CreateInstance<T>();
@@ -531,8 +536,8 @@ namespace reexmonkey.xcal.domain.extensions
             return time;
         }
 
-        public static T ParseDuration<T>(this string value)
-            where T: IDURATION, new()
+        public static T Parse_IDURATION<T>(this string value)
+            where T : IDURATION, new()
         {
             var duration = Activator.CreateInstance<T>();
             var pattern = @"^(?<minus>\-)?P((?<weeks>\d*)W)?((?<days>\d*)D)?(T((?<hours>\d*)H)?((?<mins>\d*)M)?((?<secs>\d*)S)?)?$";
@@ -553,8 +558,8 @@ namespace reexmonkey.xcal.domain.extensions
             return duration;
         }
 
-        public static T TryParseDuration<T>(this string value)
-            where T: IDURATION
+        public static T TryParse_IDURATION<T>(this string value)
+            where T : IDURATION
         {
             var duration = Activator.CreateInstance<T>();
             var pattern = @"^(?<minus>\-)?P((?<weeks>\d*)W)?((?<days>\d*)D)?(T((?<hours>\d*)H)?((?<mins>\d*)M)?((?<secs>\d*)S)?)?$";
@@ -575,7 +580,7 @@ namespace reexmonkey.xcal.domain.extensions
             return duration;
         }
 
-        public static T ParsePeriod<T, U, V>(this string value)
+        public static T Parse_IPERIOD<T, U, V>(this string value)
             where T : IPERIOD, new()
             where U : IDATE_TIME, new()
             where V : IDURATION, new()
@@ -586,53 +591,48 @@ namespace reexmonkey.xcal.domain.extensions
 
             try
             {
-                period.Start = parts[0].ParseDateTime<U>();
+                period.Start = parts[0].Parse_IDATETIME<U>();
+                period.End = parts[1].Parse_IDATETIME<U>();
             }
-            catch (FormatException) {throw; }
-            catch (Exception) {throw; }
-            try
-            {
-                period.End = parts[1].ParseDateTime<U>();
-            }
-            catch (FormatException)
-            {
+            catch (FormatException) 
+            {            
                 try
                 {
-                    period.Duration = parts[1].ParseDuration<V>();
+                    period.Duration = parts[1].Parse_IDURATION<V>();
                 }
                 catch (FormatException) { throw; }
-                catch (Exception) { throw; }
+                catch (Exception) { throw; }            
             }
             catch (Exception) { throw; }
             return period;
         }
 
-        public static T TryParsePeriod<T, U, V>(this string value)
-            where T: IPERIOD, new()
-            where U: IDATE_TIME, new()
-            where V: IDURATION, new()
+        public static T TryParse_IPERIOD<T, U, V>(this string value)
+            where T : IPERIOD, new()
+            where U : IDATE_TIME, new()
+            where V : IDURATION, new()
         {
             var period = Activator.CreateInstance<T>();
-            var parts = value.Split(new string[]{"/"}, StringSplitOptions.RemoveEmptyEntries);
+            var parts = value.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
             if (parts == null || parts.Length != 2) throw new FormatException("Invalid period format");
-            
-            var start = parts[0].ParseDateTime<U>();
+
+            var start = parts[0].Parse_IDATETIME<U>();
             if (!start.Equals(default(U))) period.Start = start;
             else return default(T);
 
-            var end = parts[1].ParseDateTime<U>();
+            var end = parts[1].Parse_IDATETIME<U>();
             if (!end.Equals(default(U))) period.End = end;
             else
             {
-                var dur = parts[1].ParseDuration<V>();
+                var dur = parts[1].Parse_IDURATION<V>();
                 if (!dur.Equals(default(V))) period.Duration = dur;
                 else return default(T);
             }
             return period;
         }
 
-        public static T ParseWeekDayNum<T>(this string value)
-            where T:IWEEKDAYNUM, new()
+        public static T Parse_IWEEKDAYNUM<T>(this string value)
+            where T : IWEEKDAYNUM, new()
         {
             var weekdaynum = Activator.CreateInstance<T>();
             var pattern = @"^((?<sign>\w)? <?ordwk>\d{1,2})?(?<weekday>(SU|MO|TU|WE|TH|FR|SA)$";
@@ -645,7 +645,7 @@ namespace reexmonkey.xcal.domain.extensions
                     {
                         if (match.Groups["sign"].Value == "-") mulitplier *= -1;
                     }
-                    if (match.Groups["ordwk"].Success) weekdaynum.OrdinalWeek = mulitplier * int.Parse( match.Groups["ordwk"].Value);
+                    if (match.Groups["ordwk"].Success) weekdaynum.OrdinalWeek = mulitplier * int.Parse(match.Groups["ordwk"].Value);
                     if (match.Groups["weekday"].Success) weekdaynum.Weekday = match.Groups["weekday"].Value.TranslateToWEEKDAY();
                 }
             }
@@ -653,7 +653,7 @@ namespace reexmonkey.xcal.domain.extensions
             return weekdaynum;
         }
 
-        public static T TryParseWeekDayNum<T>(this string value)
+        public static T TryParse_IWEEKDAYNUM<T>(this string value)
     where T : IWEEKDAYNUM, new()
         {
             var weekdaynum = Activator.CreateInstance<T>();
@@ -676,13 +676,13 @@ namespace reexmonkey.xcal.domain.extensions
         }
 
 
-        public static T ParseRecur<T, U,  V>(this string value)
-            where T: IRECUR, new()
-            where U: IDATE_TIME, new()
-            where V: IWEEKDAYNUM, new()
+        public static T Parse_IRECUR<T, U, V>(this string value)
+            where T : IRECUR, new()
+            where U : IDATE_TIME, new()
+            where V : IWEEKDAYNUM, new()
         {
             var recur = Activator.CreateInstance<T>();
-            var tokens = value.Split(new string[]{";"}, StringSplitOptions.RemoveEmptyEntries);
+            var tokens = value.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
             if (tokens == null || tokens.Length == 0) throw new FormatException("Invalid Recur format");
 
             try
@@ -692,11 +692,11 @@ namespace reexmonkey.xcal.domain.extensions
                     var pattern = @"^(FREQ|UNTIL|COUNT|INTERVAL|BYSECOND|BYMINUTE|BYHOUR|BYMONTHDAY|BYYEARDAY|BYWEEKNO|BYMONTH|WKST|BYSETPOS)=((\w+|\d+)(,[\s]*(\w+|\d+))*)$";
                     if (!Regex.IsMatch(token, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)) continue;
 
-                    var pair = token.Split(new string[]{"="}, StringSplitOptions.RemoveEmptyEntries);
+                    var pair = token.Split(new string[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
 
                     //check FREQ
-                    if (pair[0].Equals("FREQ", StringComparison.OrdinalIgnoreCase))  recur.FREQ = pair[1].TranslateToFREQ();
-                    if (pair[0].Equals("UNTIL", StringComparison.OrdinalIgnoreCase)) recur.UNTIL = pair[1].ParseDateTime<U>();
+                    if (pair[0].Equals("FREQ", StringComparison.OrdinalIgnoreCase)) recur.FREQ = pair[1].TranslateToFREQ();
+                    if (pair[0].Equals("UNTIL", StringComparison.OrdinalIgnoreCase)) recur.UNTIL = pair[1].Parse_IDATETIME<U>();
                     if (pair[0].Equals("COUNT", StringComparison.OrdinalIgnoreCase)) recur.COUNT = uint.Parse(pair[1]);
                     if (pair[0].Equals("INTERVAL", StringComparison.OrdinalIgnoreCase)) recur.COUNT = uint.Parse(pair[1]);
                     if (pair[0].Equals("BYSECOND", StringComparison.OrdinalIgnoreCase))
@@ -722,7 +722,7 @@ namespace reexmonkey.xcal.domain.extensions
                     {
                         var parts = pair[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
                         if (parts == null || parts.Length == 0) continue;
-                        recur.BYDAY = parts.Select(x => x.ParseWeekDayNum<V>() as IWEEKDAYNUM);
+                        recur.BYDAY = parts.Select(x => x.Parse_IWEEKDAYNUM<V>() as IWEEKDAYNUM);
                     }
 
                     if (pair[0].Equals("BYMONTHDAY", StringComparison.OrdinalIgnoreCase))
@@ -772,7 +772,7 @@ namespace reexmonkey.xcal.domain.extensions
         }
 
 
-        public static T TryParseRecur<T, U, V>(this string value)
+        public static T TryParse_IRECUR<T, U, V>(this string value)
             where T : IRECUR, new()
             where U : IDATE_TIME, new()
             where V : IWEEKDAYNUM, new()
@@ -792,7 +792,7 @@ namespace reexmonkey.xcal.domain.extensions
 
                     //check FREQ
                     if (pair[0].Equals("FREQ", StringComparison.OrdinalIgnoreCase)) recur.FREQ = pair[1].TranslateToFREQ();
-                    if (pair[0].Equals("UNTIL", StringComparison.OrdinalIgnoreCase)) recur.UNTIL = pair[1].ParseDateTime<U>();
+                    if (pair[0].Equals("UNTIL", StringComparison.OrdinalIgnoreCase)) recur.UNTIL = pair[1].Parse_IDATETIME<U>();
                     if (pair[0].Equals("COUNT", StringComparison.OrdinalIgnoreCase)) recur.COUNT = uint.Parse(pair[1]);
                     if (pair[0].Equals("INTERVAL", StringComparison.OrdinalIgnoreCase)) recur.COUNT = uint.Parse(pair[1]);
                     if (pair[0].Equals("BYSECOND", StringComparison.OrdinalIgnoreCase))
@@ -818,7 +818,7 @@ namespace reexmonkey.xcal.domain.extensions
                     {
                         var parts = pair[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
                         if (parts == null || parts.Length == 0) continue;
-                        recur.BYDAY = parts.Select(x => x.ParseWeekDayNum<V>() as IWEEKDAYNUM);
+                        recur.BYDAY = parts.Select(x => x.Parse_IWEEKDAYNUM<V>() as IWEEKDAYNUM);
                     }
 
                     if (pair[0].Equals("BYMONTHDAY", StringComparison.OrdinalIgnoreCase))
@@ -868,8 +868,8 @@ namespace reexmonkey.xcal.domain.extensions
         }
 
 
-        public static T ParseUri<T>(this string value)
-            where T: IURI, new()
+        public static T Parse_IURI<T>(this string value)
+            where T : IURI, new()
         {
             var uri = Activator.CreateInstance<T>();
             try
@@ -881,8 +881,8 @@ namespace reexmonkey.xcal.domain.extensions
             return uri;
         }
 
-        public static T TryParseUri<T>(this string value)
-            where T: IURI, new()
+        public static T TryParse_IURI<T>(this string value)
+            where T : IURI, new()
         {
             var uri = Activator.CreateInstance<T>();
             try
@@ -894,8 +894,8 @@ namespace reexmonkey.xcal.domain.extensions
             return uri;
         }
 
-        public static T ParseUtcOffset<T>(this string value)
-            where T: IUTC_OFFSET, new()
+        public static T Parse_ITUCOFFSET<T>(this string value)
+            where T : IUTC_OFFSET, new()
         {
             var offset = Activator.CreateInstance<T>();
             var pattern = @"^(?<minus>\-|?<plus>\+)(?<hours>\d{1,2})(?<mins>\d{1,2})(?<secs>\d{1,2})?$";
@@ -913,14 +913,17 @@ namespace reexmonkey.xcal.domain.extensions
             else throw new FormatException("Invalid UTC OFFSET format");
 
             return offset;
-        }
+        } 
+        #endregion
 
         #endregion
 
         #region specialized converters for iCalendar Parameter types
 
-        public static T ParseAltRep<T>(this string value)
-            where T: IALTREP, new()
+        #region string parsers
+
+        public static T Parse_IALTREP<T>(this string value)
+    where T : IALTREP, new()
         {
             var altrep = Activator.CreateInstance<T>();
             try
@@ -929,12 +932,12 @@ namespace reexmonkey.xcal.domain.extensions
                 var pattern = @"^ALTREP=(\"")(?<value>(\w+)((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?))(\"")$";
                 if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
                     throw new FormatException("Invalid Alternaitve Text Representation Format");
-                 foreach(Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                 {
-                     if(match.Groups["value"].Success) 
-                         altrep.Path = match.Groups["value"].Value.Replace("\"", string.Empty);
-                 }
-                
+                foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
+                {
+                    if (match.Groups["value"].Success)
+                        altrep.Path = match.Groups["value"].Value.Replace("\"", string.Empty);
+                }
+
             }
             catch (FormatException) { return default(T); }
             catch (ArgumentNullException) { return default(T); }
@@ -944,8 +947,8 @@ namespace reexmonkey.xcal.domain.extensions
             return altrep;
         }
 
-        public static T TryParseAltRep<T>(this string value)
-            where T: IALTREP, new()
+        public static T TryParse_IALTREP<T>(this string value)
+            where T : IALTREP, new()
         {
             var altrep = Activator.CreateInstance<T>();
             try
@@ -972,7 +975,7 @@ namespace reexmonkey.xcal.domain.extensions
         }
 
 
-        public static string ParseCN(this string value)
+        public static string Parse_CommonName(this string value)
         {
             var cn = string.Empty;
             try
@@ -983,13 +986,13 @@ namespace reexmonkey.xcal.domain.extensions
                 if (parts != null && parts.Length == 2) cn = parts[1];
 
             }
-            catch (ArgumentNullException){throw;}
+            catch (ArgumentNullException) { throw; }
             catch (ArgumentOutOfRangeException) { throw; }
             catch (ArgumentException) { throw; }
             return cn;
         }
 
-        public static string TryParseCN(this string value)
+        public static string TryParse_CommonName(this string value)
         {
             var cn = string.Empty;
             try
@@ -1006,11 +1009,9 @@ namespace reexmonkey.xcal.domain.extensions
             return cn;
         }
 
-
-        public static T ParseDelegate<T, U>(this string value)
-            where T: IDELEGATE, new()
-            where U: IURI, new()
-            
+        public static T Parse_IDELEGATE<T, U>(this string value)
+            where T : IDELEGATE, new()
+            where U : IURI, new()
         {
             var del = Activator.CreateInstance<T>();
             var uricheck = @"(?<value>(\w+)((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?))";
@@ -1026,7 +1027,7 @@ namespace reexmonkey.xcal.domain.extensions
                     if (match.Groups["value"].Success) val = match.Groups["value"].Value;
                 }
                 var parts = val.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                del.Addresses = new List<IURI>(parts.Select(p => p.ParseUri<U>() as IURI));
+                del.Addresses = new List<IURI>(parts.Select(p => p.Parse_IURI<U>() as IURI));
             }
             catch (ArgumentNullException) { throw; }
             catch (ArgumentOutOfRangeException) { throw; }
@@ -1034,7 +1035,7 @@ namespace reexmonkey.xcal.domain.extensions
             return del;
         }
 
-        public static T TryParseDelegate<T, U>(this string value)
+        public static T TryParse_IDELEGATE<T, U>(this string value)
             where T : IDELEGATE, new()
             where U : IURI, new()
         {
@@ -1052,7 +1053,7 @@ namespace reexmonkey.xcal.domain.extensions
                     if (match.Groups["value"].Success) val = match.Groups["value"].Value;
                 }
                 var parts = val.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                del.Addresses = new List<IURI>(parts.Select(p => p.ParseUri<U>() as IURI));
+                del.Addresses = new List<IURI>(parts.Select(p => p.Parse_IURI<U>() as IURI));
             }
             catch (ArgumentNullException) { return default(T); }
             catch (ArgumentOutOfRangeException) { return default(T); }
@@ -1060,7 +1061,7 @@ namespace reexmonkey.xcal.domain.extensions
             return del;
         }
 
-        public static T ParseDir<T, U>(this string value)
+        public static T Parse_IDIR<T, U>(this string value)
             where T : IDIR, new()
             where U : IURI, new()
         {
@@ -1074,7 +1075,7 @@ namespace reexmonkey.xcal.domain.extensions
                 foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
                 {
                     if (match.Groups["value"].Success)
-                        dir.Uri = match.Groups["value"].Value.Replace("\"", string.Empty).ParseUri<U>();
+                        dir.Uri = match.Groups["value"].Value.Replace("\"", string.Empty).Parse_IURI<U>();
                 }
 
             }
@@ -1088,7 +1089,7 @@ namespace reexmonkey.xcal.domain.extensions
         }
 
 
-        public static T TryParseDir<T, U>(this string value)
+        public static T TryParse_IDIR<T, U>(this string value)
             where T : IDIR, new()
             where U : IURI, new()
         {
@@ -1102,7 +1103,7 @@ namespace reexmonkey.xcal.domain.extensions
                 foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
                 {
                     if (match.Groups["value"].Success)
-                        dir.Uri = match.Groups["value"].Value.ParseUri<U>();
+                        dir.Uri = match.Groups["value"].Value.Parse_IURI<U>();
                 }
             }
             catch (FormatException) { return default(T); }
@@ -1113,7 +1114,7 @@ namespace reexmonkey.xcal.domain.extensions
             return dir;
         }
 
-        public static T ParseFormatType<T>(this string value)
+        public static T Parse_IFMTTYPE<T>(this string value)
             where T : IFMTTYPE, new()
         {
             var fmt = Activator.CreateInstance<T>();
@@ -1126,7 +1127,7 @@ namespace reexmonkey.xcal.domain.extensions
                 foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
                 {
                     if (match.Groups["type"].Success) fmt.TypeName = match.Groups["type"].Value;
-                    else if(match.Groups["subtype"].Success) fmt.SubTypeName = match.Groups["subtype"].Value;
+                    else if (match.Groups["subtype"].Success) fmt.SubTypeName = match.Groups["subtype"].Value;
                 }
 
             }
@@ -1139,7 +1140,7 @@ namespace reexmonkey.xcal.domain.extensions
             return fmt;
         }
 
-        public static T TryParseFormatType<T>(this string value)
+        public static T TryParse_IFMTTYPE<T>(this string value)
             where T : IFMTTYPE, new()
         {
             var fmt = Activator.CreateInstance<T>();
@@ -1164,7 +1165,7 @@ namespace reexmonkey.xcal.domain.extensions
             return fmt;
         }
 
-        public static T ParseLanguage<T>(this string value)
+        public static T Parse_ILANGUAGE<T>(this string value)
             where T : ILANGUAGE, new()
         {
             var language = Activator.CreateInstance<T>();
@@ -1189,7 +1190,7 @@ namespace reexmonkey.xcal.domain.extensions
             return language;
         }
 
-        public static T TryParseLanguage<T>(this string value)
+        public static T TryParse_ILANGUAGE<T>(this string value)
             where T : ILANGUAGE, new()
         {
             var language = Activator.CreateInstance<T>();
@@ -1213,9 +1214,9 @@ namespace reexmonkey.xcal.domain.extensions
             return language;
         }
 
-        public static T ParseMember<T, U>(this string value)
+        public static T Parse_IMEMBER<T, U>(this string value)
             where T : IMEMBER, new()
-            where U: IURI, new ()
+            where U : IURI, new()
         {
             var member = Activator.CreateInstance<T>();
             var uricheck = @"(?<value>(\w+)((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?))";
@@ -1232,7 +1233,7 @@ namespace reexmonkey.xcal.domain.extensions
                     if (match.Groups["value"].Success) val = match.Groups["value"].Value;
                 }
                 var parts = val.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                member.Addresses = new List<IURI>(parts.Select(p => p.ParseUri<U>() as IURI));
+                member.Addresses = new List<IURI>(parts.Select(p => p.Parse_IURI<U>() as IURI));
 
             }
             catch (FormatException) { throw; }
@@ -1243,8 +1244,7 @@ namespace reexmonkey.xcal.domain.extensions
             return member;
         }
 
-
-        public static T TryParseMember<T, U>(this string value)
+        public static T TryParse_IMEMBER<T, U>(this string value)
             where T : IMEMBER, new()
             where U : IURI, new()
         {
@@ -1261,7 +1261,7 @@ namespace reexmonkey.xcal.domain.extensions
                     if (match.Groups["value"].Success) val = match.Groups["value"].Value;
                 }
                 var parts = val.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                member.Addresses = new List<IURI>(parts.Select(p => p.ParseUri<U>() as IURI));
+                member.Addresses = new List<IURI>(parts.Select(p => p.Parse_IURI<U>() as IURI));
             }
             catch (FormatException) { return default(T); }
             catch (ArgumentNullException) { return default(T); }
@@ -1272,9 +1272,9 @@ namespace reexmonkey.xcal.domain.extensions
         }
 
 
-        public static T ParseSentBy<T, U>(this string value)
-            where T: ISENT_BY, new()
-            where U: IURI, new()
+        public static T Parse_ISENTBY<T, U>(this string value)
+            where T : ISENT_BY, new()
+            where U : IURI, new()
         {
             var sentby = Activator.CreateInstance<T>();
             try
@@ -1286,7 +1286,7 @@ namespace reexmonkey.xcal.domain.extensions
                 foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
                 {
                     if (match.Groups["value"].Success)
-                        sentby.Address = match.Groups["value"].Value.ParseUri<U>();
+                        sentby.Address = match.Groups["value"].Value.Parse_IURI<U>();
                 }
             }
             catch (FormatException) { throw; }
@@ -1297,7 +1297,7 @@ namespace reexmonkey.xcal.domain.extensions
             return sentby;
         }
 
-        public static T TryParseSentBy<T, U>(this string value)
+        public static T TryParse_ISENTBY<T, U>(this string value)
             where T : ISENT_BY, new()
             where U : IURI, new()
         {
@@ -1311,7 +1311,7 @@ namespace reexmonkey.xcal.domain.extensions
                 foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
                 {
                     if (match.Groups["value"].Success)
-                        sentby.Address = match.Groups["value"].Value.ParseUri<U>();
+                        sentby.Address = match.Groups["value"].Value.Parse_IURI<U>();
                 }
             }
             catch (FormatException) { return default(T); }
@@ -1323,7 +1323,7 @@ namespace reexmonkey.xcal.domain.extensions
         }
 
 
-        public static T ParseTZID<T>(this string value)
+        public static T Parse_ITZID<T>(this string value)
             where T : ITZID, new()
         {
             var tzid = Activator.CreateInstance<T>();
@@ -1353,8 +1353,7 @@ namespace reexmonkey.xcal.domain.extensions
             return tzid;
         }
 
-
-        public static T TryParseTZID<T>(this string value)
+        public static T TryParse_ITZID<T>(this string value)
      where T : ITZID, new()
         {
             var tzid = Activator.CreateInstance<T>();
@@ -1382,7 +1381,8 @@ namespace reexmonkey.xcal.domain.extensions
             catch (ArgumentException) { return default(T); }
             catch (Exception) { return default(T); }
             return tzid;
-        }
+        } 
+        #endregion
 
         #endregion
 

@@ -429,17 +429,17 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var full = dry;
             try
             {
-                full.Attendees.AddRange(db.Select<ATTENDEE, VALARM, RELS_EMAIL_ALARMS_ATTENDEES>(
+                full.Attendees.AddRange(db.Select<ATTENDEE, EMAIL_ALARM, RELS_EMAIL_ALARMS_ATTENDEES>(
                     r => r.AttendeeId,
                     r => r.AlarmId,
                     a => a.Id == dry.Id).Except(dry.Attachments.OfType<ATTENDEE>()));
 
-                full.Attachments.AddRange(db.Select<ATTACH_BINARY, VALARM, RELS_EMAIL_ALARMS_ATTACHBINS>(
+                full.Attachments.AddRange(db.Select<ATTACH_BINARY, EMAIL_ALARM, RELS_EMAIL_ALARMS_ATTACHBINS>(
                     r => r.AttachmentId,
                     r => r.AlarmId,
                     a => a.Id == dry.Id).Except(dry.Attachments.OfType<ATTACH_BINARY>()));
 
-                full.Attachments.AddRange(db.Select<ATTACH_BINARY, VALARM, RELS_EMAIL_ALARMS_ATTACHURIS>(
+                full.Attachments.AddRange(db.Select<ATTACH_BINARY, EMAIL_ALARM, RELS_EMAIL_ALARMS_ATTACHURIS>(
                     r => r.AttachmentId,
                     r => r.AlarmId,
                     a => a.Id == dry.Id).Except(dry.Attachments.OfType<ATTACH_BINARY>()));

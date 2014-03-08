@@ -44,4 +44,14 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
+    public class FormatTypeValidator: AbstractValidator<IFMTTYPE>
+    {
+        public FormatTypeValidator()
+        {
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x.TypeName).NotNull().NotEmpty();
+            RuleFor(x => x.SubTypeName).NotNull().NotEmpty();
+        }
+    }
+
 }

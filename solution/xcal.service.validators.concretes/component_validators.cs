@@ -38,4 +38,51 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.Organizer).SetValidator(new OrganizerValidator());
         }
     }
+
+    public class AlarmValidator: AbstractValidator<IALARM>
+    {
+        public AlarmValidator()
+        {
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x.Trigger).NotNull().SetValidator(new TriggerValidator());
+            RuleFor(x => x.Duration).NotNull().SetValidator(new DurationValidator()).Unless(x => x.Repeat < 0);
+            RuleFor(x => x.Repeat).GreaterThanOrEqualTo(0).Unless(x => x.Duration == null);
+        }
+    }
+
+    public class AudioAlarmValidator:AbstractValidator<IAUDIO_ALARM>
+    {
+        public AudioAlarmValidator()
+        {
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x).SetValidator(new AlarmValidator());
+            RuleFor(x => x.Attachment as ATTACH_BINARY).NotNull().SetValidator(new AttachmentBinaryValidator()).When(x => x.Attachment is ATTACH_BINARY);
+            RuleFor(x => x.Attachment as ATTACH_URI).NotNull().SetValidator(new AttachmentUriValidator()).When(x => x.Attachment is ATTACH_URI);
+        }
+    }    
+
+    public class DisplayAlarmValidator:AbstractValidator<IDISPLAY_ALARM>
+    {
+        public DisplayAlarmValidator()
+        {
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x).SetValidator(new AlarmValidator());
+            RuleFor(x => x.Description).NotNull().SetValidator(new TextValidator());
+        }
+    }
+
+    public class EmailAlarmValidator:AbstractValidator<IEMAIL_ALARM>
+    {
+        public EmailAlarmValidator()
+        {
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x).SetValidator(new AlarmValidator());
+            RuleFor(x => x.Description).NotNull().SetValidator(new TextValidator());
+            RuleFor(x => x.Summary).NotNull().SetValidator(new TextValidator());
+            RuleFor(x => x.Attendees).NotNull().NotEmpty().SetCollectionValidator(new AttendeeValidator());
+            RuleFor(x => x.Attachments.OfType<ATTACH_BINARY>()).SetCollectionValidator(new AttachmentBinaryValidator()).When(x => !x.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty());
+            RuleFor(x => x.Attachments.OfType<ATTACH_URI>()).SetCollectionValidator(new AttachmentUriValidator()).When(x => !x.Attachments.OfType<ATTACH_URI>().NullOrEmpty());
+        }
+    }
+
 }
