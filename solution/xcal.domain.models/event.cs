@@ -67,9 +67,9 @@ namespace reexmonkey.xcal.domain.models
                         if (match.Groups["recurid"].Success) 
                         {
                            var recurid = match.Groups["recurid"].Value.TryParse_IDATETIME<DATE_TIME>();
-                           if (this.RecurrenceId != null)
-                               this.RecurrenceId = (string.IsNullOrEmpty(recurid.ToString())) ? new RECURRENCE_ID(recurid) : new RECURRENCE_ID(this.Start);
-                           else this.RecurrenceId.Value = (string.IsNullOrEmpty(recurid.ToString())) ? recurid : this.Start;
+                           if (this.RecurrenceId == null)
+                               this.RecurrenceId = (recurid != null) ? new RECURRENCE_ID(recurid) : ((this.Start != null) ?new RECURRENCE_ID(this.Start): null);
+                           else this.RecurrenceId.Value = (recurid != null && string.IsNullOrEmpty(recurid.ToString())) ? recurid : this.Start;
 
                         };
                     }

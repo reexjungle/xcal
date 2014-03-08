@@ -678,13 +678,13 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator ==(DATE_TIME a, DATE_TIME b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return object.Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(DATE_TIME a, DATE_TIME b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -943,13 +943,13 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator ==(TIME a, TIME b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return object.Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(TIME a, TIME b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -1175,13 +1175,13 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator ==(DURATION a, DURATION b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return object.Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(DURATION a, DURATION b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -1351,13 +1351,13 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator ==(PERIOD a, PERIOD b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return object.Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(PERIOD a, PERIOD b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -1440,13 +1440,13 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator ==(WEEKDAYNUM a, WEEKDAYNUM b)
         {
-            if (b == null) return false;
+            if ((object)a == null || (object)b == null) return object.Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(WEEKDAYNUM a, WEEKDAYNUM b)
         {
-            if (b == null) return false;
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
 
