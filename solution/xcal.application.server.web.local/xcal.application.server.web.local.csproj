@@ -39,6 +39,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MsgPack">
+      <HintPath>..\packages\ServiceStack.Plugins.MsgPack.3.9.71\lib\net40\MsgPack.dll</HintPath>
+    </Reference>
     <Reference Include="MySql.Data">
       <HintPath>..\packages\MySql.Data.6.8.3\lib\net40\MySql.Data.dll</HintPath>
     </Reference>
@@ -60,17 +63,23 @@
     <Reference Include="ServiceStack.Logging.NLog">
       <HintPath>..\packages\ServiceStack.Logging.NLog.3.9.71\lib\net35\ServiceStack.Logging.NLog.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.OrmLite">
-      <HintPath>..\packages\ServiceStack.OrmLite.SqlServer.3.9.14\lib\ServiceStack.OrmLite.dll</HintPath>
+    <Reference Include="ServiceStack.OrmLite, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ServiceStack.OrmLite.SqlServer.3.9.71\lib\net35\ServiceStack.OrmLite.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.OrmLite.MySql">
       <HintPath>..\packages\ServiceStack.OrmLite.MySql.3.9.71\lib\net35\ServiceStack.OrmLite.MySql.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.OrmLite.SqlServer">
-      <HintPath>..\packages\ServiceStack.OrmLite.SqlServer.3.9.14\lib\ServiceStack.OrmLite.SqlServer.dll</HintPath>
+    <Reference Include="ServiceStack.OrmLite.SqlServer, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ServiceStack.OrmLite.SqlServer.3.9.71\lib\net35\ServiceStack.OrmLite.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Redis">
-      <HintPath>..\packages\ServiceStack.Redis.3.9.11\lib\net35\ServiceStack.Redis.dll</HintPath>
+    <Reference Include="ServiceStack.Plugins.MsgPack">
+      <HintPath>..\packages\ServiceStack.Plugins.MsgPack.3.9.71\lib\net40\ServiceStack.Plugins.MsgPack.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Redis, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ServiceStack.Redis.3.9.71\lib\net35\ServiceStack.Redis.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.ServiceInterface, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

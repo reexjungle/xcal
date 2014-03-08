@@ -7,6 +7,8 @@ using ServiceStack.Redis;
 using ServiceStack.Logging;
 using ServiceStack.Logging.NLogger;
 using ServiceStack.ServiceInterface.Validation;
+using ServiceStack.Plugins.MsgPack;
+using ServiceStack.ServiceInterface.Cors;
 using reexmonkey.xcal.service.validators.concretes;
 using reexmonkey.xcal.service.interfaces.contracts.live;
 using reexmonkey.xcal.service.interfaces.concretes.live;
@@ -34,7 +36,7 @@ namespace reexmonkey.xcal.application.server.web.local
                     { "Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, RESET, OPTIONS" },
                     { "Access-Control-Allow-Headers", "Content-Type" },
                 },
-                DebugMode = true, //Do not show StackTraces in service responses during development
+                DebugMode = false, //Show StackTraces in service responses during development
             });
 
             #endregion
@@ -47,6 +49,8 @@ namespace reexmonkey.xcal.application.server.web.local
 
             //activate validation feature
             Plugins.Add(new ValidationFeature());
+            Plugins.Add(new MsgPackFormat());
+            Plugins.Add(new CorsFeature());
 
             #endregion
 

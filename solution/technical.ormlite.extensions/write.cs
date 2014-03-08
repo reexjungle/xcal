@@ -45,36 +45,5 @@ namespace reexmonkey.technical.ormlite.extensions
                 x.ExecuteNonQuery();
             });
         }
-
-        public static void SaveAllExceptThese<T>(this IDbConnection db, IEnumerable<T> all, IEnumerable<T> these)
-            where T : class, IEquatable<T>, new()
-        {
-            if (!all.NullOrEmpty() && !these.NullOrEmpty())
-            {
-                var diffs = all.Except(these);
-                if (!diffs.NullOrEmpty()) db.SaveAll(diffs);
-            }
-            else if (!all.NullOrEmpty() && these.NullOrEmpty()) db.SaveAll(all);
-            else if (all.NullOrEmpty() && !these.NullOrEmpty()) return;
-            else return;
-        }
-
-
-        public static void DeleteTheseExceptAll<T>(this IDbConnection db, IEnumerable<T> all, IEnumerable<T> these)
-            where T : class, IEquatable<T>, new()
-        {
-            if (!all.NullOrEmpty() && !these.NullOrEmpty())
-            {
-                var diffs = these.Except(all);
-                if (!diffs.NullOrEmpty()) db.DeleteAll(diffs);
-            }
-            else if (!these.NullOrEmpty() && all.NullOrEmpty()) db.DeleteAll(these);
-            else if (all.NullOrEmpty() && !these.NullOrEmpty()) return;
-            else return;        
-        
-        
-        }
-
-
     }
 }
