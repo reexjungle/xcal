@@ -12,9 +12,9 @@ namespace reexmonkey.crosscut.essentials.contracts
     public interface IPaged<TSize> where TSize : struct
     {
         /// <summary>
-        /// Gets the number of pages of entities
+        /// Gets or sets the number of pages of entities
         /// </summary>
-        TSize? Pages { get; }
+        TSize? Pages { get; set; }
 
     }
 }

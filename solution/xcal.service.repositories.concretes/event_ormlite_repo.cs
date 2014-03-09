@@ -48,34 +48,34 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public IKeyGenerator<string> KeyGenerator { get; set; }
 
 
-        private IAudioAlarmOrmLiteRepository aalarmrepository = null;
-        private IDisplayAlarmOrmLiteRepository dalarmrepository = null;
-        private IEmailAlarmOrmLiteRepository ealarmrepository = null;
+        private IAudioAlarmRepository aalarmrepository = null;
+        private IDisplayAlarmRepository dalarmrepository = null;
+        private IEmailAlarmRepository ealarmrepository = null;
 
-        public IAudioAlarmOrmLiteRepository AudioAlarmOrmLiteRepository 
+        public IAudioAlarmRepository AudioAlarmRepository 
         {
             get { return this.aalarmrepository; }
             set
             {
-                if (value == null) throw new ArgumentNullException("AudioAlarmOrmLiteRepository");
+                if (value == null) throw new ArgumentNullException("AudioAlarmRepository");
                 this.aalarmrepository = value;
             }
         }
-        public IDisplayAlarmOrmLiteRepository DisplayAlarmOrmLiteRepository 
+        public IDisplayAlarmRepository DisplayAlarmRepository 
         {
             get { return this.dalarmrepository; }
             set 
             {
-                if (value == null) throw new ArgumentNullException("DisplayAlarmOrmLiteRepository");
+                if (value == null) throw new ArgumentNullException("DisplayAlarmRepository");
                 this.dalarmrepository = value;
             } 
         }
-        public IEmailAlarmOrmLiteRepository EmailAlarmOrmLiteRepository 
+        public IEmailAlarmRepository EmailAlarmRepository 
         {
             get { return this.ealarmrepository; } 
             set
             {
-                if (value == null) throw new ArgumentNullException("EmailAlarmOrmLiteRepository");
+                if (value == null) throw new ArgumentNullException("EmailAlarmRepository");
                 this.ealarmrepository = value;
             }
         }
@@ -211,9 +211,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 if (!relateds.NullOrEmpty()) db.SaveAll(relateds);
                 if (!resources.NullOrEmpty()) db.SaveAll(resources);
                 if (!reqstats.NullOrEmpty()) db.SaveAll(reqstats);
-                if (!aalarms.NullOrEmpty()) this.AudioAlarmOrmLiteRepository.SaveAll(aalarms);
-                if (!dalarms.NullOrEmpty()) this.DisplayAlarmOrmLiteRepository.SaveAll(dalarms);
-                if (!ealarms.NullOrEmpty()) this.EmailAlarmOrmLiteRepository.SaveAll(ealarms);
+                if (!aalarms.NullOrEmpty()) this.AudioAlarmRepository.SaveAll(aalarms);
+                if (!dalarms.NullOrEmpty()) this.DisplayAlarmRepository.SaveAll(dalarms);
+                if (!ealarms.NullOrEmpty()) this.EmailAlarmRepository.SaveAll(ealarms);
 
                 //3. construct relations from entity details
                 var rorg = (entity.Organizer != null && entity.Organizer is ORGANIZER) ?
@@ -516,7 +516,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         var aalarms = (!source.Contacts.OfType<AUDIO_ALARM>().NullOrEmpty()) ? source.Contacts.OfType<AUDIO_ALARM>() : null;
                         if (!aalarms.NullOrEmpty() && !uids.NullOrEmpty())
                         {
-                            AudioAlarmOrmLiteRepository.SaveAll(aalarms);
+                            AudioAlarmRepository.SaveAll(aalarms);
                             var raalarms = uids.SelectMany(x => aalarms.Select(y => new REL_EVENTS_AUDIO_ALARMS { Id = this.KeyGenerator.GetNextKey(), Uid = x, AlarmId = y.Id }));
                             var oraalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.Uid, uids) && Sql.In(q.AlarmId, aalarms.Select(x => x.Id).ToArray()));
                             if (!aalarms.NullOrEmpty() && !raalarms.Except(oraalarms).NullOrEmpty()) db.SaveAll(raalarms.Except(oraalarms));
@@ -524,7 +524,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         var dalarms = (!source.Contacts.OfType<DISPLAY_ALARM>().NullOrEmpty()) ? source.Contacts.OfType<DISPLAY_ALARM>() : null;
                         if (!dalarms.NullOrEmpty() && !uids.NullOrEmpty())
                         {
-                            DisplayAlarmOrmLiteRepository.SaveAll(dalarms);
+                            DisplayAlarmRepository.SaveAll(dalarms);
                             var rdalarms = uids.SelectMany(x => dalarms.Select(y => new REL_EVENTS_DISPLAY_ALARMS { Id = this.KeyGenerator.GetNextKey(), Uid = x, AlarmId = y.Id }));
                             var ordalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.Uid, uids) && Sql.In(q.AlarmId, dalarms.Select(x => x.Id).ToArray()));
                             if (!dalarms.NullOrEmpty() && !rdalarms.Except(ordalarms).NullOrEmpty()) db.SaveAll(rdalarms.Except(ordalarms));
@@ -533,7 +533,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         var ealarms = (!source.Contacts.OfType<EMAIL_ALARM>().NullOrEmpty()) ? source.Contacts.OfType<EMAIL_ALARM>() : null;
                         if (!ealarms.NullOrEmpty() && !uids.NullOrEmpty())
                         {
-                            EmailAlarmOrmLiteRepository.SaveAll(ealarms);
+                            EmailAlarmRepository.SaveAll(ealarms);
                             var realarms = uids.SelectMany(x => ealarms.Select(y => new REL_EVENTS_EMAIL_ALARMS { Id = this.KeyGenerator.GetNextKey(), Uid = x, AlarmId = y.Id }));
                             var orealarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.Uid, uids) && Sql.In(q.AlarmId, dalarms.Select(x => x.Id).ToArray()));
                             if (!ealarms.NullOrEmpty() && !realarms.Except(orealarms).NullOrEmpty()) db.SaveAll(realarms.Except(orealarms));
@@ -610,9 +610,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!relateds.NullOrEmpty()) db.SaveAll(relateds);
                     if (!resources.NullOrEmpty()) db.SaveAll(resources);
                     if (!reqstats.NullOrEmpty()) db.SaveAll(reqstats);
-                    if (!aalarms.NullOrEmpty()) this.AudioAlarmOrmLiteRepository.SaveAll(aalarms);
-                    if (!dalarms.NullOrEmpty()) this.DisplayAlarmOrmLiteRepository.SaveAll(dalarms);
-                    if (!ealarms.NullOrEmpty()) this.EmailAlarmOrmLiteRepository.SaveAll(ealarms);
+                    if (!aalarms.NullOrEmpty()) this.AudioAlarmRepository.SaveAll(aalarms);
+                    if (!dalarms.NullOrEmpty()) this.DisplayAlarmRepository.SaveAll(dalarms);
+                    if (!ealarms.NullOrEmpty()) this.EmailAlarmRepository.SaveAll(ealarms);
 
                     //3. construct available relations
                     var rorgs = entities.Where(x => x.Organizer != null && x.Organizer is ORGANIZER)
@@ -816,9 +816,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     e => e.Id == dry.Uid).Except(dry.Resources.OfType<RESOURCES>(), new EqualByStringId<RESOURCES>()));
 
 
-                dry.Alarms.AddRange(this.AudioAlarmOrmLiteRepository.Find(dry.Uid.ToSingleton()));
-                dry.Alarms.AddRange(this.DisplayAlarmOrmLiteRepository.Find(dry.Uid.ToSingleton()));
-                dry.Alarms.AddRange(this.EmailAlarmOrmLiteRepository.Find(dry.Uid.ToSingleton()));
+                dry.Alarms.AddRange(this.AudioAlarmRepository.Find(dry.Uid.ToSingleton()));
+                dry.Alarms.AddRange(this.DisplayAlarmRepository.Find(dry.Uid.ToSingleton()));
+                dry.Alarms.AddRange(this.EmailAlarmRepository.Find(dry.Uid.ToSingleton()));
 
             }
             catch (ArgumentNullException) { throw; }
@@ -906,9 +906,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     var xresources = (!resources.NullOrEmpty()) ? (from y in resources join r in rresources on y.Id equals r.ResourcesId join e in dry on r.Uid equals e.Uid where e.Uid == x.Uid select y) : null;
                     if (!xresources.NullOrEmpty()) x.Resources.AddRange(xresources.Except(x.Resources.OfType<RESOURCES>(), new EqualByStringId<RESOURCES>()));
 
-                    x.Alarms.AddRange(this.AudioAlarmOrmLiteRepository.Find(uids));
-                    x.Alarms.AddRange(this.DisplayAlarmOrmLiteRepository.Find(uids));
-                    x.Alarms.AddRange(this.EmailAlarmOrmLiteRepository.Find(uids));
+                    x.Alarms.AddRange(this.AudioAlarmRepository.Find(uids));
+                    x.Alarms.AddRange(this.DisplayAlarmRepository.Find(uids));
+                    x.Alarms.AddRange(this.EmailAlarmRepository.Find(uids));
 
                     return x;
                 });

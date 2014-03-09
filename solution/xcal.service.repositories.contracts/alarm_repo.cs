@@ -60,7 +60,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// <summary>
         /// Gets the connection factory of ORMLite datasources
         /// </summary>
-        IDbConnectionFactory DbConnectionFactory { get; }
+        IDbConnectionFactory DbConnectionFactory { get; set; }
     }
 
 
@@ -72,7 +72,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// <summary>
         /// Gets the connection factory of ORMLite datasources
         /// </summary>
-        IRedisClientsManager RedisClientsManager { get; }
+        IRedisClientsManager RedisClientsManager { get; set; }
     }
 
     #endregion

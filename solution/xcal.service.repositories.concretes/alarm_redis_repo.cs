@@ -52,6 +52,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public int? Pages
         {
             get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
         }
 
         public AUDIO_ALARM Find(string fkey, string pkey)
@@ -72,11 +73,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    public class DisplayAlarmRepository: IDisplayAlarmRedisRepository
+    public class DisplayAlarmRedisRepository: IDisplayAlarmRedisRepository
     {
         public IRedisClientsManager RedisClientsManager
         {
             get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
         }
 
         public DISPLAY_ALARM Find(string fkey, string pkey)
@@ -124,6 +126,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public int? Pages
         {
             get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
         }
 
 
@@ -135,12 +138,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    public class EmailAlarmRepository: IEmailAlarmRedisRepository
+    public class EmailAlarmRedisRepository: IEmailAlarmRedisRepository
     {
 
         public IRedisClientsManager RedisClientsManager
         {
             get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
+
         }
 
         public EMAIL_ALARM Hydrate(EMAIL_ALARM dry)
@@ -191,6 +196,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public int? Pages
         {
             get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
         }
 
         public EMAIL_ALARM Find(string fkey, string pkey)

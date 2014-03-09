@@ -12,44 +12,64 @@ namespace reexmonkey.xcal.service.repositories.concretes
 {
     public class CalendarRedisRepository : ICalendarRedisRepository
     {
+        public IEventRepository EventRepository { get; set; }
+
+
         public IRedisClientsManager RedisClientsManager
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
         }
 
-        public VEVENT Hydrate(VEVENT dry)
+        public VCALENDAR Hydrate(VCALENDAR dry)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<VEVENT> Hydrate(IEnumerable<VEVENT> dry)
+        public IEnumerable<VCALENDAR> Hydrate(IEnumerable<VCALENDAR> dry)
         {
             throw new NotImplementedException();
         }
 
-        public VEVENT Find(string fkey, string pkey)
+        public VCALENDAR Find(string key)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<VEVENT> Find(IEnumerable<string> fkeys, IEnumerable<string> pkeys = null, int? page = null)
+        public IEnumerable<VCALENDAR> Find(IEnumerable<string> keys, int? page = null)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<VEVENT> Get(int? page = null)
+        public IEnumerable<VCALENDAR> Get(int? page = null)
         {
             throw new NotImplementedException();
         }
 
-        public IKeyGenerator<string> KeyGenerator { get; set; }
+        public IKeyGenerator<string> KeyGenerator
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
 
-        public void Save(VEVENT entity)
+        public void Save(VCALENDAR entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Patch(VEVENT source, Expression<Func<VEVENT, object>> fields, Expression<Func<VEVENT, bool>> where = null)
+        public void Patch(VCALENDAR source, Expression<Func<VCALENDAR, object>> fields, Expression<Func<VCALENDAR, bool>> where = null)
         {
             throw new NotImplementedException();
         }
@@ -59,7 +79,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public void SaveAll(IEnumerable<VEVENT> entities)
+        public void SaveAll(IEnumerable<VCALENDAR> entities)
         {
             throw new NotImplementedException();
         }
@@ -71,7 +91,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public int? Pages
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

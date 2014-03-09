@@ -8,7 +8,7 @@ using reexmonkey.crosscut.essentials.contracts;
 using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.xcal.service.repositories.contracts;
 
-namespace reexmonkey.xcal.service.repositories.concrete
+namespace reexmonkey.xcal.service.repositories.concretes
 {
     public class EventRedisRepository: IEventRedisRepository
     {
@@ -35,6 +35,29 @@ namespace reexmonkey.xcal.service.repositories.concrete
         {
             get { return this.pages; }
             set { this.pages = value;}
+        }
+
+        public IAudioAlarmRepository AudioAlarmRepository
+        {
+            get { throw new NotImplementedException();}
+            set { throw new NotImplementedException();}
+        }
+
+        public IDisplayAlarmRepository DisplayAlarmRepository
+        {
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
+        }
+
+        public IEmailAlarmRepository EmailAlarmRepository
+        {
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
+        }
+
+        public EventRedisRepository()
+        {
+
         }
 
         public EventRedisRepository(IRedisClientsManager manager, int? pages = null)

@@ -12,8 +12,6 @@ namespace reexmonkey.xcal.service.repositories.contracts
         IWriteRepository<VCALENDAR, string>,
         IPaged<int>
     {
-        IEventRepository EventRepository { get; set; }
-
         /// <summary>
         /// Populates a sparse calendar entity with details from its consitutent entities
         /// </summary>
@@ -37,18 +35,18 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// <summary>
         /// Gets the connection factory of ORMLite datasources
         /// </summary>
-        IDbConnectionFactory DbConnectionFactory { get; }
+        IDbConnectionFactory DbConnectionFactory { get; set; }
     }
 
 
     /// <summary>
     /// Specifies an interface for a repository of calendars hosted on a NoSQL Redis data source
     /// </summary>
-    public interface ICalendarRedisRepository : IEventRepository
+    public interface ICalendarRedisRepository : ICalendarRepository
     {
         /// <summary>
         /// Gets the Redis client manager
         /// </summary>
-        IRedisClientsManager RedisClientsManager { get; }
+        IRedisClientsManager RedisClientsManager { get; set; }
     }
 }
