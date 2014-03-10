@@ -20,9 +20,6 @@
     <Setting Name="alarms_page_count" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">120</Value>
     </Setting>
-    <Setting Name="db_provider_type" Type="reexmonkey.crosscut.goodies.concretes.DataProviderType" Scope="Application">
-      <Value Profile="(Default)">ormlite</Value>
-    </Setting>
     <Setting Name="fpiLanguageId" Type="System.String" Scope="Application">
       <Value Profile="(Default)">En-en</Value>
     </Setting>
@@ -34,6 +31,9 @@
     </Setting>
     <Setting Name="fpiAuthority" Type="reexmonkey.crosscut.essentials.contracts.Authority" Scope="Application">
       <Value Profile="(Default)">None</Value>
+    </Setting>
+    <Setting Name="db_provider_type" Type="reexmonkey.crosscut.goodies.concretes.DataProviderType" Scope="Application">
+      <Value Profile="(Default)">rdbms</Value>
     </Setting>
   </Settings>
 </SettingsFile>

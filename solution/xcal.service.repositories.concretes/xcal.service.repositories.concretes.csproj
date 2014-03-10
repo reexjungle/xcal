@@ -104,13 +104,13 @@
       <Project>{8c731af7-0991-4e6e-8049-9ef9d107a0b4}</Project>
       <Name>crosscut.io.concretes</Name>
     </ProjectReference>
-    <ProjectReference Include="..\technical.ormlite.extensions\technical.ormlite.extensions.csproj">
-      <Project>{3346db20-5077-4fc8-93ee-e4a590bcc1d0}</Project>
-      <Name>technical.ormlite.extensions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\technical.redis.extensions\technical.redis.extensions.csproj">
+    <ProjectReference Include="..\technical.data.concretes\technical.data.concretes.csproj">
       <Project>{b4a2596a-5689-4ec9-bd01-0b2ff4453dad}</Project>
-      <Name>technical.redis.extensions</Name>
+      <Name>technical.data.concretes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\technical.data.contracts\technical.data.contracts.csproj">
+      <Project>{3346db20-5077-4fc8-93ee-e4a590bcc1d0}</Project>
+      <Name>technical.data.contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\xcal.domain.contracts\xcal.domain.contracts.csproj">
       <Project>{5cc7e3d9-702b-45a3-a413-a07d010c2651}</Project>

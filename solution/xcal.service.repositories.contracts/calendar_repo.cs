@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using ServiceStack.OrmLite;
 using ServiceStack.Redis;
-using reexmonkey.crosscut.essentials.contracts;
 using reexmonkey.xcal.domain.models;
+using reexmonkey.technical.data.contracts;
 
 namespace reexmonkey.xcal.service.repositories.contracts
 {

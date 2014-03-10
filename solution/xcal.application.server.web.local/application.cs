@@ -205,6 +205,7 @@ namespace reexmonkey.xcal.application.server.web.local
 
             #endregion
 
+
         }
 
         public ApplicationHost() : base(Properties.Settings.Default.service_name, typeof(EventService).Assembly)

@@ -42,6 +42,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 var toadd = request.Events.Except(oevents, new EqualByStringId<VEVENT>());
                 if (!toadd.NullOrEmpty()) calendar.Components.AddRange(toadd);
                 this.CalendarRepository.Save(calendar);
+                this.CalendarRepository.Patch(calendar, x => new { x.Calscale, x.Method }, x => x.ProdId == "000" && x.Calscale == CALSCALE.GREGORIAN);
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }

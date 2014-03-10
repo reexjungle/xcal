@@ -35,10 +35,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "technical", "technical", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.service.formats", "xcal.service.formats\xcal.service.formats.csproj", "{7496B2C6-BD7E-44A9-9C33-02CD399F0DE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "technical.ormlite.extensions", "technical.ormlite.extensions\technical.ormlite.extensions.csproj", "{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "technical.redis.extensions", "technical.redis.extensions\technical.redis.extensions.csproj", "{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.service.repositories.concretes", "xcal.service.repositories.concretes\xcal.service.repositories.concretes.csproj", "{17322A2E-E311-41BD-9070-6146842A46C3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.service.repositories.contracts", "xcal.service.repositories.contracts\xcal.service.repositories.contracts.csproj", "{1898784A-99B2-4226-8C33-689EA6558CFA}"
@@ -60,6 +56,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.service.interfaces.concretes", "xcal.service.interfaces.concretes\xcal.service.interfaces.concretes.csproj", "{0B922294-6A3F-4232-A150-CAC6BFC7BCFD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.service.interfaces.contracts", "xcal.service.interfaces.contracts\xcal.service.interfaces.contracts.csproj", "{0F139102-92D0-4D11-8A18-49757609CCBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "technical.data.concretes", "technical.data.concretes\technical.data.concretes.csproj", "{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "technical.data.contracts", "technical.data.contracts\technical.data.contracts.csproj", "{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -107,14 +107,6 @@ Global
 		{7496B2C6-BD7E-44A9-9C33-02CD399F0DE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7496B2C6-BD7E-44A9-9C33-02CD399F0DE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7496B2C6-BD7E-44A9-9C33-02CD399F0DE0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{17322A2E-E311-41BD-9070-6146842A46C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{17322A2E-E311-41BD-9070-6146842A46C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17322A2E-E311-41BD-9070-6146842A46C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -159,6 +151,14 @@ Global
 		{0F139102-92D0-4D11-8A18-49757609CCBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F139102-92D0-4D11-8A18-49757609CCBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F139102-92D0-4D11-8A18-49757609CCBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -185,7 +185,7 @@ Global
 		{8C731AF7-0991-4E6E-8049-9EF9D107A0B4} = {0C7DBB41-D410-47F4-9457-A30932FF94F2}
 		{E307C223-9021-45BE-A261-DAF43F31B354} = {0C7DBB41-D410-47F4-9457-A30932FF94F2}
 		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422} = {994ADDCE-FC85-436E-8F9A-FCCE54BE307C}
-		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0} = {8BE1181E-82DB-40AA-AD97-55D179513F29}
 		{B4A2596A-5689-4EC9-BD01-0B2FF4453DAD} = {8BE1181E-82DB-40AA-AD97-55D179513F29}
+		{3346DB20-5077-4FC8-93EE-E4A590BCC1D0} = {8BE1181E-82DB-40AA-AD97-55D179513F29}
 	EndGlobalSection
 EndGlobal

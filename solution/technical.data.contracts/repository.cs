@@ -2,8 +2,9 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
+using reexmonkey.crosscut.essentials.contracts;
 
-namespace reexmonkey.crosscut.essentials.contracts
+namespace reexmonkey.technical.data.contracts
 {
     /// <summary>
     /// Specifies the interface for repositories
