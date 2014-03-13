@@ -27,20 +27,10 @@ namespace reexmonkey.technical.data.concretes
         FULL = 0x0010
     }
 
-    [Flags]
-    public enum DateTimeMode
-    { 
-        DATE = 0x0001,
-        TIME = 0x0001,
-        UNKNOWN = 0xffff
-    }
-
     #endregion
 
     public static class OrmLiteExtensions
     {
-
-        #region read extensions
 
         #region common dml read operations
 
@@ -252,12 +242,12 @@ namespace reexmonkey.technical.data.concretes
         {
             var ev = OrmLiteConfig.DialectProvider.ExpressionVisitor<T1>();
             return db.Exec(cmd =>
-                {
-                    ev.Skip = skip;
-                    ev.Rows = rows;
-                    using (var reader = cmd.ExecReader(ev.Where(P1).ToSelectStatement()))
-                        return reader.ConvertToList<T1>();
-                });
+            {
+                ev.Skip = skip;
+                ev.Rows = rows;
+                using (var reader = cmd.ExecReader(ev.Where(P1).ToSelectStatement()))
+                    return reader.ConvertToList<T1>();
+            });
         }
 
         #endregion
@@ -1819,47 +1809,6 @@ namespace reexmonkey.technical.data.concretes
         #endregion
 
         #endregion 
-        #endregion
-
-        #region write extensions
-
-        public static void DropDatabase(this IDbConnection db, string name)
-        {
-            db.Exec(x =>
-            {
-                x.CommandText = string.Format("DROP DATABASE {0}", name);
-                x.ExecuteNonQuery();
-            });
-        }
-
-        public static void DropSchema(this IDbConnection db, string name)
-        {
-            db.Exec(x =>
-            {
-                x.CommandText = string.Format("DROP SCHEMA {0}", name);
-                x.ExecuteNonQuery();
-            });
-        }
-
-        public static void CreateSchema(this IDbConnection db, string name)
-        {
-            db.Exec(x =>
-            {
-                x.CommandText = string.Format("CREATE SCHEMA {0}", name);
-                x.ExecuteNonQuery();
-            });
-        }
-
-        public static void CreateSchemaIfNotExists(this IDbConnection db, string name)
-        {
-            db.Exec(x =>
-            {
-                x.CommandText = string.Format("CREATE SCHEMA IF NOT EXISTS {0}", name);
-                x.ExecuteNonQuery();
-            });
-        }
-
-        #endregion
 
     }
 }

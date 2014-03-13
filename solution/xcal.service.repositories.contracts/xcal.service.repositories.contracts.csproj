@@ -71,9 +71,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="alarm_repo.cs" />
-    <Compile Include="calendar_repo.cs" />
-    <Compile Include="event_repo.cs" />
+    <Compile Include="alarm.repositories.cs" />
+    <Compile Include="calendar.repositories.cs" />
+    <Compile Include="event.repositories.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -43,7 +43,7 @@ namespace reexmonkey.xcal.application.server.web.local.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server = localhost; Uid = local; Pwd = local;")]
         public string mysql_server {
             get {
                 return ((string)(this["mysql_server"]));
@@ -115,7 +115,7 @@ namespace reexmonkey.xcal.application.server.web.local.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("rdbms")]
+        [global::System.Configuration.DefaultSettingValueAttribute("relational")]
         public global::reexmonkey.crosscut.goodies.concretes.DataProviderType db_provider_type {
             get {
                 return ((global::reexmonkey.crosscut.goodies.concretes.DataProviderType)(this["db_provider_type"]));

@@ -2,6 +2,7 @@
 using Funq;
 using ServiceStack.CacheAccess;
 using ServiceStack.OrmLite;
+using ServiceStack.OrmLite.MySql;
 using ServiceStack.WebHost.Endpoints;
 using ServiceStack.Redis;
 using ServiceStack.Logging;
@@ -88,7 +89,7 @@ namespace reexmonkey.xcal.application.server.web.local
 
             #region inject core repositories and datastore
 
-            if (Properties.Settings.Default.db_provider_type == DataProviderType.rdbms)
+            if (Properties.Settings.Default.db_provider_type == DataProviderType.relational)
             {
                 #region inject ormlite repositories
 
@@ -145,8 +146,16 @@ namespace reexmonkey.xcal.application.server.web.local
 
                 #region inject rdbms provider
 
+                container.Register<IDbConnectionFactory>(new OrmLiteConnectionFactory(Properties.Settings.Default.mysql_server, MySqlDialect.Provider));
 
                 #endregion
+
+                #region initialize creation of database and tables
+                
+
+
+                #endregion
+
             }
             else if (Properties.Settings.Default.db_provider_type == DataProviderType.nosql)
             {

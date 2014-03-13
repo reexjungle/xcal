@@ -71,11 +71,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="component_validators.cs" />
-    <Compile Include="parameter_validators.cs" />
-    <Compile Include="property_validators.cs" />
-    <Compile Include="request_validators.cs" />
-    <Compile Include="value_validators.cs" />
+    <Compile Include="components.validators.cs" />
+    <Compile Include="parameters.validators.cs" />
+    <Compile Include="properties.validators.cs" />
+    <Compile Include="request.dtos.validators.cs" />
+    <Compile Include="values.validators.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

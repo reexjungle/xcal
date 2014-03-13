@@ -11,7 +11,7 @@ namespace reexmonkey.crosscut.goodies.concretes
 {
     public enum DataProviderType
     { 
-        rdbms = 0x1,
+        relational = 0x1,
         nosql = 0x2,
         unknown = 0xf
     }
