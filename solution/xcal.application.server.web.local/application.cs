@@ -10,6 +10,7 @@ using ServiceStack.Logging.NLogger;
 using ServiceStack.ServiceInterface.Validation;
 using ServiceStack.Plugins.MsgPack;
 using ServiceStack.ServiceInterface.Cors;
+using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.service.validators.concretes;
 using reexmonkey.xcal.service.interfaces.contracts.live;
 using reexmonkey.xcal.service.interfaces.concretes.live;
@@ -18,6 +19,7 @@ using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.crosscut.goodies.concretes;
 using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.xcal.service.repositories.concretes;
+using reexmonkey.technical.data.concretes.extensions.ormlite.mysql;
 
 namespace reexmonkey.xcal.application.server.web.local
 {
@@ -146,14 +148,54 @@ namespace reexmonkey.xcal.application.server.web.local
 
                 #region inject rdbms provider
 
-                container.Register<IDbConnectionFactory>(new OrmLiteConnectionFactory(Properties.Settings.Default.mysql_server, MySqlDialect.Provider));
+                container.Register<IOrmLiteDialectProvider>(MySqlDialect.Provider);
+                container.Register<IDbConnectionFactory>(new OrmLiteConnectionFactory(
+                    Properties.Settings.Default.mysql_server,
+                    container.Resolve<IOrmLiteDialectProvider>()));
 
                 #endregion
 
-                #region initialize creation of database and tables
+                #region Create databases and corresponding tables
+
+                var dbfactory = container.Resolve<IDbConnectionFactory>();
+
+                #region create logger database and tables
                 
+                #endregion
 
+                #region  create main database and tables
+                try
+                {
+                    dbfactory.Run(x =>
+                    {
+                        if (string.IsNullOrEmpty(x.Database))
+                        {
+                            x.CreateMySqlDatabase(Properties.Settings.Default.xcal_db_name, Properties.Settings.Default.overwrite_db);
+                            x.ChangeDatabase(Properties.Settings.Default.xcal_db_name);
 
+                        }
+                        else if (!x.Database.Equals(Properties.Settings.Default.xcal_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.xcal_db_name);
+
+                        //if (x.State != System.Data.ConnectionState.Open) x.Open(); 
+                        //Create core tables 
+                        x.CreateTables(false, typeof(VCALENDAR), typeof(VEVENT), typeof(AUDIO_ALARM), typeof(DISPLAY_ALARM), typeof(EMAIL_ALARM), typeof(ORGANIZER), typeof(ATTENDEE), typeof(COMMENT), typeof(RELATEDTO), typeof(ATTACH_BINARY), typeof(ATTACH_URI), typeof(CONTACT), typeof(RDATE), typeof(EXDATE), typeof(RECUR), typeof(RECURRENCE_ID), typeof(REQUEST_STATUS), typeof(RESOURCES));
+
+                        //Create 3NF relational tables
+                        x.CreateTables(false, typeof(REL_CALENDARS_EVENTS), typeof(REL_EVENTS_ATTACHBINS), typeof(REL_EVENTS_ATTACHURIS), typeof(REL_EVENTS_ATTENDEES), typeof(REL_EVENTS_AUDIO_ALARMS), typeof(REL_EVENTS_COMMENTS), typeof(REL_EVENTS_CONTACTS), typeof(REL_EVENTS_DISPLAY_ALARMS), typeof(REL_EVENTS_EMAIL_ALARMS), typeof(REL_EVENTS_EXDATES), typeof(REL_EVENTS_ORGANIZERS), typeof(REL_EVENTS_RDATES), typeof(REL_EVENTS_RECURRENCE_IDS), typeof(REL_EVENTS_RELATEDTOS), typeof(REL_EVENTS_REQSTATS), typeof(REL_EVENTS_RESOURCES), typeof(REL_EVENTS_RRULES), typeof(RELS_EALARMS_ATTACHBINS), typeof(RELS_EALARMS_ATTACHURIS), typeof(RELS_EALARMS_ATTENDEES));
+                    });
+                }
+                catch (MySql.Data.MySqlClient.MySqlException ex)
+                {
+                    container.Resolve<ILogFactory>().GetLogger(this.GetType()).Debug(ex.ToString(), ex);
+                }
+                catch (Exception ex)
+                {
+                    container.Resolve<ILogFactory>().GetLogger(this.GetType()).Debug(ex.ToString(), ex);
+                } 
+                #endregion
+
+                
+                
                 #endregion
 
             }

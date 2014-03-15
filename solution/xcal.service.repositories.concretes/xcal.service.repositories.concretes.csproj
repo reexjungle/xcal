@@ -72,15 +72,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="alarm_ormlite_rels.cs" />
-    <Compile Include="alarm_ormlite_repo.cs" />
-    <Compile Include="alarm_redis_repo.cs" />
-    <Compile Include="calendar_ormlite_rels.cs" />
-    <Compile Include="calendar_ormlite_repo.cs" />
-    <Compile Include="calendar_redis_repo.cs" />
-    <Compile Include="event_ormlite_rels.cs" />
-    <Compile Include="event_ormlite_repo.cs" />
-    <Compile Include="event_redis_repo.cs" />
+    <Compile Include="alarm.ormlite.relations.cs" />
+    <Compile Include="alarm.ormlite.repositories.cs" />
+    <Compile Include="alarm.redis.repositories.cs" />
+    <Compile Include="calendar.ormlite.relations.cs" />
+    <Compile Include="calendar.ormlite.repositories.cs" />
+    <Compile Include="calendar.redis.repository.cs" />
+    <Compile Include="event.ormlite.relations.cs" />
+    <Compile Include="event.ormlite.repository.cs" />
+    <Compile Include="event.redis.repository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

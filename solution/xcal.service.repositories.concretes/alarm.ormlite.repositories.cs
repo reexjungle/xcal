@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Collections.Generic;
 using ServiceStack.OrmLite;
 using reexmonkey.technical.data.contracts;
-using reexmonkey.technical.data.concretes;
+using reexmonkey.technical.data.concretes.extensions.ormlite;
 using reexmonkey.crosscut.essentials.contracts;
 using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.crosscut.goodies.concretes;
@@ -430,17 +430,17 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var full = dry;
             try
             {
-                full.Attendees.AddRange(db.Select<ATTENDEE, EMAIL_ALARM, RELS_EMAIL_ALARMS_ATTENDEES>(
+                full.Attendees.AddRange(db.Select<ATTENDEE, EMAIL_ALARM, RELS_EALARMS_ATTENDEES>(
                     r => r.AttendeeId,
                     r => r.AlarmId,
                     a => a.Id == dry.Id).Except(dry.Attachments.OfType<ATTENDEE>()));
 
-                full.Attachments.AddRange(db.Select<ATTACH_BINARY, EMAIL_ALARM, RELS_EMAIL_ALARMS_ATTACHBINS>(
+                full.Attachments.AddRange(db.Select<ATTACH_BINARY, EMAIL_ALARM, RELS_EALARMS_ATTACHBINS>(
                     r => r.AttachmentId,
                     r => r.AlarmId,
                     a => a.Id == dry.Id).Except(dry.Attachments.OfType<ATTACH_BINARY>()));
 
-                full.Attachments.AddRange(db.Select<ATTACH_BINARY, EMAIL_ALARM, RELS_EMAIL_ALARMS_ATTACHURIS>(
+                full.Attachments.AddRange(db.Select<ATTACH_BINARY, EMAIL_ALARM, RELS_EALARMS_ATTACHURIS>(
                     r => r.AttachmentId,
                     r => r.AlarmId,
                     a => a.Id == dry.Id).Except(dry.Attachments.OfType<ATTACH_BINARY>()));
@@ -459,9 +459,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
             {
                 //1. retrieve relationships
                 var ids = dry.Select(q => q.Id).ToArray();
-                var rattends = db.Select<RELS_EMAIL_ALARMS_ATTENDEES>(q => Sql.In(q.Id, ids));
-                var rattachbins = db.Select<RELS_EMAIL_ALARMS_ATTACHBINS>(q => Sql.In(q.Id, ids));
-                var rattachuris = db.Select<RELS_EMAIL_ALARMS_ATTACHURIS>(q => Sql.In(q.Id, ids));
+                var rattends = db.Select<RELS_EALARMS_ATTENDEES>(q => Sql.In(q.Id, ids));
+                var rattachbins = db.Select<RELS_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, ids));
+                var rattachuris = db.Select<RELS_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, ids));
 
 
                 //2. retrieve secondary entities
@@ -568,19 +568,19 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                 //3. construct relations from entity details
                 var rattends = (entity.Attendees.OfType<ATTENDEE>().Count() > 0) ? entity.Attendees.OfType<ATTENDEE>()
-                    .Select(x => new RELS_EMAIL_ALARMS_ATTENDEES { AlarmId = entity.Id, AttendeeId = x.Id }) : null;
+                    .Select(x => new RELS_EALARMS_ATTENDEES { AlarmId = entity.Id, AttendeeId = x.Id }) : null;
                 var rattachbins = (entity.Attachments.OfType<ATTACH_BINARY>().Count() > 0) ?
-                    (entity.Attachments.OfType<ATTACH_BINARY>().Select(x => new RELS_EMAIL_ALARMS_ATTACHBINS { AlarmId = entity.Id, AttachmentId = x.Id })) : null;
+                    (entity.Attachments.OfType<ATTACH_BINARY>().Select(x => new RELS_EALARMS_ATTACHBINS { AlarmId = entity.Id, AttachmentId = x.Id })) : null;
                 var rattachuris = (entity.Attachments.OfType<ATTACH_URI>().Count() > 0) ?
-                    (entity.Attachments.OfType<ATTACH_URI>().Select(x => new RELS_EMAIL_ALARMS_ATTACHURIS { AlarmId = entity.Id, AttachmentId = x.Id })) : null;
+                    (entity.Attachments.OfType<ATTACH_URI>().Select(x => new RELS_EALARMS_ATTACHURIS { AlarmId = entity.Id, AttachmentId = x.Id })) : null;
 
                 //4. retrieve existing entity-details relations
                 var orattends = (!attends.NullOrEmpty()) ?
-                    db.Select<RELS_EMAIL_ALARMS_ATTENDEES>(q => q.Id == entity.Id && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray())) : null;
+                    db.Select<RELS_EALARMS_ATTENDEES>(q => q.Id == entity.Id && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray())) : null;
                 var orattachbins = (!attachbins.NullOrEmpty()) ?
-                    db.Select<RELS_EMAIL_ALARMS_ATTACHBINS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray())) : null;
+                    db.Select<RELS_EALARMS_ATTACHBINS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray())) : null;
                 var orattachuris = (!attachuris.NullOrEmpty()) ?
-                    db.Select<RELS_EMAIL_ALARMS_ATTACHURIS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray())) : null;
+                    db.Select<RELS_EALARMS_ATTACHURIS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray())) : null;
 
                 //5. save non-existing entity-details relations
                 if (!rattends.NullOrEmpty()) db.SaveAll(rattends.Except(orattends));
@@ -619,22 +619,22 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                     //3. construct available relations
                     var rattends = entities.Where(x => x.Attendees.OfType<ATTENDEE>().Count() > 0)
-                        .SelectMany(e => e.Attendees.OfType<ATTENDEE>().Select(x => new RELS_EMAIL_ALARMS_ATTENDEES { Id = e.Id, AttendeeId = x.Id }));
+                        .SelectMany(e => e.Attendees.OfType<ATTENDEE>().Select(x => new RELS_EALARMS_ATTENDEES { Id = e.Id, AttendeeId = x.Id }));
                     var rattachbins = entities.Where(x => x.Attachments.OfType<ATTACH_BINARY>().Count() > 0)
-                        .SelectMany(e => e.Attachments.OfType<ATTACH_BINARY>().Select(x => new RELS_EMAIL_ALARMS_ATTACHBINS { Id = e.Id, AttachmentId = x.Id }));
+                        .SelectMany(e => e.Attachments.OfType<ATTACH_BINARY>().Select(x => new RELS_EALARMS_ATTACHBINS { Id = e.Id, AttachmentId = x.Id }));
                     var rattachuris = entities.Where(x => x.Attachments.OfType<ATTACH_URI>().Count() > 0)
-                        .SelectMany(e => e.Attachments.OfType<ATTACH_URI>().Select(x => new RELS_EMAIL_ALARMS_ATTACHURIS { Id = e.Id, AttachmentId = x.Id }));
+                        .SelectMany(e => e.Attachments.OfType<ATTACH_URI>().Select(x => new RELS_EALARMS_ATTACHURIS { Id = e.Id, AttachmentId = x.Id }));
 
                     //4. retrieve existing relations
                     var orattends = (!attends.NullOrEmpty()) ?
-                        db.Select<RELS_EMAIL_ALARMS_ATTENDEES>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()))  : new List<RELS_EMAIL_ALARMS_ATTENDEES>();
+                        db.Select<RELS_EALARMS_ATTENDEES>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()))  : new List<RELS_EALARMS_ATTENDEES>();
 
                     var orattachbins = (!attachbins.NullOrEmpty()) ?
-                        db.Select<RELS_EMAIL_ALARMS_ATTACHBINS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray())) : new List<RELS_EMAIL_ALARMS_ATTACHBINS>();
+                        db.Select<RELS_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray())) : new List<RELS_EALARMS_ATTACHBINS>();
 
                     var orattachuris = (!attachuris.NullOrEmpty()) ?
-                        db.Select<RELS_EMAIL_ALARMS_ATTACHURIS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id))) : 
-                        new List<RELS_EMAIL_ALARMS_ATTACHURIS>();
+                        db.Select<RELS_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id))) : 
+                        new List<RELS_EALARMS_ATTACHURIS>();
 
 
                     //5. save non-existing entity-details relations
@@ -709,8 +709,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!attends.NullOrEmpty() && !ids.NullOrEmpty())
                     {
                         db.SaveAll(attends);
-                        var rattends = ids.SelectMany(x => attends.Select(y => new RELS_EMAIL_ALARMS_ATTENDEES { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttendeeId = y.Id }));
-                        var orattends = db.Select<RELS_EMAIL_ALARMS_ATTENDEES>(q => Sql.In(q.Id, ids) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
+                        var rattends = ids.SelectMany(x => attends.Select(y => new RELS_EALARMS_ATTENDEES { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttendeeId = y.Id }));
+                        var orattends = db.Select<RELS_EALARMS_ATTENDEES>(q => Sql.In(q.Id, ids) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
                         if (!rattends.NullOrEmpty() && !rattends.Except(orattends).NullOrEmpty()) db.SaveAll(rattends.Except(orattends));
 
                     }
@@ -722,8 +722,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!attachbins.NullOrEmpty() && !ids.NullOrEmpty())
                     {
                         db.SaveAll(attachbins);
-                        var rattachbins = ids.SelectMany(x => attachbins.Select(y => new RELS_EMAIL_ALARMS_ATTACHBINS { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttachmentId = y.Id }));
-                        var orattachbins = db.Select<RELS_EMAIL_ALARMS_ATTACHBINS>(q => Sql.In(q.Id, ids) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
+                        var rattachbins = ids.SelectMany(x => attachbins.Select(y => new RELS_EALARMS_ATTACHBINS { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttachmentId = y.Id }));
+                        var orattachbins = db.Select<RELS_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, ids) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
                         if (!rattachbins.NullOrEmpty() && !rattachbins.Except(orattachbins).NullOrEmpty()) db.SaveAll(rattachbins.Except(orattachbins));
                     }
 
@@ -731,8 +731,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!attachuris.NullOrEmpty() && !ids.NullOrEmpty())
                     {
                         db.SaveAll(attachuris);
-                        var rattachuris = ids.SelectMany(x => attachuris.Select(y => new RELS_EMAIL_ALARMS_ATTACHURIS { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttachmentId = y.Id }));
-                        var orattachuris = db.Select<RELS_EMAIL_ALARMS_ATTACHURIS>(q => Sql.In(q.Id, ids) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray()));
+                        var rattachuris = ids.SelectMany(x => attachuris.Select(y => new RELS_EALARMS_ATTACHURIS { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttachmentId = y.Id }));
+                        var orattachuris = db.Select<RELS_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, ids) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray()));
                         if (!rattachuris.NullOrEmpty() && !rattachuris.Except(orattachuris).NullOrEmpty()) db.SaveAll(rattachuris.Except(orattachuris));
                     }
                 }

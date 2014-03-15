@@ -39,12 +39,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="logging.cs" />
     <Compile Include="utilities.cs" />
     <Compile Include="reflectors.cs" />
     <Compile Include="search.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\crosscut.goodies.contracts\crosscut.goodies.contracts.csproj">
+      <Project>{4117dc99-ea03-4b8f-a808-368feaa3c5f2}</Project>
+      <Name>crosscut.goodies.contracts</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

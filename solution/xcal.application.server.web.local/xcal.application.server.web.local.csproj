@@ -148,6 +148,10 @@
       <Project>{f21cb427-5dd9-41b2-a993-17cd8085535a}</Project>
       <Name>crosscut.goodies.concretes</Name>
     </ProjectReference>
+    <ProjectReference Include="..\technical.data.concretes\technical.data.concretes.csproj">
+      <Project>{b4a2596a-5689-4ec9-bd01-0b2ff4453dad}</Project>
+      <Name>technical.data.concretes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\technical.data.contracts\technical.data.contracts.csproj">
       <Project>{3346db20-5077-4fc8-93ee-e4a590bcc1d0}</Project>
       <Name>technical.data.contracts</Name>

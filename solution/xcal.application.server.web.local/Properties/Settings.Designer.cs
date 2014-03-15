@@ -121,5 +121,32 @@ namespace reexmonkey.xcal.application.server.web.local.Properties {
                 return ((global::reexmonkey.crosscut.goodies.concretes.DataProviderType)(this["db_provider_type"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("xcal_local_db")]
+        public string xcal_db_name {
+            get {
+                return ((string)(this["xcal_db_name"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool overwrite_db {
+            get {
+                return ((bool)(this["overwrite_db"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("xcal_logger_local_db")]
+        public string xcal_logdb_name {
+            get {
+                return ((string)(this["xcal_logdb_name"]));
+            }
+        }
     }
 }
