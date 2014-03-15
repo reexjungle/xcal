@@ -124,6 +124,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
+    <None Include="NLog.xsd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -147,6 +152,10 @@
     <ProjectReference Include="..\crosscut.goodies.concretes\crosscut.goodies.concretes.csproj">
       <Project>{f21cb427-5dd9-41b2-a993-17cd8085535a}</Project>
       <Name>crosscut.goodies.concretes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\crosscut.goodies.contracts\crosscut.goodies.contracts.csproj">
+      <Project>{4117dc99-ea03-4b8f-a808-368feaa3c5f2}</Project>
+      <Name>crosscut.goodies.contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\technical.data.concretes\technical.data.concretes.csproj">
       <Project>{b4a2596a-5689-4ec9-bd01-0b2ff4453dad}</Project>

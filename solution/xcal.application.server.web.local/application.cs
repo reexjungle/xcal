@@ -89,7 +89,7 @@ namespace reexmonkey.xcal.application.server.web.local
 
             #endregion
 
-            #region inject core repositories and datastore
+            #region inject core repositories and create data sources on first run
 
             if (Properties.Settings.Default.db_provider_type == DataProviderType.relational)
             {
@@ -160,21 +160,46 @@ namespace reexmonkey.xcal.application.server.web.local
                 var dbfactory = container.Resolve<IDbConnectionFactory>();
 
                 #region create logger database and tables
-                
-                #endregion
 
-                #region  create main database and tables
                 try
                 {
                     dbfactory.Run(x =>
                     {
                         if (string.IsNullOrEmpty(x.Database))
                         {
-                            x.CreateMySqlDatabase(Properties.Settings.Default.xcal_db_name, Properties.Settings.Default.overwrite_db);
-                            x.ChangeDatabase(Properties.Settings.Default.xcal_db_name);
+                            x.CreateMySqlDatabase(Properties.Settings.Default.log_db_name, Properties.Settings.Default.overwrite_db);
+                            x.ChangeDatabase(Properties.Settings.Default.log_db_name);
 
                         }
-                        else if (!x.Database.Equals(Properties.Settings.Default.xcal_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.xcal_db_name);
+                        else if (!x.Database.Equals(Properties.Settings.Default.main_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.log_db_name);
+
+                        x.CreateTables(false, typeof(NlogTable));
+                    });
+                }
+                catch (MySql.Data.MySqlClient.MySqlException ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                } 
+                
+                #endregion
+
+                #region  create main database and tables
+
+                try
+                {
+                    dbfactory.Run(x =>
+                    {
+                        if (string.IsNullOrEmpty(x.Database))
+                        {
+                            x.CreateMySqlDatabase(Properties.Settings.Default.main_db_name, Properties.Settings.Default.overwrite_db);
+                            x.ChangeDatabase(Properties.Settings.Default.main_db_name);
+
+                        }
+                        else if (!x.Database.Equals(Properties.Settings.Default.main_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.main_db_name);
 
                         //if (x.State != System.Data.ConnectionState.Open) x.Open(); 
                         //Create core tables 
@@ -192,10 +217,9 @@ namespace reexmonkey.xcal.application.server.web.local
                 {
                     container.Resolve<ILogFactory>().GetLogger(this.GetType()).Debug(ex.ToString(), ex);
                 } 
-                #endregion
 
-                
-                
+                #endregion
+       
                 #endregion
 
             }

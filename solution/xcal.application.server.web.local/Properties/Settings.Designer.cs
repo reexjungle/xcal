@@ -125,9 +125,9 @@ namespace reexmonkey.xcal.application.server.web.local.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("xcal_local_db")]
-        public string xcal_db_name {
+        public string main_db_name {
             get {
-                return ((string)(this["xcal_db_name"]));
+                return ((string)(this["main_db_name"]));
             }
         }
         
@@ -143,9 +143,9 @@ namespace reexmonkey.xcal.application.server.web.local.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("xcal_logger_local_db")]
-        public string xcal_logdb_name {
+        public string log_db_name {
             get {
-                return ((string)(this["xcal_logdb_name"]));
+                return ((string)(this["log_db_name"]));
             }
         }
     }
