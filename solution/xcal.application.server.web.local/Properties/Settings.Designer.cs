@@ -43,7 +43,7 @@ namespace reexmonkey.xcal.application.server.web.local.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Server = localhost; Uid = local; Pwd = local;")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server = localhost; Uid = local; Pwd = local; allow user variables=true;")]
         public string mysql_server {
             get {
                 return ((string)(this["mysql_server"]));
@@ -142,10 +142,30 @@ namespace reexmonkey.xcal.application.server.web.local.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("xcal_logger_local_db")]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server = localhost; Uid = local; Pwd = local; Database=xcal_elmah_local_db; allow" +
+            " user variables=true;")]
+        public string elmah_mysql_db {
+            get {
+                return ((string)(this["elmah_mysql_db"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("xcal_elmah_local_db")]
         public string log_db_name {
             get {
                 return ((string)(this["log_db_name"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("elmah_error")]
+        public string elmah_error_table {
+            get {
+                return ((string)(this["elmah_error_table"]));
             }
         }
     }

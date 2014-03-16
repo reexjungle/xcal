@@ -5,11 +5,8 @@ using System.Text;
 
 namespace reexmonkey.crosscut.goodies.concretes
 {
-
-    public interface ILogTable<TKey>
-        where TKey: IEquatable<TKey>
+    public interface ILogTable
     {
-        TKey Key { get; set; }
         string Message { get; set; }
     }
 }

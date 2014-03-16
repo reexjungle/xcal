@@ -177,6 +177,30 @@ namespace reexmonkey.crosscut.io.concretes
 
             return BitConverter.ToString(checksum);
         }
+
+        public static string ReadTextLinesFromFile(this string path)
+        {
+            var sb = new StringBuilder();
+            using (var sr = File.OpenText(path))
+            {
+                var line = string.Empty;
+                while ((line = sr.ReadLine()) != null) sb.Append(line); 
+            }
+            return sb.ToString();
+        }
+
+
+        public static string ReadText(this Stream stream)
+        {
+            var sb = new StringBuilder();
+            using (var sr = new StreamReader(stream))
+            {
+                var line = string.Empty;
+                while ((line = sr.ReadLine()) != null) sb.Append(line);
+            }
+            return sb.ToString();
+        }
+
     }
 
 }

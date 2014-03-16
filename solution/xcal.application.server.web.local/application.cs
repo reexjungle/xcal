@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Reflection;
+using System.Web;
+using System.Data;
 using Funq;
 using ServiceStack.CacheAccess;
 using ServiceStack.OrmLite;
@@ -6,20 +9,24 @@ using ServiceStack.OrmLite.MySql;
 using ServiceStack.WebHost.Endpoints;
 using ServiceStack.Redis;
 using ServiceStack.Logging;
-using ServiceStack.Logging.NLogger;
+using ServiceStack.Logging.Elmah;
 using ServiceStack.ServiceInterface.Validation;
 using ServiceStack.Plugins.MsgPack;
 using ServiceStack.ServiceInterface.Cors;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.service.validators.concretes;
-using reexmonkey.xcal.service.interfaces.contracts.live;
 using reexmonkey.xcal.service.interfaces.concretes.live;
 using reexmonkey.crosscut.essentials.contracts;
 using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.crosscut.goodies.concretes;
 using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.xcal.service.repositories.concretes;
+using reexmonkey.crosscut.io.concretes;
 using reexmonkey.technical.data.concretes.extensions.ormlite.mysql;
+using MySql.Data.MySqlClient;
+using Elmah;
+using ServiceStack.ServiceHost;
+using ServiceStack.Logging.Support.Logging;
 
 namespace reexmonkey.xcal.application.server.web.local
 {
@@ -64,15 +71,9 @@ namespace reexmonkey.xcal.application.server.web.local
 
             #endregion
 
-            #region configure loggers
-
-            
-
-            #endregion
-
             #region inject loggers
 
-            container.Register<ILogFactory>(new NLogFactory());
+            container.Register<ILogFactory>(new ElmahLogFactory(new NullLogFactory()));
 
             #endregion
 
@@ -171,12 +172,33 @@ namespace reexmonkey.xcal.application.server.web.local
                             x.ChangeDatabase(Properties.Settings.Default.log_db_name);
 
                         }
-                        else if (!x.Database.Equals(Properties.Settings.Default.main_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.log_db_name);
+                        else if (!x.Database.Equals(Properties.Settings.Default.log_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.log_db_name);
 
-                        x.CreateTables(false, typeof(NlogTable));
+                       
+                        //execute initialization script on first run
+                        if (!x.TableExists(Properties.Settings.Default.elmah_error_table))
+                        {
+                            //execute creation of stored procedures
+                            x.ExecuteSql(Properties.Resources.elmah_mysql_CreateLogTable);
+                            x.ExecuteSql(Properties.Resources.elmah_mysql_GetErrorXml);
+                            x.ExecuteSql(Properties.Resources.elmah_mysql_GetErrorsXml);
+                            x.ExecuteSql(Properties.Resources.elmah_mysql_LogError);
+
+                            //call create table stored procedure
+                            x.Exec(cmd => 
+                            {
+                                cmd.CommandText = "elmah_CreateLogTable";
+                                cmd.CommandType = CommandType.StoredProcedure;
+                                cmd.ExecuteNonQuery();
+                            });
+                        }
                     });
                 }
                 catch (MySql.Data.MySqlClient.MySqlException ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.ToString());
+                }
+                catch (InvalidOperationException ex)
                 {
                     System.Diagnostics.Debug.WriteLine(ex.Message);
                 }
@@ -201,7 +223,6 @@ namespace reexmonkey.xcal.application.server.web.local
                         }
                         else if (!x.Database.Equals(Properties.Settings.Default.main_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.main_db_name);
 
-                        //if (x.State != System.Data.ConnectionState.Open) x.Open(); 
                         //Create core tables 
                         x.CreateTables(false, typeof(VCALENDAR), typeof(VEVENT), typeof(AUDIO_ALARM), typeof(DISPLAY_ALARM), typeof(EMAIL_ALARM), typeof(ORGANIZER), typeof(ATTENDEE), typeof(COMMENT), typeof(RELATEDTO), typeof(ATTACH_BINARY), typeof(ATTACH_URI), typeof(CONTACT), typeof(RDATE), typeof(EXDATE), typeof(RECUR), typeof(RECURRENCE_ID), typeof(REQUEST_STATUS), typeof(RESOURCES));
 
@@ -209,13 +230,13 @@ namespace reexmonkey.xcal.application.server.web.local
                         x.CreateTables(false, typeof(REL_CALENDARS_EVENTS), typeof(REL_EVENTS_ATTACHBINS), typeof(REL_EVENTS_ATTACHURIS), typeof(REL_EVENTS_ATTENDEES), typeof(REL_EVENTS_AUDIO_ALARMS), typeof(REL_EVENTS_COMMENTS), typeof(REL_EVENTS_CONTACTS), typeof(REL_EVENTS_DISPLAY_ALARMS), typeof(REL_EVENTS_EMAIL_ALARMS), typeof(REL_EVENTS_EXDATES), typeof(REL_EVENTS_ORGANIZERS), typeof(REL_EVENTS_RDATES), typeof(REL_EVENTS_RECURRENCE_IDS), typeof(REL_EVENTS_RELATEDTOS), typeof(REL_EVENTS_REQSTATS), typeof(REL_EVENTS_RESOURCES), typeof(REL_EVENTS_RRULES), typeof(RELS_EALARMS_ATTACHBINS), typeof(RELS_EALARMS_ATTACHURIS), typeof(RELS_EALARMS_ATTENDEES));
                     });
                 }
-                catch (MySql.Data.MySqlClient.MySqlException ex)
+                catch (MySqlException ex)
                 {
-                    container.Resolve<ILogFactory>().GetLogger(this.GetType()).Debug(ex.ToString(), ex);
+                    container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString());
                 }
                 catch (Exception ex)
                 {
-                    container.Resolve<ILogFactory>().GetLogger(this.GetType()).Debug(ex.ToString(), ex);
+                    container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString(), ex);
                 } 
 
                 #endregion
@@ -279,7 +300,6 @@ namespace reexmonkey.xcal.application.server.web.local
             }
 
             #endregion
-
 
         }
 
