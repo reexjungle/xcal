@@ -42,10 +42,10 @@ namespace reexmonkey.xcal.application.server.web.local
                 GlobalResponseHeaders =
                 {
                     { "Access-Control-Allow-Origin", "*" },
-                    { "Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, RESET, OPTIONS" },
+                    { "Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, ANY, DELETE, RESET, OPTIONS" },
                     { "Access-Control-Allow-Headers", "Content-Type" },
                 },
-                DebugMode = false, //Show StackTraces in service responses during development
+                DebugMode = true, //Show StackTraces in service responses during development
             });
 
             #endregion
@@ -92,6 +92,7 @@ namespace reexmonkey.xcal.application.server.web.local
 
             #region inject core repositories and create data sources on first run
 
+
             if (Properties.Settings.Default.db_provider_type == DataProviderType.relational)
             {
                 #region inject ormlite repositories
@@ -108,9 +109,9 @@ namespace reexmonkey.xcal.application.server.web.local
                 {
                     KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
-                    AudioAlarmRepository = x.Resolve<IAudioAlarmOrmLiteRepository>(),
-                    DisplayAlarmRepository = x.Resolve<IDisplayAlarmOrmLiteRepository>(),
-                    EmailAlarmRepository = x.Resolve<IEmailAlarmOrmLiteRepository>(),
+                    AudioAlarmRepository = x.Resolve<IAudioAlarmRepository>(),
+                    DisplayAlarmRepository = x.Resolve<IDisplayAlarmRepository>(),
+                    EmailAlarmRepository = x.Resolve<IEmailAlarmRepository>(),
                     Pages = Properties.Settings.Default.events_page_count
                 });
 
@@ -260,27 +261,27 @@ namespace reexmonkey.xcal.application.server.web.local
                 {
                     KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     RedisClientsManager = container.Resolve<IRedisClientsManager>(),
-                    AudioAlarmRepository = x.Resolve<IAudioAlarmRedisRepository>(),
-                    DisplayAlarmRepository = x.Resolve<IDisplayAlarmRedisRepository>(),
-                    EmailAlarmRepository = x.Resolve<IEmailAlarmRedisRepository>(),
+                    AudioAlarmRepository = x.Resolve<IAudioAlarmRepository>(),
+                    DisplayAlarmRepository = x.Resolve<IDisplayAlarmRepository>(),
+                    EmailAlarmRepository = x.Resolve<IEmailAlarmRepository>(),
                     Pages = Properties.Settings.Default.events_page_count
                 });
 
-                container.Register<IAudioAlarmRedisRepository>(x => new AudioAlarmRedisRepository
+                container.Register<IAudioAlarmRepository>(x => new AudioAlarmRedisRepository
                 {
                     KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     RedisClientsManager = container.Resolve<IRedisClientsManager>(),
                     Pages = Properties.Settings.Default.alarms_page_count
                 });
 
-                container.Register<IDisplayAlarmRedisRepository>(x => new DisplayAlarmRedisRepository
+                container.Register<IDisplayAlarmRepository>(x => new DisplayAlarmRedisRepository
                 {
                     KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     RedisClientsManager = container.Resolve<IRedisClientsManager>(),
                     Pages = Properties.Settings.Default.alarms_page_count
                 });
 
-                container.Register<IEmailAlarmRedisRepository>(x => new EmailAlarmRedisRepository
+                container.Register<IEmailAlarmRepository>(x => new EmailAlarmRedisRepository
                 {
                     KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     RedisClientsManager = container.Resolve<IRedisClientsManager>(),

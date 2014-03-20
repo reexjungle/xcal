@@ -71,6 +71,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="calendar.validator.cs" />
     <Compile Include="components.validators.cs" />
     <Compile Include="parameters.validators.cs" />
     <Compile Include="properties.validators.cs" />

@@ -43,7 +43,7 @@ namespace reexmonkey.xcal.domain.operations
     /// </summary>
     [DataContract]
     [Api ("Reschedules an event or events. This involves a change in terms of time or recurrence intervals and possibly the location or description.")]
-    [Route("/calendars/{ProductId}/event/reschedule", "PUT", Summary="Reschedules an event or events", Notes="All the events must share the same UID")]
+    [Route("/calendars/{ProductId}/event/reschedule", "PATCH", Summary="Reschedules an event or events", Notes="All the events must share the same UID")]
     public class RescheduleEvents : IReturn<VCALENDAR>
     {
         /// <summary>
@@ -53,7 +53,7 @@ namespace reexmonkey.xcal.domain.operations
         public List<VEVENT> Events { get; set; }
 
         /// <summary>
-        /// Gets or sets the time zones if any dtate time of the events refer to a timezone
+        /// Gets or sets the time zones if any date time of the events refer to a timezone
         /// </summary>
         [DataMember]
         public List<VTIMEZONE> TimeZones { get; set; }

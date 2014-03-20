@@ -12,9 +12,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
 {
     public class CalendarRedisRepository : ICalendarRedisRepository
     {
-        public IEventRepository EventRepository { get; set; }
-
-
         public IRedisClientsManager RedisClientsManager
         {
             get
@@ -26,6 +23,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 throw new NotImplementedException();
             }
         }
+
+        public IEventRepository EventRepository { get; set; }
 
         public VCALENDAR Hydrate(VCALENDAR dry)
         {
@@ -99,6 +98,17 @@ namespace reexmonkey.xcal.service.repositories.concretes
             {
                 throw new NotImplementedException();
             }
+        }
+
+
+        public bool Has(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Has(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
+        {
+            throw new NotImplementedException();
         }
     }
 }

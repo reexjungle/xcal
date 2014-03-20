@@ -13,15 +13,11 @@ namespace reexmonkey.xcal.service.interfaces.contracts.live
 {
     public interface IEventService
     {
-        ILog Logger { get; set; }
-
-        ICalendarRepository CalendarRepository { get; set; }
-
-        #region VEVENT services based on RFC 5546
+        #region  RFC 5546
 
         VCALENDAR Post(PublishEvents request);
 
-        VCALENDAR Put(RescheduleEvents request);
+        VCALENDAR Patch(RescheduleEvents request);
 
         VCALENDAR Put(UpdateEvent request);
 
@@ -60,7 +56,5 @@ namespace reexmonkey.xcal.service.interfaces.contracts.live
         VCALENDAR Get(DeleteEvents request);
 
         #endregion
-
-
     }
 }

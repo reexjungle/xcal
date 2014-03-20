@@ -139,5 +139,16 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             throw new NotImplementedException();
         }
+
+
+        public bool Has(string fkey, string pkey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Has(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

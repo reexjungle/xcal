@@ -306,6 +306,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             try
             {
+
                 //1. Get fields slected for patching
                 var selection = fields.GetMemberNames();
 
@@ -353,7 +354,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 //5. Patch relations
                 if (!srelation.NullOrEmpty())
                 {
-
                     //5.1. Derive expression for each relation
                     Expression<Func<VEVENT, object>> orgexpr = y => y.Organizer;
                     Expression<Func<VEVENT, object>> ridexpr = y => y.RecurrenceId;
@@ -922,7 +922,36 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return full;
         }
 
+        public bool Has(string fkey, string pkey)
+        {
+            try
+            {
+                return !db.Select<REL_CALENDARS_EVENTS>(q => q.ProdId == fkey && q.Uid == pkey).NullOrEmpty();
+            }
+            catch (InvalidOperationException) { throw; }
+            catch (Exception) { throw; }
+        }
 
+        public bool Has(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        {
+            var found = false;
+            try
+            {
+                var rels = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.ProdId, fkeys.ToArray()) && Sql.In(q.Uid, pkeys.ToArray()));
+                switch (mode)
+                {
+                    case ExpectationMode.pessimistic: found = (!rels.NullOrEmpty()) ?
+                        rels.Select(x => x.Uid).Distinct().Count() == pkeys.Distinct().Count() :
+                        false; break;
+                    case ExpectationMode.optimistic:
+                    default:
+                        found = !rels.NullOrEmpty(); break;
+                }
+            }
+            catch (InvalidOperationException) { throw; }
+            catch (Exception) { throw; }
 
+            return found;
+        }
     }
 }

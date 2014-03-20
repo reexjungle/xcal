@@ -11,4 +11,11 @@ namespace reexmonkey.crosscut.essentials.contracts
         NonStandard = 0x2,
         None = 0x4
     }
+
+    public enum ExpectationMode
+    {
+        optimistic,
+        pessimistic,
+        unknown
+    }
 }

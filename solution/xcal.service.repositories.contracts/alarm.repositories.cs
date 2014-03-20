@@ -15,7 +15,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
     public interface IAudioAlarmRepository :
         IReadRepository<AUDIO_ALARM, string, string>,
         IWriteRepository<AUDIO_ALARM, string>,
-        IPaged<int> {}
+        IPaginated<int> {}
 
     /// <summary>
     /// Specifies an interface for a repository of audio alerts connected to an ORMlite source
@@ -50,7 +50,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
     public interface IDisplayAlarmRepository :
         IReadRepository<DISPLAY_ALARM, string, string>,
         IWriteRepository<DISPLAY_ALARM, string>,
-        IPaged<int> {}
+        IPaginated<int> {}
 
     /// <summary>
     /// Specifies an interface for a repository of display alerts connected to an ORMlite source
@@ -86,7 +86,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
     public interface IEmailAlarmRepository :
         IReadRepository<EMAIL_ALARM, string, string>,
         IWriteRepository<EMAIL_ALARM, string>,
-        IPaged<int>
+        IPaginated<int>
     {
 
         /// <summary>

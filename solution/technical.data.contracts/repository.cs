@@ -40,6 +40,23 @@ namespace reexmonkey.technical.data.contracts
         /// <param name="page">The page number of the retrieved entities</param>
         /// <returns></returns>
         IEnumerable<TEntity> Get(int? page = null);
+
+        /// <summary>
+        /// Checks if the repository contains an entity
+        /// </summary>
+        /// <param name="key">The unique identifier of the entity</param>
+        /// <returns>True if the entity is found in the repository, otherwise false</returns>
+        bool Has(TKey key);
+
+        /// <summary>
+        /// Checks if the repository contains entities
+        /// </summary>
+        /// <param name="keys">The unique identifiers of the entities</param>
+        /// <param name="mode">How the search is performed. 
+        /// Optimistic if at least one entity found, 
+        /// Pessimistic if all entities are found</param>
+        /// <returns>True if the entities are found, otherwise false</returns>
+        bool Has(IEnumerable<TKey> keys, ExpectationMode mode = ExpectationMode.optimistic);
     }
 
     /// <summary>
@@ -77,6 +94,25 @@ namespace reexmonkey.technical.data.contracts
         /// <param name="page">The page number of the retrieved entities when the results are paged</param>
         /// <returns></returns>
         IEnumerable<TPEntity> Get(int? page = null);
+
+        /// <summary>
+        /// Checks if the repository contains a referencing entity that is linked to the referenced entity
+        /// </summary>
+        /// <param name="fkey">The unique identifier of the referenced entity</param>
+        /// <param name="pkey">The unique identtifer of the referncing entity</param>
+        /// <returns></returns>
+        bool Has(TFKey fkey, TPKey pkey);
+
+        /// <summary>
+        /// Checks if the repository contains referencing entities, which are linked to the referenced entities
+        /// </summary>
+        /// <param name="fkeys">The unique identifiers of the referenced entities</param>
+        /// <param name="pkeys">The unique identtifers of the referncing entities</param>
+        /// <param name="mode">How the search is performed. 
+        /// Optimistic if at least one entity found, 
+        /// Pessimistic if all entities are found</param>
+        /// <returns></returns>
+        bool Has(IEnumerable<TFKey> fkeys, IEnumerable<TPKey> pkeys, ExpectationMode mode = ExpectationMode.optimistic);
 
     }
 

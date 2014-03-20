@@ -193,6 +193,38 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
         }
+
+        public bool Has(string fkey, string pkey)
+        {
+            try
+            {
+                return !db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.Uid == fkey && q.AlarmId == pkey).NullOrEmpty();
+            }
+            catch (InvalidOperationException) { throw; }
+            catch (Exception) { throw; }
+        }
+
+        public bool Has(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        {
+            var found = false;
+            try
+            {
+                var rels = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.Uid, fkeys.ToArray()) && Sql.In(q.AlarmId, pkeys.ToArray()));
+                switch (mode)
+                {
+                    case ExpectationMode.pessimistic: found = (!rels.NullOrEmpty()) ?
+                        rels.Select(x => x.AlarmId).Distinct().Count() == pkeys.Distinct().Count() :
+                        false; break;
+                    case ExpectationMode.optimistic:
+                    default:
+                        found = !rels.NullOrEmpty(); break;
+                }
+            }
+            catch (InvalidOperationException) { throw; }
+            catch (Exception) { throw; }
+
+            return found;
+        }
     }
 
     public class DisplayAlarmOrmLiteRepository : IDisplayAlarmOrmLiteRepository
@@ -371,6 +403,38 @@ namespace reexmonkey.xcal.service.repositories.concretes
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
+        }
+
+        public bool Has(string fkey, string pkey)
+        {
+            try
+            {
+                return !db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.Uid == fkey && q.AlarmId == pkey).NullOrEmpty();
+            }
+            catch (InvalidOperationException) { throw; }
+            catch (Exception) { throw; }
+        }
+
+        public bool Has(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        {
+            var found = false;
+            try
+            {
+                var rels = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.Uid, fkeys.ToArray()) && Sql.In(q.AlarmId, pkeys.ToArray()));
+                switch (mode)
+                {
+                    case ExpectationMode.pessimistic: found = (!rels.NullOrEmpty()) ?
+                        rels.Select(x => x.AlarmId).Distinct().Count() == pkeys.Distinct().Count() :
+                        false; break;
+                    case ExpectationMode.optimistic:
+                    default:
+                        found = !rels.NullOrEmpty(); break;
+                }
+            }
+            catch (InvalidOperationException) { throw; }
+            catch (Exception) { throw; }
+
+            return found;
         }
     }
 
@@ -749,6 +813,38 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 var patchexpr = patchstr.CompileToExpressionFunc<EMAIL_ALARM, object>(CodeDomLanguage.csharp, Utilities.GetReferencedAssemblyNamesFromEntryAssembly());
                 db.UpdateOnly<EMAIL_ALARM, object>(source, patchexpr, where);
             }
+        }
+
+        public bool Has(string fkey, string pkey)
+        {
+            try
+            {
+                return !db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.Uid == fkey && q.AlarmId == pkey).NullOrEmpty();
+            }
+            catch (InvalidOperationException) { throw; }
+            catch (Exception) { throw; }
+        }
+
+        public bool Has(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        {
+            var found = false;
+            try
+            {
+                var rels = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.Uid, fkeys.ToArray()) && Sql.In(q.AlarmId, pkeys.ToArray()));
+                switch (mode)
+                {
+                    case ExpectationMode.pessimistic: found = (!rels.NullOrEmpty()) ?
+                        rels.Select(x => x.AlarmId).Distinct().Count() == pkeys.Distinct().Count() :
+                        false; break;
+                    case ExpectationMode.optimistic:
+                    default:
+                        found = !rels.NullOrEmpty(); break;
+                }
+            }
+            catch (InvalidOperationException) { throw; }
+            catch (Exception) { throw; }
+
+            return found;
         }
     }
 

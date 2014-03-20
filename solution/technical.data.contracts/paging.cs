@@ -9,7 +9,7 @@ namespace reexmonkey.technical.data.contracts
     /// Specifies the interface for a page size
     /// </summary>
     /// <typeparam name="TSize">Represents the data type of the size</typeparam>
-    public interface IPaged<TSize> where TSize : struct
+    public interface IPaginated<TSize> where TSize : struct
     {
         /// <summary>
         /// Gets or sets the number of pages of entities

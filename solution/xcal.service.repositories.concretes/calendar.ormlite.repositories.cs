@@ -23,6 +23,18 @@ namespace reexmonkey.xcal.service.repositories.concretes
             set { throw new NotImplementedException(); }
         }
 
+        public IEventRepository EventRepository
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public VCALENDAR Hydrate(VCALENDAR dry)
         {
             throw new NotImplementedException();
@@ -77,16 +89,15 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public int? Pages { get; set; }
 
-        public IEventRepository EventRepository
+
+        public bool Has(string key)
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            throw new NotImplementedException();
+        }
+
+        public bool Has(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
+        {
+            throw new NotImplementedException();
         }
     }
 }

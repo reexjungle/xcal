@@ -16,16 +16,32 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
 {
     public class EventService: Service, IEventService
     {
-        public ILog Logger { get; set; }
+        private ILog logger;
+        private ICalendarRepository repository;
 
-        public ICalendarRepository CalendarRepository { get; set; }
+        public ILog Logger 
+        {
+            get { return this.logger; } 
+            set
+            {
+                if (value == null) throw new ArgumentNullException("Logger");
+                this.logger = value;
+            }
+        }
+        public ICalendarRepository CalendarRepository
+        {
+            get { return this.repository; }
+            set 
+            {
+                if (value == null) throw new ArgumentNullException("CalendarRepository");
+                this.repository = value; 
+            }
+        }
 
         public EventService() : base() { }
-
-        public EventService(ICalendarRepository repository, ILog logger): base()
+        public EventService(ICalendarRepository repository, ILog logger)
+            : base()
         {
-            if (repository == null) throw new ArgumentNullException("repository");
-            if (logger == null) throw new ArgumentNullException("logger");
             this.CalendarRepository = repository;
             this.Logger = logger;
         }
@@ -37,27 +53,41 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
             VCALENDAR calendar = null;
             try
             {
-                calendar = new VCALENDAR { ProdId = request.ProductId, Method = METHOD.PUBLISH };
-                var oevents = calendar.Components.OfType<VEVENT>();
-                var toadd = request.Events.Except(oevents, new EqualByStringId<VEVENT>());
-                if (!toadd.NullOrEmpty()) calendar.Components.AddRange(toadd);
-                this.CalendarRepository.Save(calendar);                
+                calendar = (this.repository.Find(request.ProductId)) ?? 
+                    new VCALENDAR { ProdId = request.ProductId, Method = METHOD.PUBLISH };
+
+                //insert/update events in repository
+                this.repository.EventRepository.SaveAll(request.Events);
+
+                //update components of calendar
+                var diff = request.Events.Except(calendar.Components.OfType<VEVENT>());
+                if (!diff.NullOrEmpty()) calendar.Components.AddRange(diff);
+
+                //update/insert calendars in repository
+                this.repository.Save(calendar);
+
             }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
+            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); }
+            catch (Exception ex) { this.logger.Error(ex.ToString()); }
             return calendar;
         }
 
-        public VCALENDAR Put(RescheduleEvents request)
+        public VCALENDAR Patch(RescheduleEvents request)
         {
             VCALENDAR calendar = null;
             try
             {
-                calendar = new VCALENDAR { ProdId = request.ProductId, Method = METHOD.REQUEST };
-                var oevents = calendar.Components.OfType<VEVENT>();
-                var toadd = request.Events.Except(oevents, new EqualByStringId<VEVENT>());
-                if (!toadd.NullOrEmpty()) calendar.Components.AddRange(toadd);
-                this.CalendarRepository.Save(calendar);
+                calendar = (this.repository.Find(request.ProductId)) ?? 
+                    new VCALENDAR { ProdId = request.ProductId, Method = METHOD.PUBLISH };
+
+                var source = request.Events.FirstOrDefault();
+                source.Sequence++;
+                source.LastModified = new DATE_TIME(DateTime.UtcNow);
+                this.repository.EventRepository.Patch(source, 
+                    x => new { x.Start, x.End, x.Description, x.Location, x.RecurrenceRule, x.Sequence, x.LastModified}, p => p.Uid == source.Uid);
+                calendar.Components.AddRange(request.Events);
+
+                this.repository.Save(calendar);
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
@@ -66,7 +96,24 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
 
         public VCALENDAR Put(UpdateEvent request)
         {
-            throw new NotImplementedException();
+            VCALENDAR calendar = null;
+            try
+            {
+                calendar = (this.repository.Find(request.ProductId)) ??
+                    new VCALENDAR { ProdId = request.ProductId, Method = METHOD.PUBLISH };
+
+                var patch = request.Events.FirstOrDefault();
+                this.repository.EventRepository.Patch(patch,
+                    x => new {x.Summary, x.Geo, x.LastModified, x.Priority, x.Sequence, x.Transparency, x.Status, x.Attendees, x.Attachments, x.Categories, x.Classification, x.Comments, x.Contacts },
+                    p => p.Uid == patch.Uid);
+                calendar.Components.AddRange(request.Events);
+
+                //this.repository.EventRepository.Find(request.ProductId, request.)
+                this.repository.Save(calendar);
+            }
+            catch (InvalidOperationException) { throw; }
+            catch (Exception) { throw; }
+            return calendar;
         }
 
         public VCALENDAR Post(DelegateEvent request)

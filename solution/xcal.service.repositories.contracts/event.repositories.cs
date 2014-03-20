@@ -14,9 +14,8 @@ namespace reexmonkey.xcal.service.repositories.contracts
     public interface IEventRepository: 
         IReadRepository<VEVENT, string, string>,
         IWriteRepository<VEVENT, string>,
-        IPaged<int>
+        IPaginated<int>
     {
-
         /// <summary>
         /// Populates a sparse event entity with details from its consitutent entities
         /// </summary>

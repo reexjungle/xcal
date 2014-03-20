@@ -4033,12 +4033,14 @@ namespace reexmonkey.xcal.domain.models
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append(this.Name);
+            sb.AppendFormat("X-REEXMONKEY-{0}", this.Name);
             foreach (var parameter in this.Parameters) sb.AppendFormat(";{0}", parameter);
             sb.AppendFormat(":{0}", this.Value);
             return sb.ToString();
         }
     }
+
+ 
 
 
     [DataContract]

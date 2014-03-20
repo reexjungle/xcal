@@ -71,6 +71,17 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             throw new NotImplementedException();
         }
+
+
+        public bool Has(string fkey, string pkey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Has(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class DisplayAlarmRedisRepository: IDisplayAlarmRedisRepository
@@ -133,6 +144,17 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public IKeyGenerator<string> KeyGenerator { get; set; }
 
         public void Patch(DISPLAY_ALARM entity, Expression<Func<DISPLAY_ALARM, object>> fields, Expression<Func<DISPLAY_ALARM, bool>> where = null)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public bool Has(string fkey, string pkey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Has(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
         {
             throw new NotImplementedException();
         }
@@ -210,5 +232,16 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
 
         public IKeyGenerator<string> KeyGenerator { get; set; }
+
+
+        public bool Has(string fkey, string pkey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Has(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

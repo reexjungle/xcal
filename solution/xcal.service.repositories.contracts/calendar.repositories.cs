@@ -10,8 +10,13 @@ namespace reexmonkey.xcal.service.repositories.contracts
     public interface ICalendarRepository:
         IReadRepository<VCALENDAR, string>,
         IWriteRepository<VCALENDAR, string>,
-        IPaged<int>
+        IPaginated<int>
     {
+        /// <summary>
+        /// Gets or sets the repository of addressing the event aggregate root
+        /// </summary>
+        IEventRepository EventRepository { get; set; }
+
         /// <summary>
         /// Populates a sparse calendar entity with details from its consitutent entities
         /// </summary>
