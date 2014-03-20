@@ -91,6 +91,10 @@
       <Project>{5cc7e3d9-702b-45a3-a413-a07d010c2651}</Project>
       <Name>xcal.domain.contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\xcal.domain.extensions\xcal.domain.extensions.csproj">
+      <Project>{42829410-cf99-4f3d-999c-29b6ac810143}</Project>
+      <Name>xcal.domain.extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\xcal.domain.models\xcal.domain.models.csproj">
       <Project>{5b708e08-1f69-4fde-9d99-afa3784a49d7}</Project>
       <Name>xcal.domain.models</Name>

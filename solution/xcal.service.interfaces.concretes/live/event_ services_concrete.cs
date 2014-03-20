@@ -9,6 +9,7 @@ using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.domain.operations;
+using reexmonkey.xcal.domain.extensions;
 using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.xcal.service.interfaces.contracts.live;
 
@@ -83,8 +84,10 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 var source = request.Events.FirstOrDefault();
                 source.Sequence++;
                 source.LastModified = new DATE_TIME(DateTime.UtcNow);
+
                 this.repository.EventRepository.Patch(source, 
-                    x => new { x.Start, x.End, x.Description, x.Location, x.RecurrenceRule, x.Sequence, x.LastModified}, p => p.Uid == source.Uid);
+                    x => new { x.Start, x.End, x.Description, x.Location, x.RecurrenceRule, x.Sequence, x.LastModified}, 
+                    p => p.Uid == source.Uid);
                 calendar.Components.AddRange(request.Events);
 
                 this.repository.Save(calendar);

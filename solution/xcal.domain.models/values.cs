@@ -477,6 +477,22 @@ namespace reexmonkey.xcal.domain.models
             else if (datetime.Kind == DateTimeKind.Utc) this.TimeFormat = TimeFormat.Utc;
         }
 
+        public DATE_TIME(DateTime datetime, ITZID tzid)
+        {
+            this.FULLYEAR = (uint)datetime.Year;
+            this.MONTH = (uint)datetime.Month;
+            this.MDAY = (uint)datetime.Day;
+            this.HOUR = (uint)datetime.Hour;
+            this.MINUTE = (uint)datetime.Minute;
+            this.SECOND = (uint)datetime.Second;
+            if (tzid != null)
+            {
+                this.TimeZoneId = tzid;
+                this.TimeFormat = TimeFormat.LocalAndTimeZone;
+            }
+            else if (datetime.Kind == DateTimeKind.Utc) this.TimeFormat = TimeFormat.Utc;
+        }
+
         public DATE_TIME(DateTimeOffset datetime)
         {
             this.FULLYEAR = (uint)datetime.Year;
