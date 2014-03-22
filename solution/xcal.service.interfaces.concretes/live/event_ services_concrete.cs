@@ -57,7 +57,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 calendar = (this.repository.Find(request.ProductId)) ?? 
                     new VCALENDAR { ProdId = request.ProductId, Method = METHOD.PUBLISH };
 
-                //insert/update events in repository
+               
                 this.repository.EventRepository.SaveAll(request.Events);
 
                 //update components of calendar

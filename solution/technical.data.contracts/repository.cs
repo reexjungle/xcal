@@ -11,6 +11,7 @@ namespace reexmonkey.technical.data.contracts
     /// </summary>
     public interface IRepository { }
 
+
     /// <summary>
     /// Specifies the interface for read-only operations on a repository
     /// </summary>
@@ -37,7 +38,7 @@ namespace reexmonkey.technical.data.contracts
         /// <summary>
         /// Gets all entities from the repository
         /// </summary>
-        /// <param name="page">The page number of the retrieved entities</param>
+        /// <param name="page">The page count of the retrieved entities</param>
         /// <returns></returns>
         IEnumerable<TEntity> Get(int? page = null);
 
@@ -46,7 +47,7 @@ namespace reexmonkey.technical.data.contracts
         /// </summary>
         /// <param name="key">The unique identifier of the entity</param>
         /// <returns>True if the entity is found in the repository, otherwise false</returns>
-        bool Has(TKey key);
+        bool Contains(TKey key);
 
         /// <summary>
         /// Checks if the repository contains entities
@@ -56,7 +57,7 @@ namespace reexmonkey.technical.data.contracts
         /// Optimistic if at least one entity found, 
         /// Pessimistic if all entities are found</param>
         /// <returns>True if the entities are found, otherwise false</returns>
-        bool Has(IEnumerable<TKey> keys, ExpectationMode mode = ExpectationMode.optimistic);
+        bool Contains(IEnumerable<TKey> keys, ExpectationMode mode = ExpectationMode.optimistic);
     }
 
     /// <summary>
@@ -101,7 +102,7 @@ namespace reexmonkey.technical.data.contracts
         /// <param name="fkey">The unique identifier of the referenced entity</param>
         /// <param name="pkey">The unique identtifer of the referncing entity</param>
         /// <returns></returns>
-        bool Has(TFKey fkey, TPKey pkey);
+        bool Contains(TFKey fkey, TPKey pkey);
 
         /// <summary>
         /// Checks if the repository contains referencing entities, which are linked to the referenced entities
@@ -112,7 +113,7 @@ namespace reexmonkey.technical.data.contracts
         /// Optimistic if at least one entity found, 
         /// Pessimistic if all entities are found</param>
         /// <returns></returns>
-        bool Has(IEnumerable<TFKey> fkeys, IEnumerable<TPKey> pkeys, ExpectationMode mode = ExpectationMode.optimistic);
+        bool Contains(IEnumerable<TFKey> fkeys, IEnumerable<TPKey> pkeys, ExpectationMode mode = ExpectationMode.optimistic);
 
     }
 
