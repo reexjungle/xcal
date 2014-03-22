@@ -194,7 +194,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public bool Has(string fkey, string pkey)
+        public bool Contains(string fkey, string pkey)
         {
             try
             {
@@ -204,7 +204,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public bool Has(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        public bool Contains(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
         {
             var found = false;
             try
@@ -405,7 +405,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public bool Has(string fkey, string pkey)
+        public bool Contains(string fkey, string pkey)
         {
             try
             {
@@ -415,7 +415,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public bool Has(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        public bool Contains(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
         {
             var found = false;
             try
@@ -436,6 +436,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
             return found;
         }
+
     }
 
     public class EmailAlarmOrmLiteRepository: IEmailAlarmOrmLiteRepository
@@ -815,7 +816,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             }
         }
 
-        public bool Has(string fkey, string pkey)
+        public bool Contains(string fkey, string pkey)
         {
             try
             {
@@ -825,7 +826,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public bool Has(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        public bool Contains(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
         {
             var found = false;
             try
@@ -846,6 +847,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
             return found;
         }
+
     }
 
 }

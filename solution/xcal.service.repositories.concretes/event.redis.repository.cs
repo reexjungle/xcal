@@ -141,12 +141,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
 
 
-        public bool Has(string fkey, string pkey)
+        public bool Contains(string fkey, string pkey)
         {
             throw new NotImplementedException();
         }
 
-        public bool Has(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        public bool Contains(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
         {
             throw new NotImplementedException();
         }

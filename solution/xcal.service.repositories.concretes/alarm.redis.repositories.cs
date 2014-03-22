@@ -82,6 +82,17 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             throw new NotImplementedException();
         }
+
+
+        public bool Contains(string fkey, string pkey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Contains(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class DisplayAlarmRedisRepository: IDisplayAlarmRedisRepository
@@ -155,6 +166,17 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
 
         public bool Has(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public bool Contains(string fkey, string pkey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Contains(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
         {
             throw new NotImplementedException();
         }
@@ -240,6 +262,17 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
 
         public bool Has(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public bool Contains(string fkey, string pkey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Contains(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
         {
             throw new NotImplementedException();
         }

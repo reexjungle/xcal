@@ -90,12 +90,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public int? Pages { get; set; }
 
 
-        public bool Has(string key)
+        public bool Contains(string key)
         {
             throw new NotImplementedException();
         }
 
-        public bool Has(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
+        public bool Contains(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
         {
             throw new NotImplementedException();
         }
