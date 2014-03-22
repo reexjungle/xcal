@@ -16,7 +16,7 @@ namespace reexmonkey.crosscut.goodies.concretes
 
     public enum DateTimeSearchOption
     {
-        previoushour,
+        lasthour,
         previoushours,
         nexthour,
         nexthours,
@@ -24,15 +24,15 @@ namespace reexmonkey.crosscut.goodies.concretes
         previousdays,
         tomorrow,
         nextdays,
-        previousweek,
+        lastweek,
         previousweeks,
         nextweek,
         nextweeks,
-        previousmonth,
+        lastmonth,
         previousmonths,
         nextmonth,
         nextmonths,
-        previousyear,
+        lastyear,
         previousyears,
         nextyear,
         nextyears,
@@ -55,16 +55,16 @@ namespace reexmonkey.crosscut.goodies.concretes
 
         public static DateTimeSearchOption ToDateFindOption(this string value)
         {
-            if (value.Trim().ToLower().Equals("pasthour")) return DateTimeSearchOption.lasthour;
+            if (value.Trim().ToLower().Equals("lasthour")) return DateTimeSearchOption.lasthour;
             else if (value.Trim().ToLower().Equals("nexthour")) return DateTimeSearchOption.nexthour;
             else if (value.Trim().ToLower().Equals("yesterday")) return DateTimeSearchOption.yesterday;
             else if (value.Trim().ToLower().Equals("tomorrow")) return DateTimeSearchOption.tomorrow;
-            else if (value.Trim().ToLower().Equals("pastweek")) return DateTimeSearchOption.lastweek;
+            else if (value.Trim().ToLower().Equals("lastweek")) return DateTimeSearchOption.lastweek;
             else if (value.Trim().ToLower().Equals("nextweek")) return DateTimeSearchOption.nextweek;
-            else if (value.Trim().ToLower().Equals("pastmonth")) return DateTimeSearchOption.lastmonth;
+            else if (value.Trim().ToLower().Equals("lastmonth")) return DateTimeSearchOption.lastmonth;
             else if (value.Trim().ToLower().Equals("nextmonth")) return DateTimeSearchOption.nextmonth;
-            else if (value.Trim().ToLower().Equals("pastyear")) return DateTimeSearchOption.lastyear;
-            else if (value.Trim().ToLower().Equals("pastyear")) return DateTimeSearchOption.nextyear;
+            else if (value.Trim().ToLower().Equals("lastyear")) return DateTimeSearchOption.lastyear;
+            else if (value.Trim().ToLower().Equals("lastyear")) return DateTimeSearchOption.nextyear;
             else return DateTimeSearchOption.none;
         }
 
@@ -73,9 +73,9 @@ namespace reexmonkey.crosscut.goodies.concretes
             if (value.Trim().ToLower().Equals("contains")) return TextSearchOption.contains;
             else if (value.Trim().ToLower().Equals("starts")) return TextSearchOption.startswith;
             else if (value.Trim().ToLower().Equals("ends")) return TextSearchOption.endswith;
-            else if (value.Trim().ToLower().Equals("tomorrow")) return TextSearchOption.equals;
-            else if (value.Trim().ToLower().Equals("pastweek")) return TextSearchOption.not_contains;
-            else if (value.Trim().ToLower().Equals("nextweek")) return TextSearchOption.not_equals;
+            else if (value.Trim().ToLower().Equals("equals")) return TextSearchOption.equals;
+            else if (value.Trim().ToLower().Equals("not_contains")) return TextSearchOption.not_contains;
+            else if (value.Trim().ToLower().Equals("not_equals")) return TextSearchOption.not_equals;
             else return TextSearchOption.none;
         }
 
