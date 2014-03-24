@@ -18,7 +18,7 @@ namespace reexmonkey.technical.data.contracts
     /// <typeparam name="TEntity">Type of entity to read from repository</typeparam>
     /// <typeparam name="TKey">Type of unique identifier for for retrieving entities</typeparam>
     public interface IReadRepository<out TEntity, in TKey> : IRepository
-        where TKey: IEquatable<TKey>
+        where TKey: IEquatable<TKey>, IComparable<TKey>
     {
         /// <summary>
         /// Finds an entity in the repository based on a unique identifier
@@ -67,9 +67,8 @@ namespace reexmonkey.technical.data.contracts
     /// <typeparam name="TFKey">The unique identifier of the referenced parent-entity</typeparam>
     /// <typeparam name="TPKey"The unique identifier of the referencing child entity></typeparam>
     public interface IReadRepository<out TPEntity, in TPKey, in TFKey> : IRepository
-       where TPKey : IEquatable<TPKey>
-       where TFKey : IEquatable<TFKey>
-
+       where TPKey : IEquatable<TPKey>, IComparable<TPKey>
+       where TFKey : IEquatable<TFKey>, IComparable<TFKey>
     {
 
         /// <summary>
@@ -123,7 +122,7 @@ namespace reexmonkey.technical.data.contracts
     /// <typeparam name="TEntity">Type of entity to write to repository</typeparam>
     /// <typeparam name="TKey">Type of unique identifier for writing entities</typeparam>
     public interface IWriteRepository<TEntity, TKey> : IRepository
-       where TKey : IEquatable<TKey>
+       where TKey : IEquatable<TKey>, IComparable<TKey>
     {
         /// <summary>
         /// Gets the provider of identifiers

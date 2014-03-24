@@ -14,6 +14,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
     public interface IEventRepository: 
         IReadRepository<VEVENT, string, string>,
         IWriteRepository<VEVENT, string>,
+        IReadRepositoryKeys<string, string>,
         IPaginated<int>
     {
         /// <summary>

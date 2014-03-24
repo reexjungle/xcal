@@ -953,5 +953,39 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
             return found;
         }
+
+        public IEnumerable<string> GetKeys(string fkey, int? page = null)
+        {
+            IEnumerable<string> keys = null;
+            try
+            {
+                var events = db.Select<VEVENT, VCALENDAR, REL_CALENDARS_EVENTS>(
+                    r => r.Uid,
+                    r => r.ProdId,
+                    c => c.ProdId == fkey);
+                keys = (!events.NullOrEmpty()) ? events.Select(x => x.Uid) : null;
+            }
+            catch (ArgumentNullException) { throw; }
+            catch (InvalidOperationException) { throw; }
+            catch (Exception) { throw; }
+            return keys;
+        }
+
+        public IEnumerable<string> GetKeys(IEnumerable<string> fkeys, int? page = null)
+        {
+            IEnumerable<string> keys = null;
+            try
+            {
+                var events = db.Select<VEVENT, VCALENDAR, REL_CALENDARS_EVENTS>(
+                    r => r.Uid,
+                    r => r.ProdId,
+                    c => Sql.In(c.ProdId, fkeys.ToArray()));
+                keys = (!events.NullOrEmpty()) ? events.Select(x => x.Uid) : null;
+            }
+            catch (ArgumentNullException) { throw; }
+            catch (InvalidOperationException) { throw; }
+            catch (Exception) { throw; }
+            return keys;
+        }
     }
 }

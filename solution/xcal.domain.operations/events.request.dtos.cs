@@ -11,12 +11,12 @@ namespace reexmonkey.xcal.domain.operations
     #region VEVENT RFC 5546 operations
 
     /// <summary>
-    /// Represents class to request for the publishing of events
+    /// Represents class to request for poisting notification of an event (incl. available recurrent instances)
     /// </summary>
     [DataContract]
-    [Api ("Post notification of an event or events. Used primarily as a method of advertising the existence of an  event.")]
-    [Route("/calendars/{ProductId}/events/publish", "POST", Summary="Publishes an event or events")]
-    public class PublishEvents : IReturn<VCALENDAR>
+    [Api ("Post notification of an event. Used primarily as a method of advertising the existence of an  event.")]
+    [Route("/calendars/{ProductId}/events/publish", "POST", Summary="Publishes an event")]
+    public class PublishEvent : IReturn<VCALENDAR>
     {
         /// <summary>
         /// Gets or sets the events to be published.
@@ -44,7 +44,7 @@ namespace reexmonkey.xcal.domain.operations
     [DataContract]
     [Api ("Reschedules an event or events. This involves a change in terms of time or recurrence intervals and possibly the location or description.")]
     [Route("/calendars/{ProductId}/event/reschedule", "PATCH", Summary="Reschedules an event or events", Notes="All the events must share the same UID")]
-    public class RescheduleEvents : IReturn<VCALENDAR>
+    public class RescheduleEvent : IReturn<VCALENDAR>
     {
         /// <summary>
         /// Gets or sets the events to be published.

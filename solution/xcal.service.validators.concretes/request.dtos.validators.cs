@@ -10,22 +10,23 @@ using reexmonkey.xcal.domain.operations;
 
 namespace reexmonkey.xcal.service.validators.concretes
 {
-    public class PublishEventsValidator: AbstractValidator<PublishEvents>
+    public class PublishEventValidator: AbstractValidator<PublishEvent>
     {
-        public PublishEventsValidator(): base()
+        public PublishEventValidator(): base()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.ProductId).NotNull().NotEmpty();
-            RuleFor(x => x.Events).NotNull().NotEmpty().SetCollectionValidator(new PublishEventValidator());
+            RuleFor(x => x.Events).NotNull().NotEmpty().SetCollectionValidator(new PublishedEventValidator());
+            RuleFor(x => x.TimeZones).Must((x, y) => !x.TimeZones.NullOrEmpty()).When(x => x.Events.FirstOrDefault().Datestamp.TimeFormat == TimeFormat.LocalAndTimeZone);
             RuleFor(x => x.TimeZones).SetCollectionValidator(new TimeZoneValidator()).
                 Must((x, y) => y.OfType<VTIMEZONE>().AreUnique(new EqualByStringId<VTIMEZONE>())).
                 When(x => !x.TimeZones.NullOrEmpty());
         }
     }
 
-    public class PublishEventValidator: AbstractValidator<IEVENT>
+    public class PublishedEventValidator: AbstractValidator<IEVENT>
     {
-        public PublishEventValidator()
+        public PublishedEventValidator()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Datestamp).NotNull();
@@ -77,12 +78,15 @@ namespace reexmonkey.xcal.service.validators.concretes
                 Must((x, y) => x.Resources.OfType<RESOURCES>().AreUnique(new EqualByStringId<RESOURCES>())).
                 When(x => !x.Resources.NullOrEmpty());
 
+            RuleFor(x => x.Attendees).Must((x, y) => x.Attendees.NullOrEmpty());
+            RuleFor(x => x.RequestStatuses).Must((x, y) => x.RequestStatuses.NullOrEmpty());
+
         }
     }
 
-    public class RescheduleEventsValidator: AbstractValidator<RescheduleEvents>
+    public class RescheduleEventValidator: AbstractValidator<RescheduleEvent>
     {
-        public RescheduleEventsValidator()
+        public RescheduleEventValidator()
             : base()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
@@ -91,13 +95,16 @@ namespace reexmonkey.xcal.service.validators.concretes
                 .Distinct()
                 .Skip(1).Any())
                 .When(x => !x.Events.NullOrEmpty() && x.Events.Count() > 1);
-
+            RuleFor(x => x.Events).NotNull().NotEmpty().SetCollectionValidator(new RequestedEventValidator());
+            RuleFor(x => x.TimeZones).SetCollectionValidator(new TimeZoneValidator()).
+                Must((x, y) => y.OfType<VTIMEZONE>().AreUnique(new EqualByStringId<VTIMEZONE>())).
+                When(x => !x.TimeZones.NullOrEmpty());
         }
     }
 
-    public class RescheduleEventValidator: AbstractValidator<IEVENT>
+    public class RequestedEventValidator: AbstractValidator<IEVENT>
     {
-        public RescheduleEventValidator(): base()
+        public RequestedEventValidator(): base()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Datestamp).NotNull();

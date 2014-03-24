@@ -150,5 +150,15 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             throw new NotImplementedException();
         }
+
+        public IEnumerable<string> GetKeys(string fkey, int? page = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> GetKeys(IEnumerable<string> fkeys, int? page = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
