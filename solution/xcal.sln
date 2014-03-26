@@ -27,8 +27,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.domain.extensions", "x
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{994ADDCE-FC85-436E-8F9A-FCCE54BE307C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web.local.test", "xcal.application.server.web.dev.test\xcal.application.server.web.local.test.csproj", "{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web.local", "xcal.application.server.web.local\xcal.application.server.web.local.csproj", "{22781B88-7BD4-4A97-B67D-3854AFBF6452}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "technical", "technical", "{8BE1181E-82DB-40AA-AD97-55D179513F29}"
@@ -61,12 +59,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "technical.data.contracts", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.service.formats.concretes", "xcal.service.formats.concretes\xcal.service.formats.concretes.csproj", "{7496B2C6-BD7E-44A9-9C33-02CD399F0DE0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2A9F9F2A-254C-4082-A4B2-88FB8D1DC8F5}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web.local.test", "xcal.application.server.web.local.test\xcal.application.server.web.local.test.csproj", "{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,10 +95,6 @@ Global
 		{42829410-CF99-4F3D-999C-29B6AC810143}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42829410-CF99-4F3D-999C-29B6AC810143}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42829410-CF99-4F3D-999C-29B6AC810143}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}.Release|Any CPU.Build.0 = Release|Any CPU
 		{22781B88-7BD4-4A97-B67D-3854AFBF6452}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{22781B88-7BD4-4A97-B67D-3854AFBF6452}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22781B88-7BD4-4A97-B67D-3854AFBF6452}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -166,6 +155,10 @@ Global
 		{7496B2C6-BD7E-44A9-9C33-02CD399F0DE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7496B2C6-BD7E-44A9-9C33-02CD399F0DE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7496B2C6-BD7E-44A9-9C33-02CD399F0DE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

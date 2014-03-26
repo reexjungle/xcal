@@ -16,8 +16,8 @@ namespace reexmonkey.xcal.service.validators.concretes
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.ProductId).NotNull().NotEmpty();
-            RuleFor(x => x.Events).NotNull().NotEmpty().SetCollectionValidator(new PublishedEventValidator());
-            RuleFor(x => x.TimeZones).Must((x, y) => !x.TimeZones.NullOrEmpty()).When(x => x.Events.FirstOrDefault().Datestamp.TimeFormat == TimeFormat.LocalAndTimeZone);
+            RuleFor(x => x.Events).NotNull().SetCollectionValidator(new PublishedEventValidator());
+            RuleFor(x => x.TimeZones).Must((x, y) => !x.TimeZones.NullOrEmpty()).When(x => !x.Events.NullOrEmpty() && x.Events.FirstOrDefault().Datestamp.TimeFormat == TimeFormat.LocalAndTimeZone);
             RuleFor(x => x.TimeZones).SetCollectionValidator(new TimeZoneValidator()).
                 Must((x, y) => y.OfType<VTIMEZONE>().AreUnique(new EqualByStringId<VTIMEZONE>())).
                 When(x => !x.TimeZones.NullOrEmpty());

@@ -49,7 +49,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
 
         #region VEVENT services based on RFC 5546
 
-        public VCALENDAR Post(PublishEvent request)
+        public VCALENDAR Get(PublishEvent request)
         {
             VCALENDAR calendar = null;
             try

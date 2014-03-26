@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.Linq.Expressions;
+using ServiceStack;
 using ServiceStack.OrmLite;
+using reexmonkey.crosscut.essentials.concretes;
+using ServiceStack.Common.Utils;
 
 namespace reexmonkey.technical.data.concretes.extensions.ormlite
 {
@@ -31,6 +35,109 @@ namespace reexmonkey.technical.data.concretes.extensions.ormlite
 
     public static class OrmLiteExtensions
     {
+
+        #region From service stack source implementation of readers
+
+        internal static IDataReader ExecReader(this IDbCommand cmd, string sql)
+        {
+            cmd.CommandText = sql;
+            return cmd.ExecuteReader();
+        }
+
+        internal static List<T> Select<T>(this IDbCommand dbCmd, string sqlFilter, params object[] filterParams)
+        {
+            using (var reader = dbCmd.ExecReader(
+                OrmLiteConfig.DialectProvider.ToSelectStatement(typeof(T), sqlFilter, filterParams)))
+            {
+                return reader.ConvertToList<T>();
+            }
+        }
+
+        internal static string GetIdsInSql(this IEnumerable idValues)
+        {
+            var sql = new StringBuilder();
+            foreach (var idValue in idValues)
+            {
+                if (sql.Length > 0) sql.Append(",");
+                sql.AppendFormat("{0}".SqlFormat(idValue));
+            }
+            return sql.Length == 0 ? null : sql.ToString();
+        }
+
+        internal static List<T> GetByIds<T>(this IDbCommand dbCmd, IEnumerable idValues)
+        {
+            var sql = idValues.GetIdsInSql();
+            return sql == null
+                ? new List<T>()
+                : Select<T>(dbCmd, OrmLiteConfig.DialectProvider.GetQuotedColumnName(ModelDefinition<T>.PrimaryKeyName) + " IN (" + sql + ")");
+        }
+
+        internal static List<TParam> ReadToList<TParam>(this IDataReader dataReader)
+        {
+            var to = new List<TParam>();
+            using (dataReader)
+            {
+                while (dataReader.Read())
+                {
+                    if (dataReader.FieldCount > 1) break;
+                    var row = (TParam)dataReader[0];
+                    to.Add(row);
+                }
+            }
+            return to;
+        }
+
+        internal static int ExecuteSql(this IDbCommand dbCmd, string sql)
+        {
+            dbCmd.CommandText = sql;
+            return dbCmd.ExecuteNonQuery();
+        }
+
+        internal static void Update<T>(this IDbCommand dbCmd, params T[] entities)
+        {
+            foreach (var obj in entities)
+            {
+                dbCmd.ExecuteSql(OrmLiteConfig.DialectProvider.ToUpdateRowStatement(obj));
+            }
+        }
+
+        internal static void Insert<T>(this IDbCommand dbCmd, params T[] entities)
+        {
+            foreach (var obj in entities)
+            {
+                dbCmd.ExecuteSql(OrmLiteConfig.DialectProvider.ToInsertRowStatement(dbCmd, obj));
+            }
+        }
+
+        internal static void SaveAll<T>(this IDbCommand cmd, IEnumerable<T> entities, IDbTransaction transaction)
+        {
+            var rows = entities.ToList();
+
+            var first = rows.FirstOrDefault();
+            if (first.Equals(default(T))) return;
+
+            var defkey = ReflectionUtils.GetDefaultValue(first.GetId().GetType());
+
+            var map = (defkey != null)
+                ? rows.Where(x => !defkey.Equals(x.GetId())).ToDictionary(x => x.GetId())
+                : rows.Where(x => x.GetId() != null).ToDictionary(x => x.GetId());
+
+            var existing = cmd.GetByIds<T>(map.Keys).ToDictionary(x => x.GetId());
+
+            if (transaction != null) cmd.Transaction = transaction;
+
+            foreach (var row in rows)
+            {
+                var id = IdUtils.GetId(row);
+                if (id != defkey && existing.ContainsKey(id)) cmd.Update(row);
+                else cmd.Insert(row);
+            }
+
+        }
+
+
+        #endregion
+
 
         #region common dml read operations
 
@@ -182,30 +289,6 @@ namespace reexmonkey.technical.data.concretes.extensions.ormlite
             }
         }
 
-        #region Borrowed service stack implementation of readers
-
-        internal static IDataReader ExecReader(this IDbCommand cmd, string sql)
-        {
-            cmd.CommandText = sql;
-            return cmd.ExecuteReader();
-        }
-
-        public static List<TParam> ReadToList<TParam>(this IDataReader dataReader)
-        {
-            var to = new List<TParam>();
-            using (dataReader)
-            {
-                while (dataReader.Read())
-                {
-                    if (dataReader.FieldCount > 1) break;
-                    var row = (TParam)dataReader[0];
-                    to.Add(row);
-                }
-            }
-            return to;
-        }
-
-        #endregion
 
         #region Group I: Select from 1 table (extended)
 
@@ -1809,6 +1892,16 @@ namespace reexmonkey.technical.data.concretes.extensions.ormlite
         #endregion
 
         #endregion 
+
+        #region SaveAll operation without implicit transaction commit
+
+        public static void SaveAll<T>(this IDbConnection db, IEnumerable<T> entities, IDbTransaction transaction)
+        {
+            db.Exec(cmd => cmd.SaveAll(entities, transaction));
+        }
+
+
+        #endregion
 
     }
 }

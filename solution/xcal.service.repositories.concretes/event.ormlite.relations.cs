@@ -20,7 +20,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related organizer entity
@@ -32,7 +32,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public bool Equals(REL_EVENTS_ORGANIZERS other)
         {
             if (other == null) return false;
-            return (this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase) &&
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
                 this.OrganizerId.Equals(other.OrganizerId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -46,7 +46,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode() ^ this.OrganizerId.GetHashCode();
+            return this.EventId.GetHashCode() ^ this.OrganizerId.GetHashCode();
         }
 
         public static bool operator == (REL_EVENTS_ORGANIZERS x, REL_EVENTS_ORGANIZERS y)
@@ -76,7 +76,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related recurrence identifier entity
@@ -88,7 +88,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public bool Equals(REL_EVENTS_RECURRENCE_IDS other)
         {
             if (other == null) return false;
-            return (this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase) &&
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
                 this.RecurrenceId_Id.Equals(other.RecurrenceId_Id, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -102,7 +102,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode() ^ this.RecurrenceId_Id.GetHashCode();
+            return this.EventId.GetHashCode() ^ this.RecurrenceId_Id.GetHashCode();
         }
 
         public static bool operator ==(REL_EVENTS_RECURRENCE_IDS x, REL_EVENTS_RECURRENCE_IDS y)
@@ -132,7 +132,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related recurrence identifier entity
@@ -144,7 +144,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public bool Equals(REL_EVENTS_RRULES other)
         {
             if (other == null) return false;
-            return (this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase) &&
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
                 this.RecurrenceRuleId.Equals(other.RecurrenceRuleId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -158,7 +158,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode() ^ this.RecurrenceRuleId.GetHashCode();
+            return this.EventId.GetHashCode() ^ this.RecurrenceRuleId.GetHashCode();
         }
 
         public static bool operator ==(REL_EVENTS_RRULES x, REL_EVENTS_RRULES y)
@@ -188,7 +188,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
@@ -200,7 +200,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public bool Equals(REL_EVENTS_ATTACHBINS other)
         {
             if (other == null) return false;
-            return (this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase) &&
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
                 this.AttachmentId.Equals(other.AttachmentId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -214,7 +214,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode() ^ this.AttachmentId.GetHashCode();
+            return this.EventId.GetHashCode() ^ this.AttachmentId.GetHashCode();
         }
 
         public static bool operator ==(REL_EVENTS_ATTACHBINS x, REL_EVENTS_ATTACHBINS y)
@@ -244,7 +244,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
@@ -256,7 +256,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public bool Equals(REL_EVENTS_ATTACHURIS other)
         {
             if (other == null) return false;
-            return (this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase) &&
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
                 this.AttachmentId.Equals(other.AttachmentId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -270,7 +270,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode() ^ this.AttachmentId.GetHashCode();
+            return this.EventId.GetHashCode() ^ this.AttachmentId.GetHashCode();
         }
 
         public static bool operator ==(REL_EVENTS_ATTACHURIS x, REL_EVENTS_ATTACHURIS y)
@@ -300,7 +300,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
@@ -312,7 +312,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public bool Equals(REL_EVENTS_ATTENDEES other)
         {
             if (other == null) return false;
-            return (this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase) &&
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
                 this.AttendeeId.Equals(other.AttendeeId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -326,7 +326,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode() ^ this.AttendeeId.GetHashCode();
+            return this.EventId.GetHashCode() ^ this.AttendeeId.GetHashCode();
         }
 
         public static bool operator ==(REL_EVENTS_ATTENDEES x, REL_EVENTS_ATTENDEES y)
@@ -356,7 +356,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related comment entity
@@ -368,7 +368,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public bool Equals(REL_EVENTS_COMMENTS other)
         {
             if (other == null) return false;
-            return (this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase) &&
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
                 this.CommentId.Equals(other.CommentId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -382,7 +382,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode() ^ this.CommentId.GetHashCode();
+            return this.EventId.GetHashCode() ^ this.CommentId.GetHashCode();
         }
 
         public static bool operator ==(REL_EVENTS_COMMENTS x, REL_EVENTS_COMMENTS y)
@@ -412,7 +412,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related contact entity
@@ -424,7 +424,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public bool Equals(REL_EVENTS_CONTACTS other)
         {
             if (other == null) return false;
-            return (this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase) &&
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
                 this.ContactId.Equals(other.ContactId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -438,7 +438,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode() ^ this.ContactId.GetHashCode();
+            return this.EventId.GetHashCode() ^ this.ContactId.GetHashCode();
         }
 
         public static bool operator ==(REL_EVENTS_CONTACTS x, REL_EVENTS_CONTACTS y)
@@ -468,7 +468,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related recurrence date entity
@@ -480,7 +480,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public bool Equals(REL_EVENTS_RDATES other)
         {
             if (other == null) return false;
-            return (this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase) &&
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
                 this.RecurrenceDateId.Equals(other.RecurrenceDateId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -494,7 +494,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode() ^ this.RecurrenceDateId.GetHashCode();
+            return this.EventId.GetHashCode() ^ this.RecurrenceDateId.GetHashCode();
         }
 
         public static bool operator ==(REL_EVENTS_RDATES x, REL_EVENTS_RDATES y)
@@ -524,7 +524,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related exception date entity
@@ -536,7 +536,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public bool Equals(REL_EVENTS_EXDATES other)
         {
             if (other == null) return false;
-            return (this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase) &&
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
                 this.ExceptionDateId.Equals(other.ExceptionDateId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -550,7 +550,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode() ^ this.ExceptionDateId.GetHashCode();
+            return this.EventId.GetHashCode() ^ this.ExceptionDateId.GetHashCode();
         }
 
         public static bool operator ==(REL_EVENTS_EXDATES x, REL_EVENTS_EXDATES y)
@@ -580,7 +580,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the relation entity
@@ -592,7 +592,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public bool Equals(REL_EVENTS_RELATEDTOS other)
         {
             if (other == null) return false;
-            return (this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase) &&
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
                 this.RelatedToId.Equals(other.RelatedToId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -606,7 +606,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode() ^ this.RelatedToId.GetHashCode();
+            return this.EventId.GetHashCode() ^ this.RelatedToId.GetHashCode();
         }
 
         public static bool operator ==(REL_EVENTS_RELATEDTOS x, REL_EVENTS_RELATEDTOS y)
@@ -636,7 +636,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related request status entity
@@ -648,7 +648,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public bool Equals(REL_EVENTS_REQSTATS other)
         {
             if (other == null) return false;
-            return (this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase) &&
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
                 this.ReqStatsId.Equals(other.ReqStatsId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -662,7 +662,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode() ^ this.ReqStatsId.GetHashCode();
+            return this.EventId.GetHashCode() ^ this.ReqStatsId.GetHashCode();
         }
 
         public static bool operator ==(REL_EVENTS_REQSTATS x, REL_EVENTS_REQSTATS y)
@@ -692,7 +692,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related resources-entity
@@ -704,7 +704,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public bool Equals(REL_EVENTS_RESOURCES other)
         {
             if (other == null) return false;
-            return (this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase) &&
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
                 this.ResourcesId.Equals(other.ResourcesId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -718,7 +718,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode() ^ this.ResourcesId.GetHashCode();
+            return this.EventId.GetHashCode() ^ this.ResourcesId.GetHashCode();
         }
 
         public static bool operator ==(REL_EVENTS_RESOURCES x, REL_EVENTS_RESOURCES y)
@@ -748,7 +748,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related alarm entity
@@ -760,7 +760,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public bool Equals(REL_EVENTS_AUDIO_ALARMS other)
         {
             if (other == null) return false;
-            return (this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase) &&
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
                 this.AlarmId.Equals(other.AlarmId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -774,7 +774,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode() ^ this.AlarmId.GetHashCode();
+            return this.EventId.GetHashCode() ^ this.AlarmId.GetHashCode();
         }
 
         public static bool operator ==(REL_EVENTS_AUDIO_ALARMS x, REL_EVENTS_AUDIO_ALARMS y)
@@ -804,7 +804,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related alarm entity
@@ -816,7 +816,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public bool Equals(REL_EVENTS_DISPLAY_ALARMS other)
         {
             if (other == null) return false;
-            return (this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase) &&
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
                 this.AlarmId.Equals(other.AlarmId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -830,7 +830,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode() ^ this.AlarmId.GetHashCode();
+            return this.EventId.GetHashCode() ^ this.AlarmId.GetHashCode();
         }
 
         public static bool operator ==(REL_EVENTS_DISPLAY_ALARMS x, REL_EVENTS_DISPLAY_ALARMS y)
@@ -860,7 +860,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related alarm entity
@@ -872,7 +872,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public bool Equals(REL_EVENTS_EMAIL_ALARMS other)
         {
             if (other == null) return false;
-            return (this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase) &&
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
                 this.AlarmId.Equals(other.AlarmId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -886,7 +886,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode() ^ this.AlarmId.GetHashCode();
+            return this.EventId.GetHashCode() ^ this.AlarmId.GetHashCode();
         }
 
         public static bool operator ==(REL_EVENTS_EMAIL_ALARMS x, REL_EVENTS_EMAIL_ALARMS y)

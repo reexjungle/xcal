@@ -75,7 +75,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 dry = db.Select<AUDIO_ALARM, VEVENT, REL_EVENTS_AUDIO_ALARMS>(
                     r => r.AlarmId,
                     a => a.Id == pkey,
-                    r => r.Uid,
+                    r => r.EventId,
                     e => e.Uid == fkey).FirstOrDefault();
             }
             catch (ArgumentNullException) { throw; }
@@ -94,7 +94,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 {
                     dry = db.Select<AUDIO_ALARM, VEVENT, REL_EVENTS_AUDIO_ALARMS>(
                         r => r.AlarmId,
-                        r => r.Uid,
+                        r => r.EventId,
                         e => Sql.In(e.Uid, fkeys.ToArray()));
                 }
                 else
@@ -102,7 +102,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     dry = db.Select<AUDIO_ALARM, VEVENT, REL_EVENTS_AUDIO_ALARMS>(
                         r => r.AlarmId,
                         a => Sql.In(a.Id, pkeys.ToArray()),
-                        r => r.Uid,
+                        r => r.EventId,
                         e => Sql.In(e.Uid, fkeys.ToArray()));
                 }
             }
@@ -198,7 +198,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             try
             {
-                return !db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.Uid == fkey && q.AlarmId == pkey).NullOrEmpty();
+                return !db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.EventId == fkey && q.AlarmId == pkey).NullOrEmpty();
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
@@ -209,7 +209,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var found = false;
             try
             {
-                var rels = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.Uid, fkeys.ToArray()) && Sql.In(q.AlarmId, pkeys.ToArray()));
+                var rels = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.EventId, fkeys.ToArray()) && Sql.In(q.AlarmId, pkeys.ToArray()));
                 switch (mode)
                 {
                     case ExpectationMode.pessimistic: found = (!rels.NullOrEmpty()) ?
@@ -286,7 +286,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 dry = db.Select<DISPLAY_ALARM, VEVENT, REL_EVENTS_DISPLAY_ALARMS>(
                     r => r.AlarmId,
                     a => a.Id == pkey,
-                    r => r.Uid,
+                    r => r.EventId,
                     e => e.Uid == fkey).FirstOrDefault();
             }
             catch (ArgumentNullException) { throw; }
@@ -305,7 +305,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 {
                     dry = db.Select<DISPLAY_ALARM, VEVENT, REL_EVENTS_DISPLAY_ALARMS>(
                         r => r.AlarmId,
-                        r => r.Uid,
+                        r => r.EventId,
                         e => Sql.In(e.Uid, fkeys.ToArray()));
                 }
                 else
@@ -313,7 +313,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     dry = db.Select<DISPLAY_ALARM, VEVENT, REL_EVENTS_DISPLAY_ALARMS>(
                         r => r.AlarmId,
                         a => Sql.In(a.Id, pkeys.ToArray()),
-                        r => r.Uid,
+                        r => r.EventId,
                         e => Sql.In(e.Uid, fkeys.ToArray()));
                 }
             }
@@ -409,7 +409,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             try
             {
-                return !db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.Uid == fkey && q.AlarmId == pkey).NullOrEmpty();
+                return !db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.EventId == fkey && q.AlarmId == pkey).NullOrEmpty();
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
@@ -420,7 +420,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var found = false;
             try
             {
-                var rels = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.Uid, fkeys.ToArray()) && Sql.In(q.AlarmId, pkeys.ToArray()));
+                var rels = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.EventId, fkeys.ToArray()) && Sql.In(q.AlarmId, pkeys.ToArray()));
                 switch (mode)
                 {
                     case ExpectationMode.pessimistic: found = (!rels.NullOrEmpty()) ?
@@ -564,7 +564,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 dry = db.Select<EMAIL_ALARM, VEVENT, REL_EVENTS_EMAIL_ALARMS>(
                     r => r.AlarmId,
                     a => a.Id == pkey,
-                    r => r.Uid,
+                    r => r.EventId,
                     e => e.Uid == fkey).FirstOrDefault();
             }
             catch (ArgumentNullException) { throw; }
@@ -583,7 +583,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 {
                     dry = db.Select<EMAIL_ALARM, VEVENT, REL_EVENTS_EMAIL_ALARMS>(
                         r => r.AlarmId,
-                        r => r.Uid,
+                        r => r.EventId,
                         e => Sql.In(e.Uid, fkeys.ToArray()));
                 }
                 else
@@ -591,7 +591,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     dry = db.Select<EMAIL_ALARM, VEVENT, REL_EVENTS_EMAIL_ALARMS>(
                         r => r.AlarmId,
                         a => Sql.In(a.Id, pkeys.ToArray()),
-                        r => r.Uid,
+                        r => r.EventId,
                         e => Sql.In(e.Uid, fkeys.ToArray()));
                 }
             }
@@ -820,7 +820,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             try
             {
-                return !db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.Uid == fkey && q.AlarmId == pkey).NullOrEmpty();
+                return !db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.EventId == fkey && q.AlarmId == pkey).NullOrEmpty();
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
@@ -831,7 +831,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var found = false;
             try
             {
-                var rels = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.Uid, fkeys.ToArray()) && Sql.In(q.AlarmId, pkeys.ToArray()));
+                var rels = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.EventId, fkeys.ToArray()) && Sql.In(q.AlarmId, pkeys.ToArray()));
                 switch (mode)
                 {
                     case ExpectationMode.pessimistic: found = (!rels.NullOrEmpty()) ?

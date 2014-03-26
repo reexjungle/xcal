@@ -18,6 +18,21 @@ namespace reexmonkey.xcal.service.repositories.contracts
         IPaginated<int>
     {
         /// <summary>
+        /// Gets or sets the audio alarm repository
+        /// </summary>
+        IAudioAlarmRepository AudioAlarmRepository { get; set; }
+
+        /// <summary>
+        /// Gets or sets the display alarm repository
+        /// </summary>
+        IDisplayAlarmRepository DisplayAlarmRepository { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email alarm repository
+        /// </summary>
+        IEmailAlarmRepository EmailAlarmRepository { get; set; }
+
+        /// <summary>
         /// Populates a sparse event entity with details from its consitutent entities
         /// </summary>
         /// <param name="dry">The sparse event entity to be populated</param>
