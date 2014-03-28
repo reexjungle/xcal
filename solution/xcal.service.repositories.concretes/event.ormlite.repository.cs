@@ -22,7 +22,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
     {
         private IDbConnection conn = null;
         private IDbConnectionFactory factory = null;
-        private int? pages = null;
+        private int? capacity = null;
 
         private IDbConnection db
         {
@@ -37,13 +37,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 this.factory = value; 
             }
         }
-        public int? Pages
+        public int? Capacity
         {
-            get { return this.pages; }
+            get { return this.capacity; }
             set 
             {
                 if (value == null) throw new ArgumentNullException("Null pages");
-                this.pages = value; 
+                this.capacity = value; 
             }
         }
         public IKeyGenerator<string> KeyGenerator { get; set; }
@@ -85,14 +85,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public EventOrmLiteRepository(IDbConnectionFactory factory, int? pages)
         {
             this.DbConnectionFactory = factory;
-            this.Pages = pages;
+            this.Capacity = pages;
             this.conn = this.factory.OpenDbConnection();
         }
         public EventOrmLiteRepository(IDbConnection connection, int? pages)
         {
             if (connection == null) throw new ArgumentNullException("connection");
             this.conn = connection; 
-            this.Pages = pages;
+            this.Capacity = pages;
         }
 
         //cleanup
@@ -123,7 +123,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             IEnumerable<VEVENT> dry = null;
             try
             {
-                dry = db.Select<VEVENT>(q => Sql.In(q.Uid, keys.ToArray()), page, pages);
+                dry = db.Select<VEVENT>(q => Sql.In(q.Uid, keys.ToArray()), page, capacity);
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
@@ -143,7 +143,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     e => Sql.In(e.Uid, pkeys.ToArray()),
                     r => r.ProdId,
                     c => Sql.In(c.ProdId, fkeys.ToArray()),
-                    Conjunctor.AND, JoinMode.INNER, true, page, pages); 
+                    Conjunctor.AND, JoinMode.INNER, true, page, capacity); 
                 }
                 else
                 {
@@ -151,7 +151,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     r => r.Uid,
                     r => r.ProdId,
                     c => Sql.In(c.ProdId, fkeys.ToArray()),
-                    JoinMode.INNER, true, page, pages); 
+                    JoinMode.INNER, true, page, capacity); 
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -165,7 +165,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             IEnumerable<VEVENT> dry = null;
             try
             {
-                dry = db.Select<VEVENT>(page, pages);
+                dry = db.Select<VEVENT>(page, capacity);
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
@@ -304,262 +304,357 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public void Patch(VEVENT source, Expression<Func<VEVENT, object>> fields, Expression<Func<VEVENT, bool>> where = null)
         {
-            try
+            #region construct anonymous fields using expression lambdas
+            
+            var selection = fields.GetMemberNames();
+
+            Expression<Func<VEVENT, object>> primitives = x => new
             {
+                x.Uid,
+                x.Start,
+                x.Created,
+                x.Description,
+                x.Geo,
+                x.LastModified,
+                x.Location,
+                x.Priority,
+                x.Sequence,
+                x.Status,
+                x.Summary,
+                x.Transparency,
+                x.Url,
+                x.End,
+                x.Duration
+            };
 
-                //1. Get fields slected for patching
-                var selection = fields.GetMemberNames();
+            Expression<Func<VEVENT, object>> relations = x => new
+            {
+                x.Organizer,
+                x.RecurrenceId,
+                x.RecurrenceRule,
+                x.Attendees,
+                x.Attachments,
+                x.Contacts,
+                x.Comments,
+                x.RecurrenceDates,
+                x.ExceptionDates,
+                x.RelatedTos,
+                x.Resources,
+                x.RequestStatuses,
+                x.Alarms
+            };
 
-                //2.Get list of all non-related event details (primitives)
-                Expression<Func<VEVENT, object>> primitives = x => new
+            //4. Get list of selected relationals
+            var srelation = relations.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
+
+            //5. Get list of selected primitives
+            var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
+
+            #endregion
+
+            #region save (insert or update) relational attributes
+
+            if (!srelation.NullOrEmpty())
+            {
+                Expression<Func<VEVENT, object>> orgexpr = y => y.Organizer;
+                Expression<Func<VEVENT, object>> ridexpr = y => y.RecurrenceId;
+                Expression<Func<VEVENT, object>> rruleexpr = y => y.RecurrenceRule;
+                Expression<Func<VEVENT, object>> attendsexpr = y => y.Attendees;
+                Expression<Func<VEVENT, object>> attachsexpr = y => y.Attachments;
+                Expression<Func<VEVENT, object>> contactsexpr = y => y.Contacts;
+                Expression<Func<VEVENT, object>> commentsexpr = y => y.Comments;
+                Expression<Func<VEVENT, object>> rdatesexpr = y => y.RecurrenceDates;
+                Expression<Func<VEVENT, object>> exdatesexpr = y => y.ExceptionDates;
+                Expression<Func<VEVENT, object>> relatedtosexpr = y => y.RelatedTos;
+                Expression<Func<VEVENT, object>> resourcesexpr = y => y.Resources;
+                Expression<Func<VEVENT, object>> reqstatsexpr = y => y.RequestStatuses;
+                Expression<Func<VEVENT, object>> alarmexpr = y => y.Alarms;
+
+                string[] eventids = null;
+                try
                 {
-                    x.Uid,
-                    x.Start,
-                    x.Created,
-                    x.Description,
-                    x.Geo,
-                    x.LastModified,
-                    x.Location,
-                    x.Priority,
-                    x.Sequence,
-                    x.Status,
-                    x.Summary,
-                    x.Transparency,
-                    x.Url,
-                    x.End,
-                    x.Duration
-                };
-
-                //3.Get list of all related event details (relational)
-                Expression<Func<VEVENT, object>> relations = x => new
+                    eventids = (where != null)
+                ? db.SelectParam<VEVENT>(q => q.Id, where).ToArray()
+                : db.SelectParam<VEVENT>(q => q.Id).ToArray();
+                }
+                catch (Exception)
                 {
-                    x.Organizer,
-                    x.RecurrenceId,
-                    x.RecurrenceRule,
-                    x.Attendees,
-                    x.Attachments,
-                    x.Contacts,
-                    x.Comments,
-                    x.RecurrenceDates,
-                    x.ExceptionDates,
-                    x.RelatedTos,
-                    x.Resources,
-                    x.RequestStatuses,
-                    x.Alarms
-                };
-
-                //4. Get list of selected relationals
-                var srelation = relations.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
-
-                //5. Patch relations
-                if (!srelation.NullOrEmpty())
-                {
-                    //5.1. Derive expression for each relation
-                    Expression<Func<VEVENT, object>> orgexpr = y => y.Organizer;
-                    Expression<Func<VEVENT, object>> ridexpr = y => y.RecurrenceId;
-                    Expression<Func<VEVENT, object>> rruleexpr = y => y.RecurrenceRule;
-                    Expression<Func<VEVENT, object>> attendsexpr = y => y.Attendees;
-                    Expression<Func<VEVENT, object>> attachsexpr = y => y.Attachments;
-                    Expression<Func<VEVENT, object>> contactsexpr = y => y.Contacts;
-                    Expression<Func<VEVENT, object>> commentsexpr = y => y.Comments;
-                    Expression<Func<VEVENT, object>> rdatesexpr = y => y.RecurrenceDates;
-                    Expression<Func<VEVENT, object>> exdatesexpr = y => y.ExceptionDates;
-                    Expression<Func<VEVENT, object>> relatedtosexpr = y => y.RelatedTos;
-                    Expression<Func<VEVENT, object>> resourcesexpr = y => y.Resources;
-                    Expression<Func<VEVENT, object>> reqstatsexpr = y => y.RequestStatuses;
-                    Expression<Func<VEVENT, object>> alarmexpr = y => y.Alarms;
-
-                    var uids = (where != null) ? db.SelectParam<VEVENT>(q => q.Uid, where).ToArray(): db.SelectParam<VEVENT>(q => q.Uid).ToArray();
-                    if (selection.Contains(orgexpr.GetMemberName()))
-                    {
-                        //get events-organizers relations
-                        var org = (source.Organizer != null && source.Organizer is ORGANIZER) ? (source.Organizer as ORGANIZER) : null;
-                        if (org != null && !uids.NullOrEmpty())
-                        {
-                            db.Save(org);
-                            var rorgs = uids.Select(x => new REL_EVENTS_ORGANIZERS { Id = this.KeyGenerator.GetNextKey(), EventId = x, OrganizerId = org.Id });
-                            var ororgs = db.Select<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.EventId, uids) && q.OrganizerId == (source.Organizer as ORGANIZER).Id);
-                            if (!rorgs.NullOrEmpty() && !rorgs.Except(ororgs).NullOrEmpty()) db.SaveAll(rorgs.Except(ororgs));
-                        }                                         
-                    }
-                    if (selection.Contains(rruleexpr.GetMemberName()))
-                    {
-                        var rrule = (source.RecurrenceRule != null && source.RecurrenceRule is RECUR) ? (source.RecurrenceRule as RECUR) : null;
-                        if (rrule != null && !uids.NullOrEmpty())
-                        {
-                            db.Save(rrule);
-                            var rrrules = uids.Select(x => new REL_EVENTS_RRULES { Id = this.KeyGenerator.GetNextKey(), EventId = x, RecurrenceRuleId = rrule.Id });
-                            var orrrules = db.Select<REL_EVENTS_RRULES>(q => Sql.In(q.EventId, uids) && q.RecurrenceRuleId == (source.RecurrenceRule as RECUR).Id);
-                            if (!rrrules.NullOrEmpty() && !rrrules.Except(orrrules).NullOrEmpty()) db.SaveAll(rrrules.Except(orrrules));
-                        } 
-                    }
-
-                    if (selection.Contains(attendsexpr.GetMemberName()))
-                    {
-                        var attends = (!source.Attendees.OfType<ATTENDEE>().NullOrEmpty()) ? source.Attendees.OfType<ATTENDEE>() : null;
-                        if (!attends.NullOrEmpty() && !uids.NullOrEmpty())
-                        {
-                            db.SaveAll(attends);
-                            var rattends = uids.SelectMany(x => attends.Select(y => new REL_EVENTS_ATTENDEES { Id = this.KeyGenerator.GetNextKey(), EventId = x, AttendeeId = y.Id }));
-                            var orattends = db.Select<REL_EVENTS_ATTENDEES>(q => Sql.In(q.EventId, uids) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
-                            if (!rattends.NullOrEmpty() && !rattends.Except(orattends).NullOrEmpty()) db.SaveAll(rattends.Except(orattends));
-                        } 
-                    }
-
-                    if(selection.Contains(attachsexpr.GetMemberName()))
-                    {
-                        var attachbins = (!source.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty()) ? source.Attachments.OfType<ATTACH_BINARY>() : null;
-                        if (!attachbins.NullOrEmpty() && !uids.NullOrEmpty())
-                        {
-                            db.SaveAll(attachbins);
-                            var rattachbins = uids.SelectMany(x => attachbins.Select(y => new REL_EVENTS_ATTACHBINS { Id = this.KeyGenerator.GetNextKey(), EventId = x, AttachmentId = y.Id }));
-                            var orattachbins = db.Select<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.EventId, uids) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
-                            if (!rattachbins.NullOrEmpty() && !rattachbins.Except(orattachbins).NullOrEmpty()) db.SaveAll(rattachbins.Except(orattachbins));
-
-                        }                   
-
-                        var attachuris = (!source.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty()) ? source.Attachments.OfType<ATTACH_BINARY>() : null;
-                        if (!attachuris.NullOrEmpty() && !uids.NullOrEmpty())
-                        {
-                            db.SaveAll(attachuris);
-                            var rattachuris = uids.SelectMany(x => attachuris.Select(y => new REL_EVENTS_ATTACHURIS { Id = this.KeyGenerator.GetNextKey(), EventId = x, AttachmentId = y.Id }));
-                            var orattachuris = db.Select<REL_EVENTS_ATTACHURIS>(q => Sql.In(q.EventId, uids) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray()));
-                            if (!rattachuris.NullOrEmpty() && !rattachuris.Except(orattachuris).NullOrEmpty()) db.SaveAll(rattachuris.Except(orattachuris));
-                        }
-                    }
-
-                    if (selection.Contains(contactsexpr.GetMemberName()))
-                    {
-                        var contacts = (!source.Contacts.OfType<CONTACT>().NullOrEmpty()) ? source.Contacts.OfType<CONTACT>() : null;
-                        if (!contacts.NullOrEmpty() && !uids.NullOrEmpty())
-                        {
-                            db.SaveAll(contacts);
-                            var rcontacts = uids.SelectMany(x => contacts.Select(y => new REL_EVENTS_CONTACTS { Id = this.KeyGenerator.GetNextKey(), EventId = x, ContactId = y.Id }));
-                            var orcontacts = db.Select<REL_EVENTS_CONTACTS>(q => Sql.In(q.EventId, uids) && Sql.In(q.ContactId, contacts.Select(x => x.Id).ToArray()));
-                            if (!rcontacts.NullOrEmpty() && !rcontacts.Except(orcontacts).NullOrEmpty()) db.SaveAll(rcontacts.Except(orcontacts));
-                        }
-                    }
-
-                    if (selection.Contains(commentsexpr.GetMemberName()))
-                    {
-                        var comments = (!source.Contacts.OfType<COMMENT>().NullOrEmpty()) ? source.Contacts.OfType<COMMENT>() : null;
-                        if (!comments.NullOrEmpty() && !uids.NullOrEmpty())
-                        {
-                            db.SaveAll(comments);
-                            var rcomments = uids.SelectMany(x => comments.Select(y => new REL_EVENTS_COMMENTS { Id = this.KeyGenerator.GetNextKey(), EventId = x, CommentId = y.Id }));
-                            var orcomments = db.Select<REL_EVENTS_COMMENTS>(q => Sql.In(q.EventId, uids) && Sql.In(q.CommentId, comments.Select(x => x.Id).ToArray()));
-                            if (!rcomments.NullOrEmpty() && !rcomments.Except(orcomments).NullOrEmpty()) db.SaveAll(rcomments.Except(orcomments));
-                        }
-                    }
-
-                    if (selection.Contains(rdatesexpr.GetMemberName()))
-                    {
-                        var rdates = (!source.Contacts.OfType<RDATE>().NullOrEmpty()) ? source.Contacts.OfType<RDATE>() : null;
-                        if (!rdates.NullOrEmpty() && !uids.NullOrEmpty())
-                        {
-                            db.SaveAll(rdates);
-                            var rrdates = uids.SelectMany(x => rdates.Select(y => new REL_EVENTS_RDATES { Id = this.KeyGenerator.GetNextKey(), EventId = x, RecurrenceDateId = y.Id }));
-                            var ordates = db.Select<REL_EVENTS_RDATES>(q => Sql.In(q.EventId, uids) && Sql.In(q.RecurrenceDateId, rdates.Select(x => x.Id).ToArray()));
-                            if (!rdates.NullOrEmpty() && !rrdates.Except(ordates).NullOrEmpty()) db.SaveAll(rrdates.Except(ordates));
-                        }
-                    }
-
-                    if (selection.Contains(exdatesexpr.GetMemberName()))
-                    {
-                        var exdates = (!source.Contacts.OfType<EXDATE>().NullOrEmpty()) ? source.Contacts.OfType<EXDATE>() : null;
-                        if (!exdates.NullOrEmpty() && !uids.NullOrEmpty())
-                        {
-                            db.SaveAll(exdates);
-                            var rexdates = uids.SelectMany(x => exdates.Select(y => new REL_EVENTS_EXDATES { Id = this.KeyGenerator.GetNextKey(), EventId = x, ExceptionDateId = y.Id }));
-                            var orexdates = db.Select<REL_EVENTS_EXDATES>(q => Sql.In(q.EventId, uids) && Sql.In(q.ExceptionDateId, exdates.Select(x => x.Id).ToArray()));
-                            if (!exdates.NullOrEmpty() && !rexdates.Except(orexdates).NullOrEmpty()) db.SaveAll(rexdates.Except(orexdates));
-                        }
-                    }
-
-                    if (selection.Contains(relatedtosexpr.GetMemberName()))
-                    {
-                        var relatedtos = (!source.Contacts.OfType<RELATEDTO>().NullOrEmpty()) ? source.Contacts.OfType<RELATEDTO>() : null;
-                        if (!relatedtos.NullOrEmpty() && !uids.NullOrEmpty())
-                        {
-                            db.SaveAll(relatedtos);
-                            var rrelatedtos = uids.SelectMany(x => relatedtos.Select(y => new REL_EVENTS_RELATEDTOS { Id = this.KeyGenerator.GetNextKey(), EventId = x, RelatedToId = y.Id }));
-                            var orrelatedtos = db.Select<REL_EVENTS_RELATEDTOS>(q => Sql.In(q.EventId, uids) && Sql.In(q.RelatedToId, relatedtos.Select(x => x.Id).ToArray()));
-                            if (!relatedtos.NullOrEmpty() && !rrelatedtos.Except(orrelatedtos).NullOrEmpty()) db.SaveAll(rrelatedtos.Except(orrelatedtos));
-                        }
-                    }
-
-                    if (selection.Contains(resourcesexpr.GetMemberName()))
-                    {
-                        var resources = (!source.Contacts.OfType<RESOURCES>().NullOrEmpty()) ? source.Contacts.OfType<RESOURCES>() : null;
-                        if (!resources.NullOrEmpty() && !uids.NullOrEmpty())
-                        {
-                            db.SaveAll(resources);
-                            var rresources = uids.SelectMany(x => resources.Select(y => new REL_EVENTS_RESOURCES { Id = this.KeyGenerator.GetNextKey(), EventId = x, ResourcesId = y.Id }));
-                            var orresources = db.Select<REL_EVENTS_RESOURCES>(q => Sql.In(q.EventId, uids) && Sql.In(q.ResourcesId, resources.Select(x => x.Id).ToArray()));
-                            if (!resources.NullOrEmpty() && !rresources.Except(orresources).NullOrEmpty()) db.SaveAll(rresources.Except(orresources));
-                        }
-                    }
-
-                    if (selection.Contains(reqstatsexpr.GetMemberName()))
-                    {
-                        var reqstats = (!source.Contacts.OfType<REQUEST_STATUS>().NullOrEmpty()) ? source.Contacts.OfType<REQUEST_STATUS>() : null;
-                        if (!reqstats.NullOrEmpty() && !uids.NullOrEmpty())
-                        {
-                            db.SaveAll(reqstats);
-                            var rreqstats = uids.SelectMany(x => reqstats.Select(y => new REL_EVENTS_REQSTATS { Id = this.KeyGenerator.GetNextKey(), EventId = x, ReqStatsId = y.Id }));
-                            var orreqstats = db.Select<REL_EVENTS_REQSTATS>(q => Sql.In(q.EventId, uids) && Sql.In(q.ReqStatsId, reqstats.Select(x => x.Id).ToArray()));
-                            if (!reqstats.NullOrEmpty() && !rreqstats.Except(orreqstats).NullOrEmpty()) db.SaveAll(rreqstats.Except(orreqstats));
-                        }
-                    }
-
-                    if (selection.Contains(alarmexpr.GetMemberName()))
-                    {
-                        var aalarms = (!source.Contacts.OfType<AUDIO_ALARM>().NullOrEmpty()) ? source.Contacts.OfType<AUDIO_ALARM>() : null;
-                        if (!aalarms.NullOrEmpty() && !uids.NullOrEmpty())
-                        {
-                            AudioAlarmRepository.SaveAll(aalarms);
-                            var raalarms = uids.SelectMany(x => aalarms.Select(y => new REL_EVENTS_AUDIO_ALARMS { Id = this.KeyGenerator.GetNextKey(), EventId = x, AlarmId = y.Id }));
-                            var oraalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.EventId, uids) && Sql.In(q.AlarmId, aalarms.Select(x => x.Id).ToArray()));
-                            if (!aalarms.NullOrEmpty() && !raalarms.Except(oraalarms).NullOrEmpty()) db.SaveAll(raalarms.Except(oraalarms));
-                        }
-                        var dalarms = (!source.Contacts.OfType<DISPLAY_ALARM>().NullOrEmpty()) ? source.Contacts.OfType<DISPLAY_ALARM>() : null;
-                        if (!dalarms.NullOrEmpty() && !uids.NullOrEmpty())
-                        {
-                            DisplayAlarmRepository.SaveAll(dalarms);
-                            var rdalarms = uids.SelectMany(x => dalarms.Select(y => new REL_EVENTS_DISPLAY_ALARMS { Id = this.KeyGenerator.GetNextKey(), EventId = x, AlarmId = y.Id }));
-                            var ordalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.EventId, uids) && Sql.In(q.AlarmId, dalarms.Select(x => x.Id).ToArray()));
-                            if (!dalarms.NullOrEmpty() && !rdalarms.Except(ordalarms).NullOrEmpty()) db.SaveAll(rdalarms.Except(ordalarms));
-                        }
-
-                        var ealarms = (!source.Contacts.OfType<EMAIL_ALARM>().NullOrEmpty()) ? source.Contacts.OfType<EMAIL_ALARM>() : null;
-                        if (!ealarms.NullOrEmpty() && !uids.NullOrEmpty())
-                        {
-                            EmailAlarmRepository.SaveAll(ealarms);
-                            var realarms = uids.SelectMany(x => ealarms.Select(y => new REL_EVENTS_EMAIL_ALARMS { Id = this.KeyGenerator.GetNextKey(), EventId = x, AlarmId = y.Id }));
-                            var orealarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.EventId, uids) && Sql.In(q.AlarmId, dalarms.Select(x => x.Id).ToArray()));
-                            if (!ealarms.NullOrEmpty() && !realarms.Except(orealarms).NullOrEmpty()) db.SaveAll(realarms.Except(orealarms));
-                        }
-
-                    } 
                     
+                    throw;
                 }
 
-                //6. Get list of selected primitives
-                var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
 
+                #region save relational non-aggregate attributes of entities
+
+                using (var transaction = db.OpenTransaction(IsolationLevel.Snapshot))
+                {
+                    try
+                    {
+                        if (selection.Contains(orgexpr.GetMemberName()))
+                        {
+                            //get events-organizers relations
+                            var org = (source.Organizer != null && source.Organizer is ORGANIZER) ? (source.Organizer as ORGANIZER) : null;
+                            if (org != null)
+                            {
+                                db.Save(org);
+                                var rorgs = eventids.Select(x => new REL_EVENTS_ORGANIZERS { Id = this.KeyGenerator.GetNextKey(), EventId = x, OrganizerId = org.Id });
+                                var ororgs = db.Select<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.EventId, eventids) && q.OrganizerId == (source.Organizer as ORGANIZER).Id);
+                                db.SaveAll((!ororgs.NullOrEmpty() && !rorgs.Except(ororgs).NullOrEmpty())
+                               ? rorgs.Except(ororgs)
+                               : rorgs, transaction);
+                            }
+                        }
+                        if (selection.Contains(rruleexpr.GetMemberName()))
+                        {
+                            var rrule = (source.RecurrenceRule != null && source.RecurrenceRule is RECUR) ? (source.RecurrenceRule as RECUR) : null;
+                            if (rrule != null)
+                            {
+                                db.Save(rrule);
+                                var rrrules = eventids.Select(x => new REL_EVENTS_RRULES { Id = this.KeyGenerator.GetNextKey(), EventId = x, RecurrenceRuleId = rrule.Id });
+                                var orrrules = db.Select<REL_EVENTS_RRULES>(q => Sql.In(q.EventId, eventids) && q.RecurrenceRuleId == (source.RecurrenceRule as RECUR).Id);
+                                db.SaveAll((!orrrules.NullOrEmpty() && !rrrules.Except(orrrules).NullOrEmpty())
+                                ? rrrules.Except(orrrules)
+                                : rrrules, transaction);
+                            }
+                        }
+
+                        if (selection.Contains(attendsexpr.GetMemberName()))
+                        {
+                            var attends = (!source.Attendees.OfType<ATTENDEE>().NullOrEmpty()) ? source.Attendees.OfType<ATTENDEE>() : null;
+                            if (!attends.NullOrEmpty())
+                            {
+                                db.SaveAll(attends);
+                                var rattends = eventids.SelectMany(x => attends.Select(y => new REL_EVENTS_ATTENDEES { Id = this.KeyGenerator.GetNextKey(), EventId = x, AttendeeId = y.Id }));
+                                var orattends = db.Select<REL_EVENTS_ATTENDEES>(q => Sql.In(q.EventId, eventids) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
+                                db.SaveAll((!orattends.NullOrEmpty() && !rattends.Except(orattends).NullOrEmpty())
+                                    ? rattends.Except(orattends)
+                                    : rattends, transaction);
+                            }
+                        }
+
+                        if (selection.Contains(attachsexpr.GetMemberName()))
+                        {
+                            var attachbins = (!source.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty()) ? source.Attachments.OfType<ATTACH_BINARY>() : null;
+                            if (!attachbins.NullOrEmpty())
+                            {
+                                db.SaveAll(attachbins, transaction);
+                                var rattachbins = eventids.SelectMany(x => attachbins.Select(y => new REL_EVENTS_ATTACHBINS { Id = this.KeyGenerator.GetNextKey(), EventId = x, AttachmentId = y.Id }));
+                                var orattachbins = db.Select<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.EventId, eventids) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
+                                db.SaveAll((!orattachbins.NullOrEmpty() && !rattachbins.Except(orattachbins).NullOrEmpty())
+                                ?rattachbins.Except(orattachbins)
+                                : rattachbins, transaction);
+
+                            }
+
+                            var attachuris = (!source.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty()) ? source.Attachments.OfType<ATTACH_BINARY>() : null;
+                            if (!attachuris.NullOrEmpty())
+                            {
+                                db.SaveAll(attachuris, transaction);
+                                var rattachuris = eventids.SelectMany(x => attachuris.Select(y => new REL_EVENTS_ATTACHURIS { Id = this.KeyGenerator.GetNextKey(), EventId = x, AttachmentId = y.Id }));
+                                var orattachuris = db.Select<REL_EVENTS_ATTACHURIS>(q => Sql.In(q.EventId, eventids) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray()));
+                                db.SaveAll((!orattachuris.NullOrEmpty() && !rattachuris.Except(orattachuris).NullOrEmpty())
+                                ?rattachuris.Except(orattachuris)
+                                :rattachuris, transaction);
+                            }
+                        }
+
+                        if (selection.Contains(contactsexpr.GetMemberName()))
+                        {
+                            var contacts = (!source.Contacts.OfType<CONTACT>().NullOrEmpty()) ? source.Contacts.OfType<CONTACT>() : null;
+                            if (!contacts.NullOrEmpty())
+                            {
+                                db.SaveAll(contacts, transaction);
+                                var rcontacts = eventids.SelectMany(x => contacts.Select(y => new REL_EVENTS_CONTACTS { Id = this.KeyGenerator.GetNextKey(), EventId = x, ContactId = y.Id }));
+                                var orcontacts = db.Select<REL_EVENTS_CONTACTS>(q => Sql.In(q.EventId, eventids) && Sql.In(q.ContactId, contacts.Select(x => x.Id).ToArray()));
+                                db.SaveAll((!orcontacts.NullOrEmpty() && !rcontacts.Except(orcontacts).NullOrEmpty())
+                                ?rcontacts.Except(orcontacts)
+                                :rcontacts, transaction);
+                            }
+                        }
+
+                        if (selection.Contains(commentsexpr.GetMemberName()))
+                        {
+                            var comments = (!source.Contacts.OfType<COMMENT>().NullOrEmpty()) ? source.Contacts.OfType<COMMENT>() : null;
+                            if (!comments.NullOrEmpty())
+                            {
+                                db.SaveAll(comments, transaction);
+                                var rcomments = eventids.SelectMany(x => comments.Select(y => new REL_EVENTS_COMMENTS { Id = this.KeyGenerator.GetNextKey(), EventId = x, CommentId = y.Id }));
+                                var orcomments = db.Select<REL_EVENTS_COMMENTS>(q => Sql.In(q.EventId, eventids) && Sql.In(q.CommentId, comments.Select(x => x.Id).ToArray()));
+                                db.SaveAll((!orcomments.NullOrEmpty() && !rcomments.Except(orcomments).NullOrEmpty())
+                                ?rcomments.Except(orcomments)
+                                :rcomments, transaction);
+                            }
+                        }
+
+                        if (selection.Contains(rdatesexpr.GetMemberName()))
+                        {
+                            var rdates = (!source.Contacts.OfType<RDATE>().NullOrEmpty()) ? source.Contacts.OfType<RDATE>() : null;
+                            if (!rdates.NullOrEmpty())
+                            {
+                                db.SaveAll(rdates, transaction);
+                                var rrdates = eventids.SelectMany(x => rdates.Select(y => new REL_EVENTS_RDATES { Id = this.KeyGenerator.GetNextKey(), EventId = x, RecurrenceDateId = y.Id }));
+                                var ordates = db.Select<REL_EVENTS_RDATES>(q => Sql.In(q.EventId, eventids) && Sql.In(q.RecurrenceDateId, rdates.Select(x => x.Id).ToArray()));
+                                db.SaveAll((!ordates.NullOrEmpty() && !rrdates.Except(ordates).NullOrEmpty())
+                                    ?rrdates.Except(ordates)
+                                    :rrdates, transaction);
+                            }
+                        }
+
+                        if (selection.Contains(exdatesexpr.GetMemberName()))
+                        {
+                            var exdates = (!source.Contacts.OfType<EXDATE>().NullOrEmpty()) ? source.Contacts.OfType<EXDATE>() : null;
+                            if (!exdates.NullOrEmpty())
+                            {
+                                db.SaveAll(exdates, transaction);
+                                var rexdates = eventids.SelectMany(x => exdates.Select(y => new REL_EVENTS_EXDATES { Id = this.KeyGenerator.GetNextKey(), EventId = x, ExceptionDateId = y.Id }));
+                                var orexdates = db.Select<REL_EVENTS_EXDATES>(q => Sql.In(q.EventId, eventids) && Sql.In(q.ExceptionDateId, exdates.Select(x => x.Id).ToArray()));
+                                db.SaveAll((!exdates.NullOrEmpty() && !rexdates.Except(orexdates).NullOrEmpty())
+                                ?rexdates.Except(orexdates)
+                                :rexdates, transaction);
+                            }
+                        }
+
+                        if (selection.Contains(relatedtosexpr.GetMemberName()))
+                        {
+                            var relatedtos = (!source.Contacts.OfType<RELATEDTO>().NullOrEmpty()) ? source.Contacts.OfType<RELATEDTO>() : null;
+                            if (!relatedtos.NullOrEmpty())
+                            {
+                                db.SaveAll(relatedtos, transaction);
+                                var rrelatedtos = eventids.SelectMany(x => relatedtos.Select(y => new REL_EVENTS_RELATEDTOS { Id = this.KeyGenerator.GetNextKey(), EventId = x, RelatedToId = y.Id }));
+                                var orrelatedtos = db.Select<REL_EVENTS_RELATEDTOS>(q => Sql.In(q.EventId, eventids) && Sql.In(q.RelatedToId, relatedtos.Select(x => x.Id).ToArray()));
+                                db.SaveAll((!relatedtos.NullOrEmpty() && !rrelatedtos.Except(orrelatedtos).NullOrEmpty())
+                                ?rrelatedtos.Except(orrelatedtos)
+                                :rrelatedtos, transaction);
+                            }
+                        }
+
+                        if (selection.Contains(resourcesexpr.GetMemberName()))
+                        {
+                            var resources = (!source.Contacts.OfType<RESOURCES>().NullOrEmpty()) ? source.Contacts.OfType<RESOURCES>() : null;
+                            if (!resources.NullOrEmpty())
+                            {
+                                db.SaveAll(resources, transaction);
+                                var rresources = eventids.SelectMany(x => resources.Select(y => new REL_EVENTS_RESOURCES { Id = this.KeyGenerator.GetNextKey(), EventId = x, ResourcesId = y.Id }));
+                                var orresources = db.Select<REL_EVENTS_RESOURCES>(q => Sql.In(q.EventId, eventids) && Sql.In(q.ResourcesId, resources.Select(x => x.Id).ToArray()));
+                                db.SaveAll((!orresources.NullOrEmpty() && !rresources.Except(orresources).NullOrEmpty())
+                                ?rresources.Except(orresources)
+                                :rresources, transaction);
+                            }
+                        }
+
+                        if (selection.Contains(reqstatsexpr.GetMemberName()))
+                        {
+                            var reqstats = (!source.Contacts.OfType<REQUEST_STATUS>().NullOrEmpty()) ? source.Contacts.OfType<REQUEST_STATUS>() : null;
+                            if (!reqstats.NullOrEmpty())
+                            {
+                                db.SaveAll(reqstats, transaction);
+                                var rreqstats = eventids.SelectMany(x => reqstats.Select(y => new REL_EVENTS_REQSTATS { Id = this.KeyGenerator.GetNextKey(), EventId = x, ReqStatsId = y.Id }));
+                                var orreqstats = db.Select<REL_EVENTS_REQSTATS>(q => Sql.In(q.EventId, eventids) && Sql.In(q.ReqStatsId, reqstats.Select(x => x.Id).ToArray()));
+                                db.SaveAll((!orreqstats.NullOrEmpty() && !rreqstats.Except(orreqstats).NullOrEmpty())
+                                ?rreqstats.Except(orreqstats)
+                                :rreqstats, transaction);
+                            }
+                        }
+
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        try {  transaction.Rollback(); }
+                        catch (Exception) {  throw; }
+                    }
+                }
+
+                #endregion
+
+                #region save relational aggregate attributes of entities
+
+                if (selection.Contains(alarmexpr.GetMemberName()))
+                {
+                    var aalarms = (!source.Contacts.OfType<AUDIO_ALARM>().NullOrEmpty())
+                        ? source.Contacts.OfType<AUDIO_ALARM>() 
+                        : null;
+
+                    var dalarms = (!source.Contacts.OfType<DISPLAY_ALARM>().NullOrEmpty())
+                        ? source.Contacts.OfType<DISPLAY_ALARM>() 
+                        : null;
+
+                    var ealarms = (!source.Contacts.OfType<EMAIL_ALARM>().NullOrEmpty()) 
+                        ? source.Contacts.OfType<EMAIL_ALARM>() 
+                        : null;
+
+
+                    if (!aalarms.NullOrEmpty()) AudioAlarmRepository.SaveAll(aalarms);
+                    if (!dalarms.NullOrEmpty()) DisplayAlarmRepository.SaveAll(dalarms);
+                    if (!ealarms.NullOrEmpty()) EmailAlarmRepository.SaveAll(ealarms);
+
+                    using (var transaction = db.OpenTransaction())
+                    {
+                        try
+                        {
+                            if (!aalarms.NullOrEmpty())
+                            {
+
+                                var raalarms = eventids.SelectMany(x => aalarms.Select(y => new REL_EVENTS_AUDIO_ALARMS { Id = this.KeyGenerator.GetNextKey(), EventId = x, AlarmId = y.Id }));
+                                var oraalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.EventId, eventids) && Sql.In(q.AlarmId, aalarms.Select(x => x.Id).ToArray()));
+                                db.SaveAll((!oraalarms.NullOrEmpty() && !oraalarms.Except(oraalarms).NullOrEmpty())
+                                ?raalarms.Except(oraalarms)
+                                :raalarms, transaction);
+                            }
+
+                            if (!dalarms.NullOrEmpty())
+                            {
+                                var rdalarms = eventids.SelectMany(x => dalarms.Select(y => new REL_EVENTS_DISPLAY_ALARMS { Id = this.KeyGenerator.GetNextKey(), EventId = x, AlarmId = y.Id }));
+                                var ordalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.EventId, eventids) && Sql.In(q.AlarmId, dalarms.Select(x => x.Id).ToArray()));
+                                db.SaveAll((!ordalarms.NullOrEmpty() && !rdalarms.Except(ordalarms).NullOrEmpty())
+                                ?rdalarms.Except(ordalarms)
+                                :rdalarms, transaction);
+                            }
+
+                            if (!ealarms.NullOrEmpty())
+                            {
+
+                                var realarms = eventids.SelectMany(x => ealarms.Select(y => new REL_EVENTS_EMAIL_ALARMS { Id = this.KeyGenerator.GetNextKey(), EventId = x, AlarmId = y.Id }));
+                                var orealarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.EventId, eventids) && Sql.In(q.AlarmId, dalarms.Select(x => x.Id).ToArray()));
+                                db.SaveAll((!realarms.NullOrEmpty() && !realarms.Except(orealarms).NullOrEmpty())
+                                ?realarms.Except(orealarms)
+                                :realarms, transaction);
+                            }
+
+                            transaction.Commit();
+                        }
+                        catch (Exception)
+                        {
+                            try { transaction.Rollback(); }
+                            catch (Exception) { throw; }
+                        }
+                    }
+
+                }
+                #endregion
+
+            } 
+
+            #endregion
+
+            #region update-only non-relational attributes
+
+            try
+            {
                 //7. Update matching event primitives
-                if(!sprimitives.NullOrEmpty())
+                if (!sprimitives.NullOrEmpty())
                 {
                     var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
                     var patchexpr = patchstr.CompileToExpressionFunc<VEVENT, object>(CodeDomLanguage.csharp, Utilities.GetReferencedAssemblyNamesFromEntryAssembly());
                     db.UpdateOnly<VEVENT, object>(source, patchexpr, where);
                 }
-
             }
             catch (NotImplementedException) { throw; }
             catch (System.Security.SecurityException) { throw; }
             catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
+            catch (Exception) { throw; } 
+            #endregion
+
         }
 
         public void Erase(string key)
@@ -574,7 +669,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public void SaveAll(IEnumerable<VEVENT> entities)
         {
-            #region retrieve attributes from entities
+            #region retrieve attributes of entities
 
             var orgs = entities.Where(x => x.Organizer != null && x.Organizer is ORGANIZER).Select(x => x.Organizer as ORGANIZER);
             var rids = entities.Where(x => x.RecurrenceId != null && x.RecurrenceId is RECURRENCE_ID).Select(x => x.RecurrenceId as RECURRENCE_ID);
@@ -595,7 +690,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
             #endregion
 
-            #region save non-aggregate elements from entities
+            #region save non-aggregate attribbutes of entities
 
             using (var transaction = db.OpenTransaction(IsolationLevel.Snapshot))
             {
@@ -781,7 +876,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
             #endregion
 
-            #region save aggregate attributes from entities
+            #region save aggregate attributes of entities
 
             try
             {

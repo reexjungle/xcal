@@ -2,30 +2,28 @@
 using System.Data;
 using System.Runtime.Serialization;
 using ServiceStack.OrmLite;
+using ServiceStack.DataAnnotations;
 using reexmonkey.xcal.domain.models;
 
 namespace reexmonkey.xcal.service.repositories.concretes
 {
-    [DataContract]
     public class REL_EVENTS_ORGANIZERS :IEquatable<REL_EVENTS_ORGANIZERS>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-organizer relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related organizer entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(ORGANIZER), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string OrganizerId { get; set; }
 
@@ -62,26 +60,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class REL_EVENTS_RECURRENCE_IDS: IEquatable<REL_EVENTS_RECURRENCE_IDS>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-recurrence ID relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related recurrence identifier entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(RECURRENCE_ID), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string RecurrenceId_Id { get; set; }
 
@@ -118,26 +113,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class REL_EVENTS_RRULES: IEquatable<REL_EVENTS_RRULES>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-recurrence relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related recurrence identifier entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(RECUR), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string RecurrenceRuleId { get; set; }
 
@@ -174,26 +166,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class REL_EVENTS_ATTACHBINS: IEquatable<REL_EVENTS_ATTACHBINS>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(ATTACH_BINARY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AttachmentId { get; set; }
 
@@ -230,26 +219,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class REL_EVENTS_ATTACHURIS : IEquatable<REL_EVENTS_ATTACHURIS>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(ATTACH_URI), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AttachmentId { get; set; }
 
@@ -286,26 +272,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class REL_EVENTS_ATTENDEES: IEquatable<REL_EVENTS_ATTENDEES>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(ATTENDEE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AttendeeId { get; set; }
 
@@ -342,26 +325,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class REL_EVENTS_COMMENTS: IEquatable<REL_EVENTS_COMMENTS>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-comment relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related comment entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(COMMENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string CommentId { get; set; }
 
@@ -398,26 +378,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class REL_EVENTS_CONTACTS: IEquatable<REL_EVENTS_CONTACTS>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-contact relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related contact entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(CONTACT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string ContactId { get; set; }
 
@@ -454,26 +431,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class REL_EVENTS_RDATES: IEquatable<REL_EVENTS_RDATES>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-recurrence date relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related recurrence date entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(RDATE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string RecurrenceDateId { get; set; }
 
@@ -510,26 +484,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class REL_EVENTS_EXDATES: IEquatable<REL_EVENTS_EXDATES>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-exception date relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related exception date entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(EXDATE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string ExceptionDateId { get; set; }
 
@@ -566,26 +537,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class REL_EVENTS_RELATEDTOS: IEquatable<REL_EVENTS_RELATEDTOS>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-related to relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the relation entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(RELATEDTO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string RelatedToId { get; set; }
 
@@ -622,26 +590,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class REL_EVENTS_REQSTATS: IEquatable<REL_EVENTS_REQSTATS>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-request status relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related request status entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(REQUEST_STATUS), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string ReqStatsId { get; set; }
 
@@ -678,13 +643,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class REL_EVENTS_RESOURCES: IEquatable<REL_EVENTS_RESOURCES>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-resources relation
         /// </summary>
         [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
@@ -734,26 +699,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class REL_EVENTS_AUDIO_ALARMS: IEquatable<REL_EVENTS_AUDIO_ALARMS>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-alarm relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related alarm entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(AUDIO_ALARM), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AlarmId { get; set; }
 
@@ -790,26 +752,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class REL_EVENTS_DISPLAY_ALARMS : IEquatable<REL_EVENTS_DISPLAY_ALARMS>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-alarm relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related alarm entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(DISPLAY_ALARM), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AlarmId { get; set; }
 
@@ -846,26 +805,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class REL_EVENTS_EMAIL_ALARMS : IEquatable<REL_EVENTS_EMAIL_ALARMS>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-alarm relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related alarm entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(EMAIL_ALARM), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AlarmId { get; set; }
 

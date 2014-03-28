@@ -49,7 +49,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public int? Pages
+        public int? Capacity
         {
             get { throw new NotImplementedException(); }
             set { throw new NotImplementedException(); }
@@ -145,7 +145,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public int? Pages
+        public int? Capacity
         {
             get { throw new NotImplementedException(); }
             set { throw new NotImplementedException(); }
@@ -237,7 +237,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public int? Pages
+        public int? Capacity
         {
             get { throw new NotImplementedException(); }
             set { throw new NotImplementedException(); }

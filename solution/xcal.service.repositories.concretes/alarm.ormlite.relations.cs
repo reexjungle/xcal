@@ -2,30 +2,28 @@
 using System.Data;
 using System.Runtime.Serialization;
 using ServiceStack.OrmLite;
+using ServiceStack.DataAnnotations;
 using reexmonkey.xcal.domain.models;
 
 namespace reexmonkey.xcal.service.repositories.concretes
 {
-    [DataContract]
     public class RELS_EALARMS_ATTENDEES: IEquatable<RELS_EALARMS_ATTENDEES>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-organizer relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(RELS_EALARMS_ATTENDEES), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AlarmId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related organizer entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(ATTENDEE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AttendeeId { get; set; }
 
@@ -62,26 +60,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class RELS_EALARMS_ATTACHBINS : IEquatable<RELS_EALARMS_ATTACHBINS>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-organizer relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(RELS_EALARMS_ATTACHBINS), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AlarmId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related organizer entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(ATTACH_BINARY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AttachmentId { get; set; }
 
@@ -118,26 +113,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    [DataContract]
     public class RELS_EALARMS_ATTACHURIS : IEquatable<RELS_EALARMS_ATTACHURIS>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-organizer relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(RELS_EALARMS_ATTACHURIS), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AlarmId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related organizer entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(ATTACH_URI), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AttachmentId { get; set; }
 

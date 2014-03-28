@@ -87,7 +87,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             throw new NotImplementedException();
         }
 
-        public int? Pages { get; set; }
+        public int? Capacity { get; set; }
 
 
         public bool Contains(string key)

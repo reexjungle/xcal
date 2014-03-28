@@ -31,7 +31,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             }
         }
 
-        public int? Pages
+        public int? Capacity
         {
             get { return this.pages; }
             set { this.pages = value;}

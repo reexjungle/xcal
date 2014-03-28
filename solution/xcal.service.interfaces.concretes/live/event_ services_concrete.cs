@@ -49,7 +49,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
 
         #region VEVENT services based on RFC 5546
 
-        public VCALENDAR Get(PublishEvent request)
+        public VCALENDAR Post(PublishEvent request)
         {
             VCALENDAR calendar = null;
             try
@@ -78,7 +78,6 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 this.repository.Save(calendar);
 
             }
-            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); }
             catch (Exception ex) { this.logger.Error(ex.ToString()); }
             return calendar;
         }

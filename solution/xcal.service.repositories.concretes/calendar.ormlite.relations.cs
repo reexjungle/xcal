@@ -1,31 +1,27 @@
 ﻿using System;
-using System.Data;
-using System.Runtime.Serialization;
 using ServiceStack.OrmLite;
+using ServiceStack.DataAnnotations;
 using reexmonkey.xcal.domain.models;
 
 namespace reexmonkey.xcal.service.repositories.concretes
 {
-    [DataContract]
     public class REL_CALENDARS_EVENTS : IEquatable<REL_CALENDARS_EVENTS>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the calendar-event relation
         /// </summary>
-        [DataMember]
+        [Index(true)]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related calendar entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VCALENDAR), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string ProdId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string Uid { get; set; }
 
