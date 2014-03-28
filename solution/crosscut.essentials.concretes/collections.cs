@@ -34,7 +34,6 @@ namespace reexmonkey.crosscut.essentials.concretes
             return (comparer == null) ? first.Intersect(second).Count() == 0 : first.Intersect(second, comparer).Count() == 0;
         }
 
-
         public static IEnumerable<TValue> Duplicates<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second, IEqualityComparer<TValue> comparer = null)
         {
             return (comparer == null)? second.Intersect(first): second.Intersect(first, comparer);
@@ -47,9 +46,22 @@ namespace reexmonkey.crosscut.essentials.concretes
                 (second.Union(first, comparer)).Except(second.Intersect(first, comparer), comparer);
         }
 
-        public static void AddRange<TValue>(this List<TValue> list, IEnumerable<TValue> value, Expression<Func<TValue, bool>> predicate)
+        public static void AddRange<TValue>(this List<TValue> list, IEnumerable<TValue> collection, Expression<Func<TValue, bool>> predicate)
         {
-            list.AddRange(value.Where(predicate.Compile()));
+            list.AddRange(collection.Where(predicate.Compile()));
+        }
+
+        public static void AddRangeComplement<TValue>(this List<TValue> list, IEnumerable<TValue> collection, IEqualityComparer<TValue> comparer = null)
+        {
+            try
+            {
+                var incoming = (comparer != null)
+                    ?collection.Except(list, comparer)
+                    : collection.Except(list);
+
+                if (!incoming.NullOrEmpty()) list.AddRange(incoming);
+            }
+            catch (ArgumentNullException) { throw; }
         }
 
         public static void Add<TValue>(this IList<TValue> list, TValue value, bool precondition)

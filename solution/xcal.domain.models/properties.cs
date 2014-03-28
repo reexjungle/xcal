@@ -2566,6 +2566,16 @@ namespace reexmonkey.xcal.domain.models
             this.Directory = null; 
         }
 
+        public ORGANIZER(IORGANIZER organizer, string id = null)
+        {
+            this.Id = id;
+            this.Address = organizer.Address;
+            this.CN = organizer.CN;
+            this.Directory = organizer.Directory;
+            this.SentBy = organizer.SentBy;
+            this.Language = organizer.Language;
+        }
+
         public ORGANIZER(IURI address, IURI sentby, string cname = null, IURI dir = null, ILANGUAGE language = null)
         {
             this.Address = address;

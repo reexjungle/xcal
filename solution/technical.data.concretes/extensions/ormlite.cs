@@ -36,7 +36,7 @@ namespace reexmonkey.technical.data.concretes.extensions.ormlite
     public static class OrmLiteExtensions
     {
 
-        #region From service stack source implementation of readers
+        #region From original service stack source implementation
 
         internal static IDataReader ExecReader(this IDbCommand cmd, string sql)
         {
@@ -44,9 +44,9 @@ namespace reexmonkey.technical.data.concretes.extensions.ormlite
             return cmd.ExecuteReader();
         }
 
-        internal static List<T> Select<T>(this IDbCommand dbCmd, string sqlFilter, params object[] filterParams)
+        internal static List<T> Select<T>(this IDbCommand cmd, string sqlFilter, params object[] filterParams)
         {
-            using (var reader = dbCmd.ExecReader(
+            using (var reader = cmd.ExecReader(
                 OrmLiteConfig.DialectProvider.ToSelectStatement(typeof(T), sqlFilter, filterParams)))
             {
                 return reader.ConvertToList<T>();
@@ -64,12 +64,26 @@ namespace reexmonkey.technical.data.concretes.extensions.ormlite
             return sql.Length == 0 ? null : sql.ToString();
         }
 
-        internal static List<T> GetByIds<T>(this IDbCommand dbCmd, IEnumerable idValues)
+        internal static List<T> GetByIds<T>(this IDbCommand cmd, IEnumerable idValues)
         {
             var sql = idValues.GetIdsInSql();
             return sql == null
                 ? new List<T>()
-                : Select<T>(dbCmd, OrmLiteConfig.DialectProvider.GetQuotedColumnName(ModelDefinition<T>.PrimaryKeyName) + " IN (" + sql + ")");
+                : Select<T>(cmd, OrmLiteConfig.DialectProvider.GetQuotedColumnName(ModelDefinition<T>.PrimaryKeyName) + " IN (" + sql + ")");
+        }
+
+        internal static T FirstOrDefault<T>(this IDbCommand cmd, string filter)
+        {
+            using (var dbReader = cmd.ExecReader(
+                OrmLiteConfig.DialectProvider.ToSelectStatement(typeof(T), filter)))
+            {
+                return dbReader.ConvertTo<T>();
+            }
+        }
+
+        internal static T GetByIdOrDefault<T>(this IDbCommand cmd, object idValue)
+        {
+            return FirstOrDefault<T>(cmd, OrmLiteConfig.DialectProvider.GetQuotedColumnName(ModelDefinition<T>.PrimaryKeyName) + " = {0}".SqlFormat(idValue));
         }
 
         internal static List<TParam> ReadToList<TParam>(this IDataReader dataReader)
@@ -87,26 +101,35 @@ namespace reexmonkey.technical.data.concretes.extensions.ormlite
             return to;
         }
 
-        internal static int ExecuteSql(this IDbCommand dbCmd, string sql)
+        internal static int ExecuteSql(this IDbCommand cmd, string sql)
         {
-            dbCmd.CommandText = sql;
-            return dbCmd.ExecuteNonQuery();
+            cmd.CommandText = sql;
+            return cmd.ExecuteNonQuery();
         }
 
-        internal static void Update<T>(this IDbCommand dbCmd, params T[] entities)
+        internal static void Update<T>(this IDbCommand cmd, params T[] entities)
         {
-            foreach (var obj in entities)
+            foreach (var entity in entities)
             {
-                dbCmd.ExecuteSql(OrmLiteConfig.DialectProvider.ToUpdateRowStatement(obj));
+                cmd.ExecuteSql(OrmLiteConfig.DialectProvider.ToUpdateRowStatement(entity));
             }
         }
 
-        internal static void Insert<T>(this IDbCommand dbCmd, params T[] entities)
+        internal static void Insert<T>(this IDbCommand cmd, params T[] entities)
         {
-            foreach (var obj in entities)
+            foreach (var entity in entities)
             {
-                dbCmd.ExecuteSql(OrmLiteConfig.DialectProvider.ToInsertRowStatement(dbCmd, obj));
+                cmd.ExecuteSql(OrmLiteConfig.DialectProvider.ToInsertRowStatement(cmd, entity));
             }
+        }
+
+        internal static void Save<T>(this IDbCommand cmd, T entity, IDbTransaction transaction)
+        {
+            var id = entity.GetId();
+            if (transaction != null) cmd.Transaction = transaction;
+            var existing = cmd.GetByIdOrDefault<T>(id);
+            if (existing.Equals(default(T))) cmd.Insert(entity);
+            else cmd.Update(entity);
         }
 
         internal static void SaveAll<T>(this IDbCommand cmd, IEnumerable<T> entities, IDbTransaction transaction)
@@ -134,7 +157,6 @@ namespace reexmonkey.technical.data.concretes.extensions.ormlite
             }
 
         }
-
 
         #endregion
 
@@ -1895,11 +1917,15 @@ namespace reexmonkey.technical.data.concretes.extensions.ormlite
 
         #region SaveAll operation without implicit transaction commit
 
+        public static void Save<T>(this IDbConnection db, T entity, IDbTransaction transaction)
+        {
+            db.Exec(cmd => cmd.Save(entity, transaction));
+        }
+
         public static void SaveAll<T>(this IDbConnection db, IEnumerable<T> entities, IDbTransaction transaction)
         {
             db.Exec(cmd => cmd.SaveAll(entities, transaction));
         }
-
 
         #endregion
 

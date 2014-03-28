@@ -57,27 +57,11 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 calendar = (this.repository.Find(request.ProductId)) ?? 
                     new VCALENDAR { ProdId = request.ProductId, Method = METHOD.PUBLISH };
 
-                this.repository.EventRepository.SaveAll(request.Events);
-
-                var existing = calendar.Components.OfType<VEVENT>();
-
-                //get new incoming evenzs
-                var incoming = (!existing.NullOrEmpty())?
-                    request.Events.Except(existing):
-                    request.Events;
-
-                //determine conflicting existing events
-                var conflicts = (!existing.NullOrEmpty())? existing.Intersect(request.Events): null;
-                if(!conflicts.NullOrEmpty())
-                {
-                    calendar.Components.RemoveAll(x => (x is VEVENT && conflicts.Contains(((VEVENT)x))));
-                    calendar.Components.AddRange(conflicts);
-                }
-                    
-                calendar.Components.AddRange(incoming);
+                this.repository.EventRepository.SaveAll(request.Events);               
+                calendar.Components.AddRangeComplement(request.Events);
                 this.repository.Save(calendar);
-
             }
+            catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); }
             catch (Exception ex) { this.logger.Error(ex.ToString()); }
             return calendar;
         }
@@ -95,22 +79,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                     x => new { x.Start, x.End, x.Description, x.Location, x.RecurrenceRule, x.Sequence, x.LastModified}, 
                     p => p.Uid == source.Uid);
 
-                var existing = calendar.Components.OfType<VEVENT>();
-
-                //get new incoming events
-                var incoming = (!existing.NullOrEmpty()) ?
-                    request.Events.Except(existing) :
-                    request.Events;
-
-                //determine conflicting existing events
-                var conflicts = (!existing.NullOrEmpty()) ? existing.Intersect(request.Events) : null;
-                if (!conflicts.NullOrEmpty())
-                {
-                    calendar.Components.RemoveAll(x => (x is VEVENT && conflicts.Contains(((VEVENT)x))));
-                    calendar.Components.AddRange(conflicts);
-                }
-
-                calendar.Components.AddRange(incoming);
+                calendar.Components.AddRangeComplement(request.Events);
                 this.repository.Save(calendar);
             }
             catch (InvalidOperationException) { throw; }
@@ -131,21 +100,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                     x => new {x.Summary, x.Geo, x.Priority, x.Transparency, x.Status, x.Attendees, x.Attachments, x.Categories, x.Classification, x.Comments, x.Contacts, x.Sequence, x.LastModified },
                     p => p.Uid == patch.Uid);
 
-                var existing = calendar.Components.OfType<VEVENT>();
-                //get new incoming evenzs
-                var incoming = (!existing.NullOrEmpty()) ?
-                    request.Events.Except(existing) :
-                    request.Events;
-
-                //determine conflicting existing events
-                var conflicts = (!existing.NullOrEmpty()) ? existing.Intersect(request.Events) : null;
-                if (!conflicts.NullOrEmpty())
-                {
-                    calendar.Components.RemoveAll(x => (x is VEVENT && conflicts.Contains(((VEVENT)x))));
-                    calendar.Components.AddRange(conflicts);
-                }
-
-                calendar.Components.AddRange(incoming);
+                calendar.Components.AddRangeComplement(request.Events);
                 this.repository.Save(calendar);
             }
             catch (InvalidOperationException) { throw; }
