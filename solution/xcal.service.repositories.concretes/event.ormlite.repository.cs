@@ -208,14 +208,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         db.Save(org);
                         var rorg = new REL_EVENTS_ORGANIZERS { Id = this.KeyGenerator.GetNextKey(), EventId = entity.Id, OrganizerId = org.Id };
                         var ororgs = db.Select<REL_EVENTS_ORGANIZERS>(q => q.EventId == entity.Id && q.OrganizerId == org.Id);
-                        if (!ororgs.NullOrEmpty() && !ororgs.Contains(rorg)) db.Save(rorg);
+                        if (!ororgs.NullOrEmpty() && !ororgs.Contains(rorg)) db.Save(rorg, transaction);
                     }
                     if (rid != null)
                     {
                         db.Save(rid, transaction);
                         var rrid = new REL_EVENTS_RECURRENCE_IDS { Id = this.KeyGenerator.GetNextKey(), EventId = entity.Id, RecurrenceId_Id = rid.Id };
                         var orrids = db.Select<REL_EVENTS_RECURRENCE_IDS>(q => q.EventId == entity.Id && q.RecurrenceId_Id == rid.Id);
-                        if (rrid != null && !orrids.Contains(rrid)) db.Save(rrid);
+                        if (!orrids.NullOrEmpty() && !orrids.Contains(rrid)) db.Save(rrid, transaction);
                     }
 
                     if (rrule != null)
@@ -223,7 +223,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         db.Save(rrule, transaction);
                         var rrrule = new REL_EVENTS_RRULES { Id = this.KeyGenerator.GetNextKey(), EventId = entity.Id, RecurrenceRuleId = rrule.Id };
                         var orrrules = db.Select<REL_EVENTS_RRULES>(q => q.EventId == entity.Id && q.RecurrenceRuleId == rrule.Id);
-                        if (rrrule != null && !orrrules.Contains(rrrule)) db.Save(rrule);
+                        if (!orrrules.NullOrEmpty() && !orrrules.Contains(rrrule)) db.Save(rrule, transaction);
                     }
 
                     if (!attends.NullOrEmpty())
@@ -231,9 +231,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         db.SaveAll(attends, transaction);
                         var rattends = attends.Select(x => new REL_EVENTS_ATTENDEES { Id = this.KeyGenerator.GetNextKey(), EventId = entity.Id, AttendeeId = x.Id });
                         var orattends = db.Select<REL_EVENTS_ATTENDEES>(q => q.EventId == entity.Id && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
-                        db.SaveAll((!orattends.NullOrEmpty() && !rattends.Except(orattends).NullOrEmpty())
-                        ? rattends.Except(orattends)
-                        : rattends, transaction);
+                        db.SaveAll(!orattends.NullOrEmpty() ? rattends.Except(orattends): rattends, transaction);
                     }
 
                     if (!attachbins.NullOrEmpty())
@@ -241,22 +239,16 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         db.SaveAll(attachbins, transaction);
                         var rattachbins = attachbins.Select(x => new REL_EVENTS_ATTACHBINS { Id = this.KeyGenerator.GetNextKey(), EventId = entity.Id, AttachmentId = x.Id });
                         var orattachbins = db.Select<REL_EVENTS_ATTACHBINS>(q => q.EventId == entity.Id && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
-                        db.SaveAll((!orattachbins.NullOrEmpty() && !rattachbins.Except(orattachbins).NullOrEmpty())
-                        ? rattachbins.Except(orattachbins)
-                        : rattachbins, transaction);
+                        db.SaveAll(!orattachbins.NullOrEmpty() ? rattachbins.Except(orattachbins): rattachbins, transaction);
                     }
 
                     if (!attachuris.NullOrEmpty())
                     {
                         db.SaveAll(attachuris, transaction);
                         var rattachuris = attachuris.Select(x => new REL_EVENTS_ATTACHURIS { Id = this.KeyGenerator.GetNextKey(), EventId = entity.Id, AttachmentId = x.Id });
-
                         var orattachuris = (!attachuris.NullOrEmpty()) ?
                             db.Select<REL_EVENTS_ATTACHURIS>(q => q.EventId == entity.Id && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray())) : null;
-
-                        db.SaveAll((!orattachuris.NullOrEmpty() && !rattachuris.Except(orattachuris).NullOrEmpty())
-                         ? rattachuris.Except(orattachuris)
-                         : rattachuris, transaction);
+                        db.SaveAll(!orattachuris.NullOrEmpty() ? rattachuris.Except(orattachuris) : rattachuris, transaction);
                     }
 
                     if (!contacts.NullOrEmpty())
@@ -265,9 +257,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         var rcontacts = contacts.Select(x => new REL_EVENTS_CONTACTS { Id = this.KeyGenerator.GetNextKey(), EventId = entity.Id, ContactId = x.Id });
                         var orcontacts = db.Select<REL_EVENTS_CONTACTS>(q => q.EventId == entity.Id && Sql.In(q.ContactId, contacts.Select(x => x.Id).ToArray()));
 
-                        db.SaveAll((!orcontacts.NullOrEmpty() && !rcontacts.Except(orcontacts).NullOrEmpty())
-                        ? rcontacts.Except(orcontacts)
-                        : rcontacts, transaction);
+                        db.SaveAll((!orcontacts.NullOrEmpty()) ? rcontacts.Except(orcontacts) : rcontacts, transaction);
                     }
 
                     if (!comments.NullOrEmpty())
@@ -275,9 +265,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         db.SaveAll(comments, transaction);
                         var rcomments = comments.Select(x => new REL_EVENTS_COMMENTS { Id = this.KeyGenerator.GetNextKey(), EventId = entity.Id, CommentId = x.Id });
                         var orcomments = db.Select<REL_EVENTS_COMMENTS>(q => q.EventId == entity.Id && Sql.In(q.CommentId, comments.Select(x => x.Id).ToArray()));
-                        db.SaveAll((!orcomments.NullOrEmpty() && !rcomments.Except(orcomments).NullOrEmpty())
-                        ? rcomments.Except(orcomments)
-                        : rcomments, transaction);
+                        db.SaveAll((!orcomments.NullOrEmpty()) ? rcomments.Except(orcomments): rcomments, transaction);
                     }
 
                     if (!rdates.NullOrEmpty())
@@ -285,9 +273,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         db.SaveAll(rdates, transaction);
                         var rrdates = rdates.Select(x => new REL_EVENTS_RDATES { Id = this.KeyGenerator.GetNextKey(), EventId = entity.Id, RecurrenceDateId = x.Id });
                         var orrdates = db.Select<REL_EVENTS_RDATES>(q => q.EventId == entity.Id && Sql.In(q.RecurrenceDateId, rdates.Select(x => x.Id).ToArray()));
-                        db.SaveAll((!orrdates.NullOrEmpty() && !rrdates.Except(orrdates).NullOrEmpty())
-                            ? rrdates.Except(orrdates) :
-                            rrdates, transaction);
+                        db.SaveAll((!orrdates.NullOrEmpty()) ? rrdates.Except(orrdates): rrdates, transaction);
                     }
 
                     if (!exdates.NullOrEmpty())
@@ -295,9 +281,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         db.SaveAll(exdates, transaction);
                         var rexdates = exdates.Select(x => new REL_EVENTS_EXDATES { Id = this.KeyGenerator.GetNextKey(), EventId = entity.Id, ExceptionDateId = x.Id });
                         var orexdates = db.Select<REL_EVENTS_EXDATES>(q => q.EventId == entity.Id && Sql.In(q.ExceptionDateId, exdates.Select(x => x.Id).ToArray()));
-                        db.SaveAll((!orexdates.NullOrEmpty() && !rexdates.Except(orexdates).NullOrEmpty())
-                        ? rexdates.Except(orexdates)
-                        : rexdates, transaction);
+                        db.SaveAll((!orexdates.NullOrEmpty()) ? rexdates.Except(orexdates) : rexdates, transaction);
                     }
 
                     if (!relateds.NullOrEmpty())
@@ -305,9 +289,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         db.SaveAll(relateds, transaction);
                         var rrelateds = relateds.Select(x => new REL_EVENTS_RELATEDTOS { Id = this.KeyGenerator.GetNextKey(), EventId = entity.Id, RelatedToId = x.Id });
                         var orrelateds = db.Select<REL_EVENTS_RELATEDTOS>(q => q.EventId == entity.Id && Sql.In(q.RelatedToId, relateds.Select(x => x.Id).ToArray()));
-                        db.SaveAll((!orrelateds.NullOrEmpty() && !rrelateds.Except(orrelateds).NullOrEmpty())
-                        ? rrelateds.Except(orrelateds)
-                        : rrelateds, transaction);
+                        db.SaveAll((!orrelateds.NullOrEmpty()) ? rrelateds.Except(orrelateds) : rrelateds, transaction);
                     }
 
                     if (!resources.NullOrEmpty())
@@ -315,20 +297,15 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         db.SaveAll(resources, transaction);
                         var rresources = resources.Select(x => new REL_EVENTS_RESOURCES { Id = this.KeyGenerator.GetNextKey(), EventId = entity.Id, ResourcesId = x.Id });
                         var orresources = db.Select<REL_EVENTS_RESOURCES>(q => q.EventId == entity.Id && Sql.In(q.ResourcesId, resources.Select(x => x.Id).ToArray()));
-                        db.SaveAll((!orresources.NullOrEmpty() && !rresources.Except(orresources).NullOrEmpty())
-                        ? rresources.Except(orresources)
-                        : rresources, transaction);
-
+                        db.SaveAll((!orresources.NullOrEmpty()) ? rresources.Except(orresources): rresources, transaction);
                     }
+
                     if (!reqstats.NullOrEmpty())
                     {
                         db.SaveAll(reqstats, transaction);
                         var rreqstats = reqstats.Select(x => new REL_EVENTS_REQSTATS { Id = this.KeyGenerator.GetNextKey(), EventId = entity.Id, ReqStatsId = x.Id });
                         var orreqstats = db.Select<REL_EVENTS_REQSTATS>(q => q.EventId == entity.Id && Sql.In(q.ReqStatsId, reqstats.Select(x => x.Id)));
-
-                        db.SaveAll((!orreqstats.NullOrEmpty() && !rreqstats.Except(orreqstats).NullOrEmpty())
-                        ? rreqstats.Except(orreqstats)
-                        : rreqstats, transaction);
+                        db.SaveAll((!orreqstats.NullOrEmpty()) ? rreqstats.Except(orreqstats) : rreqstats, transaction);
                     }
 
                     transaction.Commit();
@@ -359,27 +336,21 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     {
                         var raalarms = aalarms.Select(x => new REL_EVENTS_AUDIO_ALARMS { Id = this.KeyGenerator.GetNextKey(), EventId = entity.Id, AlarmId = x.Id });
                         var oraalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.EventId == entity.Id && Sql.In(q.EventId, aalarms.Select(x => x.Id).ToArray()));
-                        db.SaveAll((!oraalarms.NullOrEmpty() && !raalarms.Except(oraalarms).NullOrEmpty())
-                        ? raalarms.Except(oraalarms)
-                        : raalarms, transaction);
+                        db.SaveAll((!oraalarms.NullOrEmpty()) ? raalarms.Except(oraalarms): raalarms, transaction);
                     }
 
                     if (!dalarms.NullOrEmpty())
                     {
                         var rdalarms = dalarms.Select(x => new REL_EVENTS_DISPLAY_ALARMS { Id = this.KeyGenerator.GetNextKey(), EventId = entity.Id, AlarmId = x.Id });
                         var ordalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.EventId == entity.Id && Sql.In(q.EventId, dalarms.Select(x => x.Id).ToArray()));
-                        db.SaveAll((!ordalarms.NullOrEmpty() && !rdalarms.Except(ordalarms).NullOrEmpty())
-                        ? rdalarms.Except(ordalarms)
-                        : rdalarms, transaction);
+                        db.SaveAll((!ordalarms.NullOrEmpty()) ? rdalarms.Except(ordalarms) : rdalarms, transaction);
                     }
 
                     if (!ealarms.NullOrEmpty())
                     {
                         var realarms = ealarms.Select(x => new REL_EVENTS_EMAIL_ALARMS { Id = this.KeyGenerator.GetNextKey(), EventId = entity.Id, AlarmId = x.Id });
                         var orealarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.EventId == entity.Id && Sql.In(q.EventId, ealarms.Select(x => x.Id).ToArray()));
-                        db.SaveAll((!orealarms.NullOrEmpty() && !realarms.Except(orealarms).NullOrEmpty())
-                        ? realarms.Except(orealarms)
-                        : realarms, transaction);
+                        db.SaveAll((!orealarms.NullOrEmpty()) ? realarms.Except(orealarms) : realarms, transaction);
                     }
 
                     transaction.Commit();
@@ -784,24 +755,16 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     {
                         db.SaveAll(orgs, transaction);
                         var rorgs = entities.Where(x => x.Organizer != null && x.Organizer is ORGANIZER).Select(e => new REL_EVENTS_ORGANIZERS { Id = this.KeyGenerator.GetNextKey(), EventId = e.Id, OrganizerId = (e.Organizer as ORGANIZER).Id });
-
                         var ororgs = db.Select<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.OrganizerId, orgs.Select(x => x.Id).ToArray()));
-
-                        db.SaveAll((!ororgs.NullOrEmpty() && rorgs.Except(ororgs).NullOrEmpty())
-                           ? rorgs.Except(ororgs)
-                           : rorgs, transaction);
+                        db.SaveAll((!ororgs.NullOrEmpty()) ? rorgs.Except(ororgs) : rorgs, transaction);
                     }
 
                     if (!rids.NullOrEmpty())
                     {
                         db.SaveAll(rids, transaction);
                         var rrids = entities.Where(x => x.RecurrenceId != null && x.RecurrenceId is RECURRENCE_ID).Select(e => new REL_EVENTS_RECURRENCE_IDS { Id = this.KeyGenerator.GetNextKey(), EventId = e.Id, RecurrenceId_Id = (e.RecurrenceId as RECURRENCE_ID).Id });
-
                         var orrids = db.Select<REL_EVENTS_RECURRENCE_IDS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.RecurrenceId_Id, rids.Select(x => x.Id).ToArray()));
-
-                        db.SaveAll((!orrids.NullOrEmpty() && rrids.Except(orrids).NullOrEmpty())
-                            ? rrids.Except(orrids)
-                            : rrids, transaction);
+                        db.SaveAll((!orrids.NullOrEmpty()) ? rrids.Except(orrids) : rrids, transaction);
                     }
 
                     if (!rrules.NullOrEmpty())
@@ -810,10 +773,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         var rrrules = entities.Where(x => x.RecurrenceRule != null && x.RecurrenceRule is RECUR).Select(e => new REL_EVENTS_RRULES { Id = this.KeyGenerator.GetNextKey(), EventId = e.Id, RecurrenceRuleId = (e.RecurrenceRule as RECUR).Id });
 
                         var orrrules = db.Select<REL_EVENTS_RRULES>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.RecurrenceRuleId, rrules.Select(x => x.Id).ToArray()));
-
-                        db.SaveAll((!orrrules.NullOrEmpty() && rrrules.Except(orrrules).NullOrEmpty())
-                            ? rrrules.Except(orrrules) :
-                            rrrules, transaction);
+                        db.SaveAll((!orrrules.NullOrEmpty()) ? rrrules.Except(orrrules) : rrrules, transaction);
                     }
 
                     if (!attends.NullOrEmpty())
@@ -822,9 +782,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         var rattends = entities.Where(x => !x.Attendees.OfType<ATTENDEE>().NullOrEmpty())
                             .SelectMany(e => e.Attendees.OfType<ATTENDEE>().Select(x => new REL_EVENTS_ATTENDEES { Id = this.KeyGenerator.GetNextKey(), EventId = e.Id, AttendeeId = x.Id }));
                         var orattends = db.Select<REL_EVENTS_ATTENDEES>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
-                        db.SaveAll((!orattends.NullOrEmpty() && !rattends.Except(orattends).NullOrEmpty())
-                            ? rattends.Except(orattends) :
-                            rattends, transaction);
+                        db.SaveAll((!orattends.NullOrEmpty()) ? rattends.Except(orattends) : rattends, transaction);
                     }
 
                     if (!attachbins.NullOrEmpty())
@@ -832,13 +790,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         db.SaveAll(attachbins, transaction);
                         var rattachbins = entities.Where(x => !x.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty())
                             .SelectMany(e => e.Attachments.OfType<ATTACH_BINARY>().Select(x => new REL_EVENTS_ATTACHBINS { Id = this.KeyGenerator.GetNextKey(), EventId = e.Id, AttachmentId = x.Id }));
-
                         var orattachbins = db.Select<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
-
-
-                        db.SaveAll((!orattachbins.NullOrEmpty() && !rattachbins.Except(orattachbins).NullOrEmpty())
-                            ? rattachbins.Except(orattachbins)
-                            : rattachbins, transaction);
+                        db.SaveAll((!orattachbins.NullOrEmpty()) ? rattachbins.Except(orattachbins): rattachbins, transaction);
                     }
 
                     if (!attachuris.NullOrEmpty())
@@ -846,26 +799,17 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         db.SaveAll(attachuris, transaction);
                         var rattachuris = entities.Where(x => !x.Attachments.OfType<ATTACH_URI>().NullOrEmpty())
                             .SelectMany(e => e.Attachments.OfType<ATTACH_URI>().Select(x => new REL_EVENTS_ATTACHURIS { Id = this.KeyGenerator.GetNextKey(), EventId = e.Id, AttachmentId = x.Id }));
-
                         var orattachuris = db.Select<REL_EVENTS_ATTACHURIS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
-
-                        db.SaveAll((!orattachuris.NullOrEmpty() && !rattachuris.Except(orattachuris).NullOrEmpty())
-                            ? rattachuris.Except(orattachuris)
-                            : rattachuris, transaction);
+                        db.SaveAll((!orattachuris.NullOrEmpty()) ? rattachuris.Except(orattachuris): rattachuris, transaction);
                     }
 
                     if (!contacts.NullOrEmpty())
                     {
                         db.SaveAll(contacts, transaction);
-
                         var rcontacts = entities.Where(x => !x.Contacts.OfType<CONTACT>().NullOrEmpty())
                             .SelectMany(e => e.Contacts.OfType<CONTACT>().Select(x => new REL_EVENTS_CONTACTS { Id = this.KeyGenerator.GetNextKey(), EventId = e.Id, ContactId = x.Id }));
-
                         var orcontacts = db.Select<REL_EVENTS_CONTACTS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.ContactId, contacts.Select(x => x.Id).ToArray()));
-
-                        db.SaveAll((!orcontacts.NullOrEmpty() && !rcontacts.Except(orcontacts).NullOrEmpty())
-                            ? rcontacts.Except(orcontacts)
-                            : rcontacts, transaction);
+                        db.SaveAll((!orcontacts.NullOrEmpty()) ? rcontacts.Except(orcontacts) : rcontacts, transaction);
                     }
 
                     if (!comments.NullOrEmpty())
@@ -873,12 +817,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         db.SaveAll(comments, transaction);
                         var rcomments = entities.Where(x => !x.Contacts.OfType<COMMENT>().NullOrEmpty())
                             .SelectMany(e => e.Contacts.OfType<COMMENT>().Select(x => new REL_EVENTS_COMMENTS { Id = this.KeyGenerator.GetNextKey(), EventId = e.Id, CommentId = x.Id }));
-
                         var orcomments = db.Select<REL_EVENTS_COMMENTS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.CommentId, comments.Select(x => x.Id).ToArray()));
-
-                        db.SaveAll((!orcomments.NullOrEmpty() && !rcomments.Except(orcomments).NullOrEmpty())
-                            ? rcomments.Except(orcomments) :
-                            rcomments, transaction);
+                        db.SaveAll((!orcomments.NullOrEmpty()) ? rcomments.Except(orcomments) : rcomments, transaction);
                     }
 
                     if (!rdates.NullOrEmpty())
@@ -886,12 +826,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         db.SaveAll(rdates, transaction);
                         var rrdates = entities.Where(x => !x.RecurrenceDates.OfType<RDATE>().NullOrEmpty()).SelectMany(e => e.RecurrenceDates.OfType<RDATE>().Distinct(new EqualByStringId<RDATE>())
                             .Select(x => new REL_EVENTS_RDATES { Id = this.KeyGenerator.GetNextKey(), EventId = e.Id, RecurrenceDateId = x.Id }));
-
                         var orrdates = db.Select<REL_EVENTS_RDATES>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.RecurrenceDateId, rdates.Select(x => x.Id).ToArray()));
-
-                        db.SaveAll((!orrdates.NullOrEmpty() && !rrdates.Except(orrdates).NullOrEmpty())
-                            ? rrdates.Except(orrdates)
-                            : rrdates, transaction);
+                        db.SaveAll((!orrdates.NullOrEmpty()) ? rrdates.Except(orrdates) : rrdates, transaction);
                     }
 
                     if (!exdates.NullOrEmpty())
@@ -899,12 +835,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         db.SaveAll(exdates, transaction);
                         var rexdates = entities.Where(x => !x.ExceptionDates.OfType<EXDATE>().NullOrEmpty())
                             .SelectMany(e => e.ExceptionDates.OfType<EXDATE>().Select(x => new REL_EVENTS_EXDATES { Id = this.KeyGenerator.GetNextKey(), EventId = e.Id, ExceptionDateId = x.Id }));
-
                         var orexdates = db.Select<REL_EVENTS_EXDATES>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.ExceptionDateId, exdates.Select(x => x.Id).ToArray()));
-
-                        db.SaveAll((!rexdates.NullOrEmpty() && !rexdates.Except(orexdates).NullOrEmpty())
-                            ? rexdates.Except(orexdates)
-                            : rexdates, transaction);
+                        db.SaveAll((!orexdates.NullOrEmpty()) ? rexdates.Except(orexdates) : rexdates, transaction);
                     }
 
                     if (!relateds.NullOrEmpty())
@@ -912,24 +844,16 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         db.SaveAll(relateds, transaction);
                         var rrelateds = entities.Where(x => !x.RelatedTos.OfType<RELATEDTO>().NullOrEmpty())
                             .SelectMany(e => e.RelatedTos.OfType<RELATEDTO>().Select(x => new REL_EVENTS_RELATEDTOS { Id = this.KeyGenerator.GetNextKey(), EventId = e.Id, RelatedToId = x.Id }));
-
                         var orrelateds = db.Select<REL_EVENTS_RELATEDTOS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.RelatedToId, relateds.Select(x => x.Id).ToArray()));
-
-                        db.SaveAll((!orrelateds.NullOrEmpty() && !rrelateds.Except(orrelateds).NullOrEmpty())
-                            ? rrelateds.Except(orrelateds)
-                            : rrelateds, transaction);
+                        db.SaveAll((!orrelateds.NullOrEmpty())? rrelateds.Except(orrelateds): rrelateds, transaction);
                     }
 
                     if (!resources.NullOrEmpty())
                     {
                         db.SaveAll(resources, transaction);
                         var rresources = entities.Where(x => !x.Resources.OfType<RESOURCES>().NullOrEmpty()).SelectMany(e => e.Resources.OfType<RESOURCES>().Select(x => new REL_EVENTS_RESOURCES { Id = this.KeyGenerator.GetNextKey(), EventId = e.Id, ResourcesId = x.Id }));
-
                         var orresources = db.Select<REL_EVENTS_RESOURCES>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.ResourcesId, resources.Select(x => x.Id).ToArray()));
-
-                        db.SaveAll((!orresources.NullOrEmpty() && !rresources.Except(orresources).NullOrEmpty())
-                        ? rresources.Except(orresources)
-                        : rresources, transaction);
+                        db.SaveAll((!orresources.NullOrEmpty())? rresources.Except(orresources): rresources, transaction);
                     }
 
                     if (!reqstats.NullOrEmpty())
@@ -937,12 +861,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         db.SaveAll(reqstats, transaction);
                         var rreqstats = entities.Where(x => !x.RequestStatuses.OfType<REQUEST_STATUS>().NullOrEmpty())
                             .SelectMany(e => e.RequestStatuses.OfType<REQUEST_STATUS>().Select(x => new REL_EVENTS_REQSTATS { Id = this.KeyGenerator.GetNextKey(), EventId = e.Id, ReqStatsId = x.Id }));
-
                         var orreqstats = db.Select<REL_EVENTS_REQSTATS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.ReqStatsId, reqstats.Select(x => x.Id).ToArray()));
-
-                        db.SaveAll((!orreqstats.NullOrEmpty() && !rreqstats.Except(orreqstats).NullOrEmpty())
-                            ? rreqstats.Except(orreqstats)
-                            : rreqstats, transaction);
+                        db.SaveAll((!orreqstats.NullOrEmpty()) ? rreqstats.Except(orreqstats): rreqstats, transaction);
 
                     }
 
@@ -975,23 +895,15 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!aalarms.NullOrEmpty())
                     {
                         var raalarms = entities.Where(x => !x.Alarms.OfType<AUDIO_ALARM>().NullOrEmpty()).SelectMany(e => e.RequestStatuses.OfType<AUDIO_ALARM>().Select(x => new REL_EVENTS_AUDIO_ALARMS { Id = this.KeyGenerator.GetNextKey(), EventId = e.Id, AlarmId = x.Id }));
-
                         var oraalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.AlarmId, aalarms.Select(x => x.Id).ToArray()));
-
-                        db.SaveAll((!oraalarms.NullOrEmpty() && !raalarms.Except(oraalarms).NullOrEmpty())
-                        ? raalarms.Except(oraalarms)
-                        : raalarms, transaction);
+                        db.SaveAll((!oraalarms.NullOrEmpty()) ? raalarms.Except(oraalarms): raalarms, transaction);
                     }
 
                     if (!dalarms.NullOrEmpty())
                     {
                         var rdalarms = entities.Where(x => !x.Alarms.OfType<DISPLAY_ALARM>().NullOrEmpty()).SelectMany(e => e.RequestStatuses.OfType<DISPLAY_ALARM>().Select(x => new REL_EVENTS_DISPLAY_ALARMS { Id = this.KeyGenerator.GetNextKey(), EventId = e.Id, AlarmId = x.Id }));
-
                         var ordalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.AlarmId, dalarms.Select(x => x.Id).ToArray()));
-
-                        db.SaveAll((!ordalarms.NullOrEmpty() && !rdalarms.Except(ordalarms).NullOrEmpty())
-                        ? rdalarms.Except(ordalarms)
-                        : rdalarms, transaction);
+                        db.SaveAll((!ordalarms.NullOrEmpty()) ? rdalarms.Except(ordalarms) : rdalarms, transaction);
                     }
 
                     if (!ealarms.NullOrEmpty())
@@ -999,10 +911,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         var realarms = entities.Where(x => !x.Alarms.OfType<EMAIL_ALARM>().NullOrEmpty()).SelectMany(e => e.RequestStatuses.OfType<EMAIL_ALARM>().Select(x => new REL_EVENTS_EMAIL_ALARMS { Id = this.KeyGenerator.GetNextKey(), EventId = e.Id, AlarmId = x.Id }));
 
                         var orealarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.AlarmId, ealarms.Select(x => x.Id).ToArray()));
-
-                        db.SaveAll((!orealarms.NullOrEmpty() && !realarms.Except(orealarms).NullOrEmpty())
-                            ? realarms.Except(orealarms)
-                            : realarms, transaction);
+                        db.SaveAll((!orealarms.NullOrEmpty()) ? realarms.Except(orealarms): realarms, transaction);
                     }
 
                     transaction.Commit();

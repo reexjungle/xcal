@@ -127,13 +127,20 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public void Save(AUDIO_ALARM entity)
         {
-            try
+            using (var transaction = db.OpenTransaction())
             {
-                //Save dry event entity i.e. without related details
-                db.Save(entity);
+                try
+                {
+                    //Save dry event entity i.e. without related details
+                    db.Save(entity, transaction);
+                    transaction.Commit();
+                }
+                catch (Exception)
+                {
+                    try { transaction.Rollback();}
+                    catch (Exception) {throw;}
+                } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public void Erase(string key)
@@ -148,12 +155,19 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public void SaveAll(IEnumerable<AUDIO_ALARM> entities)
         {
-            try
+            using (var transaction = db.OpenTransaction())
             {
-                db.SaveAll(entities);
+                try
+                {
+                    db.SaveAll(entities, transaction);
+                    transaction.Commit();
+                }
+                catch (Exception) 
+                {
+                    try { transaction.Rollback();}
+                    catch (Exception) {throw;}
+                } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public void Patch(AUDIO_ALARM source, Expression<Func<AUDIO_ALARM, object>> fields, Expression<Func<AUDIO_ALARM, bool>> where = null)
@@ -338,23 +352,37 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public void Save(DISPLAY_ALARM entity)
         {
-            try
+            using (var transaction = db.OpenTransaction())
             {
-                //Save dry event entity i.e. without related details
-                db.Save(entity);
+                try
+                {
+                    //Save dry event entity i.e. without related details
+                    db.Save(entity, transaction);
+                    transaction.Commit();
+                }
+                catch (Exception)
+                {
+                    try { transaction.Rollback(); }
+                    catch (Exception) { throw; }
+                }
             }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public void SaveAll(IEnumerable<DISPLAY_ALARM> entities)
         {
-            try
+            using (var transaction = db.OpenTransaction())
             {
-                db.SaveAll(entities);
+                try
+                {
+                    db.SaveAll(entities, transaction);
+                    transaction.Commit();
+                }
+                catch (Exception)
+                {
+                    try { transaction.Rollback(); }
+                    catch (Exception) { throw; }
+                }
             }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public void Patch(DISPLAY_ALARM source, Expression<Func<DISPLAY_ALARM, object>> fields, Expression<Func<DISPLAY_ALARM, bool>> where = null)
@@ -616,44 +644,52 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public void Save(EMAIL_ALARM entity)
         {
-            try
+            using (var transaction = db.OpenTransaction())
             {
-                //Save dry event entity i.e. without related details
-                db.Save(entity);
+                try
+                {
+                    //Save dry event entity i.e. without related details
+                    db.Save(entity, transaction);
 
-                //1. retrieve entity details
-                var attends = (!entity.Attendees.OfType<ATTENDEE>().Empty()) ? entity.Attendees.OfType<ATTENDEE>() : null;
-                var attachbins = (!entity.Attachments.OfType<ATTACH_BINARY>().Empty()) ? (entity.Attachments.OfType<ATTACH_BINARY>()) : null;
-                var attachuris = (!entity.Attachments.OfType<ATTACH_URI>().Empty()) ? (entity.Attachments.OfType<ATTACH_URI>()) : null;
+                    //1. retrieve entity details
+                    var attends = entity.Attendees.OfType<ATTENDEE>();
+                    var attachbins = entity.Attachments.OfType<ATTACH_BINARY>();
+                    var attachuris = entity.Attachments.OfType<ATTACH_URI>();
 
-                //2. save details
-                if (!attends.NullOrEmpty()) db.SaveAll(attends);
-                if (!attachbins.NullOrEmpty()) db.SaveAll(attachbins);
-                if (!attachuris.NullOrEmpty()) db.SaveAll(attachuris);
+                    //2. save details
+                    if (!attends.NullOrEmpty())
+                    {
+                        db.SaveAll(attends, transaction);
+                        var rattends = attends.Select(x => new RELS_EALARMS_ATTENDEES { AlarmId = entity.Id, AttendeeId = x.Id });
+                        var orattends = db.Select<RELS_EALARMS_ATTENDEES>(q => q.Id == entity.Id && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
+                        db.SaveAll(!orattends.NullOrEmpty() ? rattends.Except(orattends) : rattends, transaction);
+                    }
 
-                //3. construct relations from entity details
-                var rattends = (entity.Attendees.OfType<ATTENDEE>().Count() > 0) ? entity.Attendees.OfType<ATTENDEE>()
-                    .Select(x => new RELS_EALARMS_ATTENDEES { AlarmId = entity.Id, AttendeeId = x.Id }) : null;
-                var rattachbins = (entity.Attachments.OfType<ATTACH_BINARY>().Count() > 0) ?
-                    (entity.Attachments.OfType<ATTACH_BINARY>().Select(x => new RELS_EALARMS_ATTACHBINS { AlarmId = entity.Id, AttachmentId = x.Id })) : null;
-                var rattachuris = (entity.Attachments.OfType<ATTACH_URI>().Count() > 0) ?
-                    (entity.Attachments.OfType<ATTACH_URI>().Select(x => new RELS_EALARMS_ATTACHURIS { AlarmId = entity.Id, AttachmentId = x.Id })) : null;
+                    if (!attachbins.NullOrEmpty())
+                    {
+                        db.SaveAll(attachbins, transaction);
+                        var rattachbins = attachbins.Select(x => new RELS_EALARMS_ATTACHBINS { AlarmId = entity.Id, AttachmentId = x.Id });
+                        var orattachbins = db.Select<RELS_EALARMS_ATTACHBINS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
+                        db.SaveAll(!orattachbins.NullOrEmpty() ? rattachbins.Except(orattachbins) : rattachbins, transaction);
+                    }
 
-                //4. retrieve existing entity-details relations
-                var orattends = (!attends.NullOrEmpty()) ?
-                    db.Select<RELS_EALARMS_ATTENDEES>(q => q.Id == entity.Id && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray())) : null;
-                var orattachbins = (!attachbins.NullOrEmpty()) ?
-                    db.Select<RELS_EALARMS_ATTACHBINS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray())) : null;
-                var orattachuris = (!attachuris.NullOrEmpty()) ?
-                    db.Select<RELS_EALARMS_ATTACHURIS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray())) : null;
+                    if (!attachuris.NullOrEmpty())
+                    {
+                        db.SaveAll(attachuris, transaction);
+                        var rattachuris = attachuris.Select(x => new RELS_EALARMS_ATTACHURIS { AlarmId = entity.Id, AttachmentId = x.Id });
+                        var orattachuris = db.Select<RELS_EALARMS_ATTACHURIS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray()));
+                        var rdiffs = rattachuris.Except(orattachuris);
+                        db.SaveAll(!orattachuris.NullOrEmpty() ? rattachuris.Except(orattachuris) : rattachuris, transaction);
+                    }
 
-                //5. save non-existing entity-details relations
-                if (!rattends.NullOrEmpty()) db.SaveAll(rattends.Except(orattends));
-                if (!rattachbins.NullOrEmpty()) db.SaveAll(rattachbins.Except(orattachbins));
-                if (!rattachuris.NullOrEmpty()) db.SaveAll(rattachuris.Except(orattachuris));
+                    transaction.Commit();
+                }
+                catch (Exception)
+                {
+                    try { transaction.Rollback(); }
+                    catch (Exception) { throw; }
+                }
             }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public void Erase(string key)
@@ -668,48 +704,51 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public void SaveAll(IEnumerable<EMAIL_ALARM> entities)
         {
-            try
+            using (var transaction = db.OpenTransaction())
             {
-                     db.SaveAll(entities);
-                    
+                try
+                {
+                    db.SaveAll(entities, transaction);
+
                     //1. retrieve details of events
                     var attends = entities.Where(x => x.Attendees.OfType<ATTENDEE>().Count() > 0).SelectMany(x => x.Attendees.OfType<ATTENDEE>());
                     var attachbins = entities.Where(x => x.Attachments.OfType<ATTACH_BINARY>().Count() > 0).SelectMany(x => x.Attachments.OfType<ATTACH_BINARY>());
                     var attachuris = entities.Where(x => x.Attachments.OfType<ATTACH_URI>().Count() > 0).SelectMany(x => x.Attachments.OfType<ATTACH_URI>());
 
                     //2. save details of events
-                    if (!attends.NullOrEmpty()) db.SaveAll(attends);
-                    if (!attachbins.NullOrEmpty()) db.SaveAll(attachbins);
-                    if (!attachuris.NullOrEmpty()) db.SaveAll(attachuris);
+                    if (!attends.NullOrEmpty())
+                    {
+                        db.SaveAll(attends, transaction);
+                        var rattends = entities.Where(x => !x.Attendees.OfType<ATTENDEE>().NullOrEmpty())
+                            .SelectMany(e => e.Attendees.OfType<ATTENDEE>().Select(x => new RELS_EALARMS_ATTENDEES { Id = e.Id, AttendeeId = x.Id }));
+                        var orattends = db.Select<RELS_EALARMS_ATTENDEES>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
+                        db.SaveAll(!orattends.NullOrEmpty() ? rattends.Except(orattends) : rattends, transaction);
+                    }
 
-                    //3. construct available relations
-                    var rattends = entities.Where(x => x.Attendees.OfType<ATTENDEE>().Count() > 0)
-                        .SelectMany(e => e.Attendees.OfType<ATTENDEE>().Select(x => new RELS_EALARMS_ATTENDEES { Id = e.Id, AttendeeId = x.Id }));
-                    var rattachbins = entities.Where(x => x.Attachments.OfType<ATTACH_BINARY>().Count() > 0)
-                        .SelectMany(e => e.Attachments.OfType<ATTACH_BINARY>().Select(x => new RELS_EALARMS_ATTACHBINS { Id = e.Id, AttachmentId = x.Id }));
-                    var rattachuris = entities.Where(x => x.Attachments.OfType<ATTACH_URI>().Count() > 0)
-                        .SelectMany(e => e.Attachments.OfType<ATTACH_URI>().Select(x => new RELS_EALARMS_ATTACHURIS { Id = e.Id, AttachmentId = x.Id }));
+                    if (!attachbins.NullOrEmpty())
+                    {
+                        db.SaveAll(attachbins, transaction);
+                        var rattachbins = entities.Where(x => !x.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty())
+                            .SelectMany(e => e.Attachments.OfType<ATTACH_BINARY>().Select(x => new RELS_EALARMS_ATTACHBINS { Id = e.Id, AttachmentId = x.Id }));
+                        var orattachbins = db.Select<RELS_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
+                        db.SaveAll(!orattachbins.NullOrEmpty() ? rattachbins.Except(orattachbins) : rattachbins, transaction);
+                    }
 
-                    //4. retrieve existing relations
-                    var orattends = (!attends.NullOrEmpty()) ?
-                        db.Select<RELS_EALARMS_ATTENDEES>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()))  : new List<RELS_EALARMS_ATTENDEES>();
+                    if (!attachuris.NullOrEmpty())
+                    {
+                        db.SaveAll(attachuris, transaction);
+                        var rattachuris = entities.Where(x => !x.Attachments.OfType<ATTACH_URI>().NullOrEmpty())
+                            .SelectMany(e => e.Attachments.OfType<ATTACH_URI>().Select(x => new RELS_EALARMS_ATTACHURIS { Id = e.Id, AttachmentId = x.Id }));
+                        var orattachuris = db.Select<RELS_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id)));
+                        db.SaveAll(!orattachuris.NullOrEmpty() ? rattachuris.Except(orattachuris) : rattachuris, transaction);
 
-                    var orattachbins = (!attachbins.NullOrEmpty()) ?
-                        db.Select<RELS_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray())) : new List<RELS_EALARMS_ATTACHBINS>();
+                    }
 
-                    var orattachuris = (!attachuris.NullOrEmpty()) ?
-                        db.Select<RELS_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id))) : 
-                        new List<RELS_EALARMS_ATTACHURIS>();
-
-
-                    //5. save non-existing entity-details relations
-                    if (!rattends.NullOrEmpty() && !rattends.Except(orattends).NullOrEmpty()) db.SaveAll(rattends.Except(orattends));
-                    if (!rattachbins.NullOrEmpty() && !rattachbins.Except(orattachbins).NullOrEmpty()) db.SaveAll(rattachbins.Except(orattachbins));
-                    if (!rattachuris.NullOrEmpty() && !rattachuris.Except(orattachuris).NullOrEmpty()) db.SaveAll(rattachuris.Except(orattachuris));
-                        
+                    transaction.Commit();
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
 
         }
 
