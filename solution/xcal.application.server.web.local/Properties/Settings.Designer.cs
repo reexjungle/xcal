@@ -154,9 +154,9 @@ namespace reexmonkey.xcal.application.server.web.local.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("xcal_elmah_local_db")]
-        public string log_db_name {
+        public string elmah_db_name {
             get {
-                return ((string)(this["log_db_name"]));
+                return ((string)(this["elmah_db_name"]));
             }
         }
         
@@ -166,6 +166,15 @@ namespace reexmonkey.xcal.application.server.web.local.Properties {
         public string elmah_error_table {
             get {
                 return ((string)(this["elmah_error_table"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("xcal_nlog_local_db")]
+        public string nlog_db_name {
+            get {
+                return ((string)(this["nlog_db_name"]));
             }
         }
     }

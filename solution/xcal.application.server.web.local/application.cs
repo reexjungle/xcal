@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Reflection;
-using System.Web;
 using System.Data;
 using Funq;
+using MySql.Data.MySqlClient;
 using ServiceStack.CacheAccess;
 using ServiceStack.OrmLite;
-using ServiceStack.OrmLite.MySql;
 using ServiceStack.WebHost.Endpoints;
 using ServiceStack.Redis;
 using ServiceStack.Logging;
+using ServiceStack.Logging.NLogger;
 using ServiceStack.Logging.Elmah;
 using ServiceStack.ServiceInterface.Validation;
 using ServiceStack.Plugins.MsgPack;
@@ -21,12 +20,8 @@ using reexmonkey.crosscut.essentials.concretes;
 using reexmonkey.crosscut.goodies.concretes;
 using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.xcal.service.repositories.concretes;
-using reexmonkey.crosscut.io.concretes;
 using reexmonkey.technical.data.concretes.extensions.ormlite.mysql;
-using MySql.Data.MySqlClient;
-using Elmah;
-using ServiceStack.ServiceHost;
-using ServiceStack.Logging.Support.Logging;
+
 
 namespace reexmonkey.xcal.application.server.web.local
 {
@@ -73,7 +68,7 @@ namespace reexmonkey.xcal.application.server.web.local
 
             #region inject loggers
 
-            container.Register<ILogFactory>(new ElmahLogFactory(new NullLogFactory()));
+            container.Register<ILogFactory>(new ElmahLogFactory(new NLogFactory()));
 
             #endregion
 
@@ -161,19 +156,31 @@ namespace reexmonkey.xcal.application.server.web.local
 
                 var dbfactory = container.Resolve<IDbConnectionFactory>();
 
-                #region create logger database and tables
+                #region create logger databases and tables
 
                 try
                 {
                     dbfactory.Run(x =>
                     {
+                        //create NLog database and table
                         if (string.IsNullOrEmpty(x.Database))
                         {
-                            x.CreateMySqlDatabase(Properties.Settings.Default.log_db_name, Properties.Settings.Default.overwrite_db);
-                            x.ChangeDatabase(Properties.Settings.Default.log_db_name);
+                            x.CreateMySqlDatabase(Properties.Settings.Default.nlog_db_name, Properties.Settings.Default.overwrite_db);
+                            x.ChangeDatabase(Properties.Settings.Default.nlog_db_name);
 
                         }
-                        else if (!x.Database.Equals(Properties.Settings.Default.log_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.log_db_name);
+                        else if (!x.Database.Equals(Properties.Settings.Default.nlog_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.nlog_db_name);
+                        x.CreateTableIfNotExists<NlogTable>();
+
+
+                        //create elmah database, table and stored procedures
+                        if (string.IsNullOrEmpty(x.Database))
+                        {
+                            x.CreateMySqlDatabase(Properties.Settings.Default.elmah_db_name, Properties.Settings.Default.overwrite_db);
+                            x.ChangeDatabase(Properties.Settings.Default.elmah_db_name);
+
+                        }
+                        else if (!x.Database.Equals(Properties.Settings.Default.elmah_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.elmah_db_name);
 
                        
                         //execute initialization script on first run
@@ -185,7 +192,7 @@ namespace reexmonkey.xcal.application.server.web.local
                             x.ExecuteSql(Properties.Resources.elmah_mysql_GetErrorsXml);
                             x.ExecuteSql(Properties.Resources.elmah_mysql_LogError);
 
-                            //call create table stored procedure
+                            //call "create table" stored procedure
                             x.Exec(cmd => 
                             {
                                 cmd.CommandText = "elmah_CreateLogTable";
@@ -194,8 +201,13 @@ namespace reexmonkey.xcal.application.server.web.local
                             });
                         }
                     });
+
                 }
                 catch (MySql.Data.MySqlClient.MySqlException ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.ToString());
+                }
+                catch (NLog.NLogRuntimeException ex)
                 {
                     System.Diagnostics.Debug.WriteLine(ex.ToString());
                 }
@@ -230,6 +242,7 @@ namespace reexmonkey.xcal.application.server.web.local
                         //Create 3NF relational tables
                         x.CreateTables(false, typeof(REL_CALENDARS_EVENTS), typeof(REL_EVENTS_ATTACHBINS), typeof(REL_EVENTS_ATTACHURIS), typeof(REL_EVENTS_ATTENDEES), typeof(REL_EVENTS_AUDIO_ALARMS), typeof(REL_EVENTS_COMMENTS), typeof(REL_EVENTS_CONTACTS), typeof(REL_EVENTS_DISPLAY_ALARMS), typeof(REL_EVENTS_EMAIL_ALARMS), typeof(REL_EVENTS_EXDATES), typeof(REL_EVENTS_ORGANIZERS), typeof(REL_EVENTS_RDATES), typeof(REL_EVENTS_RECURRENCE_IDS), typeof(REL_EVENTS_RELATEDTOS), typeof(REL_EVENTS_REQSTATS), typeof(REL_EVENTS_RESOURCES), typeof(REL_EVENTS_RRULES), typeof(RELS_EALARMS_ATTACHBINS), typeof(RELS_EALARMS_ATTACHURIS), typeof(RELS_EALARMS_ATTENDEES));
                     });
+
                 }
                 catch (MySqlException ex)
                 {
@@ -301,7 +314,6 @@ namespace reexmonkey.xcal.application.server.web.local
             }
 
             #endregion
-
         }
 
         public ApplicationHost() : base(Properties.Settings.Default.service_name, typeof(EventService).Assembly)

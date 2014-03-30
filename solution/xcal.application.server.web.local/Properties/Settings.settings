@@ -48,11 +48,14 @@
 &lt;/SerializableConnectionString&gt;</DesignTimeValue>
       <Value Profile="(Default)">Server = localhost; Uid = local; Pwd = local; Database=xcal_elmah_local_db; allow user variables=true;</Value>
     </Setting>
-    <Setting Name="log_db_name" Type="System.String" Scope="Application">
+    <Setting Name="elmah_db_name" Type="System.String" Scope="Application">
       <Value Profile="(Default)">xcal_elmah_local_db</Value>
     </Setting>
     <Setting Name="elmah_error_table" Type="System.String" Scope="Application">
       <Value Profile="(Default)">elmah_error</Value>
+    </Setting>
+    <Setting Name="nlog_db_name" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">xcal_nlog_local_db</Value>
     </Setting>
   </Settings>
 </SettingsFile>
