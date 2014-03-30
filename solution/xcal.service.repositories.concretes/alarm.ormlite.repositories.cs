@@ -746,8 +746,11 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                     transaction.Commit();
                 }
-                catch (InvalidOperationException) { throw; }
-                catch (Exception) { throw; } 
+                catch (Exception) 
+                {
+                    try { transaction.Rollback(); }
+                    catch (Exception) { throw; }
+                } 
             }
 
         }
@@ -805,40 +808,57 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 Expression<Func<EMAIL_ALARM, object>> attendsexpr = y => y.Attendees;
                 Expression<Func<EMAIL_ALARM, object>> attachsexpr = y => y.Attachments;
 
-                var ids = (where != null) ? db.SelectParam<EMAIL_ALARM>(q => q.Id, where).ToArray() : db.SelectParam<EMAIL_ALARM>(q => q.Id).ToArray();
+                var eventids = (where != null) 
+                    ? db.SelectParam<EMAIL_ALARM>(q => q.Id, where).ToArray() 
+                    : db.SelectParam<EMAIL_ALARM>(q => q.Id).ToArray();
 
-                if (selection.Contains(attendsexpr.GetMemberName()))
+                using (var transaction = db.OpenTransaction())
                 {
-                    var attends = (!source.Attendees.OfType<ATTENDEE>().NullOrEmpty()) ? source.Attendees.OfType<ATTENDEE>() : null;
-                    if (!attends.NullOrEmpty() && !ids.NullOrEmpty())
+                    try
                     {
-                        db.SaveAll(attends);
-                        var rattends = ids.SelectMany(x => attends.Select(y => new RELS_EALARMS_ATTENDEES { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttendeeId = y.Id }));
-                        var orattends = db.Select<RELS_EALARMS_ATTENDEES>(q => Sql.In(q.Id, ids) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
-                        if (!rattends.NullOrEmpty() && !rattends.Except(orattends).NullOrEmpty()) db.SaveAll(rattends.Except(orattends));
+                        bool skip = eventids.NullOrEmpty();
+                        if (selection.Contains(attendsexpr.GetMemberName()))
+                        {
+                            var attends = source.Attendees.OfType<ATTENDEE>();
+                            if (!attends.NullOrEmpty() && !skip)
+                            {
+                                db.SaveAll(attends, transaction);
+                                var rattends = eventids.SelectMany(x => attends.Select(y => new RELS_EALARMS_ATTENDEES { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttendeeId = y.Id }));
+                                var orattends = db.Select<RELS_EALARMS_ATTENDEES>(q => Sql.In(q.Id, eventids) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
+                                db.SaveAll(!rattends.NullOrEmpty() ? rattends.Except(orattends) : rattends, transaction);
 
+                            }
+                        }
+
+                        if (selection.Contains(attachsexpr.GetMemberName()))
+                        {
+                            var attachbins = source.Attachments.OfType<ATTACH_BINARY>();
+                            if (!attachbins.NullOrEmpty() && !skip)
+                            {
+                                db.SaveAll(attachbins, transaction);
+                                var rattachbins = eventids.SelectMany(x => attachbins.Select(y => new RELS_EALARMS_ATTACHBINS { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttachmentId = y.Id }));
+                                var orattachbins = db.Select<RELS_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, eventids) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
+                                db.SaveAll(!rattachbins.NullOrEmpty() ? rattachbins.Except(orattachbins) : rattachbins, transaction);
+                            }
+
+                            var attachuris = source.Attachments.OfType<ATTACH_URI>();
+                            if (!attachuris.NullOrEmpty() && !skip)
+                            {
+                                db.SaveAll(attachuris, transaction);
+                                var rattachuris = eventids.SelectMany(x => attachuris.Select(y => new RELS_EALARMS_ATTACHURIS { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttachmentId = y.Id }));
+                                var orattachuris = db.Select<RELS_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, eventids) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray()));
+                                db.SaveAll(!rattachuris.NullOrEmpty() ? rattachuris.Except(orattachuris) : rattachuris, transaction);
+                            }
+                        }
+
+                        transaction.Commit();
                     }
-                }
-
-                if (selection.Contains(attachsexpr.GetMemberName()))
-                {
-                    var attachbins = (!source.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty()) ? source.Attachments.OfType<ATTACH_BINARY>() : null;
-                    if (!attachbins.NullOrEmpty() && !ids.NullOrEmpty())
+                    catch (Exception)
                     {
-                        db.SaveAll(attachbins);
-                        var rattachbins = ids.SelectMany(x => attachbins.Select(y => new RELS_EALARMS_ATTACHBINS { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttachmentId = y.Id }));
-                        var orattachbins = db.Select<RELS_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, ids) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
-                        if (!rattachbins.NullOrEmpty() && !rattachbins.Except(orattachbins).NullOrEmpty()) db.SaveAll(rattachbins.Except(orattachbins));
+                        try { transaction.Rollback(); }
+                        catch (Exception) { throw; }
                     }
-
-                    var attachuris = (!source.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty()) ? source.Attachments.OfType<ATTACH_URI>() : null;
-                    if (!attachuris.NullOrEmpty() && !ids.NullOrEmpty())
-                    {
-                        db.SaveAll(attachuris);
-                        var rattachuris = ids.SelectMany(x => attachuris.Select(y => new RELS_EALARMS_ATTACHURIS { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttachmentId = y.Id }));
-                        var orattachuris = db.Select<RELS_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, ids) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray()));
-                        if (!rattachuris.NullOrEmpty() && !rattachuris.Except(orattachuris).NullOrEmpty()) db.SaveAll(rattachuris.Except(orattachuris));
-                    }
+ 
                 }
             }
 
@@ -849,9 +869,16 @@ namespace reexmonkey.xcal.service.repositories.concretes
             //7. Update matching event primitives
             if (!sprimitives.NullOrEmpty())
             {
-                var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
-                var patchexpr = patchstr.CompileToExpressionFunc<EMAIL_ALARM, object>(CodeDomLanguage.csharp, Utilities.GetReferencedAssemblyNamesFromEntryAssembly());
-                db.UpdateOnly<EMAIL_ALARM, object>(source, patchexpr, where);
+                try
+                {
+                    var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
+                    var patchexpr = patchstr.CompileToExpressionFunc<EMAIL_ALARM, object>(CodeDomLanguage.csharp, Utilities.GetReferencedAssemblyNamesFromEntryAssembly());
+                    db.UpdateOnly<EMAIL_ALARM, object>(source, patchexpr, where);
+                }
+                catch (NotImplementedException) { throw; }
+                catch (System.Security.SecurityException) { throw; }
+                catch (InvalidOperationException) { throw; }
+                catch (Exception) { throw; }
             }
         }
 
