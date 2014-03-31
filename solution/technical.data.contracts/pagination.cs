@@ -14,7 +14,7 @@ namespace reexmonkey.technical.data.contracts
         /// <summary>
         /// Gets or sets page capacity (maximum number of results per page)
         /// </summary>
-        TSize? Capacity { get; set; }
+        TSize? PageSize { get; set; }
 
     }
 }

@@ -17,19 +17,19 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// Gets or sets the unique identifier of the related calendar entity
         /// </summary>
         [ForeignKey(typeof(VCALENDAR), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string ProdId { get; set; }
+        public string CalendarId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string Uid { get; set; }
+        public string EventId { get; set; }
 
         public bool Equals(REL_CALENDARS_EVENTS other)
         {
             if (other == null) return false;
-            return (this.ProdId.Equals(other.ProdId, StringComparison.OrdinalIgnoreCase) &&
-                this.ProdId.Equals(other.ProdId, StringComparison.OrdinalIgnoreCase));
+            return (this.CalendarId.Equals(other.CalendarId, StringComparison.OrdinalIgnoreCase) &&
+                this.CalendarId.Equals(other.CalendarId, StringComparison.OrdinalIgnoreCase));
         }
 
         public override bool Equals(object obj)
@@ -42,7 +42,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public override int GetHashCode()
         {
-            return this.ProdId.GetHashCode() ^ this.Uid.GetHashCode();
+            return this.CalendarId.GetHashCode() ^ this.EventId.GetHashCode();
         }
 
         public static bool operator ==(REL_CALENDARS_EVENTS x, REL_CALENDARS_EVENTS y)

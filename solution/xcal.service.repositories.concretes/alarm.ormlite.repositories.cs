@@ -35,7 +35,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 this.factory = value;
             }
         }
-        public int? Capacity
+        public int? PageSize
         {
             get { return this.pages; }
             set
@@ -51,14 +51,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public AudioAlarmOrmLiteRepository(IDbConnectionFactory factory, int? pages)
         {
             this.DbConnectionFactory = factory;
-            this.Capacity = pages;
+            this.PageSize = pages;
             this.conn = this.factory.OpenDbConnection();
         }
         public AudioAlarmOrmLiteRepository(IDbConnection connection, int? pages)
         {
             if (connection == null) throw new ArgumentNullException("connection");
             this.conn = connection;
-            this.Capacity = pages;
+            this.PageSize = pages;
         }
 
         //cleanup
@@ -262,7 +262,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 this.factory = value;
             }
         }
-        public int? Capacity
+        public int? PageSize
         {
             get { return this.pages; }
             set
@@ -276,14 +276,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public DisplayAlarmOrmLiteRepository(IDbConnectionFactory factory, int? pages)
         {
             this.DbConnectionFactory = factory;
-            this.Capacity = pages;
+            this.PageSize = pages;
             this.conn = this.factory.OpenDbConnection();
         }
         public DisplayAlarmOrmLiteRepository(IDbConnection connection, int? pages)
         {
             if (connection == null) throw new ArgumentNullException("connection");
             this.conn = connection;
-            this.Capacity = pages;
+            this.PageSize = pages;
         }
 
         //cleanup
@@ -487,7 +487,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 this.factory = value; 
             }
         }
-        public int? Capacity
+        public int? PageSize
         {
             get { return this.pages; }
             set 
@@ -502,14 +502,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public EmailAlarmOrmLiteRepository(IDbConnectionFactory factory, int? pages)
         {
             this.DbConnectionFactory = factory;
-            this.Capacity = pages;
+            this.PageSize = pages;
             this.conn = this.factory.OpenDbConnection();
         }
         public EmailAlarmOrmLiteRepository(IDbConnection connection, int? pages)
         {
             if (connection == null) throw new ArgumentNullException("connection");
             this.conn = connection; 
-            this.Capacity = pages;
+            this.PageSize = pages;
         }
 
         //cleanup

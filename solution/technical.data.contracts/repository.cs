@@ -77,7 +77,7 @@ namespace reexmonkey.technical.data.contracts
         /// <param name="pkey">The unique identifier for the primary entity</param>
         /// <param name="fkey">The unique identifier for the secondary entity</param>
         /// <returns></returns>
-        TPEntity Find(TFKey fkey, TPKey pkey );
+        TPEntity Find(TFKey fkey, TPKey pkey);
 
         /// <summary>
         /// Searches for referencing entities, which are related to referenced entities

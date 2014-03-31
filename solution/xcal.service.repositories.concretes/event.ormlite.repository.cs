@@ -22,7 +22,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
     {
         private IDbConnection conn = null;
         private IDbConnectionFactory factory = null;
-        private int? capacity = null;
+        private int? page_size = null;
+        private IKeyGenerator<string> keygen;
 
         private IDbConnection db
         {
@@ -37,16 +38,24 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 this.factory = value; 
             }
         }
-        public int? Capacity
+        public int? PageSize
         {
-            get { return this.capacity; }
+            get { return this.page_size; }
             set 
             {
                 if (value == null) throw new ArgumentNullException("Null pages");
-                this.capacity = value; 
+                this.page_size = value; 
             }
         }
-        public IKeyGenerator<string> KeyGenerator { get; set; }
+        public IKeyGenerator<string> KeyGenerator
+        {
+            get { return this.keygen; }
+            set 
+            {
+                if (value == null) throw new ArgumentNullException("KeyGenerator");
+                this.keygen = value;
+            }
+        }
 
 
         private IAudioAlarmRepository aalarmrepository = null;
@@ -85,14 +94,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public EventOrmLiteRepository(IDbConnectionFactory factory, int? pages)
         {
             this.DbConnectionFactory = factory;
-            this.Capacity = pages;
+            this.PageSize = pages;
             this.conn = this.factory.OpenDbConnection();
         }
         public EventOrmLiteRepository(IDbConnection connection, int? pages)
         {
             if (connection == null) throw new ArgumentNullException("connection");
             this.conn = connection; 
-            this.Capacity = pages;
+            this.PageSize = pages;
         }
 
         //cleanup
@@ -107,9 +116,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
             try
             {
                 dry = db.Select<VEVENT, VCALENDAR, REL_CALENDARS_EVENTS>(
-                    r => r.Uid,
+                    r => r.EventId,
                     e => e.Uid == pkey,
-                    r => r.ProdId,
+                    r => r.CalendarId,
                     c => c.ProdId == fkey).FirstOrDefault();
             }
             catch (ArgumentNullException) { throw; }
@@ -123,7 +132,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             IEnumerable<VEVENT> dry = null;
             try
             {
-                dry = db.Select<VEVENT>(q => Sql.In(q.Uid, keys.ToArray()), page, capacity);
+                dry = db.Select<VEVENT>(q => Sql.In(q.Uid, keys.ToArray()), page, page_size);
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
@@ -139,19 +148,19 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 if (!pkeys.NullOrEmpty())
                 {
                     dry = db.Select<VEVENT, VCALENDAR, REL_CALENDARS_EVENTS>(
-                    r => r.Uid,
+                    r => r.EventId,
                     e => Sql.In(e.Uid, pkeys.ToArray()),
-                    r => r.ProdId,
+                    r => r.CalendarId,
                     c => Sql.In(c.ProdId, fkeys.ToArray()),
-                    Conjunctor.AND, JoinMode.INNER, true, page, capacity); 
+                    Conjunctor.AND, JoinMode.INNER, true, page, page_size); 
                 }
                 else
                 {
                     dry = db.Select<VEVENT, VCALENDAR, REL_CALENDARS_EVENTS>(
-                    r => r.Uid,
-                    r => r.ProdId,
+                    r => r.EventId,
+                    r => r.CalendarId,
                     c => Sql.In(c.ProdId, fkeys.ToArray()),
-                    JoinMode.INNER, true, page, capacity); 
+                    JoinMode.INNER, true, page, page_size); 
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -165,7 +174,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             IEnumerable<VEVENT> dry = null;
             try
             {
-                dry = db.Select<VEVENT>(page, capacity);
+                dry = db.Select<VEVENT>(page, page_size);
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
@@ -1128,7 +1137,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             try
             {
-                return !db.Select<REL_CALENDARS_EVENTS>(q => q.ProdId == fkey && q.Uid == pkey).NullOrEmpty();
+                return !db.Select<REL_CALENDARS_EVENTS>(q => q.CalendarId == fkey && q.EventId == pkey).NullOrEmpty();
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
@@ -1139,11 +1148,11 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var found = false;
             try
             {
-                var rels = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.ProdId, fkeys.ToArray()) && Sql.In(q.Uid, pkeys.ToArray()));
+                var rels = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, fkeys.ToArray()) && Sql.In(q.EventId, pkeys.ToArray()));
                 switch (mode)
                 {
                     case ExpectationMode.pessimistic: found = (!rels.NullOrEmpty()) ?
-                        rels.Select(x => x.Uid).Distinct().Count() == pkeys.Distinct().Count() :
+                        rels.Select(x => x.EventId).Distinct().Count() == pkeys.Distinct().Count() :
                         false; break;
                     case ExpectationMode.optimistic:
                     default:
@@ -1162,8 +1171,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
             try
             {
                 var events = db.Select<VEVENT, VCALENDAR, REL_CALENDARS_EVENTS>(
-                    r => r.Uid,
-                    r => r.ProdId,
+                    r => r.EventId,
+                    r => r.CalendarId,
                     c => c.ProdId == fkey);
                 keys = (!events.NullOrEmpty()) ? events.Select(x => x.Uid) : null;
             }
@@ -1179,8 +1188,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
             try
             {
                 var events = db.Select<VEVENT, VCALENDAR, REL_CALENDARS_EVENTS>(
-                    r => r.Uid,
-                    r => r.ProdId,
+                    r => r.EventId,
+                    r => r.CalendarId,
                     c => Sql.In(c.ProdId, fkeys.ToArray()));
                 keys = (!events.NullOrEmpty()) ? events.Select(x => x.Uid) : null;
             }
