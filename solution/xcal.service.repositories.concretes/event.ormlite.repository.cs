@@ -374,7 +374,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         }
 
-        public void Patch(VEVENT source, Expression<Func<VEVENT, object>> fields, Expression<Func<VEVENT, bool>> where = null)
+        public void Patch(VEVENT source, Expression<Func<VEVENT, object>> fields, Expression<Func<VEVENT, bool>> predicate = null)
         {
             #region construct anonymous fields using expression lambdas
             
@@ -445,8 +445,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 string[] eventids = null;
                 try
                 {
-                    eventids = (where != null)
-                ? db.SelectParam<VEVENT>(q => q.Id, where).ToArray()
+                    eventids = (predicate != null)
+                ? db.SelectParam<VEVENT>(q => q.Id, predicate).ToArray()
                 : db.SelectParam<VEVENT>(q => q.Id).ToArray();
                 }
                 catch (Exception)
@@ -708,7 +708,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 {
                     var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
                     var patchexpr = patchstr.CompileToExpressionFunc<VEVENT, object>(CodeDomLanguage.csharp, Utilities.GetReferencedAssemblyNamesFromEntryAssembly());
-                    db.UpdateOnly<VEVENT, object>(source, patchexpr, where);
+                    db.UpdateOnly<VEVENT, object>(source, patchexpr, predicate);
                 }
             }
             catch (NotImplementedException) { throw; }

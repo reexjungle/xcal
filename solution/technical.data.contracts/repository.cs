@@ -47,7 +47,7 @@ namespace reexmonkey.technical.data.contracts
         /// </summary>
         /// <param name="key">The unique identifier of the entity</param>
         /// <returns>True if the entity is found in the repository, otherwise false</returns>
-        bool Contains(TKey key);
+        bool ContainsKey(TKey key);
 
         /// <summary>
         /// Checks if the repository contains entities
@@ -57,7 +57,7 @@ namespace reexmonkey.technical.data.contracts
         /// Optimistic if at least one entity found, 
         /// Pessimistic if all entities are found</param>
         /// <returns>True if the entities are found, otherwise false</returns>
-        bool Contains(IEnumerable<TKey> keys, ExpectationMode mode = ExpectationMode.optimistic);
+        bool ContainsKeys(IEnumerable<TKey> keys, ExpectationMode mode = ExpectationMode.optimistic);
     }
 
     /// <summary>
@@ -140,8 +140,8 @@ namespace reexmonkey.technical.data.contracts
         /// </summary>
         /// <param name="source">The source containing patch details</param>
         /// <param name="fields">Specfies which fields are used for the patching. The fields are specified in an anonymous variable</param>
-        /// <param name="where">Filters the entities to patch. No filter implies all entities are patched</param>
-        void Patch(TEntity source, Expression<Func<TEntity, object>> fields, Expression<Func<TEntity, bool>> where = null);
+        /// <param name="predicate">Filters the entities to patch. No filter implies all entities are patched</param>
+        void Patch(TEntity source, Expression<Func<TEntity, object>> fields, Expression<Func<TEntity, bool>> predicate = null);
 
         /// <summary>
         /// Erases an entity from the repository based on a unique identifier
