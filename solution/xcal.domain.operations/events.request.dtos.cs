@@ -162,7 +162,7 @@ namespace reexmonkey.xcal.domain.operations
         public List<VEVENT> Events { get; set; }
 
         [DataMember]
-        public Dictionary<UID, List<ATTENDEE>> Invited { get; set; }
+        public List<ATTENDEE> Invited { get; set; }
 
         /// <summary>
         /// Gets or sets the Product Id of the calendar
@@ -173,7 +173,7 @@ namespace reexmonkey.xcal.domain.operations
         public ForwardEvent()
         {
             this.Events = new List<VEVENT>();
-            this.Invited = new Dictionary<UID, List<ATTENDEE>>();
+            this.Invited = new List<ATTENDEE>();
         }
     }
 
@@ -185,7 +185,7 @@ namespace reexmonkey.xcal.domain.operations
         public List<VEVENT> Events { get; set; }
 
         [DataMember]
-        public Dictionary<UID, List<ATTENDEE>> Updates { get; set; }
+        public List<ATTENDEE> Attendees { get; set; }
 
         /// <summary>
         /// Gets or sets the Product Id of the calendar
@@ -196,7 +196,7 @@ namespace reexmonkey.xcal.domain.operations
         public UpdateAttendeesStatus()
         {
             this.Events = new List<VEVENT>();
-            this.Updates = new Dictionary<UID, List<ATTENDEE>>();
+            this.Attendees = new List<ATTENDEE>();
         }
 
     }
