@@ -22,7 +22,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
     {
         private IDbConnection conn = null;
         private IDbConnectionFactory factory = null;
-        private int? page_size = null;
+        private int? take = null;
         private IKeyGenerator<string> keygen;
 
         private IDbConnection db
@@ -38,13 +38,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 this.factory = value; 
             }
         }
-        public int? PageSize
+        public int? Take
         {
-            get { return this.page_size; }
+            get { return this.take; }
             set 
             {
                 if (value == null) throw new ArgumentNullException("Null pages");
-                this.page_size = value; 
+                this.take = value; 
             }
         }
         public IKeyGenerator<string> KeyGenerator
@@ -91,17 +91,17 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
 
         public EventOrmLiteRepository() { }
-        public EventOrmLiteRepository(IDbConnectionFactory factory, int? pages)
+        public EventOrmLiteRepository(IDbConnectionFactory factory, int? take)
         {
             this.DbConnectionFactory = factory;
-            this.PageSize = pages;
+            this.Take = take;
             this.conn = this.factory.OpenDbConnection();
         }
-        public EventOrmLiteRepository(IDbConnection connection, int? pages)
+        public EventOrmLiteRepository(IDbConnection connection, int? take)
         {
             if (connection == null) throw new ArgumentNullException("connection");
             this.conn = connection; 
-            this.PageSize = pages;
+            this.Take = take;
         }
 
         //cleanup
@@ -110,71 +110,37 @@ namespace reexmonkey.xcal.service.repositories.concretes
             if (this.conn != null) this.conn.Dispose();
         }
 
-        public VEVENT Find(string fkey, string pkey)
+        public VEVENT Find(string key)
         {
             VEVENT dry = null;
             try
             {
-                dry = db.Select<VEVENT, VCALENDAR, REL_CALENDARS_EVENTS>(
-                    r => r.EventId,
-                    e => e.Uid == pkey,
-                    r => r.CalendarId,
-                    c => c.ProdId == fkey).FirstOrDefault();
+                dry = db.Select<VEVENT>(q => q.Id == key).FirstOrDefault();
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
-            return (dry != null) ? this.Hydrate(dry) : null;
+            return (dry != null) ? this.Hydrate(dry) : dry;
         }
 
-        public IEnumerable<VEVENT> Find(IEnumerable<string> keys, int? page = null)
+        public IEnumerable<VEVENT> Find(IEnumerable<string> keys, int? skip = null)
         {
             IEnumerable<VEVENT> dry = null;
             try
             {
-                dry = db.Select<VEVENT>(q => Sql.In(q.Uid, keys.ToArray()), page, page_size);
+                dry = db.Select<VEVENT>(q => Sql.In(q.Uid, keys.ToArray()), skip, take);
             }
-            catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
             return (!dry.NullOrEmpty()) ? this.Hydrate(dry) : null;
         }
 
-        public IEnumerable<VEVENT> Find(IEnumerable<string> fkeys, IEnumerable<string> pkeys = null, int? page = null)
+        public IEnumerable<VEVENT> Get(int? skip = null)
         {
             IEnumerable<VEVENT> dry = null;
             try
             {
-                if (!pkeys.NullOrEmpty())
-                {
-                    dry = db.Select<VEVENT, VCALENDAR, REL_CALENDARS_EVENTS>(
-                    r => r.EventId,
-                    e => Sql.In(e.Uid, pkeys.ToArray()),
-                    r => r.CalendarId,
-                    c => Sql.In(c.ProdId, fkeys.ToArray()),
-                    Conjunctor.AND, JoinMode.INNER, true, page, page_size); 
-                }
-                else
-                {
-                    dry = db.Select<VEVENT, VCALENDAR, REL_CALENDARS_EVENTS>(
-                    r => r.EventId,
-                    r => r.CalendarId,
-                    c => Sql.In(c.ProdId, fkeys.ToArray()),
-                    JoinMode.INNER, true, page, page_size); 
-                }
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
-            return (!dry.NullOrEmpty()) ? this.Hydrate(dry) : null;
-        }
-
-        public IEnumerable<VEVENT> Get(int? page = null)
-        {
-            IEnumerable<VEVENT> dry = null;
-            try
-            {
-                dry = db.Select<VEVENT>(page, page_size);
+                dry = db.Select<VEVENT>(skip, take);
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
@@ -957,224 +923,375 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public VEVENT Hydrate(VEVENT dry)
         {
+            VEVENT full = null;
             try
             {
-                var orgs = db.Select<ORGANIZER, VEVENT, REL_EVENTS_ORGANIZERS>(
-                    r => r.OrganizerId,
-                    r => r.EventId,
-                    e => e.Id == dry.Uid);
-                if (!orgs.NullOrEmpty()) dry.Organizer = orgs.FirstOrDefault();
+                full = db.Select<VEVENT>(q => q.Id == dry.Id).FirstOrDefault();
 
-                var rids = db.Select<RECURRENCE_ID, VEVENT, REL_EVENTS_RECURRENCE_IDS>(
-                    r => r.RecurrenceId_Id,
-                    r => r.EventId,
-                    e => e.Id == dry.Uid);
-                if (!rids.NullOrEmpty()) dry.RecurrenceId = rids.FirstOrDefault();
+                if(full != null)
+                {
+                    var orgs = db.Select<ORGANIZER, VEVENT, REL_EVENTS_ORGANIZERS>(
+                        r => r.OrganizerId,
+                        r => r.EventId,
+                        e => e.Id == full.Id);
+                    if (!orgs.NullOrEmpty()) full.Organizer = orgs.FirstOrDefault();
 
-                var rrules = db.Select<RECUR, VEVENT, REL_EVENTS_RRULES>(
-                    r => r.RecurrenceRuleId, 
-                    r => r.EventId, 
-                    e => e.Id == dry.Uid);
-                if (!rrules.NullOrEmpty()) dry.RecurrenceRule = rrules.FirstOrDefault();
+                    var rids = db.Select<RECURRENCE_ID, VEVENT, REL_EVENTS_RECURRENCE_IDS>(
+                        r => r.RecurrenceId_Id,
+                        r => r.EventId,
+                        e => e.Id == full.Id);
+                    if (!rids.NullOrEmpty()) full.RecurrenceId = rids.FirstOrDefault();
 
-               dry.Attachments.AddRangeComplement(db.Select<ATTACH_BINARY, VEVENT, REL_EVENTS_ATTACHBINS>(
-                   r => r.AttachmentId,
-                   r => r.EventId,
-                   e => e.Id == dry.Uid).Except(dry.Attachments.OfType<ATTACH_BINARY>(),new EqualByStringId<ATTACH_BINARY>()));
+                    var rrules = db.Select<RECUR, VEVENT, REL_EVENTS_RRULES>(
+                        r => r.RecurrenceRuleId,
+                        r => r.EventId,
+                        e => e.Id == full.Id);
+                    if (!rrules.NullOrEmpty()) full.RecurrenceRule = rrules.FirstOrDefault();
 
-               dry.Attachments.AddRange(db.Select<ATTACH_URI, VEVENT, REL_EVENTS_ATTACHBINS>(
-                   r => r.AttachmentId,
-                   r => r.EventId,
-                   e => e.Id == dry.Uid).Except(dry.Attachments.OfType<ATTACH_URI>()));
+                    var attachbins = db.Select<ATTACH_BINARY, VEVENT, REL_EVENTS_ATTACHBINS>(
+                       r => r.AttachmentId,
+                       r => r.EventId,
+                       e => e.Id == full.Id);
+                    if (!attachbins.NullOrEmpty()) full.Attachments.AddRangeComplement(attachbins);
 
-                dry.Attendees.AddRange(db.Select<ATTENDEE, VEVENT, REL_EVENTS_ATTENDEES>(
-                    r => r.AttendeeId,
-                    r => r.EventId,
-                    e => e.Id == dry.Uid).Except(dry.Attendees.OfType<ATTENDEE>(), new EqualByStringId<ATTENDEE>()));
+                    var attachuris = db.Select<ATTACH_URI, VEVENT, REL_EVENTS_ATTACHURIS>(
+                       r => r.AttachmentId,
+                       r => r.EventId,
+                       e => e.Id == full.Id);
+                    if (!attachuris.NullOrEmpty()) full.Attachments.AddRangeComplement(attachuris);
 
-                dry.Comments.AddRange(db.Select<COMMENT, VEVENT, REL_EVENTS_COMMENTS>(
-                    r => r.CommentId,
-                    r => r.EventId,
-                    e => e.Id == dry.Uid).Except(dry.Comments.OfType<COMMENT>()));
+                    var attendees = db.Select<ATTENDEE, VEVENT, REL_EVENTS_ATTENDEES>(
+                         r => r.AttendeeId,
+                         r => r.EventId,
+                         e => e.Id == full.Id);
+                    if (!attendees.NullOrEmpty()) attendees.AddRangeComplement(attendees);
 
-                dry.Contacts.AddRange(db.Select<CONTACT, VEVENT, REL_EVENTS_CONTACTS >(
-                    r => r.ContactId,
-                    r => r.EventId,
-                    e => e.Id == dry.Uid).Except(dry.Contacts.OfType<CONTACT>(), new EqualByStringId<CONTACT>()));
+                    var comments = db.Select<COMMENT, VEVENT, REL_EVENTS_COMMENTS>(
+                        r => r.CommentId,
+                        r => r.EventId,
+                        e => e.Id == full.Id);
+                    if(!comments.NullOrEmpty()) full.Comments.AddRangeComplement(comments);
 
-                dry.RecurrenceDates.AddRange(db.Select<RDATE, VEVENT, REL_EVENTS_RDATES>(
-                    r => r.RecurrenceDateId, 
-                    r => r.EventId,
-                    e => e.Id == dry.Uid).Except(dry.RecurrenceDates.OfType<RDATE>()));
+                    var contacts = db.Select<CONTACT, VEVENT, REL_EVENTS_CONTACTS>(
+                        r => r.ContactId,
+                        r => r.EventId,
+                        e => e.Id == full.Id);
+                    if(!contacts.NullOrEmpty()) full.Contacts.AddRangeComplement(contacts);
 
-                dry.ExceptionDates.AddRange(db.Select<EXDATE, VEVENT, REL_EVENTS_EXDATES>(
-                    r => r.ExceptionDateId, 
-                    r => r.EventId,
-                    e => e.Id == dry.Uid).Except(dry.ExceptionDates.OfType<EXDATE>(), new EqualByStringId<EXDATE>()));
+                    var rdates = db.Select<RDATE, VEVENT, REL_EVENTS_RDATES>(
+                        r => r.RecurrenceDateId,
+                        r => r.EventId,
+                        e => e.Id == full.Id);
+                    if(!rdates.NullOrEmpty()) full.RecurrenceDates.AddRangeComplement(rdates);
 
-                dry.RelatedTos.AddRange(db.Select<RELATEDTO, VEVENT, REL_EVENTS_RELATEDTOS>(
-                    r => r.RelatedToId, 
-                    r => r.EventId,
-                    e => e.Id == dry.Uid).Except(dry.RelatedTos.OfType<RELATEDTO>(), new EqualByStringId<RELATEDTO>()));
+                    var exdates = db.Select<EXDATE, VEVENT, REL_EVENTS_EXDATES>(
+                        r => r.ExceptionDateId,
+                        r => r.EventId,
+                        e => e.Id == full.Id);
+                    if(!exdates.NullOrEmpty())full.ExceptionDates.AddRangeComplement(exdates);
 
-                dry.RequestStatuses.AddRange(db.Select<REQUEST_STATUS, VEVENT, REL_EVENTS_REQSTATS>(
-                    r => r.ReqStatsId, 
-                    r => r.EventId, 
-                    e => e.Id == dry.Uid).Except(dry.RequestStatuses.OfType<REQUEST_STATUS>(), new EqualByStringId<REQUEST_STATUS>()));
+                   var relatedtos= db.Select<RELATEDTO, VEVENT, REL_EVENTS_RELATEDTOS>(
+                        r => r.RelatedToId,
+                        r => r.EventId,
+                        e => e.Id == full.Id);
+                    full.RelatedTos.AddRangeComplement(relatedtos);
 
-                dry.Resources.AddRange(db.Select<RESOURCES, VEVENT, REL_EVENTS_RESOURCES>(
-                    r => r.ResourcesId,
-                    r => r.EventId,
-                    e => e.Id == dry.Uid).Except(dry.Resources.OfType<RESOURCES>(), new EqualByStringId<RESOURCES>()));
+                    var reqstats = db.Select<REQUEST_STATUS, VEVENT, REL_EVENTS_REQSTATS>(
+                        r => r.ReqStatsId,
+                        r => r.EventId,
+                        e => e.Id == full.Id);
+                    full.RequestStatuses.AddRangeComplement(reqstats);
 
+                    var resources = db.Select<RESOURCES, VEVENT, REL_EVENTS_RESOURCES>(
+                        r => r.ResourcesId,
+                        r => r.EventId,
+                        e => e.Id == dry.Uid);
+                    if (!resources.NullOrEmpty()) full.Resources.AddRangeComplement(resources);
 
-                dry.Alarms.AddRange(this.AudioAlarmRepository.Find(dry.Uid.ToSingleton()));
-                dry.Alarms.AddRange(this.DisplayAlarmRepository.Find(dry.Uid.ToSingleton()));
-                dry.Alarms.AddRange(this.EmailAlarmRepository.Find(dry.Uid.ToSingleton()));
+                    var raalarms = this.db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.Id == full.Id);
+                    if (!raalarms.NullOrEmpty())
+                    {
+                        full.Alarms.AddRangeComplement(this.AudioAlarmRepository.Find(raalarms.Select(x => x.AlarmId).ToList()));
+                    }
+
+                    var rdalarms = this.db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.Id == full.Id);
+                    if (!rdalarms.NullOrEmpty())
+                    {
+                        full.Alarms.AddRangeComplement(this.DisplayAlarmRepository.Find(rdalarms.Select(x => x.AlarmId).ToList()));
+                    }
+
+                    var realarms = this.db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.Id == full.Id);
+                    if (!realarms.NullOrEmpty())
+                    {
+                        full.Alarms.AddRangeComplement(this.EmailAlarmRepository.Find(realarms.Select(x => x.AlarmId).ToList()));
+                    }
+                }
 
             }
-            catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
 
-            return dry;
+            return full?? dry;
 
         }
 
         public IEnumerable<VEVENT> Hydrate(IEnumerable<VEVENT> dry)
         {
-            IEnumerable<VEVENT> full = null;
+            List<VEVENT> full = null;
             try
             {
-                //1. retrieve relationships
-                var uids = dry.Select(q => q.Uid).ToArray();
-                var rorgs = db.Select<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.EventId, uids));
-                var rrids = db.Select<REL_EVENTS_RECURRENCE_IDS>(q => Sql.In(q.EventId, uids));
-                var rrrules = db.Select<REL_EVENTS_RRULES>(q => Sql.In(q.EventId, uids));
-                var rattends = db.Select<REL_EVENTS_ATTENDEES>(q => Sql.In(q.EventId, uids));
-                var rcomments = db.Select<REL_EVENTS_COMMENTS>(q => Sql.In(q.EventId, uids));
-                var rattachs = db.Select<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.EventId, uids));
-                var rcontacts = db.Select<REL_EVENTS_CONTACTS>(q => Sql.In(q.EventId, uids));
-                var rexdates = db.Select<REL_EVENTS_EXDATES>(q => Sql.In(q.EventId, uids));
-                var rrdates = db.Select<REL_EVENTS_RDATES>(q => Sql.In(q.EventId, uids));
-                var rrelateds = db.Select<REL_EVENTS_RELATEDTOS>(q => Sql.In(q.EventId, uids));
-                var rrstats = db.Select<REL_EVENTS_REQSTATS>(q => Sql.In(q.EventId, uids));
-                var rresources = db.Select<REL_EVENTS_RESOURCES>(q => Sql.In(q.EventId, uids));
-
-                //2. retrieve secondary entities
-                var orgs = (!rorgs.Empty())? db.Select<ORGANIZER>(q => Sql.In(q.Id, rorgs.Select(r => r.OrganizerId).ToArray())): null;
-                var rids = (!rrids.Empty()) ? db.Select<RECURRENCE_ID>(q => Sql.In(q.Id, rrids.Select(r => r.RecurrenceId_Id).ToArray())): null;
-                var rrules = (!rrrules.Empty()) ? db.Select<RECUR>(q => Sql.In(q.Id, rrrules.Select(r => r.RecurrenceRuleId).ToArray())): null;
-                var attends = (!rattends.Empty()) ? db.Select<ATTENDEE>(q => Sql.In(q.Id, rattends.Select(r => r.AttendeeId).ToArray())): null;
-                var comments = (!rcomments.Empty()) ? db.Select<COMMENT>(q => Sql.In(q.Id, rcomments.Select(r => r.CommentId).ToArray())): null;
-                var attachbins = (!rattachs.Empty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachs.Select(r => r.AttachmentId).ToArray())): null;
-                var attachuris = (!rattachs.Empty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachs.Select(r => r.AttachmentId).ToArray())) : null;
-                var contacts = (!rcontacts.Empty()) ? db.Select<CONTACT>(q => Sql.In(q.Id, rcontacts.Select(r => r.ContactId).ToArray())) : null;
-                var exdates = (!rexdates.Empty()) ? db.Select<EXDATE>(q => Sql.In(q.Id, rexdates.Select(r => r.ExceptionDateId).ToArray())) : null;
-                var rdates = (!rrdates.Empty()) ? db.Select<RDATE>(q => Sql.In(q.Id, rrdates.Select(r => r.RecurrenceDateId).ToArray())) : null;
-                var relatedtos = (!rrelateds.Empty()) ? db.Select<RELATEDTO>(q => Sql.In(q.Id, rrelateds.Select(r => r.RelatedToId).ToArray())) : null;
-                var reqstats = (!rrstats.Empty()) ? db.Select<REQUEST_STATUS>(q => Sql.In(q.Id, rrstats.Select(r => r.ReqStatsId).ToArray())) : null;
-                var resources = (!rresources.Empty()) ? db.Select<RESOURCES>(q => Sql.In(q.Id, rresources.Select(r => r.ResourcesId).ToArray())) : null;
-
-                //3. Use Linq to stitch secondary entities to primary entities
-                full = dry.Select(x =>
+                var keys = dry.Select(q => q.Id).ToArray();
+                full = db.Select<VEVENT>(q => Sql.In(q.Id, keys));
+                if (!full.NullOrEmpty())
                 {
-                    var xorgs = (!orgs.NullOrEmpty())?(from y in orgs join r in rorgs on y.Id equals r.OrganizerId join e in dry on r.EventId equals e.Uid where e.Uid == x.Uid select y): null;
-                    if (!xorgs.NullOrEmpty()) x.Organizer = xorgs.FirstOrDefault();
+                    #region 1. retrieve relationships
 
-                    var xrrids = (!rids.NullOrEmpty())? (from y in rids join r in rrids on y.Id equals r.RecurrenceId_Id join e in dry on r.EventId equals e.Uid where e.Uid == x.Uid select y): null;
-                    if (!rrids.NullOrEmpty()) x.RecurrenceId = xrrids.FirstOrDefault();
+                    var rorgs = this.db.Select<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.EventId, keys));
+                    var rrids = this.db.Select<REL_EVENTS_RECURRENCE_IDS>(q => Sql.In(q.EventId, keys));
+                    var rrrules = this.db.Select<REL_EVENTS_RRULES>(q => Sql.In(q.EventId, keys));
+                    var rattendees = this.db.Select<REL_EVENTS_ATTENDEES>(q => Sql.In(q.EventId, keys));
+                    var rcomments = this.db.Select<REL_EVENTS_COMMENTS>(q => Sql.In(q.EventId, keys));
+                    var rattachbins = this.db.Select<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.EventId, keys));
+                    var rattachuris = this.db.Select<REL_EVENTS_ATTACHURIS>(q => Sql.In(q.EventId, keys));
+                    var rcontacts = this.db.Select<REL_EVENTS_CONTACTS>(q => Sql.In(q.EventId, keys));
+                    var rexdates = this.db.Select<REL_EVENTS_EXDATES>(q => Sql.In(q.EventId, keys));
+                    var rrdates = this.db.Select<REL_EVENTS_RDATES>(q => Sql.In(q.EventId, keys));
+                    var rrelatedtos = this.db.Select<REL_EVENTS_RELATEDTOS>(q => Sql.In(q.EventId, keys));
+                    var rreqstats = this.db.Select<REL_EVENTS_REQSTATS>(q => Sql.In(q.EventId, keys));
+                    var rresources = this.db.Select<REL_EVENTS_RESOURCES>(q => Sql.In(q.EventId, keys));
+                    var raalarms = this.db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.EventId, keys));
+                    var rdalarms = this.db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.EventId, keys));
+                    var realarms = this.db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.EventId, keys)); 
 
-                    var xrrules = (!rrules.NullOrEmpty()) ?(from y in rrules join r in rrrules on y.Id equals r.RecurrenceRuleId join e in dry on r.EventId equals e.Uid where e.Uid == x.Uid select y): null;
-                    if (!xrrules.NullOrEmpty()) x.RecurrenceRule = xrrules.FirstOrDefault();
+                    #endregion
 
-                    var xcomments = (comments != null)?(from y in comments join r in rcomments on y.Id equals r.CommentId join e in dry on r.EventId equals e.Uid where e.Uid == x.Uid select y): null;
-                    if(!xcomments.NullOrEmpty()) x.Comments.AddRange(xcomments.Except(x.Comments.OfType<COMMENT>(), new EqualByStringId<COMMENT>()));
+                    #region 2. retrieve secondary entities
 
-                    var xattendees = (!attends.NullOrEmpty())?(from y in attends join r in rattends on y.Id equals r.AttendeeId join e in dry on r.EventId equals e.Uid where e.Uid == x.Uid select y): null;
-                    if(!xattendees.NullOrEmpty()) x.Attendees.AddRange(xattendees.Except(x.Attendees.OfType<ATTENDEE>(), new EqualByStringId<ATTENDEE>()));
+                    var orgs = (!rorgs.Empty()) ? db.Select<ORGANIZER>(q => Sql.In(q.Id, rorgs.Select(r => r.OrganizerId).ToArray())) : null;
+                    var rids = (!rrids.Empty()) ? db.Select<RECURRENCE_ID>(q => Sql.In(q.Id, rrids.Select(r => r.RecurrenceId_Id).ToArray())) : null;
+                    var rrules = (!rrrules.Empty()) ? db.Select<RECUR>(q => Sql.In(q.Id, rrrules.Select(r => r.RecurrenceRuleId).ToArray())) : null;
+                    var attendees = (!rattendees.Empty()) ? db.Select<ATTENDEE>(q => Sql.In(q.Id, rattendees.Select(r => r.AttendeeId).ToArray())) : null;
+                    var comments = (!rcomments.Empty()) ? db.Select<COMMENT>(q => Sql.In(q.Id, rcomments.Select(r => r.CommentId).ToArray())) : null;
+                    var attachbins = (!rattachbins.Empty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToArray())) : null;
+                    var attachuris = (!rattachuris.Empty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachuris.Select(r => r.AttachmentId).ToArray())) : null;
+                    var contacts = (!rcontacts.Empty()) ? db.Select<CONTACT>(q => Sql.In(q.Id, rcontacts.Select(r => r.ContactId).ToArray())) : null;
+                    var exdates = (!rexdates.Empty()) ? db.Select<EXDATE>(q => Sql.In(q.Id, rexdates.Select(r => r.ExceptionDateId).ToArray())) : null;
+                    var rdates = (!rrdates.Empty()) ? db.Select<RDATE>(q => Sql.In(q.Id, rrdates.Select(r => r.RecurrenceDateId).ToArray())) : null;
+                    var relatedtos = (!rrelatedtos.Empty()) ? db.Select<RELATEDTO>(q => Sql.In(q.Id, rrelatedtos.Select(r => r.RelatedToId).ToArray())) : null;
+                    var reqstats = (!rreqstats.Empty()) ? db.Select<REQUEST_STATUS>(q => Sql.In(q.Id, rreqstats.Select(r => r.ReqStatsId).ToArray())) : null;
+                    var resources = (!rresources.Empty()) ? db.Select<RESOURCES>(q => Sql.In(q.Id, rresources.Select(r => r.ResourcesId).ToArray())) : null;
+                    var aalarms = (!raalarms.Empty()) ? this.AudioAlarmRepository.Find(raalarms.Select(x => x.AlarmId).ToList()) : null;
+                    var dalarms = (!rdalarms.Empty()) ? this.DisplayAlarmRepository.Find(rdalarms.Select(x => x.AlarmId).ToList()) : null;
+                    var ealarms = (!realarms.Empty()) ? this.EmailAlarmRepository.Find(realarms.Select(x => x.AlarmId).ToList()) : null;
 
-                    var xattachbins = (!attachbins.NullOrEmpty())?(from y in attachbins join r in rattachs on y.Id equals r.AttachmentId join e in dry on r.EventId equals e.Uid where e.Uid == x.Uid select y): null;
-                    var xattachuris = (!attachuris.NullOrEmpty())?(from y in attachuris join r in rattachs on y.Id equals r.AttachmentId join e in dry on r.EventId equals e.Uid where e.Uid == x.Uid select y): null;
+                    #endregion
 
-                    if(!xattachbins.NullOrEmpty()) x.Attachments.AddRange(xattachbins.Except(x.Attachments.OfType<ATTACH_BINARY>(), new EqualByStringId<ATTACH_BINARY>()));
-                    if(!xattachuris.NullOrEmpty()) x.Attachments.AddRange(xattachuris.Except(x.Attachments.OfType<ATTACH_URI>(), new EqualByStringId<ATTACH_URI>()));
+                    #region 3. Use Linq to stitch secondary entities to primary entities
 
-                    var xcontacts = (!contacts.NullOrEmpty())? (from y in contacts join r in rcontacts on y.Id equals r.ContactId join e in dry on r.EventId equals e.Uid where e.Uid == x.Uid select y): null;
-                    if(!xcontacts.NullOrEmpty()) x.Contacts.AddRange(xcontacts.Except(x.Contacts.OfType<CONTACT>(), new EqualByStringId<CONTACT>()));
+                    full.ForEach(x =>
+                    {
+                        if (!orgs.NullOrEmpty())
+                        {
+                            var xorgs = from y in orgs
+                                        join r in rorgs on y.Id equals r.OrganizerId
+                                        join e in full on r.EventId equals e.Id
+                                        where e.Id == x.Id
+                                        select y;
+                            if (!xorgs.NullOrEmpty()) x.Organizer = xorgs.FirstOrDefault();
+                        }
 
-                    var xrdates = (!rdates.NullOrEmpty())?(from y in rdates join r in rrdates on y.Id equals r.RecurrenceDateId join e in dry on r.EventId equals e.Uid where e.Uid == x.Uid select y): null;
-                    if(!xrdates.NullOrEmpty())x.RecurrenceDates.AddRange(xrdates.Except(x.RecurrenceDates.OfType<RDATE>(), new EqualByStringId<RDATE>()));
+                        if (!rids.NullOrEmpty())
+                        {
+                            var xrrids = from y in rids
+                                         join r in rrids on y.Id equals r.RecurrenceId_Id
+                                         join e in full on r.EventId equals e.Id
+                                         where e.Id == x.Id
+                                         select y;
+                            if (!xrrids.NullOrEmpty()) x.RecurrenceId = xrrids.FirstOrDefault();
+                        }
 
-                    var xexdates = (!exdates.NullOrEmpty())?(from y in exdates join r in rexdates on y.Id equals r.ExceptionDateId join e in dry on r.EventId equals e.Uid where e.Uid == x.Uid select y): null;
-                    if(!xexdates.NullOrEmpty())x.ExceptionDates.AddRange(xexdates.Except(x.ExceptionDates.OfType<EXDATE>(), new EqualByStringId<EXDATE>()));
+                        if (!rrules.NullOrEmpty())
+                        {
+                            var xrrules = from y in rrules
+                                          join r in rrrules on y.Id equals r.RecurrenceRuleId
+                                          join e in full on r.EventId equals e.Id
+                                          where e.Id == x.Id
+                                          select y;
+                            if (!xrrules.NullOrEmpty()) x.RecurrenceRule = xrrules.FirstOrDefault();
+                        }
 
-                    var xrelatedtos = (!relatedtos.NullOrEmpty())?(from y in relatedtos join r in rrelateds on y.Id equals r.RelatedToId join e in dry on r.EventId equals e.Uid where e.Uid == x.Uid select y): null;
-                    if(!xrelatedtos.NullOrEmpty())x.RelatedTos.AddRange(xrelatedtos.Except(x.RelatedTos.OfType<RELATEDTO>(), new EqualByStringId<RELATEDTO>()));
+                        if (!comments.NullOrEmpty())
+                        {
+                            var xcomments = from y in comments
+                                            join r in rcomments on y.Id equals r.CommentId
+                                            join e in full on r.EventId equals e.Id
+                                            where e.Id == x.Id
+                                            select y;
+                            if (!xcomments.NullOrEmpty()) x.Comments.AddRangeComplement(xcomments);
+                        }
 
-                    var xreqstats = (!reqstats.NullOrEmpty())?(from y in reqstats join r in rrstats on y.Id equals r.ReqStatsId join e in dry on r.EventId equals e.Uid where e.Uid == x.Uid select y): null;
-                    if(!xreqstats.NullOrEmpty())x.RequestStatuses.AddRange(xreqstats.Except(x.RequestStatuses.OfType<REQUEST_STATUS>(), new EqualByStringId<REQUEST_STATUS>()));
+                        if (!attendees.NullOrEmpty())
+                        {
+                            var xattendees = from y in attendees
+                                             join r in rattendees on y.Id equals r.AttendeeId
+                                             join e in full on r.EventId equals e.Id
+                                             where e.Id == x.Id
+                                             select y;
+                            if (!xattendees.NullOrEmpty()) x.Attendees.AddRange(xattendees);
+                        }
 
-                    var xresources = (!resources.NullOrEmpty()) ? (from y in resources join r in rresources on y.Id equals r.ResourcesId join e in dry on r.EventId equals e.Uid where e.Uid == x.Uid select y) : null;
-                    if (!xresources.NullOrEmpty()) x.Resources.AddRange(xresources.Except(x.Resources.OfType<RESOURCES>(), new EqualByStringId<RESOURCES>()));
+                        if (!attachbins.NullOrEmpty())
+                        {
+                            var xattachbins = from y in attachbins
+                                              join r in rattachbins on y.Id equals r.AttachmentId
+                                              join e in full on r.EventId equals e.Id
+                                              where e.Id == x.Id
+                                              select y;
+                            if (!xattachbins.NullOrEmpty()) x.Attachments.AddRangeComplement(xattachbins);
 
-                    x.Alarms.AddRange(this.AudioAlarmRepository.Find(uids));
-                    x.Alarms.AddRange(this.DisplayAlarmRepository.Find(uids));
-                    x.Alarms.AddRange(this.EmailAlarmRepository.Find(uids));
+                        }
 
-                    return x;
-                });
+                        if (!attachuris.NullOrEmpty())
+                        {
+                            var xattachuris = from y in attachuris
+                                              join r in rattachuris on y.Id equals r.AttachmentId
+                                              join e in full on r.EventId equals e.Id
+                                              where e.Id == x.Id
+                                              select y;
+                            if (!xattachuris.NullOrEmpty()) x.Attachments.AddRangeComplement(xattachuris);
+                        }
 
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
+                        var xcontacts = from y in contacts
+                                        join r in rcontacts on y.Id equals r.ContactId
+                                        join e in full on r.EventId equals e.Id
+                                        where e.Id == x.Id
+                                        select y;
 
-            return full;
-        }
+                        if (!xcontacts.NullOrEmpty()) x.Contacts.AddRangeComplement(xcontacts);
 
-        public bool Contains(string fkey, string pkey)
-        {
-            try
-            {
-                return !db.Select<REL_CALENDARS_EVENTS>(q => q.CalendarId == fkey && q.EventId == pkey).NullOrEmpty();
-            }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
-        }
+                        if (!rdates.NullOrEmpty())
+                        {
+                            var xrdates = from y in rdates
+                                          join r in rrdates on y.Id equals r.RecurrenceDateId
+                                          join e in full on r.EventId equals e.Id
+                                          where e.Id == x.Id
+                                          select y;
+                            if (!xrdates.NullOrEmpty()) x.RecurrenceDates.AddRangeComplement(xrdates);
+                        }
 
-        public bool Contains(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
-        {
-            var found = false;
-            try
-            {
-                var rels = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, fkeys.ToArray()) && Sql.In(q.EventId, pkeys.ToArray()));
-                switch (mode)
-                {
-                    case ExpectationMode.pessimistic: found = (!rels.NullOrEmpty()) ?
-                        rels.Select(x => x.EventId).Distinct().Count() == pkeys.Distinct().Count() :
-                        false; break;
-                    case ExpectationMode.optimistic:
-                    default:
-                        found = !rels.NullOrEmpty(); break;
+                        if (!exdates.NullOrEmpty())
+                        {
+                            var xexdates = from y in exdates
+                                           join r in rexdates on y.Id equals r.ExceptionDateId
+                                           join e in full on r.EventId equals e.Id
+                                           where e.Id == x.Id
+                                           select y;
+                            if (!xexdates.NullOrEmpty()) x.ExceptionDates.AddRangeComplement(xexdates);
+                        }
+
+                        if (!relatedtos.NullOrEmpty())
+                        {
+                            var xrelatedtos = from y in relatedtos
+                                              join r in rrelatedtos on y.Id equals r.RelatedToId
+                                              join e in full on r.EventId equals e.Id
+                                              where e.Id == x.Id
+                                              select y;
+                            if (!xrelatedtos.NullOrEmpty()) x.RelatedTos.AddRangeComplement(xrelatedtos);
+                        }
+
+                        if (!reqstats.NullOrEmpty())
+                        {
+                            var xreqstats = from y in reqstats
+                                            join r in rreqstats on y.Id equals r.ReqStatsId
+                                            join e in full on r.EventId equals e.Id
+                                            where e.Id == x.Id
+                                            select y;
+                            if (!xreqstats.NullOrEmpty()) x.RequestStatuses.AddRangeComplement(xreqstats);
+
+                        }
+
+                        if (!resources.NullOrEmpty())
+                        {
+                            var xresources = from y in resources
+                                             join r in rresources on y.Id equals r.ResourcesId
+                                             join e in full on r.EventId equals e.Id
+                                             where e.Id == x.Id
+                                             select y;
+                            if (!xresources.NullOrEmpty()) x.Resources.AddRangeComplement(xresources);
+                        }
+
+                        if (!aalarms.NullOrEmpty())
+                        {
+                            var xraalarms = from y in aalarms
+                                            join r in raalarms on y.Id equals r.AlarmId
+                                            join e in full on r.EventId equals e.Id
+                                            where e.Id == x.Id
+                                            select y;
+                            if (!xraalarms.NullOrEmpty()) x.Alarms.AddRangeComplement(xraalarms);
+                        }
+
+                        if (!dalarms.NullOrEmpty())
+                        {
+                            var xrdalarms = from y in dalarms
+                                            join r in rdalarms on y.Id equals r.AlarmId
+                                            join e in full on r.EventId equals e.Id
+                                            where e.Id == x.Id
+                                            select y;
+                            if (!xrdalarms.NullOrEmpty()) x.Alarms.AddRangeComplement(xrdalarms);
+
+                        }
+
+                        if (!ealarms.NullOrEmpty())
+                        {
+                            var xrealarms = from y in ealarms
+                                            join r in realarms on y.Id equals r.AlarmId
+                                            join e in full on r.EventId equals e.Id
+                                            where e.Id == x.Id
+                                            select y;
+                            if (!xrealarms.NullOrEmpty()) x.Alarms.AddRangeComplement(xrealarms);
+                        }
+                    });
+
+                    #endregion
                 }
+
             }
+            catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
 
-            return found;
+            return full ?? dry;
         }
 
-        public IEnumerable<string> GetKeys(string fkey, int? page = null)
+        public bool ContainsKey(string key)
+        {
+            try
+            {
+                return db.Count<VEVENT>(q => q.Id == key) != 0;
+            }
+            catch (InvalidOperationException) { throw; }
+            catch (Exception) { throw; }
+        }
+
+        public bool ContainsKeys(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
+        {
+            try
+            {
+                var dkeys = keys.Distinct().ToArray();
+                if (mode == ExpectationMode.pessimistic || mode == ExpectationMode.unknown)
+                    return db.Count<VEVENT>(q => Sql.In(q.Id, dkeys)) == dkeys.Count();
+                else return db.Count<VEVENT>(q => Sql.In(q.Id, dkeys)) != 0;
+            }
+            catch (InvalidOperationException) { throw; }
+            catch (Exception) { throw; }
+        }
+
+        public IEnumerable<string> GetKeys(int? skip = null)
         {
             IEnumerable<string> keys = null;
             try
             {
-                var events = db.Select<VEVENT, VCALENDAR, REL_CALENDARS_EVENTS>(
-                    r => r.EventId,
-                    r => r.CalendarId,
-                    c => c.ProdId == fkey);
-                keys = (!events.NullOrEmpty()) ? events.Select(x => x.Uid) : null;
+                keys = db.SelectParam<VEVENT>(q => q.Id, skip, take);
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
@@ -1182,21 +1299,5 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return keys;
         }
 
-        public IEnumerable<string> GetKeys(IEnumerable<string> fkeys, int? page = null)
-        {
-            IEnumerable<string> keys = null;
-            try
-            {
-                var events = db.Select<VEVENT, VCALENDAR, REL_CALENDARS_EVENTS>(
-                    r => r.EventId,
-                    r => r.CalendarId,
-                    c => Sql.In(c.ProdId, fkeys.ToArray()));
-                keys = (!events.NullOrEmpty()) ? events.Select(x => x.Uid) : null;
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
-            return keys;
-        }
     }
 }

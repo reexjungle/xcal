@@ -20,7 +20,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         private IDbConnection conn;
         private IDbConnectionFactory factory = null;
-        private int? pages = null;
+        private int? take = null;
 
         private IDbConnection db
         {
@@ -35,13 +35,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 this.factory = value;
             }
         }
-        public int? PageSize
+        public int? Take
         {
-            get { return this.pages; }
+            get { return this.take; }
             set
             {
                 if (value == null) throw new ArgumentNullException("Null pages");
-                this.pages = value;
+                this.take = value;
             }
         }
         public IKeyGenerator<string> KeyGenerator { get; set; }
@@ -51,14 +51,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public AudioAlarmOrmLiteRepository(IDbConnectionFactory factory, int? pages)
         {
             this.DbConnectionFactory = factory;
-            this.PageSize = pages;
+            this.Take = pages;
             this.conn = this.factory.OpenDbConnection();
         }
         public AudioAlarmOrmLiteRepository(IDbConnection connection, int? pages)
         {
             if (connection == null) throw new ArgumentNullException("connection");
             this.conn = connection;
-            this.PageSize = pages;
+            this.Take = pages;
         }
 
         //cleanup
@@ -67,16 +67,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
             if (this.conn != null) this.conn.Dispose();
         }
 
-        public AUDIO_ALARM Find(string fkey, string pkey)
+        public AUDIO_ALARM Find(string key)
         {
             AUDIO_ALARM dry = null;
             try
             {
-                dry = db.Select<AUDIO_ALARM, VEVENT, REL_EVENTS_AUDIO_ALARMS>(
-                    r => r.AlarmId,
-                    a => a.Id == pkey,
-                    r => r.EventId,
-                    e => e.Uid == fkey).FirstOrDefault();
+                dry = db.Select<AUDIO_ALARM>(q => q.Id == key).FirstOrDefault();
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
@@ -84,27 +80,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return dry;
         }
 
-        public IEnumerable<AUDIO_ALARM> Find(IEnumerable<string> fkeys, IEnumerable<string> pkeys = null, int? page = null)
+        public IEnumerable<AUDIO_ALARM> Find(IEnumerable<string> keys,  int? skip = null)
         {
             IEnumerable<AUDIO_ALARM> dry = null;
 
             try
             {
-                if (pkeys == null)
-                {
-                    dry = db.Select<AUDIO_ALARM, VEVENT, REL_EVENTS_AUDIO_ALARMS>(
-                        r => r.AlarmId,
-                        r => r.EventId,
-                        e => Sql.In(e.Uid, fkeys.ToArray()));
-                }
-                else
-                {
-                    dry = db.Select<AUDIO_ALARM, VEVENT, REL_EVENTS_AUDIO_ALARMS>(
-                        r => r.AlarmId,
-                        a => Sql.In(a.Id, pkeys.ToArray()),
-                        r => r.EventId,
-                        e => Sql.In(e.Uid, fkeys.ToArray()));
-                }
+                dry = db.Select<AUDIO_ALARM>(q => Sql.In(q.Id, keys.ToArray()), skip, Take);
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
@@ -112,12 +94,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return dry;
         }
 
-        public IEnumerable<AUDIO_ALARM> Get(int? page = null)
+        public IEnumerable<AUDIO_ALARM> Get(int? skip = null)
         {
             IEnumerable<AUDIO_ALARM> dry = null;
             try
             {
-                dry = db.Select<AUDIO_ALARM>(page, pages);
+                dry = db.Select<AUDIO_ALARM>(skip, take);
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
@@ -147,7 +129,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             try
             {
-                db.Delete<AUDIO_ALARM>(q => q.Id.ToUpper() == key.ToUpper());
+                db.Delete<AUDIO_ALARM>(q => q.Id == key);
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
@@ -208,36 +190,27 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public bool Contains(string fkey, string pkey)
+        public bool ContainsKey(string key)
         {
             try
             {
-                return !db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.EventId == fkey && q.AlarmId == pkey).NullOrEmpty();
+                return db.Count<AUDIO_ALARM>(q => q.Id == key) != 0;
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
         }
 
-        public bool Contains(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        public bool ContainsKeys(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
         {
-            var found = false;
             try
             {
-                var rels = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.EventId, fkeys.ToArray()) && Sql.In(q.AlarmId, pkeys.ToArray()));
-                switch (mode)
-                {
-                    case ExpectationMode.pessimistic: found = (!rels.NullOrEmpty()) ?
-                        rels.Select(x => x.AlarmId).Distinct().Count() == pkeys.Distinct().Count() :
-                        false; break;
-                    case ExpectationMode.optimistic:
-                    default:
-                        found = !rels.NullOrEmpty(); break;
-                }
+                var dkeys = keys.Distinct().ToArray();
+                if (mode == ExpectationMode.pessimistic || mode == ExpectationMode.unknown)
+                    return db.Count<AUDIO_ALARM>(q => Sql.In(q.Id, dkeys)) == dkeys.Count();
+                else return db.Count<AUDIO_ALARM>(q => Sql.In(q.Id, dkeys)) != 0;
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
-
-            return found;
         }
     }
 
@@ -246,7 +219,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         private IDbConnection conn;
         private IDbConnectionFactory factory = null;
-        private int? pages = null;
+        private int? take = null;
         public IKeyGenerator<string> KeyGenerator { get; set; }
 
         private IDbConnection db
@@ -258,32 +231,32 @@ namespace reexmonkey.xcal.service.repositories.concretes
             get { return this.factory; }
             set
             {
-                if (value == null) throw new ArgumentNullException("Null factory");
+                if (value == null) throw new ArgumentNullException("DbConnectionFactory");
                 this.factory = value;
             }
         }
-        public int? PageSize
+        public int? Take
         {
-            get { return this.pages; }
+            get { return this.take; }
             set
             {
-                if (value == null) throw new ArgumentNullException("Null pages");
-                this.pages = value;
+                if (value == null) throw new ArgumentNullException("Take");
+                this.take = value;
             }
         }
 
         public DisplayAlarmOrmLiteRepository() { }
-        public DisplayAlarmOrmLiteRepository(IDbConnectionFactory factory, int? pages)
+        public DisplayAlarmOrmLiteRepository(IDbConnectionFactory factory, int? take)
         {
             this.DbConnectionFactory = factory;
-            this.PageSize = pages;
+            this.Take = take;
             this.conn = this.factory.OpenDbConnection();
         }
-        public DisplayAlarmOrmLiteRepository(IDbConnection connection, int? pages)
+        public DisplayAlarmOrmLiteRepository(IDbConnection connection, int? take)
         {
             if (connection == null) throw new ArgumentNullException("connection");
             this.conn = connection;
-            this.PageSize = pages;
+            this.Take = take;
         }
 
         //cleanup
@@ -292,16 +265,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
             if (this.conn != null) this.conn.Dispose();
         }
 
-        public DISPLAY_ALARM Find(string fkey, string pkey)
+        public DISPLAY_ALARM Find(string key)
         {
             DISPLAY_ALARM dry = null;
             try
             {
-                dry = db.Select<DISPLAY_ALARM, VEVENT, REL_EVENTS_DISPLAY_ALARMS>(
-                    r => r.AlarmId,
-                    a => a.Id == pkey,
-                    r => r.EventId,
-                    e => e.Uid == fkey).FirstOrDefault();
+                dry = db.Select<DISPLAY_ALARM>(q => q.Id == key).FirstOrDefault();
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
@@ -309,27 +278,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return dry;
         }
 
-        public IEnumerable<DISPLAY_ALARM> Find(IEnumerable<string> fkeys, IEnumerable<string> pkeys = null, int? page = null)
+        public IEnumerable<DISPLAY_ALARM> Find(IEnumerable<string> keys, int? skip = null)
         {
             IEnumerable<DISPLAY_ALARM> dry = null;
 
             try
             {
-                if (pkeys == null)
-                {
-                    dry = db.Select<DISPLAY_ALARM, VEVENT, REL_EVENTS_DISPLAY_ALARMS>(
-                        r => r.AlarmId,
-                        r => r.EventId,
-                        e => Sql.In(e.Uid, fkeys.ToArray()));
-                }
-                else
-                {
-                    dry = db.Select<DISPLAY_ALARM, VEVENT, REL_EVENTS_DISPLAY_ALARMS>(
-                        r => r.AlarmId,
-                        a => Sql.In(a.Id, pkeys.ToArray()),
-                        r => r.EventId,
-                        e => Sql.In(e.Uid, fkeys.ToArray()));
-                }
+                dry = db.Select<DISPLAY_ALARM>(q => Sql.In(q.Id, keys.ToArray()), skip, Take);
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
@@ -342,7 +297,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             IEnumerable<DISPLAY_ALARM> dry = null;
             try
             {
-                dry = db.Select<DISPLAY_ALARM>(page, pages);
+                dry = db.Select<DISPLAY_ALARM>(page, take);
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
@@ -416,7 +371,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             try
             {
-                db.Delete<DISPLAY_ALARM>(q => q.Id.ToUpper() == key.ToUpper());
+                db.Delete<DISPLAY_ALARM>(q => q.Id == key);
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
@@ -433,36 +388,29 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public bool Contains(string fkey, string pkey)
+        public bool ContainsKey(string key)
         {
             try
             {
-                return !db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.EventId == fkey && q.AlarmId == pkey).NullOrEmpty();
+                return db.Count<DISPLAY_ALARM>(q => q.Id == key) != 0;
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
         }
 
-        public bool Contains(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        public bool ContainsKeys(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
         {
-            var found = false;
             try
             {
-                var rels = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.EventId, fkeys.ToArray()) && Sql.In(q.AlarmId, pkeys.ToArray()));
-                switch (mode)
-                {
-                    case ExpectationMode.pessimistic: found = (!rels.NullOrEmpty()) ?
-                        rels.Select(x => x.AlarmId).Distinct().Count() == pkeys.Distinct().Count() :
-                        false; break;
-                    case ExpectationMode.optimistic:
-                    default:
-                        found = !rels.NullOrEmpty(); break;
-                }
+                var dkeys = keys.Distinct().ToArray();
+                if (mode == ExpectationMode.pessimistic || mode == ExpectationMode.unknown)
+                    return db.Count<DISPLAY_ALARM>(q => Sql.In(q.Id, dkeys)) == dkeys.Count();
+                else return db.Count<DISPLAY_ALARM>(q => Sql.In(q.Id, dkeys)) != 0;
+
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
 
-            return found;
         }
 
     }
@@ -472,7 +420,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                
         private IDbConnection conn;
         private IDbConnectionFactory factory = null;
-        private int? pages = null;
+        private int? take = null;
 
         private IDbConnection db
         {
@@ -483,33 +431,32 @@ namespace reexmonkey.xcal.service.repositories.concretes
             get { return this.factory; }
             set 
             {
-                if (value == null) throw new ArgumentNullException("Null factory");
+                if (value == null) throw new ArgumentNullException("DbConnectionFactory");
                 this.factory = value; 
             }
         }
-        public int? PageSize
+        public int? Take
         {
-            get { return this.pages; }
+            get { return this.take; }
             set 
             {
-                if (value == null) throw new ArgumentNullException("Null pages");
-                this.pages = value; 
+                if (value == null) throw new ArgumentNullException("Take");
+                this.take = value; 
             }
         }
         public IKeyGenerator<string> KeyGenerator { get; set; }
-
         public EmailAlarmOrmLiteRepository() { }
-        public EmailAlarmOrmLiteRepository(IDbConnectionFactory factory, int? pages)
+        public EmailAlarmOrmLiteRepository(IDbConnectionFactory factory, int? take)
         {
             this.DbConnectionFactory = factory;
-            this.PageSize = pages;
+            this.Take = take;
             this.conn = this.factory.OpenDbConnection();
         }
-        public EmailAlarmOrmLiteRepository(IDbConnection connection, int? pages)
+        public EmailAlarmOrmLiteRepository(IDbConnection connection, int? take)
         {
             if (connection == null) throw new ArgumentNullException("connection");
             this.conn = connection; 
-            this.PageSize = pages;
+            this.Take = take;
         }
 
         //cleanup
@@ -520,80 +467,98 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public EMAIL_ALARM Hydrate(EMAIL_ALARM dry)
         {
-            var full = dry;
+            EMAIL_ALARM full = null;
             try
             {
-                full.Attendees.AddRange(db.Select<ATTENDEE, EMAIL_ALARM, RELS_EALARMS_ATTENDEES>(
-                    r => r.AttendeeId,
-                    r => r.AlarmId,
-                    a => a.Id == dry.Id).Except(dry.Attachments.OfType<ATTENDEE>()));
+                full = db.Select<EMAIL_ALARM>(q => q.Id == dry.Id).FirstOrDefault();
+                if (full != null)
+                {
+                    var attendees = db.Select<ATTENDEE, EMAIL_ALARM, RELS_EALARMS_ATTENDEES>(
+                        r => r.AttendeeId,
+                        r => r.AlarmId,
+                        a => a.Id == dry.Id);
+                    if (!attendees.NullOrEmpty()) full.Attendees.AddRangeComplement(attendees);
 
-                full.Attachments.AddRange(db.Select<ATTACH_BINARY, EMAIL_ALARM, RELS_EALARMS_ATTACHBINS>(
-                    r => r.AttachmentId,
-                    r => r.AlarmId,
-                    a => a.Id == dry.Id).Except(dry.Attachments.OfType<ATTACH_BINARY>()));
+                    var attachbins = db.Select<ATTACH_BINARY, EMAIL_ALARM, RELS_EALARMS_ATTACHBINS>(
+                        r => r.AttachmentId,
+                        r => r.AlarmId,
+                        a => a.Id == dry.Id);
+                    if (!attachbins.NullOrEmpty()) full.Attachments.AddRangeComplement(attachbins);
 
-                full.Attachments.AddRange(db.Select<ATTACH_BINARY, EMAIL_ALARM, RELS_EALARMS_ATTACHURIS>(
-                    r => r.AttachmentId,
-                    r => r.AlarmId,
-                    a => a.Id == dry.Id).Except(dry.Attachments.OfType<ATTACH_BINARY>()));
+                    var attachuris = db.Select<ATTACH_BINARY, EMAIL_ALARM, RELS_EALARMS_ATTACHURIS>(
+                        r => r.AttachmentId,
+                        r => r.AlarmId,
+                        a => a.Id == dry.Id);
+                    if (!attachuris.NullOrEmpty()) full.Attachments.AddRangeComplement(attachuris);
+                    
+                }
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
 
-            return full;
+            return full?? dry;
         }
 
         public IEnumerable<EMAIL_ALARM> Hydrate(IEnumerable<EMAIL_ALARM> dry)
         {
-            IEnumerable<EMAIL_ALARM> full = null;
+            List<EMAIL_ALARM> full = null;
             try
             {
+                var keys = dry.Select(q => q.Id).ToArray();
+                full = db.Select<EMAIL_ALARM>(q => Sql.In(q.Id, keys));
+
                 //1. retrieve relationships
-                var ids = dry.Select(q => q.Id).ToArray();
-                var rattends = db.Select<RELS_EALARMS_ATTENDEES>(q => Sql.In(q.Id, ids));
-                var rattachbins = db.Select<RELS_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, ids));
-                var rattachuris = db.Select<RELS_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, ids));
-
-
-                //2. retrieve secondary entities
-                var attends = (!rattends.Empty()) ? db.Select<ATTENDEE>(q => Sql.In(q.Id, rattends.Select(r => r.AttendeeId).ToArray())) : null;
-                var attachbins = (!rattachbins.Empty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToArray())) : null;
-                var attachuris = (!rattachuris.Empty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachuris.Select(r => r.AttachmentId).ToArray())) : null;
-
-                //3. Use Linq to stitch secondary entities to primary entities
-                full = dry.Select(x =>
+                if (!full.NullOrEmpty())
                 {
-                    var xattachbins = (!attachbins.NullOrEmpty()) ? (from y in attachbins join r in rattachbins on y.Id equals r.AttachmentId join a in dry on r.AlarmId equals a.Id where a.Id == x.Id select y) : null;
-                    var xattachuris = (!attachuris.NullOrEmpty()) ? (from y in attachuris join r in rattachuris on y.Id equals r.AttachmentId join a in dry on r.AlarmId equals a.Id where a.Id == x.Id select y) : null;
+                    var rattends = db.Select<RELS_EALARMS_ATTENDEES>(q => Sql.In(q.Id, keys));
+                    var rattachbins = db.Select<RELS_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, keys));
+                    var rattachuris = db.Select<RELS_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, keys));
 
-                    if (!xattachbins.NullOrEmpty()) x.Attachments.AddRange(xattachbins.Except(x.Attachments.OfType<ATTACH_BINARY>()));
-                    if (!xattachuris.NullOrEmpty()) x.Attachments.AddRange(xattachuris.Except(x.Attachments.OfType<ATTACH_URI>()));
+                    //2. retrieve secondary entities
+                    var attends = (!rattends.Empty()) ? db.Select<ATTENDEE>(q => Sql.In(q.Id, rattends.Select(r => r.AttendeeId).ToArray())) : null;
+                    var attachbins = (!rattachbins.Empty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToArray())):null;
+                    var attachuris = (!rattachuris.Empty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachuris.Select(r => r.AttachmentId).ToArray())):null;
 
-                    var xattends = (!attends.NullOrEmpty()) ? (from y in attends join r in rattends on y.Id equals r.AlarmId join a in dry on r.Id equals a.Id where a.Id == x.Id select y) : null;
-                    if (!xattends.NullOrEmpty()) x.Attendees.AddRange(xattends.Except(x.Attendees.OfType<ATTENDEE>()));
+                    //3. Use Linq to stitch secondary entities to primary entities
+                    full.ForEach(x =>
+                    {
+                        var xattachbins = from y in attachbins 
+                                          join r in rattachbins on y.Id equals r.AttachmentId 
+                                          join a in dry on r.AlarmId equals a.Id 
+                                          where a.Id == x.Id select y;
+                        if (!xattachbins.NullOrEmpty()) x.Attachments.AddRangeComplement(xattachbins);
 
-                    return x;
-                });
+
+                        var xattachuris = from y in attachuris 
+                                          join r in rattachuris on y.Id equals r.AttachmentId 
+                                          join a in dry on r.AlarmId equals a.Id 
+                                          where a.Id == x.Id select y;
+                        if (!xattachuris.NullOrEmpty()) x.Attachments.AddRangeComplement(xattachuris);
+
+
+                        var xattendees = from y in attends 
+                                       join r in rattends on y.Id equals r.AlarmId 
+                                       join a in dry on r.Id equals a.Id 
+                                       where a.Id == x.Id select y;
+                        if (!xattendees.NullOrEmpty()) x.Attendees.AddRangeComplement(xattendees);
+
+                    }); 
+                }
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
 
-            return full;
+            return full ?? dry;
         }
 
-        public EMAIL_ALARM Find(string fkey, string pkey )
+        public EMAIL_ALARM Find(string key )
         {
             EMAIL_ALARM dry = null;
             try
             {
-                dry = db.Select<EMAIL_ALARM, VEVENT, REL_EVENTS_EMAIL_ALARMS>(
-                    r => r.AlarmId,
-                    a => a.Id == pkey,
-                    r => r.EventId,
-                    e => e.Uid == fkey).FirstOrDefault();
+                dry = db.Select<EMAIL_ALARM>(q => q.Id == key).FirstOrDefault();
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
@@ -601,27 +566,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return (dry != null) ? this.Hydrate(dry) : null;
         }
 
-        public IEnumerable<EMAIL_ALARM> Find(IEnumerable<string> fkeys, IEnumerable<string> pkeys = null, int? page = null)
+        public IEnumerable<EMAIL_ALARM> Find(IEnumerable<string> keys, int? skip = null)
         {
             IEnumerable<EMAIL_ALARM> dry = null;
 
             try
             {
-                if (pkeys == null)
-                {
-                    dry = db.Select<EMAIL_ALARM, VEVENT, REL_EVENTS_EMAIL_ALARMS>(
-                        r => r.AlarmId,
-                        r => r.EventId,
-                        e => Sql.In(e.Uid, fkeys.ToArray()));
-                }
-                else
-                {
-                    dry = db.Select<EMAIL_ALARM, VEVENT, REL_EVENTS_EMAIL_ALARMS>(
-                        r => r.AlarmId,
-                        a => Sql.In(a.Id, pkeys.ToArray()),
-                        r => r.EventId,
-                        e => Sql.In(e.Uid, fkeys.ToArray()));
-                }
+                dry = db.Select<EMAIL_ALARM>(q => Sql.In(q.Id, keys.ToArray()), skip, Take);
+
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
@@ -629,12 +581,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return (dry != null) ? this.Hydrate(dry) : null;
         }
 
-        public IEnumerable<EMAIL_ALARM> Get(int? page = null)
+        public IEnumerable<EMAIL_ALARM> Get(int? skip = null)
         {
             IEnumerable<EMAIL_ALARM> dry = null;
             try
             {
-                dry = db.Select<EMAIL_ALARM>(page, pages);
+                dry = db.Select<EMAIL_ALARM>(skip, take);
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
@@ -882,36 +834,28 @@ namespace reexmonkey.xcal.service.repositories.concretes
             }
         }
 
-        public bool Contains(string fkey, string pkey)
+        public bool ContainsKey(string key)
         {
             try
             {
-                return !db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.EventId == fkey && q.AlarmId == pkey).NullOrEmpty();
+                return db.Count<EMAIL_ALARM>(q => q.Id == key) != 0;
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
         }
 
-        public bool Contains(IEnumerable<string> fkeys, IEnumerable<string> pkeys, ExpectationMode mode = ExpectationMode.optimistic)
+        public bool ContainsKeys(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
         {
-            var found = false;
             try
             {
-                var rels = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.EventId, fkeys.ToArray()) && Sql.In(q.AlarmId, pkeys.ToArray()));
-                switch (mode)
-                {
-                    case ExpectationMode.pessimistic: found = (!rels.NullOrEmpty()) ?
-                        rels.Select(x => x.AlarmId).Distinct().Count() == pkeys.Distinct().Count() :
-                        false; break;
-                    case ExpectationMode.optimistic:
-                    default:
-                        found = !rels.NullOrEmpty(); break;
-                }
+                var dkeys = keys.Distinct().ToArray();
+                if (mode == ExpectationMode.pessimistic || mode == ExpectationMode.unknown)
+                    return db.Count<EMAIL_ALARM>(q => Sql.In(q.Id, dkeys)) == dkeys.Count();
+                else return db.Count<EMAIL_ALARM>(q => Sql.In(q.Id, dkeys)) != 0;
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
 
-            return found;
         }
 
     }

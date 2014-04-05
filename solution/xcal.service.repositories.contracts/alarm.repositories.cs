@@ -13,7 +13,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
     /// Specifies a general interface for a repository of audio alerts
     /// </summary>
     public interface IAudioAlarmRepository :
-        IReadRepository<AUDIO_ALARM, string, string>,
+        IReadRepository<AUDIO_ALARM, string>,
         IWriteRepository<AUDIO_ALARM, string>,
         IPaginated<int> {}
 
@@ -48,7 +48,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
     /// Specifies a general interface for a repository of display alerts
     /// </summary>
     public interface IDisplayAlarmRepository :
-        IReadRepository<DISPLAY_ALARM, string, string>,
+        IReadRepository<DISPLAY_ALARM, string>,
         IWriteRepository<DISPLAY_ALARM, string>,
         IPaginated<int> {}
 
@@ -84,7 +84,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
     /// Specifies a general interface for a repository of email alerts
     /// </summary>
     public interface IEmailAlarmRepository :
-        IReadRepository<EMAIL_ALARM, string, string>,
+        IReadRepository<EMAIL_ALARM, string>,
         IWriteRepository<EMAIL_ALARM, string>,
         IPaginated<int>
     {
@@ -113,7 +113,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// <summary>
         /// Gets the connection factory of ORMLite datasources
         /// </summary>
-        IDbConnectionFactory DbConnectionFactory { get; }
+        IDbConnectionFactory DbConnectionFactory { get; set; }
     }
 
 
@@ -125,7 +125,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// <summary>
         /// Gets the connection factory of ORMLite datasources
         /// </summary>
-        IRedisClientsManager RedisClientsManager { get; }
+        IRedisClientsManager RedisClientsManager { get; set; }
     }
 
 

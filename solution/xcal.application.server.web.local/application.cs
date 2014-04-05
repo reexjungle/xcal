@@ -97,7 +97,7 @@ namespace reexmonkey.xcal.application.server.web.local
                     KeyGenerator = x.Resolve<IFPIKeyGenerator>(),
                     DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
                     EventRepository = x.Resolve<IEventRepository>(),
-                    PageSize = Properties.Settings.Default.calendars_page_count
+                    Take = Properties.Settings.Default.calendars_take
                 });
 
                 container.Register<IEventRepository>(x => new EventOrmLiteRepository
@@ -107,28 +107,28 @@ namespace reexmonkey.xcal.application.server.web.local
                     AudioAlarmRepository = x.Resolve<IAudioAlarmRepository>(),
                     DisplayAlarmRepository = x.Resolve<IDisplayAlarmRepository>(),
                     EmailAlarmRepository = x.Resolve<IEmailAlarmRepository>(),
-                    PageSize = Properties.Settings.Default.events_page_count
+                    Take = Properties.Settings.Default.events_take
                 });
 
                 container.Register<IAudioAlarmOrmLiteRepository>(x => new AudioAlarmOrmLiteRepository
                 {
                     KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
-                    PageSize = Properties.Settings.Default.alarms_page_count
+                    Take = Properties.Settings.Default.alarms_take
                 });
 
                 container.Register<IDisplayAlarmOrmLiteRepository>(x => new DisplayAlarmOrmLiteRepository
                 {
                     KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
-                    PageSize = Properties.Settings.Default.alarms_page_count
+                    Take = Properties.Settings.Default.alarms_take
                 });
 
                 container.Register<IEmailAlarmOrmLiteRepository>(x => new EmailAlarmOrmLiteRepository
                 {
                     KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
-                    PageSize = Properties.Settings.Default.alarms_page_count
+                    Take = Properties.Settings.Default.alarms_take
                 });
 
                 #endregion
@@ -267,7 +267,7 @@ namespace reexmonkey.xcal.application.server.web.local
                     KeyGenerator = x.Resolve<IFPIKeyGenerator>(),
                     RedisClientsManager = container.Resolve<IRedisClientsManager>(),
                     EventRepository = x.Resolve<IEventRepository>(),
-                    PageSize = Properties.Settings.Default.calendars_page_count
+                    Take = Properties.Settings.Default.calendars_take
                 });
 
                 container.Register<IEventRepository>(x => new EventRedisRepository
@@ -277,28 +277,28 @@ namespace reexmonkey.xcal.application.server.web.local
                     AudioAlarmRepository = x.Resolve<IAudioAlarmRepository>(),
                     DisplayAlarmRepository = x.Resolve<IDisplayAlarmRepository>(),
                     EmailAlarmRepository = x.Resolve<IEmailAlarmRepository>(),
-                    PageSize = Properties.Settings.Default.events_page_count
+                    Take = Properties.Settings.Default.events_take
                 });
 
                 container.Register<IAudioAlarmRepository>(x => new AudioAlarmRedisRepository
                 {
                     KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     RedisClientsManager = container.Resolve<IRedisClientsManager>(),
-                    PageSize = Properties.Settings.Default.alarms_page_count
+                    Take = Properties.Settings.Default.alarms_take
                 });
 
                 container.Register<IDisplayAlarmRepository>(x => new DisplayAlarmRedisRepository
                 {
                     KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     RedisClientsManager = container.Resolve<IRedisClientsManager>(),
-                    PageSize = Properties.Settings.Default.alarms_page_count
+                    Take = Properties.Settings.Default.alarms_take
                 });
 
                 container.Register<IEmailAlarmRepository>(x => new EmailAlarmRedisRepository
                 {
                     KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     RedisClientsManager = container.Resolve<IRedisClientsManager>(),
-                    PageSize = Properties.Settings.Default.alarms_page_count
+                    Take = Properties.Settings.Default.alarms_take
                 });
 
                 #endregion

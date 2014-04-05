@@ -53,27 +53,27 @@ namespace reexmonkey.xcal.application.server.web.local.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("5")]
-        public int calendars_page_count {
+        public int calendars_take {
             get {
-                return ((int)(this["calendars_page_count"]));
+                return ((int)(this["calendars_take"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("60")]
-        public int events_page_count {
+        public int events_take {
             get {
-                return ((int)(this["events_page_count"]));
+                return ((int)(this["events_take"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("120")]
-        public int alarms_page_count {
+        public int alarms_take {
             get {
-                return ((int)(this["alarms_page_count"]));
+                return ((int)(this["alarms_take"]));
             }
         }
         

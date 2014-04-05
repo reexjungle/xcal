@@ -12,9 +12,9 @@ namespace reexmonkey.technical.data.contracts
     public interface IPaginated<TSize> where TSize : struct
     {
         /// <summary>
-        /// Gets or sets page capacity (maximum number of results per page)
+        /// Gets or sets page capacity (number of results taken per page)
         /// </summary>
-        TSize? PageSize { get; set; }
+        TSize? Take { get; set; }
 
     }
 }

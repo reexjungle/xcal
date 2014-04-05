@@ -11,13 +11,13 @@
     <Setting Name="mysql_server" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Server = localhost; Uid = local; Pwd = local; allow user variables=true;</Value>
     </Setting>
-    <Setting Name="calendars_page_count" Type="System.Int32" Scope="Application">
+    <Setting Name="calendars_take" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">5</Value>
     </Setting>
-    <Setting Name="events_page_count" Type="System.Int32" Scope="Application">
+    <Setting Name="events_take" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">60</Value>
     </Setting>
-    <Setting Name="alarms_page_count" Type="System.Int32" Scope="Application">
+    <Setting Name="alarms_take" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">120</Value>
     </Setting>
     <Setting Name="fpiLanguageId" Type="System.String" Scope="Application">
