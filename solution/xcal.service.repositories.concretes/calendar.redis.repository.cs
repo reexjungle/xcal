@@ -76,53 +76,43 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public VCALENDAR Hydrate(VCALENDAR dry)
         {
             VCALENDAR full = null;
-            try
+            var cclient = this.redis.As<VCALENDAR>();
+            full = cclient.GetValue(dry.Id);
+            if (full != null)
             {
-                var cclient = this.redis.As<VCALENDAR>();
-                full = cclient.GetValue(dry.Id);
-                if(full != null)
+                var revents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => x.CalendarId == full.Id);
+                if (!revents.NullOrEmpty())
                 {
-                    var revents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => x.CalendarId == full.Id);
-                    if (!revents.NullOrEmpty())
-                    {
-                        full.Components.AddRangeComplement(this.EventRepository.Find(revents.Select(x => x.EventId).ToList()));
-                    }
+                    full.Components.AddRangeComplement(this.EventRepository.Find(revents.Select(x => x.EventId).ToList()));
                 }
             }
-            catch (ArgumentNullException) { throw; }
-            catch (Exception) { throw; }
             return full ?? dry;
         }
 
         public IEnumerable<VCALENDAR> Hydrate(IEnumerable<VCALENDAR> dry)
         {
             List<VCALENDAR> full = null;
-            try
+            var cclient = this.redis.As<VCALENDAR>();
+            var keys = dry.Select(x => x.Id).Distinct().ToList();
+            full = cclient.GetValues(keys);
+
+            if (!full.NullOrEmpty())
             {
-                var cclient = this.redis.As<VCALENDAR>();
-                var keys = dry.Select(x => x.Id).Distinct().ToList();
-                full = cclient.GetValues(keys);
-
-                if (!full.NullOrEmpty())
+                var revents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => keys.Contains(x.CalendarId));
+                var events = (!revents.Empty()) ? this.EventRepository.Find(revents.Select(x => x.EventId).ToList()) : null;
+                full.ForEach(x =>
                 {
-                    var revents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => keys.Contains(x.CalendarId));
-                    var events = (!revents.Empty()) ? this.EventRepository.Find(revents.Select(x => x.EventId).ToList()) : null;
-                    full.ForEach(x => 
+                    if (!events.NullOrEmpty())
                     {
-                        if (!events.NullOrEmpty())
-                        {
-                            var xevents = from y in events
-                                          join r in revents on y.Id equals r.EventId
-                                          join c in full on r.CalendarId equals c.Id
-                                          where c.Id == x.Id
-                                          select y;
-                            if (!xevents.NullOrEmpty()) x.Components.AddRangeComplement(xevents);
-                        } 
-                    });
-                }
-
+                        var xevents = from y in events
+                                      join r in revents on y.Id equals r.EventId
+                                      join c in full on r.CalendarId equals c.Id
+                                      where c.Id == x.Id
+                                      select y;
+                        if (!xevents.NullOrEmpty()) x.Components.AddRangeComplement(xevents);
+                    }
+                });
             }
-            catch (ArgumentNullException) { throw; }
             return full ?? dry;
         }
 
@@ -138,32 +128,32 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public VCALENDAR Find(string key)
         {
-            VCALENDAR dry = this.redis.As<VCALENDAR>().GetValue(key);
+            var dry = this.redis.As<VCALENDAR>().GetValue(key);
             return (dry != null) ? this.Hydrate(dry) : dry;
         }
 
-        public IEnumerable<VCALENDAR> Find(IEnumerable<string> keys, int? page = null)
+        public IEnumerable<VCALENDAR> Find(IEnumerable<string> keys, int? skip = null)
         {
             IEnumerable<VCALENDAR> dry = null;
             var cclient = this.redis.As<VCALENDAR>();
             var dkeys = keys.Distinct().ToList();
             if (cclient.GetAllKeys().Intersect(dkeys).Count() == dkeys.Count())
             {
-                dry = (page != null) ?
-                    cclient.GetValues(dkeys).Skip(page.Value).Take(take.Value)
+                dry = (skip != null) ?
+                    cclient.GetValues(dkeys).Skip(skip.Value).Take(take.Value)
                     : cclient.GetValues(dkeys);
             }
             return (!dry.NullOrEmpty()) ? this.Hydrate(dry) : dry;
         }
 
-        public IEnumerable<VCALENDAR> Get(int? page = null)
+        public IEnumerable<VCALENDAR> Get(int? skip = null)
         {
             IEnumerable<VCALENDAR> dry = null;
             try
             {
                 var cclient = this.redis.As<VCALENDAR>();
-                dry = (page != null) ?
-                    cclient.GetAll().Skip(page.Value).Take(take.Value)
+                dry = (skip != null) ?
+                    cclient.GetAll().Skip(skip.Value).Take(take.Value)
                     : cclient.GetAll();
             }
             catch (Exception) { throw; }
@@ -172,7 +162,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public void Save(VCALENDAR entity)
         {
-            //save calendar
             using (var transaction = this.redis.CreateTransaction())
             {
                 try
@@ -183,7 +172,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     var events = entity.Components.OfType<VEVENT>();
                     if (!events.NullOrEmpty())
                     {
-                        var eventkeys = events.Select(x => x.Id).ToArray();
                         this.EventRepository.SaveAll(events);
                         var revents = events.Select(x => new REL_CALENDARS_EVENTS
                         {
@@ -199,7 +187,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             ? revents.Except(orevents) 
                             : revents));
                     }
-
                     transaction.Commit();
                 }
                 catch (Exception)
@@ -245,7 +232,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                     var cclient = this.redis.As<VCALENDAR>();
                     var keys = (predicate != null) 
-                        ? cclient.GetAll().Where(predicate.Compile()).Select(x => x.Id) 
+                        ? cclient.GetAll().Where(predicate.Compile()).Select(x => x.Id).ToList() 
                         : cclient.GetAllKeys();
 
 
@@ -288,14 +275,15 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         Expression<Func<VCALENDAR, object>> scaleexpr = x => x.Calscale;
                         Expression<Func<VCALENDAR, object>> methodexpr = x => x.Method;
 
-                        keys.ToList().ForEach(k =>
+                        var entities = cclient.GetValues(keys);
+                        entities.ForEach(x =>
                         {
-                            var x = cclient.GetValue(k);
                             if (selection.Contains(versionexpr.GetMemberName())) x.Version = source.Version;
                             if (selection.Contains(scaleexpr.GetMemberName())) x.Calscale = source.Calscale;
                             if (selection.Contains(methodexpr.GetMemberName())) x.Method = source.Method;
-                            transaction.QueueCommand(trans => cclient.Store(x));
                         });
+
+                        transaction.QueueCommand(trans => cclient.StoreAll(entities));
                     }
 
                     #endregion
@@ -362,17 +350,24 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public void EraseAll(IEnumerable<string> keys = null)
         {
             var cclient = this.redis.As<VCALENDAR>();
-            if (keys != null) cclient.DeleteAll();
+            Action<IRedisTypedClient<VCALENDAR>, string> cascade_on_delete = (e, k) =>
+            {
+                if (e.ContainsKey(k))
+                {
+                    cclient.DeleteRelatedEntities<REL_CALENDARS_EVENTS>(k);
+                }
+            };
+
+            if (keys == null)
+            {
+                cclient.GetAllKeys().ForEach(x => cascade_on_delete(cclient, x));
+                cclient.DeleteAll();
+            }
             else
             {
-                keys.ToList().ForEach(x =>
-                {
-                    if (cclient.ContainsKey(x))
-                    {
-                        cclient.DeleteRelatedEntities<REL_CALENDARS_EVENTS>(x);
-                        cclient.DeleteById(x);
-                    }
-                });
+                var dkeys = keys.Distinct().ToList();
+                dkeys.ForEach(x => cascade_on_delete(cclient, x));
+                cclient.DeleteByIds(dkeys);
             }
         }
 
@@ -388,6 +383,17 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return mode == ExpectationMode.pessimistic
                 ? matches.Count() == keys.Count()
                 : !matches.NullOrEmpty();
+        }
+
+        public IEnumerable<VCALENDAR> Dehydrate(IEnumerable<VCALENDAR> full)
+        {
+            IEnumerable<VCALENDAR> dry = null;
+            dry = full.Select(x => 
+            {
+                if(!x.Components.NullOrEmpty()) x.Components.Clear();
+                return x;
+            });
+            return dry ?? full;
         }
     }
 }

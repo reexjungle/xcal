@@ -21,17 +21,17 @@ namespace reexmonkey.crosscut.essentials.contracts
     }
 
     /// <summary>
-    /// Specifies a contract for providing identifiers
+    /// Specifies a contract for providing unique keys
     /// </summary>
-    /// <typeparam name="TId">The type of identifier</typeparam>
-    public  interface IKeyGenerator<TId>
-        where TId: IEquatable<TId>
+    /// <typeparam name="Tkey">The type of key</typeparam>
+    public  interface IKeyGenerator<Tkey>
+        where Tkey: IEquatable<Tkey>
     {
         /// <summary>
-        /// Produces the next identifier
+        /// Produces the next key
         /// </summary>
-        /// <returns>The created identifier</returns>
-        TId GetNextKey();
+        /// <returns>The next available key</returns>
+        Tkey GetNextKey();
     }
 
     public interface IIntegralKeyGenerator : IKeyGenerator<int> { }

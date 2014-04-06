@@ -99,5 +99,11 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             throw new NotImplementedException();
         }
+
+
+        public IEnumerable<VCALENDAR> Dehydrate(IEnumerable<VCALENDAR> full)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

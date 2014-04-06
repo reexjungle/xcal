@@ -30,6 +30,8 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// <param name="dry">The sparse calendar entities to be populated</param>
         /// <returns>Populated calendar entities</returns>
         IEnumerable<VCALENDAR> Hydrate(IEnumerable<VCALENDAR> dry);
+
+        IEnumerable<VCALENDAR> Dehydrate(IEnumerable<VCALENDAR> full);
     }
 
     /// <summary>

@@ -78,7 +78,7 @@
     <Compile Include="alarm.ormlite.repositories.cs" />
     <Compile Include="alarm.redis.repositories.cs" />
     <Compile Include="calendar.relations.cs" />
-    <Compile Include="calendar.ormlite.repositories.cs" />
+    <Compile Include="calendar.ormlite.repository.cs" />
     <Compile Include="calendar.redis.repository.cs" />
     <Compile Include="event.relations.cs" />
     <Compile Include="event.ormlite.repository.cs" />

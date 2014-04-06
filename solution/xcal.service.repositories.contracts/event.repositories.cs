@@ -39,12 +39,16 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// <returns>The populated event entity</returns>
         VEVENT Hydrate(VEVENT dry);
 
+        VEVENT Dehydrate(VEVENT full);
+
         /// <summary>
         /// Populates event entities with details from respective constituent entities
         /// </summary>
         /// <param name="dry">The sparse events entities to be populated</param>
         /// <returns>Populated event entities</returns>
         IEnumerable<VEVENT> Hydrate(IEnumerable<VEVENT> dry);
+
+        IEnumerable<VEVENT> Dehydrate(IEnumerable<VEVENT> full);
     } 
 
     /// <summary>
