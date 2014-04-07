@@ -555,30 +555,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public EMAIL_ALARM Find(string key )
         {
-            EMAIL_ALARM dry = null;
             try
             {
-                dry = db.Select<EMAIL_ALARM>(q => q.Id == key).FirstOrDefault();
+                return db.Select<EMAIL_ALARM>(q => q.Id == key).FirstOrDefault();
             }
-            catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
-            return (dry != null) ? this.Hydrate(dry) : null;
         }
 
         public IEnumerable<EMAIL_ALARM> Find(IEnumerable<string> keys, int? skip = null)
         {
-            IEnumerable<EMAIL_ALARM> dry = null;
-
             try
             {
-                dry = db.Select<EMAIL_ALARM>(q => Sql.In(q.Id, keys.ToArray()), skip, Take);
-
+                return db.Select<EMAIL_ALARM>(q => Sql.In(q.Id, keys.ToArray()), skip, Take);
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
-            return (dry != null) ? this.Hydrate(dry) : null;
         }
 
         public IEnumerable<EMAIL_ALARM> Get(int? skip = null)

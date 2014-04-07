@@ -112,27 +112,22 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public VEVENT Find(string key)
         {
-            VEVENT dry = null;
             try
             {
-                dry = db.Select<VEVENT>(q => q.Id == key).FirstOrDefault();
+               return db.Select<VEVENT>(q => q.Id == key).FirstOrDefault();
             }
-            catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
-            return (dry != null) ? this.Hydrate(dry) : dry;
         }
 
         public IEnumerable<VEVENT> Find(IEnumerable<string> keys, int? skip = null)
         {
-            IEnumerable<VEVENT> dry = null;
             try
             {
-                dry = db.Select<VEVENT>(q => Sql.In(q.Uid, keys.ToArray()), skip, take);
+                return db.Select<VEVENT>(q => Sql.In(q.Uid, keys.ToArray()), skip, take);
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
-            return (!dry.NullOrEmpty()) ? this.Hydrate(dry) : null;
         }
 
         public IEnumerable<VEVENT> Get(int? skip = null)
@@ -1176,7 +1171,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     var realarms = this.db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.Id == full.Id);
                     if (!realarms.NullOrEmpty())
                     {
-                        full.Alarms.AddRangeComplement(this.EmailAlarmRepository.Find(realarms.Select(x => x.AlarmId).ToList()));
+                        full.Alarms.AddRangeComplement(this.EmailAlarmRepository
+                            .Hydrate(this.EmailAlarmRepository.Find(realarms.Select(x => x.AlarmId).ToList())));
                     }
                 }
 
@@ -1235,7 +1231,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     var resources = (!rresources.Empty()) ? db.Select<RESOURCES>(q => Sql.In(q.Id, rresources.Select(r => r.ResourcesId).ToArray())) : null;
                     var aalarms = (!raalarms.Empty()) ? this.AudioAlarmRepository.Find(raalarms.Select(x => x.AlarmId).ToList()) : null;
                     var dalarms = (!rdalarms.Empty()) ? this.DisplayAlarmRepository.Find(rdalarms.Select(x => x.AlarmId).ToList()) : null;
-                    var ealarms = (!realarms.Empty()) ? this.EmailAlarmRepository.Find(realarms.Select(x => x.AlarmId).ToList()) : null;
+                    var ealarms = (!realarms.Empty()) ? this.EmailAlarmRepository.Hydrate(this.EmailAlarmRepository.Find(realarms.Select(x => x.AlarmId).ToList())) : null;
 
                     #endregion
 
@@ -1454,30 +1450,27 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public IEnumerable<VEVENT> Dehydrate(IEnumerable<VEVENT> full)
         {
-            var dry = full.Select(x =>
-            {
-                return this.Dehydrate(x);
-            });
-
+            var dry = full.Select(x => {  return this.Dehydrate(x); });
             return dry;
         }
 
         public VEVENT Dehydrate(VEVENT full)
         {
-            full.Organizer = null;
-            full.RecurrenceId = null;
-            full.RecurrenceRule = null;
-            full.Attendees.Clear();
-            full.Attachments.Clear();
-            full.Contacts.Clear();
-            full.Comments.Clear();
-            full.RecurrenceDates.Clear();
-            full.ExceptionDates.Clear();
-            full.RelatedTos.Clear();
-            full.RequestStatuses.Clear();
-            full.Resources.Clear();
-            full.Alarms.Clear();
-            return full;
+            var dry = full;
+            dry.Organizer = null;
+            dry.RecurrenceId = null;
+            dry.RecurrenceRule = null;
+            dry.Attendees.Clear();
+            dry.Attachments.Clear();
+            dry.Contacts.Clear();
+            dry.Comments.Clear();
+            dry.RecurrenceDates.Clear();
+            dry.ExceptionDates.Clear();
+            dry.RelatedTos.Clear();
+            dry.RequestStatuses.Clear();
+            dry.Resources.Clear();
+            dry.Alarms.Clear();
+            return dry;
         }
     }
 }

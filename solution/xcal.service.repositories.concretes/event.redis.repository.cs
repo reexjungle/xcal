@@ -194,7 +194,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 var realarms = this.redis.As<REL_EVENTS_EMAIL_ALARMS>().GetAll().Where(x => x.EventId == full.Id);
                 if (!realarms.NullOrEmpty())
                 {
-                    full.Alarms.AddRangeComplement(this.EmailAlarmRepository.Find(realarms.Select(x => x.AlarmId).ToList())); 
+                    full.Alarms.AddRangeComplement(this.EmailAlarmRepository
+                        .Hydrate(this.EmailAlarmRepository.Find(realarms.Select(x => x.AlarmId).ToList()))); 
                 }
             }
 
@@ -248,7 +249,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 var resources = (!rresources.Empty()) ? this.redis.As<RESOURCES>().GetValues(rresources.Select(x => x.ResourcesId).ToList()) : null;
                 var aalarms = (!raalarms.Empty()) ? this.AudioAlarmRepository.Find(raalarms.Select(x => x.AlarmId).ToList()) : null;
                 var dalarms = (!rdalarms.Empty()) ? this.DisplayAlarmRepository.Find(rdalarms.Select(x => x.AlarmId).ToList()) : null;
-                var ealarms = (!realarms.Empty()) ? this.EmailAlarmRepository.Find(realarms.Select(x => x.AlarmId).ToList()) : null;
+                var ealarms = (!realarms.Empty()) ? this.EmailAlarmRepository.Hydrate(this.EmailAlarmRepository.Find(realarms.Select(x => x.AlarmId).ToList())) : null;
                 
                 #endregion                
                 
@@ -798,7 +799,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public VEVENT Find(string key)
         {
             var dry = this.redis.As<VEVENT>().GetValue(key);
-            return (dry != null) ? this.Hydrate(dry) : dry;
+            return dry;
         }
 
         public IEnumerable<VEVENT> Find(IEnumerable<string> keys, int? skip = null)
@@ -812,7 +813,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     eclient.GetValues(dkeys).Skip(skip.Value).Take(take.Value)
                     : eclient.GetValues(dkeys);
             }
-            return (!dry.NullOrEmpty()) ? this.Hydrate(dry) : dry;
+            return dry;
         }
 
         public bool ContainsKey(string key)

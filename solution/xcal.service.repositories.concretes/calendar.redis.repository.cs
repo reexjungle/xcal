@@ -83,7 +83,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 var revents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => x.CalendarId == full.Id);
                 if (!revents.NullOrEmpty())
                 {
-                    full.Components.AddRangeComplement(this.EventRepository.Find(revents.Select(x => x.EventId).ToList()));
+                    var events = this.EventRepository.Find(revents.Select(x => x.EventId).ToList());
+                    full.Components.AddRangeComplement(this.EventRepository.Hydrate(events));
                 }
             }
             return full ?? dry;
@@ -94,24 +95,24 @@ namespace reexmonkey.xcal.service.repositories.concretes
             List<VCALENDAR> full = null;
             var cclient = this.redis.As<VCALENDAR>();
             var keys = dry.Select(x => x.Id).Distinct().ToList();
+            
             full = cclient.GetValues(keys);
-
             if (!full.NullOrEmpty())
             {
                 var revents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => keys.Contains(x.CalendarId));
-                var events = (!revents.Empty()) ? this.EventRepository.Find(revents.Select(x => x.EventId).ToList()) : null;
-                full.ForEach(x =>
+                if(!revents.NullOrEmpty())
                 {
-                    if (!events.NullOrEmpty())
-                    {
-                        var xevents = from y in events
-                                      join r in revents on y.Id equals r.EventId
-                                      join c in full on r.CalendarId equals c.Id
-                                      where c.Id == x.Id
-                                      select y;
-                        if (!xevents.NullOrEmpty()) x.Components.AddRangeComplement(xevents);
-                    }
-                });
+                   var events = this.EventRepository.Hydrate(this.EventRepository.Find(revents.Select(x => x.EventId))).ToList();
+                   full.ForEach(x =>
+                   {
+                       var xevents = from y in events
+                                     join r in revents on y.Id equals r.EventId
+                                     join c in full on r.CalendarId equals c.Id
+                                     where c.Id == x.Id
+                                     select y;
+                       if (!xevents.NullOrEmpty()) x.Components.AddRangeComplement(xevents);
+                   });
+                }
             }
             return full ?? dry;
         }
@@ -128,8 +129,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public VCALENDAR Find(string key)
         {
-            var dry = this.redis.As<VCALENDAR>().GetValue(key);
-            return (dry != null) ? this.Hydrate(dry) : dry;
+            return this.redis.As<VCALENDAR>().GetValue(key);
         }
 
         public IEnumerable<VCALENDAR> Find(IEnumerable<string> keys, int? skip = null)
@@ -143,7 +143,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     cclient.GetValues(dkeys).Skip(skip.Value).Take(take.Value)
                     : cclient.GetValues(dkeys);
             }
-            return (!dry.NullOrEmpty()) ? this.Hydrate(dry) : dry;
+            return dry;
         }
 
         public IEnumerable<VCALENDAR> Get(int? skip = null)
@@ -157,7 +157,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     : cclient.GetAll();
             }
             catch (Exception) { throw; }
-            return (!dry.NullOrEmpty()) ? this.Hydrate(dry) : dry;
+            return dry;
         }
 
         public void Save(VCALENDAR entity)
@@ -385,15 +385,31 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 : !matches.NullOrEmpty();
         }
 
+        public VCALENDAR Dehydrate(VCALENDAR full)
+        {
+            var dry = full;
+            try
+            {
+                if(!dry.Components.NullOrEmpty()) dry.Components.Clear();
+            }
+            catch (ArgumentNullException) { throw; }
+            return dry;
+        }
+
         public IEnumerable<VCALENDAR> Dehydrate(IEnumerable<VCALENDAR> full)
         {
             IEnumerable<VCALENDAR> dry = null;
-            dry = full.Select(x => 
+            try
             {
-                if(!x.Components.NullOrEmpty()) x.Components.Clear();
-                return x;
-            });
+                dry = full.Select(x => 
+                {
+                    if (!x.Components.NullOrEmpty()) x.Components.Clear();
+                    return x;
+                });
+            }
+            catch (ArgumentNullException) { throw; }
             return dry ?? full;
         }
+
     }
 }

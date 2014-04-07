@@ -19,7 +19,7 @@ namespace reexmonkey.crosscut.io.concretes
         public static TValue Clone<TValue>(this TValue value)
             where TValue: new()
         {
-            if (value == null) throw new ArgumentNullException("value", "Null argument!");
+            if (value == null) throw new ArgumentNullException("value");
 
             object copy = null;
             using (var ms = new MemoryStream())

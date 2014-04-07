@@ -25,11 +25,19 @@ namespace reexmonkey.xcal.service.repositories.contracts
         VCALENDAR Hydrate(VCALENDAR dry);
 
         /// <summary>
-        /// Populates calendar entities with details from respective constituent entities
+        /// Populates respective calendars with aggregate entities
         /// </summary>
         /// <param name="dry">The sparse calendar entities to be populated</param>
         /// <returns>Populated calendar entities</returns>
         IEnumerable<VCALENDAR> Hydrate(IEnumerable<VCALENDAR> dry);
+
+
+        /// <summary>
+        /// Depopulates aggregate entities from a calendar 
+        /// </summary>
+        /// <param name="full">The calendar to be depopulated</param>
+        /// <returns>A depopulated calendar</returns>
+        VCALENDAR Dehydrate(VCALENDAR full);
 
         IEnumerable<VCALENDAR> Dehydrate(IEnumerable<VCALENDAR> full);
     }
