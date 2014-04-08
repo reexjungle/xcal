@@ -113,7 +113,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    public class REL_EVENTS_RRULES: IEquatable<REL_EVENTS_RRULES>
+    public class REL_EVENTS_RECURS: IEquatable<REL_EVENTS_RECURS>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-recurrence relation
@@ -133,7 +133,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         [ForeignKey(typeof(RECUR), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string RecurrenceRuleId { get; set; }
 
-        public bool Equals(REL_EVENTS_RRULES other)
+        public bool Equals(REL_EVENTS_RECURS other)
         {
             if (other == null) return false;
             return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
@@ -143,7 +143,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            var rel = obj as REL_EVENTS_RRULES;
+            var rel = obj as REL_EVENTS_RECURS;
             if (rel == null) return false;
             return this.Equals(rel);
         }
@@ -153,13 +153,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return this.EventId.GetHashCode() ^ this.RecurrenceRuleId.GetHashCode();
         }
 
-        public static bool operator ==(REL_EVENTS_RRULES x, REL_EVENTS_RRULES y)
+        public static bool operator ==(REL_EVENTS_RECURS x, REL_EVENTS_RECURS y)
         {
             if ((object)x == null || (object)y == null) return object.Equals(x, y);
             return x.Equals(y);
         }
 
-        public static bool operator !=(REL_EVENTS_RRULES x, REL_EVENTS_RRULES y)
+        public static bool operator !=(REL_EVENTS_RECURS x, REL_EVENTS_RECURS y)
         {
             if ((object)x == null || y == (object)null) return !object.Equals(x, y);
             return !x.Equals(y);
