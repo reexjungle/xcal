@@ -115,15 +115,6 @@ namespace reexmonkey.xcal.application.server.web.local.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("relational")]
-        public global::reexmonkey.crosscut.goodies.concretes.DataProviderType db_provider_type {
-            get {
-                return ((global::reexmonkey.crosscut.goodies.concretes.DataProviderType)(this["db_provider_type"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("xcal_local_db")]
         public string main_db_name {
             get {
@@ -175,6 +166,15 @@ namespace reexmonkey.xcal.application.server.web.local.Properties {
         public string nlog_db_name {
             get {
                 return ((string)(this["nlog_db_name"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("nosql")]
+        public global::reexmonkey.crosscut.goodies.concretes.StorageType primary_storage {
+            get {
+                return ((global::reexmonkey.crosscut.goodies.concretes.StorageType)(this["primary_storage"]));
             }
         }
     }

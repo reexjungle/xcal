@@ -88,7 +88,7 @@ namespace reexmonkey.xcal.application.server.web.local
             #region inject core repositories and create data sources on first run
 
 
-            if (Properties.Settings.Default.db_provider_type == DataProviderType.relational)
+            if (Properties.Settings.Default.primary_storage == StorageType.rdbms)
             {
                 #region inject ormlite repositories
 
@@ -258,7 +258,7 @@ namespace reexmonkey.xcal.application.server.web.local
                 #endregion
 
             }
-            else if (Properties.Settings.Default.db_provider_type == DataProviderType.nosql)
+            else if (Properties.Settings.Default.primary_storage == StorageType.nosql)
             {
                 #region inject redis repositories
 

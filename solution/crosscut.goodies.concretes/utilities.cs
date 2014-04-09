@@ -9,9 +9,9 @@ using System.Diagnostics;
 
 namespace reexmonkey.crosscut.goodies.concretes
 {
-    public enum DataProviderType
+    public enum StorageType
     { 
-        relational = 0x1,
+        rdbms = 0x1,
         nosql = 0x2,
         unknown = 0xf
     }
