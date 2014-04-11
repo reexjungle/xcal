@@ -548,8 +548,8 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             sb.Append("DESCRIPTION");
             if (this.AlternativeText != null) sb.AppendFormat(";{0}", this.AlternativeText);
-            if (!this.Language.Equals(string.Empty)) sb.AppendFormat(";{0}", this.Language);
-            sb.AppendFormat(":{0}", this.Text).AppendLine();
+            if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
+            sb.AppendFormat(":{0}", this.Text);
             return sb.ToString();
         }
 
@@ -2592,7 +2592,7 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("ORGANIZER");
-            if (this.CN != null) sb.AppendFormat(";{0}", this.CN);
+            if (this.CN != null) sb.AppendFormat(";CN={0}", this.CN);
             if (this.Directory != null) sb.AppendFormat(";{0}", this.Directory);
             if (this.SentBy != null) sb.AppendFormat(";SENT-BY=\"mailto:{0}\"", this.SentBy);
             if (this.Language != null) sb.AppendFormat(";LANGUAGE={0}", this.Language);

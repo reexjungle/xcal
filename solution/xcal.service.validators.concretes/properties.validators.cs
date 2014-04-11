@@ -58,6 +58,14 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
+    public class AttachhmentValidator: AbstractValidator<IATTACH>
+    {
+        public AttachhmentValidator()
+        {
+            RuleFor(x => x.FormatType).SetValidator(new FormatTypeValidator()).When(x => x.FormatType != null);
+        }
+    }
+
     public class AttachmentBinaryValidator: AbstractValidator<ATTACH_BINARY>
     {
         public AttachmentBinaryValidator()

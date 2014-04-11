@@ -79,10 +79,51 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="event.tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\crosscut.essentials.concretes\crosscut.essentials.concretes.csproj">
+      <Project>{eedf1367-a0fc-400a-a649-716261252b9e}</Project>
+      <Name>crosscut.essentials.concretes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\crosscut.essentials.contracts\crosscut.essentials.contracts.csproj">
+      <Project>{0188be5c-bafa-4fac-b068-11dcf7cd918e}</Project>
+      <Name>crosscut.essentials.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.domain.contracts\xcal.domain.contracts.csproj">
+      <Project>{5cc7e3d9-702b-45a3-a413-a07d010c2651}</Project>
+      <Name>xcal.domain.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.domain.models\xcal.domain.models.csproj">
+      <Project>{5b708e08-1f69-4fde-9d99-afa3784a49d7}</Project>
+      <Name>xcal.domain.models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.domain.operations\xcal.domain.operations.csproj">
+      <Project>{06f6dd18-fe2b-47d1-9639-7926f29fb3a5}</Project>
+      <Name>xcal.domain.operations</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.service.interfaces.concretes\xcal.service.interfaces.concretes.csproj">
+      <Project>{0b922294-6a3f-4232-a150-cac6bfc7bcfd}</Project>
+      <Name>xcal.service.interfaces.concretes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.service.interfaces.contracts\xcal.service.interfaces.contracts.csproj">
+      <Project>{0f139102-92d0-4d11-8a18-49757609ccbf}</Project>
+      <Name>xcal.service.interfaces.contracts</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

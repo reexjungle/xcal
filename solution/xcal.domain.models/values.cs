@@ -527,8 +527,10 @@ namespace reexmonkey.xcal.domain.models
         {
             if (this.tformat == TimeFormat.Local) return string.Format("{0:D4}{1:D2}{2:D2}T{3:D2}{4:D2}{5:D2}", this.fullyear, this.month, this.mday, this.hour, this.minute, this.second);
 
-            else if (this.tformat == TimeFormat.Utc) return string.Format("0:D4}{1:D2}{2:D2}T{3:D2}{4:D2}{5:D2}Z", this.fullyear, this.month, this.mday, this.hour, this.minute, this.second);
-            else return string.Format("{0}:{1:D4}{2:D2}{3:D2}T{4:D2}{5:D2}{6:D2}", this.fullyear, this.month, this.mday, this.tzid, this.hour, this.minute, this.second); 
+            else if (this.tformat == TimeFormat.Utc) 
+                return string.Format("{0:D4}{1:D2}{2:D2}T{3:D2}{4:D2}{5:D2}Z", this.fullyear, this.month, this.mday, this.hour, this.minute, this.second);
+            else 
+                return string.Format("{0}:{1:D4}{2:D2}{3:D2}T{4:D2}{5:D2}{6:D2}", this.tzid, this.fullyear, this.month, this.mday, this.hour, this.minute, this.second); 
         }
 
         public bool Equals(DATE_TIME other)

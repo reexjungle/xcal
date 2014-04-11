@@ -41,6 +41,7 @@ namespace reexmonkey.xcal.application.server.web.local
                     { "Access-Control-Allow-Headers", "Content-Type" },
                 },
                 DebugMode = true, //Show StackTraces in service responses during development
+                ReturnsInnerException = true
             });
 
             #endregion
@@ -85,7 +86,121 @@ namespace reexmonkey.xcal.application.server.web.local
 
             #endregion
 
-            #region inject core repositories and create data sources on first run
+            #region inject rdbms provider
+
+            container.Register<IOrmLiteDialectProvider>(MySqlDialect.Provider);
+            container.Register<IDbConnectionFactory>(new OrmLiteConnectionFactory(
+                Properties.Settings.Default.mysql_server,
+                container.Resolve<IOrmLiteDialectProvider>()));
+
+            #endregion
+
+            #region Create databases and corresponding tables
+
+            var dbfactory = container.Resolve<IDbConnectionFactory>();
+
+            #region create logger databases and tables
+
+            try
+            {
+                dbfactory.Run(x =>
+                {
+                    //create NLog database and table
+                    if (string.IsNullOrEmpty(x.Database))
+                    {
+                        x.CreateMySqlDatabase(Properties.Settings.Default.nlog_db_name, Properties.Settings.Default.overwrite_db);
+                        x.ChangeDatabase(Properties.Settings.Default.nlog_db_name);
+
+                    }
+                    else if (!x.Database.Equals(Properties.Settings.Default.nlog_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.nlog_db_name);
+                    x.CreateTableIfNotExists<NlogTable>();
+
+
+                    //create elmah database, table and stored procedures
+                    if (string.IsNullOrEmpty(x.Database))
+                    {
+                        x.CreateMySqlDatabase(Properties.Settings.Default.elmah_db_name, Properties.Settings.Default.overwrite_db);
+                        x.ChangeDatabase(Properties.Settings.Default.elmah_db_name);
+
+                    }
+                    else if (!x.Database.Equals(Properties.Settings.Default.elmah_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.elmah_db_name);
+
+
+                    //execute initialization script on first run
+                    if (!x.TableExists(Properties.Settings.Default.elmah_error_table))
+                    {
+                        //execute creation of stored procedures
+                        x.ExecuteSql(Properties.Resources.elmah_mysql_CreateLogTable);
+                        x.ExecuteSql(Properties.Resources.elmah_mysql_GetErrorXml);
+                        x.ExecuteSql(Properties.Resources.elmah_mysql_GetErrorsXml);
+                        x.ExecuteSql(Properties.Resources.elmah_mysql_LogError);
+
+                        //call "create table" stored procedure
+                        x.Exec(cmd =>
+                        {
+                            cmd.CommandText = "elmah_CreateLogTable";
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.ExecuteNonQuery();
+                        });
+                    }
+                });
+
+            }
+            catch (MySql.Data.MySqlClient.MySqlException ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+            }
+            catch (NLog.NLogRuntimeException ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+            }
+            catch (InvalidOperationException ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+
+            #endregion
+
+            #region  create main database and tables
+
+            try
+            {
+                dbfactory.Run(x =>
+                {
+                    if (string.IsNullOrEmpty(x.Database))
+                    {
+                        x.CreateMySqlDatabase(Properties.Settings.Default.main_db_name, Properties.Settings.Default.overwrite_db);
+                        x.ChangeDatabase(Properties.Settings.Default.main_db_name);
+
+                    }
+                    else if (!x.Database.Equals(Properties.Settings.Default.main_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.main_db_name);
+
+                    //Create core tables 
+                    x.CreateTables(false, typeof(VCALENDAR), typeof(VEVENT), typeof(AUDIO_ALARM), typeof(DISPLAY_ALARM), typeof(EMAIL_ALARM), typeof(ORGANIZER), typeof(ATTENDEE), typeof(COMMENT), typeof(RELATEDTO), typeof(ATTACH_BINARY), typeof(ATTACH_URI), typeof(CONTACT), typeof(RDATE), typeof(EXDATE), typeof(RECUR), typeof(RECURRENCE_ID), typeof(REQUEST_STATUS), typeof(RESOURCES));
+
+                    //Create 3NF relational tables
+                    x.CreateTables(false, typeof(REL_CALENDARS_EVENTS), typeof(REL_EVENTS_ATTACHBINS), typeof(REL_EVENTS_ATTACHURIS), typeof(REL_EVENTS_ATTENDEES), typeof(REL_EVENTS_AUDIO_ALARMS), typeof(REL_EVENTS_COMMENTS), typeof(REL_EVENTS_CONTACTS), typeof(REL_EVENTS_DISPLAY_ALARMS), typeof(REL_EVENTS_EMAIL_ALARMS), typeof(REL_EVENTS_EXDATES), typeof(REL_EVENTS_ORGANIZERS), typeof(REL_EVENTS_RDATES), typeof(REL_EVENTS_RECURRENCE_IDS), typeof(REL_EVENTS_RELATEDTOS), typeof(REL_EVENTS_REQSTATS), typeof(REL_EVENTS_RESOURCES), typeof(REL_EVENTS_RECURS), typeof(RELS_EALARMS_ATTACHBINS), typeof(RELS_EALARMS_ATTACHURIS), typeof(RELS_EALARMS_ATTENDEES));
+                });
+
+            }
+            catch (MySqlException ex)
+            {
+                container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString());
+            }
+            catch (Exception ex)
+            {
+                container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString(), ex);
+            }
+
+            #endregion
+
+            #endregion
+
+            #region inject core repositories and create primary data sources on first run
 
 
             if (Properties.Settings.Default.primary_storage == StorageType.rdbms)
@@ -94,7 +209,7 @@ namespace reexmonkey.xcal.application.server.web.local
 
                 container.Register<ICalendarRepository>(x => new CalendarOrmLiteRepository
                 {
-                    KeyGenerator = x.Resolve<IFPIKeyGenerator>(),
+                    KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
                     EventRepository = x.Resolve<IEventRepository>(),
                     Take = Properties.Settings.Default.calendars_take
@@ -143,120 +258,6 @@ namespace reexmonkey.xcal.application.server.web.local
 
                 #endregion
 
-                #region inject rdbms provider
-
-                container.Register<IOrmLiteDialectProvider>(MySqlDialect.Provider);
-                container.Register<IDbConnectionFactory>(new OrmLiteConnectionFactory(
-                    Properties.Settings.Default.mysql_server,
-                    container.Resolve<IOrmLiteDialectProvider>()));
-
-                #endregion
-
-                #region Create databases and corresponding tables
-
-                var dbfactory = container.Resolve<IDbConnectionFactory>();
-
-                #region create logger databases and tables
-
-                try
-                {
-                    dbfactory.Run(x =>
-                    {
-                        //create NLog database and table
-                        if (string.IsNullOrEmpty(x.Database))
-                        {
-                            x.CreateMySqlDatabase(Properties.Settings.Default.nlog_db_name, Properties.Settings.Default.overwrite_db);
-                            x.ChangeDatabase(Properties.Settings.Default.nlog_db_name);
-
-                        }
-                        else if (!x.Database.Equals(Properties.Settings.Default.nlog_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.nlog_db_name);
-                        x.CreateTableIfNotExists<NlogTable>();
-
-
-                        //create elmah database, table and stored procedures
-                        if (string.IsNullOrEmpty(x.Database))
-                        {
-                            x.CreateMySqlDatabase(Properties.Settings.Default.elmah_db_name, Properties.Settings.Default.overwrite_db);
-                            x.ChangeDatabase(Properties.Settings.Default.elmah_db_name);
-
-                        }
-                        else if (!x.Database.Equals(Properties.Settings.Default.elmah_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.elmah_db_name);
-
-                       
-                        //execute initialization script on first run
-                        if (!x.TableExists(Properties.Settings.Default.elmah_error_table))
-                        {
-                            //execute creation of stored procedures
-                            x.ExecuteSql(Properties.Resources.elmah_mysql_CreateLogTable);
-                            x.ExecuteSql(Properties.Resources.elmah_mysql_GetErrorXml);
-                            x.ExecuteSql(Properties.Resources.elmah_mysql_GetErrorsXml);
-                            x.ExecuteSql(Properties.Resources.elmah_mysql_LogError);
-
-                            //call "create table" stored procedure
-                            x.Exec(cmd => 
-                            {
-                                cmd.CommandText = "elmah_CreateLogTable";
-                                cmd.CommandType = CommandType.StoredProcedure;
-                                cmd.ExecuteNonQuery();
-                            });
-                        }
-                    });
-
-                }
-                catch (MySql.Data.MySqlClient.MySqlException ex)
-                {
-                    System.Diagnostics.Debug.WriteLine(ex.ToString());
-                }
-                catch (NLog.NLogRuntimeException ex)
-                {
-                    System.Diagnostics.Debug.WriteLine(ex.ToString());
-                }
-                catch (InvalidOperationException ex)
-                {
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
-                } 
-                
-                #endregion
-
-                #region  create main database and tables
-
-                try
-                {
-                    dbfactory.Run(x =>
-                    {
-                        if (string.IsNullOrEmpty(x.Database))
-                        {
-                            x.CreateMySqlDatabase(Properties.Settings.Default.main_db_name, Properties.Settings.Default.overwrite_db);
-                            x.ChangeDatabase(Properties.Settings.Default.main_db_name);
-
-                        }
-                        else if (!x.Database.Equals(Properties.Settings.Default.main_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.main_db_name);
-
-                        //Create core tables 
-                        x.CreateTables(false, typeof(VCALENDAR), typeof(VEVENT), typeof(AUDIO_ALARM), typeof(DISPLAY_ALARM), typeof(EMAIL_ALARM), typeof(ORGANIZER), typeof(ATTENDEE), typeof(COMMENT), typeof(RELATEDTO), typeof(ATTACH_BINARY), typeof(ATTACH_URI), typeof(CONTACT), typeof(RDATE), typeof(EXDATE), typeof(RECUR), typeof(RECURRENCE_ID), typeof(REQUEST_STATUS), typeof(RESOURCES));
-
-                        //Create 3NF relational tables
-                        x.CreateTables(false, typeof(REL_CALENDARS_EVENTS), typeof(REL_EVENTS_ATTACHBINS), typeof(REL_EVENTS_ATTACHURIS), typeof(REL_EVENTS_ATTENDEES), typeof(REL_EVENTS_AUDIO_ALARMS), typeof(REL_EVENTS_COMMENTS), typeof(REL_EVENTS_CONTACTS), typeof(REL_EVENTS_DISPLAY_ALARMS), typeof(REL_EVENTS_EMAIL_ALARMS), typeof(REL_EVENTS_EXDATES), typeof(REL_EVENTS_ORGANIZERS), typeof(REL_EVENTS_RDATES), typeof(REL_EVENTS_RECURRENCE_IDS), typeof(REL_EVENTS_RELATEDTOS), typeof(REL_EVENTS_REQSTATS), typeof(REL_EVENTS_RESOURCES), typeof(REL_EVENTS_RECURS), typeof(RELS_EALARMS_ATTACHBINS), typeof(RELS_EALARMS_ATTACHURIS), typeof(RELS_EALARMS_ATTENDEES));
-                    });
-
-                }
-                catch (MySqlException ex)
-                {
-                    container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString());
-                }
-                catch (Exception ex)
-                {
-                    container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString(), ex);
-                } 
-
-                #endregion
-       
-                #endregion
-
             }
             else if (Properties.Settings.Default.primary_storage == StorageType.nosql)
             {
@@ -264,7 +265,7 @@ namespace reexmonkey.xcal.application.server.web.local
 
                 container.Register<ICalendarRepository>(x => new CalendarRedisRepository
                 {
-                    KeyGenerator = x.Resolve<IFPIKeyGenerator>(),
+                    KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     RedisClientsManager = container.Resolve<IRedisClientsManager>(),
                     EventRepository = x.Resolve<IEventRepository>(),
                     Take = Properties.Settings.Default.calendars_take
@@ -306,8 +307,8 @@ namespace reexmonkey.xcal.application.server.web.local
                 #region inject redis provider
 
                 //register cache client to redis server running on linux. 
-                //NOTE: Redis Server must already be installed on the remote machine and must be running
-                container.Register<IRedisClientsManager>(x => new PooledRedisClientManager(Properties.Settings.Default.redis_server));
+                //NOTE: Redis Server must already be installed on the local machine and must be running
+                container.Register<IRedisClientsManager>(x => new BasicRedisClientManager(Properties.Settings.Default.redis_server));
 
 
                 #endregion

@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="reexmonkey.xcal.application.server.web.dev.test.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="test_server" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://localhost:3105/</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

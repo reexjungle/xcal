@@ -1546,8 +1546,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
             #endregion
 
-            
-        
         }
 
         public VEVENT Find(string key)

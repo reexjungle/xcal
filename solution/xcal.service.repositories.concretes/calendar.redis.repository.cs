@@ -63,7 +63,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public CalendarRedisRepository(IRedisClientsManager manager, IEventRepository eventrepository)
         {
             this.EventRepository = eventrepository;
-            this.manager = manager;
+            this.RedisClientsManager = manager;
         }
 
         public CalendarRedisRepository(IRedisClient client, IEventRepository eventrepository)
@@ -136,7 +136,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             IEnumerable<VCALENDAR> dry = null;
             var cclient = this.redis.As<VCALENDAR>();
-            var dkeys = keys.Distinct().ToList();
+            var dkeys = keys.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
             if (cclient.GetAllKeys().Intersect(dkeys).Count() == dkeys.Count())
             {
                 dry = (skip != null) ?
