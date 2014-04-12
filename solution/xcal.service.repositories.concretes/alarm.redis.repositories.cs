@@ -14,7 +14,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
     public class AudioAlarmRedisRepository: IAudioAlarmRedisRepository
     {
         private IRedisClientsManager manager;
-        private IEventRepository eventrepository;
         private int? take = null;
         private IKeyGenerator<string> keygen;
 
@@ -44,6 +43,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             {
                 if (value == null) throw new ArgumentNullException("RedisClientsManager");
                 this.manager = value;
+                this.client = manager.GetClient();
             }
         }
 
@@ -246,7 +246,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
     public class DisplayAlarmRedisRepository: IDisplayAlarmRedisRepository
     {
         private IRedisClientsManager manager;
-        private IEventRepository eventrepository;
         private int? take = null;
         private IKeyGenerator<string> keygen;
 
@@ -276,6 +275,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             {
                 if (value == null) throw new ArgumentNullException("RedisClientsManager");
                 this.manager = value;
+                this.client = manager.GetClient();
             }
         }
 
@@ -480,7 +480,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
     {
 
         private IRedisClientsManager manager;
-        private IEventRepository eventrepository;
         private int? take = null;
         private IKeyGenerator<string> keygen;
 
@@ -510,6 +509,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             {
                 if (value == null) throw new ArgumentNullException("RedisClientsManager");
                 this.manager = value;
+                this.client = manager.GetClient();
             }
         }
 

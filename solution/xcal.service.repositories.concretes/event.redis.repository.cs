@@ -36,6 +36,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             {
                 if (value == null) throw new ArgumentNullException("RedisClientsManager");
                 this.manager = value;
+                this.client = manager.GetClient();
             }
         }
 
@@ -44,7 +45,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             get { return this.take; }
             set 
             {
-                if (take == null) throw new ArgumentNullException("Take");
+                if (value == null) throw new ArgumentNullException("Take");
                 this.take = value;
             }
         }
@@ -75,7 +76,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             set
             {
                 if (value == null) throw new ArgumentNullException("EmailAlarmRepository");
-                this.EmailAlarmRepository = value;
+                this.ealarmrepository = value;
             }
         }
 
@@ -95,7 +96,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
             int? take = null)
         {
             this.RedisClientsManager = manager;
-            this.client = manager.GetClient();
             this.Take = take;
             this.AudioAlarmRepository = aalarmrepository;
             this.DisplayAlarmRepository = dalarmrepository;

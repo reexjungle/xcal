@@ -41,7 +41,7 @@ namespace reexmonkey.xcal.application.server.web.local
                     { "Access-Control-Allow-Headers", "Content-Type" },
                 },
                 DebugMode = true, //Show StackTraces in service responses during development
-                ReturnsInnerException = true
+                ReturnsInnerException = false
             });
 
             #endregion
@@ -76,13 +76,13 @@ namespace reexmonkey.xcal.application.server.web.local
             #region inject key generators
 
             container.Register<IGuidKeyGenerator>(new GuidKeyGenerator());
-            container.Register<IFPIKeyGenerator>(x => new FPIKeyGenerator<string>(new GuidKeyGenerator())
-            {
-                Owner = Properties.Settings.Default.fpiOwner,
-                LanguageId = Properties.Settings.Default.fpiLanguageId,
-                Description = Properties.Settings.Default.fpiDescription,
-                Authority = Properties.Settings.Default.fpiAuthority
-            });
+            //container.Register<IFPIKeyGenerator>(x => new FPIKeyGenerator<string>(new GuidKeyGenerator())
+            //{
+            //    Owner = Properties.Settings.Default.fpiOwner,
+            //    LanguageId = Properties.Settings.Default.fpiLanguageId,
+            //    Description = Properties.Settings.Default.fpiDescription,
+            //    Authority = Properties.Settings.Default.fpiAuthority
+            //});
 
             #endregion
 
@@ -252,9 +252,9 @@ namespace reexmonkey.xcal.application.server.web.local
 
                 //register cache client to redis server running on linux. 
                 //NOTE: Redis Server must already be installed on the remote machine and must be running
-                container.Register<IRedisClientsManager>(x => new PooledRedisClientManager(Properties.Settings.Default.redis_server));
-                var cclient = container.Resolve<IRedisClientsManager>().GetCacheClient();
-                if (cclient != null) container.Register<ICacheClient>(x => cclient);
+                container.Register<IRedisClientsManager>(x => new BasicRedisClientManager(Properties.Settings.Default.redis_server));
+                var cachedclient = container.Resolve<IRedisClientsManager>().GetCacheClient();
+                if (cachedclient != null) container.Register<ICacheClient>(x => cachedclient);
 
                 #endregion
 

@@ -17,16 +17,23 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
 {
     public class EventService: Service, IEventService
     {
-        private ILog logger;
+        private ILogFactory logfactory;
         private ICalendarRepository repository;
 
-        public ILog Logger 
+        private ILog log = null;
+        private ILog logger
         {
-            get { return this.logger; } 
+            get { return (log != null)? this.log: this.logfactory.GetLogger(this.GetType()); }
+        }
+
+        public ILogFactory LogFactory 
+        {
+            get { return this.logfactory; } 
             set
             {
                 if (value == null) throw new ArgumentNullException("Logger");
-                this.logger = value;
+                this.logfactory = value;
+                this.log = logfactory.GetLogger(this.GetType());
             }
         }
         public ICalendarRepository CalendarRepository
@@ -39,12 +46,17 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
             }
         }
 
-        public EventService() : base() { }
-        public EventService(ICalendarRepository repository, ILog logger)
+        public EventService() : base() 
+        {
+            this.CalendarRepository = this.TryResolve<ICalendarRepository>();
+            this.LogFactory = this.TryResolve<ILogFactory>();
+        }
+
+        public EventService(ICalendarRepository repository, ILogFactory logger)
             : base()
         {
             this.CalendarRepository = repository;
-            this.Logger = logger;
+            this.LogFactory = logger;
         }
 
         #region VEVENT services based on RFC 5546
@@ -71,12 +83,12 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
             VCALENDAR calendar = null;
             try
             {
-                calendar = (this.repository.Find(request.ProductId)) ?? 
+                calendar = (this.repository.Find(request.ProductId)) ??
                     new VCALENDAR { ProdId = request.ProductId, Method = METHOD.REQUEST };
 
                 var source = request.Events.FirstOrDefault();
-                this.repository.EventRepository.Patch(source, 
-                    x => new { x.Start, x.End, x.Description, x.Location, x.RecurrenceRule, x.Sequence, x.LastModified}, 
+                this.repository.EventRepository.Patch(source,
+                    x => new { x.Start, x.End, x.Description, x.Location, x.RecurrenceRule, x.Sequence, x.LastModified },
                     p => p.Uid == source.Uid);
 
                 calendar.Components.AddRangeComplement(request.Events);
@@ -97,7 +109,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
 
                 var patch = request.Events.FirstOrDefault();
                 this.repository.EventRepository.Patch(patch,
-                    x => new {x.Summary, x.Geo, x.Priority, x.Transparency, x.Status, x.Attendees, x.Attachments, x.Categories, x.Classification, x.Comments, x.Contacts, x.Sequence, x.LastModified },
+                    x => new { x.Summary, x.Geo, x.Priority, x.Transparency, x.Status, x.Attendees, x.Attachments, x.Categories, x.Classification, x.Comments, x.Contacts, x.Sequence, x.LastModified },
                     p => p.Uid == patch.Uid);
 
                 calendar.Components.AddRangeComplement(request.Events);
