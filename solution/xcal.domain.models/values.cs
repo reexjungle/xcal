@@ -624,11 +624,12 @@ namespace reexmonkey.xcal.domain.models
             var duration = new DURATION();
             if (start == end) return duration;
 
-            if (start < end) 
-            { 
+            if (start < end)
+            {
                 x = start; y = end;
-                duration.Sign = SignType.Negative; 
+                duration.Sign = SignType.Negative;
             }
+            else duration.Sign = SignType.Positive;
 
             if (x.SECOND < y.SECOND)
             {
@@ -985,7 +986,10 @@ namespace reexmonkey.xcal.domain.models
         public uint WEEKS
         {
             get { return weeks; }
-            set { this.weeks = value; }
+            set 
+            { 
+                this.weeks = value; 
+            }
         }
 
         [DataMember]
@@ -1031,6 +1035,16 @@ namespace reexmonkey.xcal.domain.models
             this.minutes = 0;
             this.seconds = 0;
             this.sign = SignType.Neutral;
+        }
+
+        public DURATION(IDURATION duration)
+        {
+            this.weeks = duration.WEEKS;
+            this.days = duration.DAYS;
+            this.hours = duration.HOURS;
+            this.minutes = duration.MINUTES;
+            this.seconds = duration.SECONDS;
+            this.sign = duration.Sign;
         }
 
         public DURATION(uint weeks, uint days = 0, uint hours = 0, uint minutes = 0, uint seconds = 0, SignType sign = SignType.Positive)
@@ -1972,9 +1986,9 @@ namespace reexmonkey.xcal.domain.models
 
         public UTC_OFFSET()
         {
-            this.HOUR = 0u;
-            this.MINUTE = 0u;
-            this.SECOND = 1;
+            this.hour = 0u;
+            this.minute = 0u;
+            this.second = 1u;
             this.Sign = SignType.Positive;
         }
 
@@ -1982,6 +1996,7 @@ namespace reexmonkey.xcal.domain.models
         {
             this.HOUR = hour;
             this.MINUTE = minute;
+            this.SECOND = second;
             this.Sign = sign;
         }
 
@@ -1989,7 +2004,7 @@ namespace reexmonkey.xcal.domain.models
         {
             this.HOUR = (uint)hours;
             this.MINUTE = (uint)minutes;
-            this.SECOND = (uint)hours;
+            this.SECOND = (uint)seconds;
 
             if (hours > 0)
             {

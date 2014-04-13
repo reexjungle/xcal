@@ -47,6 +47,7 @@ namespace reexmonkey.xcal.domain.models
         private string uid;
         private IDATE_TIME start;
         private IDATE_TIME end;
+        private IDURATION duration;
 
         /// <summary>
         /// Gets or sets the unique identifier of the event. It is synonymous to the &quot;Uid&quot; property of the event. 
@@ -153,11 +154,29 @@ namespace reexmonkey.xcal.domain.models
         public IDATE_TIME End
         {
             get { return this.end; }
-            set { this.end = value; }
+            set 
+            { 
+                this.end = value;
+                if (this.start != null && this.end != null)
+                {
+                    this.duration = new DATE_TIME(this.end) - new DATE_TIME(this.start);
+                }
+            }
         }
 
         [DataMember]
-        public IDURATION Duration { get; set; }
+        public IDURATION Duration 
+        {
+            get { return this.duration; } 
+            set
+            {
+                this.duration = value;
+                if(this.start != null && this.duration != null)
+                {
+                    this.end = new DATE_TIME(this.start) + new DURATION(this.duration);
+                }
+            }
+        }
 
         [DataMember]
         [Ignore]
@@ -213,6 +232,8 @@ namespace reexmonkey.xcal.domain.models
         public VEVENT()
         {
             this.Datestamp = new DATE_TIME(DateTimeOffset.Now);
+            this.Created = new DATE_TIME(DateTimeOffset.Now);
+            this.LastModified = new DATE_TIME(DateTimeOffset.Now);
         }
 
         public VEVENT(IDATE_TIME dtstamp, string uid, IDATE_TIME dtstart,  IORGANIZER organizer = null, ITEXT location = null, 
@@ -346,8 +367,8 @@ namespace reexmonkey.xcal.domain.models
             if (this.Priority != null) sb.Append(this.Priority).AppendLine();
             sb.AppendFormat("SEQUENCE:{0}", this.Sequence).AppendLine();
             if (this.Status != STATUS.UNKNOWN) sb.AppendFormat("STATUS:{0}",this.Status).AppendLine();
-            if (this.Summary != null) sb.AppendFormat("SUMMARY:{0}", this.Summary).AppendLine();
-            if (this.Transparency != TRANSP.UNKNOWN) sb.AppendFormat("TRANSP:{0}", this.Transparency);
+            if (this.Summary != null) sb.AppendFormat("{0}", this.Summary).AppendLine();
+            if (this.Transparency != TRANSP.UNKNOWN) sb.AppendFormat("TRANSP:{0}", this.Transparency).AppendLine();
             if (this.Url != null) sb.Append(this.Url).AppendLine();
             if (this.RecurrenceId != null) sb.Append(this.RecurrenceId).AppendLine();
             if (this.RecurrenceRule != null) sb.AppendFormat("RRULE:{0}", this.RecurrenceRule).AppendLine();

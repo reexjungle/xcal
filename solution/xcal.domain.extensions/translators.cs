@@ -269,6 +269,8 @@ namespace reexmonkey.xcal.domain.extensions
             datetime.MINUTE = (uint)value.Minute;
             datetime.SECOND = (uint)value.Second;
             if (value.Kind == DateTimeKind.Utc) datetime.TimeFormat = TimeFormat.Utc;
+            else if (value.Kind == DateTimeKind.Local) datetime.TimeFormat = TimeFormat.Local;
+            else datetime.TimeFormat = TimeFormat.Unknown; 
             return datetime;
         }
 
@@ -289,7 +291,12 @@ namespace reexmonkey.xcal.domain.extensions
                 datetime.TimeZoneId = tzinfo.To_ITZID<U>();
                 datetime.TimeFormat = TimeFormat.LocalAndTimeZone;
             }
-            else if (value.Kind == DateTimeKind.Utc) datetime.TimeFormat = TimeFormat.Utc;
+            else
+            {
+                if (value.Kind == DateTimeKind.Utc) datetime.TimeFormat = TimeFormat.Utc;
+                else if (value.Kind == DateTimeKind.Local) datetime.TimeFormat = TimeFormat.Local;
+                else datetime.TimeFormat = TimeFormat.Unknown;
+            }
             return datetime;
         }
 
@@ -302,6 +309,8 @@ namespace reexmonkey.xcal.domain.extensions
             time.MINUTE = (uint)value.Minute;
             time.SECOND = (uint)value.Second;
             if (value.Kind == DateTimeKind.Utc) time.TimeFormat = TimeFormat.Utc;
+            else if (value.Kind == DateTimeKind.Local) time.TimeFormat = TimeFormat.Local;
+            else time.TimeFormat = TimeFormat.Unknown; 
             return time;
         }
 
@@ -319,7 +328,12 @@ namespace reexmonkey.xcal.domain.extensions
                 time.TimeZoneId = tzinfo.To_ITZID<U>();
                 time.TimeFormat = TimeFormat.LocalAndTimeZone;
             }
-            else if (value.Kind == DateTimeKind.Utc) time.TimeFormat = TimeFormat.Utc;
+            else
+            {
+                if (value.Kind == DateTimeKind.Utc) time.TimeFormat = TimeFormat.Utc;
+                else if (value.Kind == DateTimeKind.Local) time.TimeFormat = TimeFormat.Local;
+                else time.TimeFormat = TimeFormat.Unknown;
+            } 
             return time;
         }
 
@@ -340,8 +354,22 @@ namespace reexmonkey.xcal.domain.extensions
         public static DateTime ToDateTime(this IDATE_TIME value)
         {
             if (value == null) return new DateTime();
-            return new DateTime((int)value.FULLYEAR, (int)value.MONTH, (int)value.MDAY,
-                (int)value.HOUR, (int)value.MINUTE, (int)value.SECOND, DateTimeKind.Local);
+
+            if(value.TimeFormat == TimeFormat.Utc)
+            {
+                return new DateTime((int)value.FULLYEAR, (int)value.MONTH, (int)value.MDAY,
+                    (int)value.HOUR, (int)value.MINUTE, (int)value.SECOND, DateTimeKind.Utc);
+            }
+            else if(value.TimeFormat == TimeFormat.Local || value.TimeFormat == TimeFormat.LocalAndTimeZone)
+            {
+                return new DateTime((int)value.FULLYEAR, (int)value.MONTH, (int)value.MDAY,
+                    (int)value.HOUR, (int)value.MINUTE, (int)value.SECOND, DateTimeKind.Local);
+            }
+            else
+            {
+                return new DateTime((int)value.FULLYEAR, (int)value.MONTH, (int)value.MDAY,
+                    (int)value.HOUR, (int)value.MINUTE, (int)value.SECOND, DateTimeKind.Unspecified);
+            }
         }
 
         public static TimeSpan ToTimeSpan(this ITIME value)

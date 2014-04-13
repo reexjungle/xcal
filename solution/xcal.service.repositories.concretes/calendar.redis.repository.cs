@@ -45,6 +45,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             {
                 if (value == null) throw new ArgumentNullException("RedisClientsManager");
                 this.manager = value;
+                this.client = this.manager.GetClient();
             }
         }
 
@@ -76,8 +77,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public VCALENDAR Hydrate(VCALENDAR dry)
         {
             VCALENDAR full = null;
-            var cclient = this.redis.As<VCALENDAR>();
-            full = cclient.GetValue(dry.Id);
+            full = this.redis.As<VCALENDAR>().GetById(dry.Id);
             if (full != null)
             {
                 var revents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => x.CalendarId == full.Id);
@@ -92,18 +92,18 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public IEnumerable<VCALENDAR> Hydrate(IEnumerable<VCALENDAR> dry)
         {
-            List<VCALENDAR> full = null;
+            IEnumerable<VCALENDAR> full = null;
             var cclient = this.redis.As<VCALENDAR>();
             var keys = dry.Select(x => x.Id).Distinct().ToList();
             
-            full = cclient.GetValues(keys);
+            full = cclient.GetByIds(keys);
             if (!full.NullOrEmpty())
             {
                 var revents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => keys.Contains(x.CalendarId));
                 if(!revents.NullOrEmpty())
                 {
                    var events = this.EventRepository.Hydrate(this.EventRepository.Find(revents.Select(x => x.EventId))).ToList();
-                   full.ForEach(x =>
+                   full.Select(x =>
                    {
                        var xevents = from y in events
                                      join r in revents on y.Id equals r.EventId
@@ -111,6 +111,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                      where c.Id == x.Id
                                      select y;
                        if (!xevents.NullOrEmpty()) x.Components.AddRangeComplement(xevents);
+                       return x;
                    });
                 }
             }
@@ -162,13 +163,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public void Save(VCALENDAR entity)
         {
-            using (var transaction = this.redis.CreateTransaction())
+            this.manager.ExecTrans(transaction =>
             {
                 try
                 {
-                    var cclient = this.redis.As<VCALENDAR>();
-                    transaction.QueueCommand( x => cclient.Store(entity));
-
+                    var keys = this.redis.As<VCALENDAR>().GetAllKeys().ToArray();
+                    if (!keys.NullOrEmpty()) this.redis.Watch(keys);
                     var events = entity.Components.OfType<VEVENT>();
                     if (!events.NullOrEmpty())
                     {
@@ -182,19 +182,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                         var rclient = this.redis.As<REL_CALENDARS_EVENTS>();
                         var orevents = rclient.GetAll().Where(x => x.CalendarId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !orevents.NullOrEmpty() 
-                            ? revents.Except(orevents) 
+                        transaction.QueueCommand(x => x.StoreAll(!orevents.NullOrEmpty()
+                            ? revents.Except(orevents)
                             : revents));
                     }
-                    transaction.Commit();
+
+                    transaction.QueueCommand(x => x.Store(this.Dehydrate(entity)));
+
                 }
-                catch (Exception)
+                catch (RedisResponseException)
                 {
-                    transaction.Rollback();
                     throw;
-                } 
-            }
+                }
+                catch (InvalidOperationException)
+                {
+                    throw;
+                }
+            });
         }
 
         public void Patch(VCALENDAR source, Expression<Func<VCALENDAR, object>> fields, Expression<Func<VCALENDAR, bool>> predicate = null)
@@ -258,7 +262,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                 var orevents = rclient.GetAll().Where(x => keys.Contains(x.CalendarId));
 
                                 transaction.QueueCommand(x => 
-                                    rclient.StoreAll(!orevents.NullOrEmpty() 
+                                    x.StoreAll(!orevents.NullOrEmpty() 
                                     ? revents.Except(orevents) 
                                     : revents));
                             }
@@ -283,7 +287,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             if (selection.Contains(methodexpr.GetMemberName())) x.Method = source.Method;
                         });
 
-                        transaction.QueueCommand(trans => cclient.StoreAll(entities));
+                        transaction.QueueCommand(x => x.StoreAll(entities));
                     }
 
                     #endregion
@@ -317,7 +321,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     //save calendar
                     var cclient = this.redis.As<VCALENDAR>();
                     var keys = entities.Select(c => c.Id);
-                    transaction.QueueCommand(x => cclient.StoreAll(entities));
+                    transaction.QueueCommand(x => x.StoreAll(entities));
 
                     //save events
                     var events = entities.SelectMany(x => x.Components.OfType<VEVENT>());
@@ -335,7 +339,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                         var rclient = this.redis.As<REL_CALENDARS_EVENTS>();
                         var orevents  = rclient.GetAll().Where(x => keys.Contains(x.CalendarId));
-                        transaction.QueueCommand(t => rclient.StoreAll(!orevents.NullOrEmpty()? revents.Except(orevents): revents));
+                        transaction.QueueCommand(x => x.StoreAll(!orevents.NullOrEmpty()? revents.Except(orevents): revents));
                     }
                     transaction.Commit();
                 }

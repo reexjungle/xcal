@@ -63,7 +63,7 @@ namespace reexmonkey.xcal.application.server.web.local
             #region inject plugins
 
             //register all validators defined in the assembly of EventValidator
-            container.RegisterValidators(typeof(EventValidator).Assembly);
+            //container.RegisterValidators(typeof(EventValidator).Assembly);
 
             #endregion
 
@@ -308,8 +308,10 @@ namespace reexmonkey.xcal.application.server.web.local
 
                 //register cache client to redis server running on linux. 
                 //NOTE: Redis Server must already be installed on the local machine and must be running
-                container.Register<IRedisClientsManager>(x => new BasicRedisClientManager(Properties.Settings.Default.redis_server));
+                container.Register<IRedisClientsManager>(x => new PooledRedisClientManager(Properties.Settings.Default.redis_server));
 
+                var redis = container.Resolve<IRedisClientsManager>().GetClient();
+                redis.FlushDb();
 
                 #endregion
             }
