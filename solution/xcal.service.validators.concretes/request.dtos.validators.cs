@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using ServiceStack.FluentValidation;
 using reexmonkey.crosscut.essentials.concretes;
+using reexmonkey.crosscut.goodies.concretes;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.domain.operations;
@@ -41,9 +42,12 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.Status).Must((x, y) => y == STATUS.TENTATIVE || y == STATUS.CONFIRMED || y == STATUS.CANCELLED);
             RuleFor(x => x.Url).SetValidator(new UriValidator()).When(x => x.Url != null);
 
-            RuleFor(x => x.Attachments).SetCollectionValidator(new AttachhmentValidator()).
-                Must((x, y) => x.Attachments.AreUnique()).
-                When(x => !x.Attachments.NullOrEmpty());
+            RuleFor(x => x.Attachments).SetValidator(
+                new PolymorphicCollectionValidator<IATTACH>(new AttachmentValidator())
+                .RegisterDerivedValidator<ATTACH_BINARY>(new AttachmentBinaryValidator())
+                .RegisterDerivedValidator<ATTACH_URI>(new AttachmentUriValidator()))
+                .Must((x, y) => x.Attachments.AreUnique())
+                .When(x => !x.Attachments.NullOrEmpty());
 
             RuleFor(x => x.Categories).NotNull().When(x => x.Categories != null);
             RuleFor(x => x.Classification).NotEqual(CLASS.UNKNOWN);

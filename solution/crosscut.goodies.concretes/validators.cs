@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using ServiceStack.FluentValidation;
 using ServiceStack.FluentValidation.Results;
+using ServiceStack.FluentValidation.Validators;
 
 namespace reexmonkey.crosscut.goodies.concretes
 {
@@ -25,5 +26,43 @@ namespace reexmonkey.crosscut.goodies.concretes
             var combined = berrors.Concat(oerrors);
             return new ValidationResult(combined);
         } 
+    }
+
+
+    public class PolymorphicCollectionValidator<T>: NoopPropertyValidator
+    {
+        IValidator<T> validator;
+        Dictionary<Type, IValidator> deriveds; 
+
+        public PolymorphicCollectionValidator(IValidator<T> validator)
+        {
+            this.validator = validator;
+            this.deriveds = new Dictionary<Type, IValidator>();
+        }
+
+        public PolymorphicCollectionValidator<T> RegisterDerivedValidator<TDerived>(IValidator<TDerived> validator)
+            where TDerived: T
+        {
+            if (!this.deriveds.ContainsKey(typeof(TDerived))) this.deriveds.Add(typeof(TDerived), validator);
+            return this;
+        }
+
+        public override IEnumerable<ValidationFailure> Validate(PropertyValidatorContext context)
+        {
+            var collection = context.PropertyValue as IEnumerable<T>;
+            if (collection == null) return Enumerable.Empty<ValidationFailure>();
+            if (!collection.Any()) return Enumerable.Empty<ValidationFailure>();
+
+            foreach(var item in collection)
+            {
+                if (!deriveds.ContainsKey(item.GetType())) continue;
+                var derived = deriveds[item.GetType()];
+                var collectionValidator = new ChildCollectionValidatorAdaptor(derived);
+                return collectionValidator.Validate(context);
+            }
+
+            var baseCollectionValidator = new ChildCollectionValidatorAdaptor(this.validator);
+            return baseCollectionValidator.Validate(context);
+        }
     }
 }

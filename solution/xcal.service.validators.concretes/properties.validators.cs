@@ -59,9 +59,11 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class AttachhmentValidator : AbstractValidator<IATTACH>
+    public abstract class AttachmentBaseValidator<T> : AbstractValidator<T>
+        where T : IATTACH
     {
-        public AttachhmentValidator()
+        public AttachmentBaseValidator()
+            : base()
         {
             RuleFor(x => x.FormatType)
                 .Must((x, y) => !string.IsNullOrEmpty(y.TypeName) && !string.IsNullOrEmpty(y.SubTypeName))
@@ -69,23 +71,34 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class AttachmentBinaryValidator : AbstractCompositeValidator<ATTACH_BINARY>
+    public class AttachmentValidator : AttachmentBaseValidator<IATTACH>
+    {
+        public AttachmentValidator()
+            : base()
+        {
+            RuleFor(x => x.FormatType)
+                .Must((x, y) => !string.IsNullOrEmpty(y.TypeName) && !string.IsNullOrEmpty(y.SubTypeName))
+                .When(x => x.FormatType != null);
+        }
+    }
+
+    public class AttachmentBinaryValidator : AttachmentBaseValidator<ATTACH_BINARY>
     {
         public AttachmentBinaryValidator(): base()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
-            this.RegisterBaseValidator(new AttachhmentValidator());
+            //this.RegisterBaseValidator(new AttachhmentValidator());
             RuleFor(x => x.Content).NotNull().SetValidator(new BinaryValidator());
             RuleFor(x => x.Encoding).NotEqual(ENCODING.UNKNOWN);
         }
     }
 
-    public class AttachmentUriValidator : AbstractCompositeValidator<ATTACH_URI>
+    public class AttachmentUriValidator : AttachmentBaseValidator<ATTACH_URI>
     {
         public AttachmentUriValidator(): base()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
-            this.RegisterBaseValidator(new AttachhmentValidator());
+            //this.RegisterBaseValidator(new AttachhmentValidator());
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Content).NotNull().SetValidator(new UriValidator());
         }
