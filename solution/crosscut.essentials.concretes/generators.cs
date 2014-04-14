@@ -47,7 +47,7 @@ namespace reexmonkey.crosscut.essentials.concretes
         public string LanguageId { get; set; }
         public Authority Authority { get; set; }
 
-        public FPIKeyGenerator(IKeyGenerator<TDiscriminator> discriminator)
+        public FPIKeyGenerator(IKeyGenerator<TDiscriminator> discriminator = null)
         {
             if (discriminator == null) throw new ArgumentNullException("Null Sequence Generator");
             this.discriminator = discriminator;
@@ -59,7 +59,8 @@ namespace reexmonkey.crosscut.essentials.concretes
             if (Authority == Authority.ISO) sb.Append(this.ISO);
             else if (Authority == Authority.NonStandard) sb.Append("+");
             else if (Authority == Authority.None) sb.Append("-");
-            if(!string.IsNullOrEmpty(this.Owner))sb.AppendFormat("//{0}-{1}", this.Owner, this.discriminator.GetNextKey());
+            if(!string.IsNullOrEmpty(this.Owner) && this.discriminator != null)sb.AppendFormat("//{0}-{1}", this.Owner, this.discriminator.GetNextKey());
+            else if(!string.IsNullOrEmpty(this.Owner))sb.AppendFormat("//{0}", this.Owner);
             if(!string.IsNullOrEmpty(this.Description))sb.AppendFormat("//{0}", this.Description);            
             if(!string.IsNullOrEmpty(this.LanguageId))sb.AppendFormat("//{0}", this.LanguageId);      
             return sb.ToString();

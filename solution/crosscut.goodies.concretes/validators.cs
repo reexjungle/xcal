@@ -29,27 +29,28 @@ namespace reexmonkey.crosscut.goodies.concretes
     }
 
 
-    public class PolymorphicCollectionValidator<T>: NoopPropertyValidator
+    public class PolymorphicCollectionValidator<TBase>: NoopPropertyValidator
     {
-        IValidator<T> validator;
+        IValidator<TBase> validator;
         Dictionary<Type, IValidator> deriveds; 
 
-        public PolymorphicCollectionValidator(IValidator<T> validator)
+        public PolymorphicCollectionValidator(IValidator<TBase> validator = null)
         {
             this.validator = validator;
             this.deriveds = new Dictionary<Type, IValidator>();
         }
 
-        public PolymorphicCollectionValidator<T> RegisterDerivedValidator<TDerived>(IValidator<TDerived> validator)
-            where TDerived: T
+        public PolymorphicCollectionValidator<TBase> Add<TDerived>(IValidator<TDerived> validator)
+            where TDerived: TBase
         {
-            if (!this.deriveds.ContainsKey(typeof(TDerived))) this.deriveds.Add(typeof(TDerived), validator);
+            if (!this.deriveds.ContainsKey(typeof(TDerived))) 
+                this.deriveds.Add(typeof(TDerived), validator);
             return this;
         }
 
         public override IEnumerable<ValidationFailure> Validate(PropertyValidatorContext context)
         {
-            var collection = context.PropertyValue as IEnumerable<T>;
+            var collection = context.PropertyValue as IEnumerable<TBase>;
             if (collection == null) return Enumerable.Empty<ValidationFailure>();
             if (!collection.Any()) return Enumerable.Empty<ValidationFailure>();
 
@@ -61,8 +62,13 @@ namespace reexmonkey.crosscut.goodies.concretes
                 return collectionValidator.Validate(context);
             }
 
-            var baseCollectionValidator = new ChildCollectionValidatorAdaptor(this.validator);
-            return baseCollectionValidator.Validate(context);
+            if(this.validator != null)
+            {
+                var baseCollectionValidator = new ChildCollectionValidatorAdaptor(this.validator);
+                return baseCollectionValidator.Validate(context);
+            }
+
+            return Enumerable.Empty<ValidationFailure>();
         }
     }
 }

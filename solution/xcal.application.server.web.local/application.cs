@@ -76,13 +76,6 @@ namespace reexmonkey.xcal.application.server.web.local
             #region inject key generators
 
             container.Register<IGuidKeyGenerator>(new GuidKeyGenerator());
-            //container.Register<IFPIKeyGenerator>(x => new FPIKeyGenerator<string>(new GuidKeyGenerator())
-            //{
-            //    Owner = Properties.Settings.Default.fpiOwner,
-            //    LanguageId = Properties.Settings.Default.fpiLanguageId,
-            //    Description = Properties.Settings.Default.fpiDescription,
-            //    Authority = Properties.Settings.Default.fpiAuthority
-            //});
 
             #endregion
 
@@ -308,7 +301,7 @@ namespace reexmonkey.xcal.application.server.web.local
 
                 //register cache client to redis server running on linux. 
                 //NOTE: Redis Server must already be installed on the local machine and must be running
-                container.Register<IRedisClientsManager>(x => new PooledRedisClientManager(Properties.Settings.Default.redis_server));
+                container.Register<IRedisClientsManager>(x => new BasicRedisClientManager(Properties.Settings.Default.redis_server));
 
                 var redis = container.Resolve<IRedisClientsManager>().GetClient();
                 redis.FlushDb();

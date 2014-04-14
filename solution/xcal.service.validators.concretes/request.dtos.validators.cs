@@ -43,9 +43,9 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.Url).SetValidator(new UriValidator()).When(x => x.Url != null);
 
             RuleFor(x => x.Attachments).SetValidator(
-                new PolymorphicCollectionValidator<IATTACH>(new AttachmentValidator())
-                .RegisterDerivedValidator<ATTACH_BINARY>(new AttachmentBinaryValidator())
-                .RegisterDerivedValidator<ATTACH_URI>(new AttachmentUriValidator()))
+                new PolymorphicCollectionValidator<IATTACH>()
+                .Add<ATTACH_BINARY>(new AttachmentBinaryValidator())
+                .Add<ATTACH_URI>(new AttachmentUriValidator()))
                 .Must((x, y) => x.Attachments.AreUnique())
                 .When(x => !x.Attachments.NullOrEmpty());
 
