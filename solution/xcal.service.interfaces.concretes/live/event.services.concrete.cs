@@ -61,34 +61,8 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
 
         #region VEVENT services based on RFC 5546
 
-        public VCALENDAR Get(PublishEvent request)
+        public VCALENDAR Post(PublishEvent request)
         {
-            var pubevent = new VEVENT
-            {
-                Uid = new GuidKeyGenerator().GetNextKey(),
-                Organizer = new ORGANIZER
-                {
-                    CN = "Emmanuel Ngwane",
-                    Address = new URI("ngwanemk@gmail.com"),
-                    Language = new LANGUAGE("en", "EN")
-                },
-                Location = new LOCATION
-                {
-                    Text = "Düsseldorf",
-                    Language = new LANGUAGE("de", "DE")
-                },
-
-                Summary = new SUMMARY("Test Meeting"),
-                Description = new DESCRIPTION("A test meeting for freaks"),
-                Start = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc)),
-                End = new DATE_TIME(new DateTime(2014, 6, 15, 18, 03, 08, 0, DateTimeKind.Utc)),
-                Status = STATUS.CONFIRMED,
-                Transparency = TRANSP.TRANSPARENT,
-                Classification = CLASS.PUBLIC
-            };
-
-            request.Events = new List<VEVENT>{pubevent};
-
 
             VCALENDAR calendar = null;
             try
@@ -103,8 +77,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
             catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); }
             catch (Exception ex) { this.logger.Error(ex.ToString()); }
-            var cal = this.repository.Hydrate(calendar);
-            return cal;
+            return this.repository.Hydrate(calendar);
         }
 
         public VCALENDAR Patch(RescheduleEvent request)

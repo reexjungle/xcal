@@ -12,7 +12,7 @@ namespace reexmonkey.xcal.service.validators.concretes
     {
         public AltrepValidator(): base()
         {
-            RuleFor(x => x).SetValidator(new UriValidator());
+            //RuleFor(x => x).SetValidator(new UriValidator());
         }
     }
 
@@ -20,7 +20,7 @@ namespace reexmonkey.xcal.service.validators.concretes
     {
         public LanguageValidator(): base()
         {
-            RuleFor(x => x).Must(x => x.Tag != null);
+            RuleFor(x => x.Tag).NotNull();
         }
     }
 
@@ -29,8 +29,8 @@ namespace reexmonkey.xcal.service.validators.concretes
         public TimeZoneIdValidator()
             : base()
         {
-            RuleFor(x => x).Must(x => x.Prefix != null).When(x => x.GloballyUnique = false);
-            RuleFor(x => x).Must(x => x.Suffix != null);
+            RuleFor(x =>x.Prefix).NotNull().When(x => x.GloballyUnique = false);
+            RuleFor(x => x.Suffix).NotNull();
         }
     }
 

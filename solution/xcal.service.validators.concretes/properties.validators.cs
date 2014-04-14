@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using ServiceStack.FluentValidation;
 using reexmonkey.crosscut.essentials.concretes;
+using reexmonkey.crosscut.goodies.concretes;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 
@@ -58,32 +59,35 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class AttachhmentValidator: AbstractValidator<IATTACH>
+    public class AttachhmentValidator : AbstractValidator<IATTACH>
     {
         public AttachhmentValidator()
         {
-            RuleFor(x => x.FormatType).SetValidator(new FormatTypeValidator()).When(x => x.FormatType != null);
+            RuleFor(x => x.FormatType)
+                .Must((x, y) => !string.IsNullOrEmpty(y.TypeName) && !string.IsNullOrEmpty(y.SubTypeName))
+                .When(x => x.FormatType != null);
         }
     }
 
-    public class AttachmentBinaryValidator: AbstractValidator<ATTACH_BINARY>
+    public class AttachmentBinaryValidator : AbstractCompositeValidator<ATTACH_BINARY>
     {
-        public AttachmentBinaryValidator()
+        public AttachmentBinaryValidator(): base()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            this.RegisterBaseValidator(new AttachhmentValidator());
             RuleFor(x => x.Content).NotNull().SetValidator(new BinaryValidator());
             RuleFor(x => x.Encoding).NotEqual(ENCODING.UNKNOWN);
-            RuleFor(x => x.FormatType).SetValidator(new FormatTypeValidator()).When(x => x.FormatType != null);
         }
     }
 
-    public class AttachmentUriValidator : AbstractValidator<ATTACH_URI>
+    public class AttachmentUriValidator : AbstractCompositeValidator<ATTACH_URI>
     {
-        public AttachmentUriValidator()
+        public AttachmentUriValidator(): base()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            this.RegisterBaseValidator(new AttachhmentValidator());
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Content).NotNull().SetValidator(new UriValidator());
-            RuleFor(x => x.FormatType).SetValidator(new FormatTypeValidator()).When(x => x.FormatType != null);
         }
     }
 
@@ -159,13 +163,13 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.TimeZoneOffsetTo).SetValidator(new UtcOffsetValidator()).When(x => x.TimeZoneOffsetTo != null);
             RuleFor(x => x.RecurrenceRule).SetValidator(new RecurrenceValidator()).When(x => x.RecurrenceRule != null);
             RuleFor(x => x.RecurrenceDates).SetCollectionValidator(new RecurrenceDateValidator()).
-                Must((x, y) => y.OfType<RDATE>().AreUnique(new EqualByStringId<RDATE>())).
+                Must((x, y) => y.AreUnique()).
                 When(x => x.RecurrenceRule != null && !x.RecurrenceDates.NullOrEmpty());
             RuleFor(x => x.Comments).SetCollectionValidator(new TextValidator()).
-                Must((x, y) => y.OfType<COMMENT>().AreUnique(new EqualByStringId<COMMENT>())).
+                Must((x, y) => y.AreUnique()).
                 When(x => !x.Comments.NullOrEmpty());
             RuleFor(x => x.Names).SetCollectionValidator(new TimeZoneNameValidator()).
-                Must((x, y) => x.Names.OfType<TZNAME>().AreUnique(new EqualByStringId<TZNAME>())).
+                Must((x, y) => x.Names.AreUnique()).
                 When(x => !x.Names.NullOrEmpty());
             
         }

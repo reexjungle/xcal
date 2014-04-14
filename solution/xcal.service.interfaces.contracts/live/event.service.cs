@@ -15,7 +15,7 @@ namespace reexmonkey.xcal.service.interfaces.contracts.live
     {
         #region  RFC 5546
 
-        VCALENDAR Get(PublishEvent request);
+        VCALENDAR Post(PublishEvent request);
 
         VCALENDAR Patch(RescheduleEvent request);
 
