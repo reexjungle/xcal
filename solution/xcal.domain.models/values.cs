@@ -1075,22 +1075,16 @@ namespace reexmonkey.xcal.domain.models
 
         public override string ToString()
         {
+            var sb = new StringBuilder();
             var sym = (this.sign == SignType.Negative)? "-": string.Empty;
-            if (this.weeks != 0) return string.Format("{0}P{1}W", sym, this.weeks);
-            else
-            {
-                var sb = new StringBuilder();
-                sb.Append(sym);
-                if (this.days != 0) sb.AppendFormat("P{0}D", this.days);
-                if (this.hours != 0 || this.minutes != 0 && this.seconds != 0) 
-                {
-                    sb.Append("T");
-                    if (this.hours != 0) sb.AppendFormat("{0:D2}H", this.hours);
-                    if (this.minutes != 0) sb.AppendFormat("{0:D2}M", this.minutes);
-                    if (this.seconds != 0) sb.AppendFormat("{0:D}S", this.seconds);                
-                }
-                return sb.ToString();
-            }               
+            sb.AppendFormat("{0}P", sym);
+            if (this.weeks != 0)  sb.AppendFormat("{1}W", this.weeks);
+            if (this.days != 0) sb.AppendFormat("{0}D", this.days);
+            if (this.hours != 0 || this.minutes != 0 && this.seconds != 0) sb.Append("T");
+            if (this.hours != 0) sb.AppendFormat("{0}H", this.hours);
+            if (this.minutes != 0) sb.AppendFormat("{0}M", this.minutes);
+            if (this.seconds != 0) sb.AppendFormat("{0}S", this.seconds);  
+            return sb.ToString();
         }
 
         public bool Equals(DURATION other)

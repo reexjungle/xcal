@@ -19,22 +19,17 @@ namespace reexmonkey.xcal.application.server.web.dev.test
         public void PublishMinimalEvent()
         {
             var sclient = new JsonServiceClient(Properties.Settings.Default.test_server);
-            try
+            var published = sclient.Post<VCALENDAR>(new PublishEvent
             {
-                var keygen = new FPIKeyGenerator<string>()
+                ProductId = new FPIKeyGenerator<string>()
                 {
                     Owner = Properties.Settings.Default.fpiOwner,
                     LanguageId = Properties.Settings.Default.fpiLanguageId,
                     Description = Properties.Settings.Default.fpiDescription,
                     Authority = Properties.Settings.Default.fpiAuthority
-                };
+                }.GetNextKey().ToUrn(),
 
-                var pkey = new GuidKeyGenerator().GetNextKey();
-
-                var published = sclient.Post<VCALENDAR>(new PublishEvent
-                {
-                    ProductId = keygen.GetNextKey(),
-                    Events = new List<VEVENT> 
+                Events = new List<VEVENT> 
                     {
                         new VEVENT
                         {
@@ -43,7 +38,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                             {
                                 CN = "Emmanuel Ngwane",
                                 Address = new URI("ngwanemk@gmail.com"),
-                                Language = new LANGUAGE("en", "EN")
+                                Language = new LANGUAGE("en")
                             },
                             Location = new LOCATION
                             {
@@ -61,27 +56,17 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                         }
                     
                     },
-                    TimeZones = null
-                });
+                TimeZones = null
+            });
 
-                Assert.AreNotEqual(published, null);
-                Assert.AreEqual<METHOD>(published.Method, METHOD.PUBLISH);
-                Assert.AreEqual<int>(published.Components.Count, 1);
+            Assert.AreNotEqual(published, null);
+            Assert.AreEqual(published.Method, METHOD.PUBLISH);
+            Assert.AreEqual(published.Components.Count, 1);
 
-            }
-            catch (ServiceStack.ServiceClient.Web.WebServiceException ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
-            }
-            catch (System.Net.WebException ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
-            }
-
+            var pevent = published.Components[0] as VEVENT;
+            Assert.AreNotEqual(pevent, null);
+            Assert.AreEqual(pevent.Start.ToString(), "20140615T160701Z");
+            Assert.AreEqual(pevent.Duration.ToString(), "PT1H56M7S");
             
         }
     }
