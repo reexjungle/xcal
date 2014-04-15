@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using ServiceStack.FluentValidation;
-using reexmonkey.crosscut.essentials.concretes;
+using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
 
 namespace reexmonkey.xcal.service.validators.concretes

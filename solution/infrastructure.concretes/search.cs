@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace reexmonkey.crosscut.goodies.concretes
+namespace reexmonkey.infrastructure.operations.concretes
 {
     [Flags]
     public enum DateTimeOption

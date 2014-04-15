@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ServiceStack.FluentValidation;
-using reexmonkey.crosscut.essentials.concretes;
-using reexmonkey.crosscut.goodies.concretes;
+using reexmonkey.foundation.essentials.concretes;
+using reexmonkey.crosscut.operations.concretes;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 

@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 
-namespace reexmonkey.crosscut.essentials.concretes
+namespace reexmonkey.foundation.essentials.concretes
 {
     public static class CommonStringExtensions
     {

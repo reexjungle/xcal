@@ -15,12 +15,13 @@ using ServiceStack.ServiceInterface.Cors;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.service.validators.concretes;
 using reexmonkey.xcal.service.interfaces.concretes.live;
-using reexmonkey.crosscut.essentials.contracts;
-using reexmonkey.crosscut.essentials.concretes;
-using reexmonkey.crosscut.goodies.concretes;
+using reexmonkey.foundation.essentials.contracts;
+using reexmonkey.foundation.essentials.concretes;
+using reexmonkey.crosscut.operations.concretes;
 using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.xcal.service.repositories.concretes;
 using reexmonkey.technical.data.concretes.extensions.ormlite.mysql;
+using reexmonkey.infrastructure.operations.concretes;
 
 
 namespace reexmonkey.xcal.application.server.web.local

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ServiceStack.FluentValidation;
-using reexmonkey.crosscut.essentials.concretes;
-using reexmonkey.crosscut.goodies.concretes;
+using reexmonkey.foundation.essentials.concretes;
+using reexmonkey.crosscut.operations.concretes;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.domain.operations;
@@ -21,7 +21,7 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.Events).SetCollectionValidator(new PublishedEventValidator());
             RuleFor(x => x.TimeZones).Must((x, y) => !x.TimeZones.NullOrEmpty()).When(x => !x.Events.NullOrEmpty() && x.Events.FirstOrDefault().Datestamp.TimeFormat == TimeFormat.LocalAndTimeZone);
             RuleFor(x => x.TimeZones).SetCollectionValidator(new TimeZoneValidator()).
-                Must((x, y) => y.OfType<VTIMEZONE>().AreUnique(new EqualByStringId<VTIMEZONE>())).
+                Must((x, y) => y.AreUnique()).
                 When(x => !x.TimeZones.NullOrEmpty());
         }
     }
@@ -96,7 +96,7 @@ namespace reexmonkey.xcal.service.validators.concretes
                 .When(x => !x.Events.NullOrEmpty() && x.Events.Count() > 1);
             RuleFor(x => x.Events).NotNull().NotEmpty().SetCollectionValidator(new RequestedEventValidator());
             RuleFor(x => x.TimeZones).SetCollectionValidator(new TimeZoneValidator()).
-                Must((x, y) => y.OfType<VTIMEZONE>().AreUnique(new EqualByStringId<VTIMEZONE>())).
+                Must((x, y) => y.AreUnique()).
                 When(x => !x.TimeZones.NullOrEmpty());
         }
     }
@@ -118,11 +118,11 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.Url).SetValidator(new UriValidator()).When(x => x.Url != null);
 
             RuleFor(x => x.Attachments.OfType<ATTACH_BINARY>()).SetCollectionValidator(new AttachmentBinaryValidator()).
-                Must((x, y) => x.Attachments.OfType<ATTACH_BINARY>().AreUnique(new EqualByStringId<ATTACH_BINARY>())).
+                Must((x, y) => x.Attachments.AreUnique()).
                 When(x => !x.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty());
 
             RuleFor(x => x.Attachments.OfType<ATTACH_URI>()).SetCollectionValidator(new AttachmentUriValidator()).
-                Must((x, y) => x.Attachments.OfType<ATTACH_URI>().AreUnique(new EqualByStringId<ATTACH_URI>())).
+                Must((x, y) => x.Attachments.AreUnique()).
                 When(x => !x.Attachments.OfType<ATTACH_URI>().NullOrEmpty());
 
             RuleFor(x => x.Categories).NotNull().When(x => x.Categories != null);
@@ -133,26 +133,26 @@ namespace reexmonkey.xcal.service.validators.concretes
                 When(x => !x.Comments.OfType<COMMENT>().NullOrEmpty());
 
             RuleFor(x => x.Contacts.OfType<CONTACT>()).SetCollectionValidator(new ContactValidator()).
-                Must((x, y) => x.Contacts.OfType<CONTACT>().AreUnique(new EqualByStringId<CONTACT>()) &&
-                    x.Contacts.OfType<CONTACT>().Count() <= 1).
-                When(x => !x.Contacts.OfType<CONTACT>().NullOrEmpty());
+                Must((x, y) => x.Contacts.AreUnique() &&
+                    x.Contacts.Count() <= 1).
+                When(x => !x.Contacts.NullOrEmpty());
 
             RuleFor(x => x.Description).SetValidator(new TextValidator()).When(x => x.Description != null);
             RuleFor(x => x.End).NotNull().Unless(x => x.Duration != null);
             RuleFor(x => x.Duration).NotNull().Unless(x => x.End != null);
 
             RuleFor(x => x.ExceptionDates).SetCollectionValidator(new ExceptionDateValidator()).
-                Must((x, y) => x.ExceptionDates.OfType<EXDATE>().AreUnique(new EqualByStringId<EXDATE>())).
+                Must((x, y) => x.ExceptionDates.AreUnique()).
                 When(x => !x.ExceptionDates.NullOrEmpty());
 
             RuleFor(x => x.Location).SetValidator(new TextValidator()).When(x => x.Location != null);
             RuleFor(x => x.Priority).SetValidator(new PriorityValidator()).When(x => x.Priority != null);
             RuleFor(x => x.RelatedTos).SetCollectionValidator(new RelatedToValidator()).
-                Must((x, y) => x.RelatedTos.OfType<RELATEDTO>().AreUnique(new EqualByStringId<RELATEDTO>())).
+                Must((x, y) => x.RelatedTos.AreUnique()).
                 When(x => !x.RelatedTos.NullOrEmpty());
 
             RuleFor(x => x.Resources).SetCollectionValidator(new ResourcesValidator()).
-                Must((x, y) => x.Resources.OfType<RESOURCES>().AreUnique(new EqualByStringId<RESOURCES>())).
+                Must((x, y) => x.Resources.AreUnique()).
                 When(x => !x.Resources.NullOrEmpty());
         }
     }

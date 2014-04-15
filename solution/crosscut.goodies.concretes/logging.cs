@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
-using ServiceStack.DataAnnotations;
+﻿using ServiceStack.DataAnnotations;
 using ServiceStack.OrmLite.MySql.DataAnnotations;
+using reexmonkey.crosscut.operations.contracts;
 
-namespace reexmonkey.crosscut.goodies.concretes
+namespace reexmonkey.crosscut.operations.concretes
 {
     [Alias("nlogtable")]
     public class NlogTable : ILogTable

@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using ServiceStack.OrmLite;
 using reexmonkey.technical.data.contracts;
 using reexmonkey.technical.data.concretes.extensions.ormlite;
-using reexmonkey.crosscut.goodies.concretes;
-using reexmonkey.crosscut.essentials.contracts;
-using reexmonkey.crosscut.essentials.concretes;
-using reexmonkey.crosscut.io.concretes;
+using reexmonkey.crosscut.operations.concretes;
+using reexmonkey.foundation.essentials.contracts;
+using reexmonkey.foundation.essentials.concretes;
+using reexmonkey.infrastructure.io.concretes;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.service.repositories.contracts;
+using reexmonkey.infrastructure.operations.concretes;
 
 namespace reexmonkey.xcal.service.repositories.concretes
 {

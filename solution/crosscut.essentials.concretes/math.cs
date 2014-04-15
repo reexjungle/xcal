@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 
 
-namespace reexmonkey.crosscut.essentials.concretes
+namespace reexmonkey.foundation.essentials.concretes
 {
     public static class MathExtensions
     {

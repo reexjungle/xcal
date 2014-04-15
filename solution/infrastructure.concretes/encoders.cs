@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 
-namespace reexmonkey.crosscut.essentials.concretes
+namespace reexmonkey.foundation.essentials.concretes
 {
     public static class EncodingExtensions
     {

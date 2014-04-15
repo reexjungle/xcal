@@ -136,9 +136,10 @@ namespace reexmonkey.xcal.application.server.web.local.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("nosql")]
-        public global::reexmonkey.crosscut.goodies.concretes.StorageType primary_storage {
+        public global::reexmonkey.infrastructure.operations.concretes.StorageType primary_storage
+        {
             get {
-                return ((global::reexmonkey.crosscut.goodies.concretes.StorageType)(this["primary_storage"]));
+                return ((global::reexmonkey.infrastructure.operations.concretes.StorageType)(this["primary_storage"]));
             }
         }
     }

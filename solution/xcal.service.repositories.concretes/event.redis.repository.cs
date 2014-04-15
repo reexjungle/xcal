@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using ServiceStack.Redis;
 using ServiceStack.Redis.Generic;
 using reexmonkey.xcal.domain.models;
-using reexmonkey.crosscut.essentials.contracts;
-using reexmonkey.crosscut.essentials.concretes;
+using reexmonkey.foundation.essentials.contracts;
+using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.technical.data.concretes.extensions.redis;
 

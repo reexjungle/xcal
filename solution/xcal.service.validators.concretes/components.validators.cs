@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ServiceStack.FluentValidation;
-using reexmonkey.crosscut.essentials.concretes;
+using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 
@@ -17,10 +17,10 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null);
             RuleFor(x => x.Url).SetValidator(new UriValidator()).When(x => x.Url != null);
             RuleFor(x => x.StandardTimes).SetCollectionValidator(new ObservanceValidator()).
-                Must((x, y) => y.OfType<STANDARD>().AreUnique(new EqualByStringId<STANDARD>())).
+                Must((x, y) => y.AreUnique()).
                 When(x => !x.StandardTimes.OfType<STANDARD>().NullOrEmpty());
             RuleFor(x => x.DaylightSaveTimes).SetCollectionValidator(new ObservanceValidator()).
-                Must((x, y) => y.OfType<DAYLIGHT>().AreUnique(new EqualByStringId<DAYLIGHT>())).
+                Must((x, y) => y.AreUnique()).
                 When(x => !x.DaylightSaveTimes.OfType<DAYLIGHT>().NullOrEmpty());
         }
     }
@@ -80,8 +80,8 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.Description).NotNull().SetValidator(new TextValidator());
             RuleFor(x => x.Summary).NotNull().SetValidator(new TextValidator());
             RuleFor(x => x.Attendees).NotNull().NotEmpty().SetCollectionValidator(new AttendeeValidator());
-            RuleFor(x => x.Attachments.OfType<ATTACH_BINARY>()).SetCollectionValidator(new AttachmentBinaryValidator()).When(x => !x.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty());
-            RuleFor(x => x.Attachments.OfType<ATTACH_URI>()).SetCollectionValidator(new AttachmentUriValidator()).When(x => !x.Attachments.OfType<ATTACH_URI>().NullOrEmpty());
+            RuleFor(x => x.Attachments.OfType<ATTACH_BINARY>()).SetCollectionValidator(new AttachmentBinaryValidator()).When(x => !x.Attachments.NullOrEmpty());
+            RuleFor(x => x.Attachments.OfType<ATTACH_URI>()).SetCollectionValidator(new AttachmentUriValidator()).When(x => !x.Attachments.NullOrEmpty());
         }
     }
 

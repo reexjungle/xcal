@@ -7,8 +7,8 @@
     <ProjectGuid>{4117DC99-EA03-4B8F-A808-368FEAA3C5F2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.crosscut.goodies.contracts</RootNamespace>
-    <AssemblyName>crosscut.goodies.contracts</AssemblyName>
+    <RootNamespace>reexmonkey.crosscut.operations.contracts</RootNamespace>
+    <AssemblyName>crosscut.contracts</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

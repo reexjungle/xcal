@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
-using reexmonkey.crosscut.essentials.concretes;
+using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
 
 namespace reexmonkey.xcal.domain.models

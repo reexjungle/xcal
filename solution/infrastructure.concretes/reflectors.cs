@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Reflection;
 
-namespace reexmonkey.crosscut.goodies.concretes
+namespace reexmonkey.infrastructure.operations.concretes
 {
     /// <summary>
     /// Represents a basic property structure of an object  

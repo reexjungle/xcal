@@ -8,7 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using ServiceStack;
 using ServiceStack.OrmLite;
-using reexmonkey.crosscut.essentials.concretes;
+using reexmonkey.foundation.essentials.concretes;
 using ServiceStack.Common.Utils;
 
 namespace reexmonkey.technical.data.concretes.extensions.ormlite

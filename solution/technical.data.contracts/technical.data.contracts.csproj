@@ -45,9 +45,9 @@
     <Compile Include="repository.keys.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\crosscut.essentials.contracts\crosscut.essentials.contracts.csproj">
+    <ProjectReference Include="..\crosscut.essentials.contracts\foundation.essentials.contracts.csproj">
       <Project>{0188be5c-bafa-4fac-b068-11dcf7cd918e}</Project>
-      <Name>crosscut.essentials.contracts</Name>
+      <Name>foundation.essentials.contracts</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using reexmonkey.crosscut.essentials.contracts;
+using reexmonkey.foundation.essentials.contracts;
 
-namespace reexmonkey.crosscut.essentials.concretes
+namespace reexmonkey.foundation.essentials.concretes
 {
     public abstract class EqualByTId<TPrimary, TId> : IEqualityComparer<TPrimary>
         where TPrimary : IContainsKey<TId>

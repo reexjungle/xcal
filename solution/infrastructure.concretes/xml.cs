@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 using System.Runtime.Serialization;
 using System.Xml.Linq;
 
-namespace reexmonkey.crosscut.io.concretes
+namespace reexmonkey.infrastructure.io.concretes
 {
     public static class XmlExtensions
     {

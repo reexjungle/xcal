@@ -19,21 +19,6 @@ namespace reexmonkey.crosscut.security.policies.concretes
         }
     }
 
-    [Obsolete("Use only for development purposes")]
-    public class TrustReexuxCertificatePolicy : ICertificatePolicy
-    {
-
-        public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate, WebRequest request, int certificateProblem)
-        {
-            return (certificate as X509Certificate2).Thumbprint == "32707337FD972A0A7CCD9E5CAD6F430B20CD62B1".Replace(System.Environment.NewLine, string.Empty);
-        }
-
-        public bool RemoteCertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-        {
-            return  (certificate as X509Certificate2).Thumbprint == "32707337FD972A0A7CCD9E5CAD6F430B20CD62B1".Replace(System.Environment.NewLine, string.Empty);
-        }
-    }
-
     public class TrustX509CertificatePolicy : ICertificatePolicy
     {
         private string hash = string.Empty;

@@ -6,7 +6,7 @@ using ServiceStack.FluentValidation;
 using ServiceStack.FluentValidation.Results;
 using ServiceStack.FluentValidation.Validators;
 
-namespace reexmonkey.crosscut.goodies.concretes
+namespace reexmonkey.crosscut.operations.concretes
 {
     public abstract class AbstractCompositeValidator<T>: AbstractValidator<T>
     {
@@ -27,7 +27,6 @@ namespace reexmonkey.crosscut.goodies.concretes
             return new ValidationResult(combined);
         } 
     }
-
 
     public class PolymorphicCollectionValidator<TBase>: NoopPropertyValidator
     {

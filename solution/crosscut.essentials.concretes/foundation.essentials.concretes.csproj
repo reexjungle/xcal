@@ -7,8 +7,8 @@
     <ProjectGuid>{EEDF1367-A0FC-400A-A649-716261252B9E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.crosscut.essentials.concretes</RootNamespace>
-    <AssemblyName>crosscut.essentials.concretes</AssemblyName>
+    <RootNamespace>reexmonkey.foundation.essentials.concretes</RootNamespace>
+    <AssemblyName>foundation.essentials.concretes</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,21 +40,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="collections.cs" />
-    <Compile Include="comparer.cs" />
     <Compile Include="datetime.cs" />
-    <Compile Include="encoders.cs" />
     <Compile Include="exceptions.cs" />
     <Compile Include="expressions.cs" />
-    <Compile Include="generators.cs" />
     <Compile Include="math.cs" />
     <Compile Include="numerical.cs" />
     <Compile Include="strings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\crosscut.essentials.contracts\crosscut.essentials.contracts.csproj">
+    <ProjectReference Include="..\crosscut.essentials.contracts\foundation.essentials.contracts.csproj">
       <Project>{0188be5c-bafa-4fac-b068-11dcf7cd918e}</Project>
-      <Name>crosscut.essentials.contracts</Name>
+      <Name>foundation.essentials.contracts</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

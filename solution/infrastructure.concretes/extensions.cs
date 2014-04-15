@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Diagnostics;
 
-namespace reexmonkey.crosscut.goodies.concretes
+namespace reexmonkey.infrastructure.operations.concretes
 {
     public enum StorageType
     { 

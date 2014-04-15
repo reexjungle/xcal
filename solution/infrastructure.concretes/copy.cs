@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace reexmonkey.crosscut.io.concretes
+namespace reexmonkey.infrastructure.io.concretes
 {
     /// <summary>
     /// Provides extended object copying functionalities

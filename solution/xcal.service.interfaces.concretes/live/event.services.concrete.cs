@@ -5,7 +5,7 @@ using System.Text;
 using ServiceStack.Logging;
 using ServiceStack.ServiceInterface;
 using ServiceStack.FluentValidation;
-using reexmonkey.crosscut.essentials.concretes;
+using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.domain.operations;
