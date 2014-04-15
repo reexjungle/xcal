@@ -16,7 +16,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
         [TestMethod]
         public void PublishMinimalEvent()
         {
-            var sclient = new JsvServiceClient(Properties.Settings.Default.test_server);
+            var sclient = new JsonServiceClient(Properties.Settings.Default.test_server);
             var prodkeygen = new FPIKeyGenerator<string>()
             {
                 Owner = Properties.Settings.Default.fpiOwner,

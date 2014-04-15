@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2013 for Web
+# Visual Studio Express 2013 for Windows Desktop
 VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "application", "application", "{A6C8E01B-8688-4D61-AACF-E045B9BC68C6}"
@@ -60,6 +60,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.service.formats.concretes", "xcal.service.formats.concretes\xcal.service.formats.concretes.csproj", "{7496B2C6-BD7E-44A9-9C33-02CD399F0DE0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web.local.test", "xcal.application.server.web.local.test\xcal.application.server.web.local.test.csproj", "{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.client.console.local", "xcal.application.client.console.local\xcal.application.client.console.local.csproj", "{5C2EFB06-B55B-4A58-B62F-49FEB380D305}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -159,6 +161,10 @@ Global
 		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C1D065E-D5E0-4024-89CB-B1F36F7D8422}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C2EFB06-B55B-4A58-B62F-49FEB380D305}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C2EFB06-B55B-4A58-B62F-49FEB380D305}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C2EFB06-B55B-4A58-B62F-49FEB380D305}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C2EFB06-B55B-4A58-B62F-49FEB380D305}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -168,6 +174,7 @@ Global
 		{A3803476-A968-41BA-86E9-AE456E8E3558} = {A6C8E01B-8688-4D61-AACF-E045B9BC68C6}
 		{47148FF0-D886-43B6-B7DF-BF5373C8D312} = {A6C8E01B-8688-4D61-AACF-E045B9BC68C6}
 		{22781B88-7BD4-4A97-B67D-3854AFBF6452} = {A6C8E01B-8688-4D61-AACF-E045B9BC68C6}
+		{5C2EFB06-B55B-4A58-B62F-49FEB380D305} = {A6C8E01B-8688-4D61-AACF-E045B9BC68C6}
 		{5CC7E3D9-702B-45A3-A413-A07D010C2651} = {021BF9C2-BF34-492B-88D5-192162B63FE4}
 		{5B708E08-1F69-4FDE-9D99-AFA3784A49D7} = {021BF9C2-BF34-492B-88D5-192162B63FE4}
 		{06F6DD18-FE2B-47D1-9639-7926F29FB3A5} = {021BF9C2-BF34-492B-88D5-192162B63FE4}
