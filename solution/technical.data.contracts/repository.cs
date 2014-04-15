@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
-using reexmonkey.foundation.essentials.contracts;
+using reexmonkey.infrastructure.operations.contracts;
 
 namespace reexmonkey.technical.data.contracts
 {

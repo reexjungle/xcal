@@ -53,9 +53,10 @@ namespace reexmonkey.xcal.application.server.web.dev.test.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("None")]
-        public global::reexmonkey.foundation.essentials.contracts.Authority fpiAuthority {
+        public global::reexmonkey.infrastructure.operations.contracts.Authority fpiAuthority
+        {
             get {
-                return ((global::reexmonkey.foundation.essentials.contracts.Authority)(this["fpiAuthority"]));
+                return ((global::reexmonkey.infrastructure.operations.contracts.Authority)(this["fpiAuthority"]));
             }
         }
         

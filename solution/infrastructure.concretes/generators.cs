@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using reexmonkey.foundation.essentials.contracts;
+using reexmonkey.infrastructure.operations.contracts;
 
 namespace reexmonkey.infrastructure.operations.concretes
 {
@@ -22,6 +20,7 @@ namespace reexmonkey.infrastructure.operations.concretes
             if (Regex.IsMatch(seed, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)) this.seed = seed;
             else throw new FormatException("seed does not match GUID format");
         }
+
         public string GetNextKey()
         {
             try
@@ -36,10 +35,10 @@ namespace reexmonkey.infrastructure.operations.concretes
         }
     }
 
-    public class FPIKeyGenerator<TDiscriminator>: IFPIKeyGenerator
-        where TDiscriminator: IEquatable<TDiscriminator>
+    public class FPIKeyGenerator<T>: IFPIKeyGenerator
+        where T: IEquatable<T>
     {
-        private IKeyGenerator<TDiscriminator> discriminator;
+        private IKeyGenerator<T> discriminator;
 
         public string ISO { get; set; }
         public string Owner { get; set; }
@@ -47,10 +46,9 @@ namespace reexmonkey.infrastructure.operations.concretes
         public string LanguageId { get; set; }
         public Authority Authority { get; set; }
 
-        public FPIKeyGenerator(IKeyGenerator<TDiscriminator> discriminator = null)
+        public FPIKeyGenerator(IKeyGenerator<T> discriminator = null)
         {
-            if (discriminator == null) throw new ArgumentNullException("Null Sequence Generator");
-            this.discriminator = discriminator;
+            if (discriminator != null) this.discriminator = discriminator;
         }
 
         public string GetNextKey()
@@ -106,4 +104,12 @@ namespace reexmonkey.infrastructure.operations.concretes
         }
     }
 
+    public static class GeneratorExtensions
+    {
+        public static string GetNextUrnKey<T>(this FPIKeyGenerator<T> generator)
+            where T: IEquatable<T>
+        {
+            return string.Format("urn:{0}", generator.GetNextKey().Replace("//", ":"));
+        }
+    }
 }

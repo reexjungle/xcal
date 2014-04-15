@@ -19,20 +19,21 @@ namespace reexmonkey.xcal.application.server.web.dev.test
         public void PublishMinimalEvent()
         {
             var sclient = new JsonServiceClient(Properties.Settings.Default.test_server);
-            var prodkeygen = new FPIKeyGenerator<string>()
-            {
-                Owner = Properties.Settings.Default.fpiOwner,
-                LanguageId = Properties.Settings.Default.fpiLanguageId,
-                Description = Properties.Settings.Default.fpiDescription,
-                Authority = Properties.Settings.Default.fpiAuthority
-            };
-
-
             try
             {
+                var prodkeygen = new FPIKeyGenerator<string>()
+                {
+                    Owner = Properties.Settings.Default.fpiOwner,
+                    LanguageId = Properties.Settings.Default.fpiLanguageId,
+                    Description = Properties.Settings.Default.fpiDescription,
+                    Authority = Properties.Settings.Default.fpiAuthority
+                };
+
+                var pkey = prodkeygen.GetNextKey();
+
                 var published = sclient.Post<VCALENDAR>(new PublishEvent
                 {
-                    ProductId = prodkeygen.GetNextKey(),
+                    ProductId = "abc123",
                     Events = new List<VEVENT> 
                     {
                         new VEVENT

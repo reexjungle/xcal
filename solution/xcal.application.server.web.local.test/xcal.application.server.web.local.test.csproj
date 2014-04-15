@@ -108,6 +108,10 @@
       <Project>{9b9036f7-c547-43d3-b1ec-bb0c5965dc12}</Project>
       <Name>infrastructure.concretes</Name>
     </ProjectReference>
+    <ProjectReference Include="..\infrastructure.contracts\infrastructure.contracts.csproj">
+      <Project>{82ed5f70-e1d9-456e-8686-c59306312726}</Project>
+      <Name>infrastructure.contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\xcal.domain.contracts\xcal.domain.contracts.csproj">
       <Project>{5cc7e3d9-702b-45a3-a413-a07d010c2651}</Project>
       <Name>xcal.domain.contracts</Name>

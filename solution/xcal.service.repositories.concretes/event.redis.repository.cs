@@ -9,6 +9,7 @@ using reexmonkey.foundation.essentials.contracts;
 using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.technical.data.concretes.extensions.redis;
+using reexmonkey.infrastructure.operations.contracts;
 
 namespace reexmonkey.xcal.service.repositories.concretes
 {
