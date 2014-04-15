@@ -21,7 +21,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             var sclient = new JsonServiceClient(Properties.Settings.Default.test_server);
             try
             {
-                var prodkeygen = new FPIKeyGenerator<string>()
+                var keygen = new FPIKeyGenerator<string>()
                 {
                     Owner = Properties.Settings.Default.fpiOwner,
                     LanguageId = Properties.Settings.Default.fpiLanguageId,
@@ -29,11 +29,11 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                     Authority = Properties.Settings.Default.fpiAuthority
                 };
 
-                var pkey = prodkeygen.GetNextKey();
+                var pkey = new GuidKeyGenerator().GetNextKey();
 
                 var published = sclient.Post<VCALENDAR>(new PublishEvent
                 {
-                    ProductId = "abc123",
+                    ProductId = keygen.GetNextKey(),
                     Events = new List<VEVENT> 
                     {
                         new VEVENT

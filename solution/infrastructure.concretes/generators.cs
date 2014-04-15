@@ -106,10 +106,14 @@ namespace reexmonkey.infrastructure.operations.concretes
 
     public static class GeneratorExtensions
     {
-        public static string GetNextUrnKey<T>(this FPIKeyGenerator<T> generator)
-            where T: IEquatable<T>
+        public static string ToUrn(this string fpi)
         {
-            return string.Format("urn:{0}", generator.GetNextKey().Replace("//", ":"));
+            return string.Format("urn:{0}", fpi.Replace("//", ":"));
+        }
+
+        public static string ToFpi(this string urn)
+        {
+            return string.Format("urn:{0}", urn.Substring(4).Replace(":", "//"));
         }
     }
 }

@@ -11,11 +11,11 @@
     <Setting Name="fpiOwner" Type="System.String" Scope="Application">
       <Value Profile="(Default)">reexMonkey</Value>
     </Setting>
-    <Setting Name="fpiAuthority" Type="reexmonkey.crosscut.essentials.contracts.Authority" Scope="Application">
-      <Value Profile="(Default)">None</Value>
-    </Setting>
     <Setting Name="fpiLanguageId" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">En-en</Value>
+      <Value Profile="(Default)">EN</Value>
+    </Setting>
+    <Setting Name="fpiAuthority" Type="reexmonkey.infrastructure.operations.contracts.Authority" Scope="Application">
+      <Value Profile="(Default)">None</Value>
     </Setting>
   </Settings>
 </SettingsFile>
