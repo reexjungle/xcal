@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using reexmonkey.foundation.essentials.contracts;
 
-namespace reexmonkey.foundation.essentials.concretes
+namespace reexmonkey.infrastructure.operations.concretes
 {
     public class GuidKeyGenerator: IGuidKeyGenerator
     {

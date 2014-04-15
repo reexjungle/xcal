@@ -304,9 +304,19 @@ namespace reexmonkey.xcal.application.server.web.local
                 //NOTE: Redis Server must already be installed on the local machine and must be running
                 container.Register<IRedisClientsManager>(x => new BasicRedisClientManager(Properties.Settings.Default.redis_server));
 
-                var redis = container.Resolve<IRedisClientsManager>().GetClient();
-                redis.FlushDb();
-
+                try
+                {
+                    var redis = container.Resolve<IRedisClientsManager>().GetClient();
+                    redis.FlushDb();
+                }
+                catch (RedisResponseException ex)
+                {
+                    container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString(), ex);
+                }
+                catch (RedisException ex)
+                {
+                    container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString(), ex);
+                }
                 #endregion
             }
 

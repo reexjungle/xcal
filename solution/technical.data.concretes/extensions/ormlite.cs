@@ -3,12 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Linq;
 using System.Linq.Expressions;
-using ServiceStack;
 using ServiceStack.OrmLite;
-using reexmonkey.foundation.essentials.concretes;
 using ServiceStack.Common.Utils;
 
 namespace reexmonkey.technical.data.concretes.extensions.ormlite

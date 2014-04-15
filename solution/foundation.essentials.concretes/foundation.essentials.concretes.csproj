@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4117DC99-EA03-4B8F-A808-368FEAA3C5F2}</ProjectGuid>
+    <ProjectGuid>{EEDF1367-A0FC-400A-A649-716261252B9E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.crosscut.operations.contracts</RootNamespace>
-    <AssemblyName>crosscut.contracts</AssemblyName>
+    <RootNamespace>reexmonkey.foundation.essentials.concretes</RootNamespace>
+    <AssemblyName>foundation.essentials.concretes</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -39,8 +39,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="logging.cs" />
+    <Compile Include="collections.cs" />
+    <Compile Include="datetime.cs" />
+    <Compile Include="exceptions.cs" />
+    <Compile Include="expressions.cs" />
+    <Compile Include="math.cs" />
+    <Compile Include="numerical.cs" />
+    <Compile Include="strings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\foundation.essentials.contracts\foundation.essentials.contracts.csproj">
+      <Project>{0188be5c-bafa-4fac-b068-11dcf7cd918e}</Project>
+      <Name>foundation.essentials.contracts</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

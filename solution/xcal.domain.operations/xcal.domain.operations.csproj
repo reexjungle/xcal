@@ -73,11 +73,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\crosscut.essentials.concretes\foundation.essentials.concretes.csproj">
-      <Project>{eedf1367-a0fc-400a-a649-716261252b9e}</Project>
-      <Name>foundation.essentials.concretes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\crosscut.essentials.contracts\foundation.essentials.contracts.csproj">
+    <ProjectReference Include="..\foundation.essentials.contracts\foundation.essentials.contracts.csproj">
       <Project>{0188be5c-bafa-4fac-b068-11dcf7cd918e}</Project>
       <Name>foundation.essentials.contracts</Name>
     </ProjectReference>

@@ -74,7 +74,7 @@
     <Compile Include="validators.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\crosscut.goodies.contracts\crosscut.operations.contracts.csproj">
+    <ProjectReference Include="..\crosscut.operations.contracts\crosscut.operations.contracts.csproj">
       <Project>{4117dc99-ea03-4b8f-a808-368feaa3c5f2}</Project>
       <Name>crosscut.operations.contracts</Name>
     </ProjectReference>

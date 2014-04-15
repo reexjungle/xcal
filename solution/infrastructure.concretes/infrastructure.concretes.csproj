@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EEDF1367-A0FC-400A-A649-716261252B9E}</ProjectGuid>
+    <ProjectGuid>{9B9036F7-C547-43D3-B1EC-BB0C5965DC12}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.foundation.essentials.concretes</RootNamespace>
-    <AssemblyName>foundation.essentials.concretes</AssemblyName>
+    <RootNamespace>infrastructure.concretes</RootNamespace>
+    <AssemblyName>infrastructure.concretes</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,17 +40,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="collections.cs" />
-    <Compile Include="datetime.cs" />
-    <Compile Include="exceptions.cs" />
-    <Compile Include="expressions.cs" />
-    <Compile Include="math.cs" />
-    <Compile Include="numerical.cs" />
-    <Compile Include="strings.cs" />
+    <Compile Include="codedom.cs" />
+    <Compile Include="comparer.cs" />
+    <Compile Include="copy.cs" />
+    <Compile Include="encoders.cs" />
+    <Compile Include="file.cs" />
+    <Compile Include="generators.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="reflectors.cs" />
+    <Compile Include="search.cs" />
+    <Compile Include="extensions.cs" />
+    <Compile Include="xml.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\crosscut.essentials.contracts\foundation.essentials.contracts.csproj">
+    <ProjectReference Include="..\foundation.essentials.contracts\foundation.essentials.contracts.csproj">
       <Project>{0188be5c-bafa-4fac-b068-11dcf7cd918e}</Project>
       <Name>foundation.essentials.contracts</Name>
     </ProjectReference>

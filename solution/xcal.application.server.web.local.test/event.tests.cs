@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ServiceStack.ServiceClient.Web;
-using reexmonkey.crosscut.essentials.contracts;
-using reexmonkey.crosscut.essentials.concretes;
+using reexmonkey.foundation.essentials.contracts;
+using reexmonkey.foundation.essentials.concretes;
+using reexmonkey.infrastructure.operations.concretes;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.domain.operations;
+
 
 namespace reexmonkey.xcal.application.server.web.dev.test
 {
