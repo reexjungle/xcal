@@ -56,8 +56,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(AUDIO_ALARM other)
         {
             if (other == null) return false;
-            return (this.Action == other.Action && this.Trigger == other.Trigger 
-                && this.Duration == other.Duration && this.Repeat == other.Repeat);
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override string ToString()
@@ -158,11 +157,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(DISPLAY_ALARM other)
         {
             if (other == null) return false;
-            return (this.Action == other.Action && 
-                this.Trigger == other.Trigger && 
-                this.Duration == other.Duration && 
-                this.Repeat == other.Repeat) &&
-                this.Description == other.Description;
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override string ToString()
@@ -290,14 +285,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(EMAIL_ALARM other)
         {
             if (other == null) return false;
-            return this.Action == other.Action && 
-                this.Trigger == other.Trigger && 
-                this.Duration == other.Duration && 
-                this.Repeat == other.Repeat &&
-                this.Description == other.Description &&
-                this.Summary == other.Summary &&
-                ((!this.Attendees.NullOrEmpty())? this.Attendees.AreDuplicatesOf(other.Attendees): true) &&
-                ((!this.Attachments.NullOrEmpty())? this.Attachments.AreDuplicatesOf(other.Attachments): true);
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override string ToString()

@@ -97,67 +97,6 @@ namespace reexmonkey.xcal.domain.models
     }
 
     [DataContract]
-    public class CN : ICN, IEquatable<CN>
-    {
-        /// <summary>
-        /// Gets or sets the Uniform Resource Identifier (URI) that points to an alternative representation for a textual property value
-        /// </summary>
-        [DataMember]
-        public string Value { get; set; }
-
-        public bool IsDefault()
-        {
-            return string.IsNullOrEmpty(this.Value);
-        }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="uri">The textual representation of the URI value for the alternative text representation</param>
-        public CN(string value)
-        {
-            this.Value = value;
-        }
-
-        public bool Equals(CN other)
-        {
-            if (other == null) return false;
-            return (this.Value == other.Value);
-        }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.AppendFormat("CN={0}", this.Value);
-            return sb.ToString();
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return this.Equals(obj as CN);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.Value.GetHashCode();
-        }
-
-        public static bool operator ==(CN cn, CN other)
-        {
-            if (other == null) return false;
-            return cn.Equals(other);
-        }
-
-        public static bool operator !=(CN cn, CN other)
-        {
-            if (other == null) return false;
-            return !cn.Equals(other);
-        }
-
-    }
-
-    [DataContract]
     [KnownType(typeof(URI))]
     public class DELEGATED_FROM : IDELEGATE, IEquatable<DELEGATED_FROM>
     {
@@ -301,70 +240,6 @@ namespace reexmonkey.xcal.domain.models
         {
             if (a == null || b == null) return false;
             return !a.Equals(b);
-        }
-
-    }
-
-    /// <summary>
-    /// Directory Entry Reference. 
-    /// Provides a reference to a directory entry associated with the calendar user specified by the user.
-    /// </summary>
-    [DataContract]
-    [KnownType(typeof(URI))]
-    public class DIR : IDIR, IEquatable<DIR>
-    {
-        /// <summary>
-        /// Gets or sets URI reference to the directory entry.
-        /// </summary>
-        [DataMember]
-        public IURI Uri{ get; set; }
-
-        public bool IsDefault()
-        {
-             return this.Uri.IsDefault();
-        }
-
-        /// <summary>
-        /// Overloaded constructor
-        /// </summary>
-        /// <param name="value">The textual representation of the URI value for the alternative text representation</param>
-        public DIR(URI value)
-        {
-            this.Uri = value;
-        }
-
-        public override string ToString()
-        {
-            return string.Format("DIR={0}", this.Uri);
-        }
-
-        public bool Equals(DIR other)
-        {
-            if (other == null) return false;
-            return (this.Uri == other.Uri);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return this.Equals(obj as DIR);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.Uri.GetHashCode();
-        }
-
-        public static bool operator ==(DIR dir, DIR other)
-        {
-            if (other == null) return false;
-            return dir.Equals(other);
-        }
-
-        public static bool operator !=(DIR dir, DIR other)
-        {
-            if (other == null) return false;
-            return !dir.Equals(other);
         }
 
     }

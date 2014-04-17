@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using ServiceStack.OrmLite;
 using ServiceStack.Common.Utils;
+using reexmonkey.foundation.essentials.concretes;
 
 namespace reexmonkey.technical.data.concretes.extensions.ormlite
 {
@@ -125,38 +126,37 @@ namespace reexmonkey.technical.data.concretes.extensions.ormlite
             var id = entity.GetId();
             if (transaction != null) cmd.Transaction = transaction;
             var existing = cmd.GetByIdOrDefault<T>(id);
-            if (existing.Equals(default(T))) cmd.Insert(entity);
+            if (Equals(existing, default(T))) cmd.Insert(entity);
             else cmd.Update(entity);
         }
 
         internal static void SaveAll<T>(this IDbCommand cmd, IEnumerable<T> entities, IDbTransaction transaction)
         {
             var rows = entities.ToList();
-
             var first = rows.FirstOrDefault();
-            if (first.Equals(default(T))) return;
+            if (Equals(first, default(T))) return;
 
-            var defkey = ReflectionUtils.GetDefaultValue(first.GetId().GetType());
+            var defkeyvalue = ReflectionUtils.GetDefaultValue(first.GetId().GetType());
 
-            var map = (defkey != null)
-                ? rows.Where(x => !defkey.Equals(x.GetId())).ToDictionary(x => x.GetId())
+            var keymap = (defkeyvalue != null)
+                ? rows.Where(x => !defkeyvalue.Equals(x.GetId())).ToDictionary(x => x.GetId())
                 : rows.Where(x => x.GetId() != null).ToDictionary(x => x.GetId());
 
-            var existing = cmd.GetByIds<T>(map.Keys).ToDictionary(x => x.GetId());
-
+            var existing = cmd.GetByIds<T>(keymap.Keys).ToDictionary(x => x.GetId());
             if (transaction != null) cmd.Transaction = transaction;
 
             foreach (var row in rows)
             {
                 var id = IdUtils.GetId(row);
-                if (id != defkey && existing.ContainsKey(id)) cmd.Update(row);
-                else cmd.Insert(row);
+                if (id != defkeyvalue && existing.ContainsKey(id)) 
+                    cmd.Update(row);
+                else 
+                    cmd.Insert(row);
             }
 
         }
 
         #endregion
-
 
         #region common dml read operations
 

@@ -10,6 +10,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
     public interface ICalendarRepository:
         IReadRepository<VCALENDAR, string>,
         IWriteRepository<VCALENDAR, string>,
+        IReadRepositoryKeys<string>,
         IPaginated<int>
     {
         /// <summary>

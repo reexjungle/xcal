@@ -23,6 +23,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         private IDbConnection conn;
         private IDbConnectionFactory factory = null;
         private int? take = null;
+        private IKeyGenerator<string> keygen;
 
         private IDbConnection db
         {
@@ -46,7 +47,17 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 this.take = value;
             }
         }
-        public IKeyGenerator<string> KeyGenerator { get; set; }
+
+        public IKeyGenerator<string> KeyGenerator
+        {
+            get { return this.keygen; }
+            set
+            {
+                if (value == null) throw new ArgumentNullException("KeyGenerator");
+                this.keygen = value;
+            }
+        }
+
 
 
         public AudioAlarmOrmLiteRepository() { }
@@ -54,7 +65,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             this.DbConnectionFactory = factory;
             this.Take = pages;
-            this.conn = this.factory.OpenDbConnection();
         }
         public AudioAlarmOrmLiteRepository(IDbConnection connection, int? pages)
         {

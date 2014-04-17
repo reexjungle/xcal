@@ -2024,6 +2024,14 @@ namespace reexmonkey.xcal.domain.models
             }
         }
 
+        public UTC_OFFSET(IUTC_OFFSET offset)
+        {
+            this.HOUR = offset.HOUR;
+            this.MINUTE = offset.MINUTE;
+            this.SECOND = offset.SECOND;
+            this.Sign = offset.Sign;
+        }
+
         public override string ToString()
         {
             if (this.sign == SignType.Negative) return string.Format("-{0:D2}{1:D2}{2:D2}", this.hour, this.minute, this.second);

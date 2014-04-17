@@ -17,37 +17,17 @@ namespace reexmonkey.xcal.domain.models
     /// Specifes a contract for the VEVENT component of the iCalendar Core Object
     /// </summary>
     [DataContract]
-    [KnownType(typeof(DATE_TIME))]
-    [KnownType(typeof(DESCRIPTION))]
-    [KnownType(typeof(GEO))]
-    [KnownType(typeof(LOCATION))]
-    [KnownType(typeof(ORGANIZER))]
-    [KnownType(typeof(PRIORITY))]
-    [KnownType(typeof(SUMMARY))]
-    [KnownType(typeof(URI))]
-    [KnownType(typeof(RECURRENCE_ID))]
-    [KnownType(typeof(RECUR))]
-    [KnownType(typeof(DURATION))]
     [KnownType(typeof(ATTACH_BINARY))]
     [KnownType(typeof(ATTACH_URI))]
-    [KnownType(typeof(ATTENDEE))]
-    [KnownType(typeof(CATEGORIES))]
-    [KnownType(typeof(COMMENT))]
-    [KnownType(typeof(CONTACT))]
-    [KnownType(typeof(EXDATE))]
-    [KnownType(typeof(REQUEST_STATUS))]
-    [KnownType(typeof(RESOURCES))]
-    [KnownType(typeof(RELATEDTO))]
-    [KnownType(typeof(RDATE))]
     [KnownType(typeof(AUDIO_ALARM))]
     [KnownType(typeof(DISPLAY_ALARM))]
     [KnownType(typeof(EMAIL_ALARM))]
     public class VEVENT : IEVENT, IEquatable<VEVENT>, IComparable<VEVENT>, IContainsKey<string>
     {
         private string uid;
-        private IDATE_TIME start;
-        private IDATE_TIME end;
-        private IDURATION duration;
+        private DATE_TIME start;
+        private DATE_TIME end;
+        private DURATION duration;
 
         /// <summary>
         /// Gets or sets the unique identifier of the event. It is synonymous to the &quot;Uid&quot; property of the event. 
@@ -56,26 +36,29 @@ namespace reexmonkey.xcal.domain.models
         [Index(Unique = true)] 
         public string Id
         {
-            get { return (this.RecurrenceId != null)? string.Format("{0}-{1}", this.Uid, this.RecurrenceId.Value): this.Uid; }
-            set 
-            {
-                var pattern = @"^(?<uid>(\p{L})+)+(?<hyphen>-)?(?<recurid>(\p{L}+\p{P}*\s*)+)$";
-                if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
-                {
-                    foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
-                    {
-                        if (match.Groups["uid"].Success) this.Uid = match.Groups["uid"].Value;
-                        if (match.Groups["recurid"].Success) 
-                        {
-                           var recurid = match.Groups["recurid"].Value.TryParse_IDATETIME<DATE_TIME>();
-                           if (this.RecurrenceId == null)
-                               this.RecurrenceId = (recurid != null) ? new RECURRENCE_ID(recurid) : ((this.Start != null) ?new RECURRENCE_ID(this.Start): null);
-                           else this.RecurrenceId.Value = (recurid != null && string.IsNullOrEmpty(recurid.ToString())) ? recurid : this.Start;
+            get { return this.Uid;}
+            set {this.Uid = value;}
 
-                        };
-                    }
-                }
-            }
+            //get { return (this.RecurrenceId != null)? string.Format("{0}-{1}", this.Uid, this.RecurrenceId.Value): this.Uid; }
+            //set 
+            //{
+            //    var pattern = @"^(?<uid>(\p{L})+)+(?<hyphen>-)?(?<recurid>(\p{L}+\p{P}*\s*)+)$";
+            //    if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
+            //    {
+            //        foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
+            //        {
+            //            if (match.Groups["uid"].Success) this.Uid = match.Groups["uid"].Value;
+            //            if (match.Groups["recurid"].Success) 
+            //            {
+            //               var recurid = match.Groups["recurid"].Value.TryParse_IDATETIME<DATE_TIME>();
+            //               if (this.RecurrenceId == null)
+            //                   this.RecurrenceId = (recurid != null) ? new RECURRENCE_ID(recurid) : ((this.Start != null) ?new RECURRENCE_ID(this.Start): null);
+            //               else this.RecurrenceId.Value = (recurid != null && string.IsNullOrEmpty(recurid.ToString())) ? recurid : this.Start;
+
+            //            };
+            //        }
+            //    }
+            //}
         }
 
         /// <summary>
@@ -89,10 +72,10 @@ namespace reexmonkey.xcal.domain.models
         }
 
         [DataMember]
-        public IDATE_TIME Datestamp { get; set; }
+        public DATE_TIME Datestamp { get; set; }
 
         [DataMember]
-        public IDATE_TIME Start
+        public DATE_TIME Start
         {
             get { return this.start; }
             set
@@ -106,26 +89,26 @@ namespace reexmonkey.xcal.domain.models
         public CLASS Classification { get; set; }
 
         [DataMember]
-        public IDATE_TIME Created { get; set; }
+        public DATE_TIME Created { get; set; }
 
         [DataMember]
-        public ITEXT Description { get; set; }
+        public DESCRIPTION Description { get; set; }
 
         [DataMember]
-        public IGEO Geo { get; set; }
+        public GEO Geo { get; set; }
 
         [DataMember]
-        public IDATE_TIME LastModified { get; set; }
+        public DATE_TIME LastModified { get; set; }
 
         [DataMember]
-        public ITEXT Location { get; set; }
+        public LOCATION Location { get; set; }
 
         [DataMember]
         [Ignore]
-        public IORGANIZER Organizer { get; set; }
+        public ORGANIZER Organizer { get; set; }
 
         [DataMember]
-        public IPRIORITY Priority { get; set; }
+        public PRIORITY Priority { get; set; }
 
         [DataMember]
         public int Sequence { get; set; }
@@ -134,24 +117,24 @@ namespace reexmonkey.xcal.domain.models
         public STATUS Status { get; set; }
 
         [DataMember]
-        public ITEXT Summary { get; set; }
+        public SUMMARY Summary { get; set; }
 
         [DataMember]
         public TRANSP Transparency { get; set; }
 
         [DataMember]
-        public IURI Url { get; set; }
+        public URI Url { get; set; }
 
         [DataMember]
         [Ignore]
-        public IRECURRENCE_ID RecurrenceId { get; set; }
+        public RECURRENCE_ID RecurrenceId { get; set; }
 
         [DataMember]
         [Ignore]
-        public IRECUR RecurrenceRule { get; set; }
+        public RECUR RecurrenceRule { get; set; }
 
         [DataMember]
-        public IDATE_TIME End
+        public DATE_TIME End
         {
             get { return this.end; }
             set 
@@ -165,7 +148,7 @@ namespace reexmonkey.xcal.domain.models
         }
 
         [DataMember]
-        public IDURATION Duration 
+        public DURATION Duration 
         {
             get { return this.duration; } 
             set
@@ -173,7 +156,7 @@ namespace reexmonkey.xcal.domain.models
                 this.duration = value;
                 if(this.start != null && this.duration != null)
                 {
-                    this.end = new DATE_TIME(this.start) + new DURATION(this.duration);
+                    this.end = start + duration;
                 }
             }
         }
@@ -184,38 +167,38 @@ namespace reexmonkey.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public List<IATTENDEE> Attendees { get; set; }
+        public List<ATTENDEE> Attendees { get; set; }
 
         [DataMember]
-        public ICATEGORIES Categories { get; set; }
-
-        [DataMember]
-        [Ignore]
-        public List<ITEXT> Comments { get; set; }
+        public CATEGORIES Categories { get; set; }
 
         [DataMember]
         [Ignore]
-        public List<ICONTACT> Contacts { get; set; }
+        public List<COMMENT> Comments { get; set; }
 
         [DataMember]
         [Ignore]
-        public List<IEXDATE> ExceptionDates { get; set; }
+        public List<CONTACT> Contacts { get; set; }
 
         [DataMember]
         [Ignore]
-        public List<IREQUEST_STATUS> RequestStatuses { get; set; }
+        public List<EXDATE> ExceptionDates { get; set; }
 
         [DataMember]
         [Ignore]
-        public List<IRESOURCES> Resources { get; set; }
+        public List<REQUEST_STATUS> RequestStatuses { get; set; }
 
         [DataMember]
         [Ignore]
-        public List<IRELATEDTO> RelatedTos { get; set; }
+        public List<RESOURCES> Resources { get; set; }
 
         [DataMember]
         [Ignore]
-        public List<IRDATE> RecurrenceDates { get; set; }
+        public List<RELATEDTO> RelatedTos { get; set; }
+
+        [DataMember]
+        [Ignore]
+        public List<RDATE> RecurrenceDates { get; set; }
 
         [DataMember]
         [Ignore]
@@ -233,13 +216,12 @@ namespace reexmonkey.xcal.domain.models
         {
             this.Datestamp = new DATE_TIME(DateTimeOffset.Now);
             this.Created = new DATE_TIME(DateTimeOffset.Now);
-            this.LastModified = new DATE_TIME(DateTimeOffset.Now);
         }
 
-        public VEVENT(IDATE_TIME dtstamp, string uid, IDATE_TIME dtstart,  IORGANIZER organizer = null, ITEXT location = null, 
-            IPRIORITY priority = null, STATUS status = STATUS.NEEDS_ACTION, ITEXT summary = null, TRANSP transparency = TRANSP.TRANSPARENT,
-            IRECURRENCE_ID recurid = null, IRECUR rrule = null, IDATE_TIME dtend = null,
-            List<IATTENDEE> attendees = null, ICATEGORIES categories = null, List<IRELATEDTO> relatedtos = null)
+        public VEVENT(DATE_TIME dtstamp, string uid, DATE_TIME dtstart,  ORGANIZER organizer = null, LOCATION location = null, 
+            PRIORITY priority = null, STATUS status = STATUS.NEEDS_ACTION, SUMMARY summary = null, TRANSP transparency = TRANSP.TRANSPARENT,
+            RECURRENCE_ID recurid = null, RECUR rrule = null, DATE_TIME dtend = null,
+            List<ATTENDEE> attendees = null, CATEGORIES categories = null, List<RELATEDTO> relatedtos = null)
         {
             this.Datestamp = dtstamp;
             this.Uid = uid;
@@ -259,10 +241,10 @@ namespace reexmonkey.xcal.domain.models
         }
 
 
-        public VEVENT(IDATE_TIME dtstamp, string uid, IDATE_TIME dtstart = null, IORGANIZER organizer = null, ITEXT location = null,
-            IPRIORITY priority = null, STATUS status = STATUS.NEEDS_ACTION, ITEXT summary = null, TRANSP transparency = TRANSP.TRANSPARENT,
-            IRECURRENCE_ID recurid = null, IRECUR rrule = null, IDURATION duration = null,
-            List<IATTENDEE> attendees = null, ICATEGORIES categories = null, List<IRELATEDTO> relatedtos = null)
+        public VEVENT(DATE_TIME dtstamp, string uid, DATE_TIME dtstart = null, ORGANIZER organizer = null, LOCATION location = null,
+            PRIORITY priority = null, STATUS status = STATUS.NEEDS_ACTION, SUMMARY summary = null, TRANSP transparency = TRANSP.TRANSPARENT,
+            RECURRENCE_ID recurid = null, RECUR rrule = null, DURATION duration = null,
+            List<ATTENDEE> attendees = null, CATEGORIES categories = null, List<RELATEDTO> relatedtos = null)
         {
             this.Datestamp = dtstamp;
             this.Uid = uid;
@@ -349,7 +331,7 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             sb.Append("BEGIN:VEVENT").AppendLine();
             sb.AppendFormat("DTSTAMP:{0}", this.Datestamp).AppendLine();
-            sb.AppendFormat("UID:{0}", this.Uid).AppendLine();
+            sb.AppendFormat("string:{0}", this.Uid).AppendLine();
 
             if (this.Start != null)
             {

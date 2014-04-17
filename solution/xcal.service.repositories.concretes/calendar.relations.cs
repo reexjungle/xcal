@@ -29,7 +29,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             if (other == null) return false;
             return (this.CalendarId.Equals(other.CalendarId, StringComparison.OrdinalIgnoreCase) &&
-                this.CalendarId.Equals(other.CalendarId, StringComparison.OrdinalIgnoreCase));
+                this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase));
         }
 
         public override bool Equals(object obj)

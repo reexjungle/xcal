@@ -18,7 +18,7 @@ namespace reexmonkey.technical.data.concretes.extensions.ormlite.mysql
             });
         }
 
-        public static void CreateMySqlDatabase(this IDbConnection db, string db_name, bool overwrite = false)
+        public static void CreateSchemaIfNotExists(this IDbConnection db, string db_name, bool overwrite = false)
         {
             if (overwrite) db.DropMySqlDatabase(db_name);
             db.Exec(x =>

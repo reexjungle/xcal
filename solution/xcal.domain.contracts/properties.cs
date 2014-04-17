@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace reexmonkey.xcal.domain.contracts
 {
-
     public interface IPROPERTY 
     {
         bool IsDefault();
@@ -55,19 +54,6 @@ namespace reexmonkey.xcal.domain.contracts
         ILANGUAGE Language { get; set; }
     }
 
-    //public interface ICOMMENT : IPROPERTY
-    //{
-    //    /// <summary>
-    //    /// Gets or sets the text of the comment
-    //    /// </summary>
-    //    string Text { get; set; }
-
-    //    IALTREP AlternativeText { get; set; }
-
-    //    ILANGUAGE Language { get; set; }
-
-    //}
-
     public interface ITEXT : IPROPERTY
     {
         IALTREP AlternativeText { get; set; }
@@ -85,16 +71,7 @@ namespace reexmonkey.xcal.domain.contracts
         float Longitude { get; set; }
         float Latitude { get; set; }
     } 
-  
-    //public interface ILOCATION : IPROPERTY
-    //{
-    //    IALTREP AlternativeText { get; set; }
-
-    //    ILANGUAGE Language { get; set; }
-
-    //    string Text { get; set; }
-    //} 
-
+ 
     public interface IRESOURCES : IPROPERTY
     {
         IALTREP AlternativeText { get; set; }
@@ -103,15 +80,6 @@ namespace reexmonkey.xcal.domain.contracts
 
         List<string> Values { get; set; }
     }
-
-    //public interface ISUMMARY : IPROPERTY
-    //{
-    //    IALTREP AlternativeText { get; set; }
-
-    //    ILANGUAGE Language { get; set; }
-
-    //    string Text { get; set; }
-    //}
 
     public interface IPRIORITY: IPROPERTY
     {
@@ -125,36 +93,16 @@ namespace reexmonkey.xcal.domain.contracts
 
     #region Date and Time Component Properties
 
-    public interface IDURATIONPROP: IPROPERTY
-    {
-        IDURATION Value { get; set; }
-    }
-
     public interface IFREEBUSY : IPROPERTY
     {
         FBTYPE Type { get; set; }
 
         IEnumerable<IPERIOD> Periods { get; set; }
     }
-
-#endregion
+    
+    #endregion
 
     #region Time Zone Component Properties
-
-    public interface ITZIDPROP : IPROPERTY
-    {
-        /// <summary>
-        /// Gets or sets whether the time-zone prefix should be included
-        /// </summary>
-        bool GloballyUnique { get; set; }
-
-        string Prefix { get; set; }
-
-        /// <summary>
-        /// Gets or sets the identifier for the time zone definition for a time component
-        /// </summary>
-        string Value { get; set; }
-    }
 
     public interface ITZNAME : IPROPERTY
     {
@@ -172,12 +120,6 @@ namespace reexmonkey.xcal.domain.contracts
     {
         IUTC_OFFSET Offset { get; set; }
     }
-
-    public interface ITZURL : IPROPERTY
-    {
-        IURI Uri { get; set; }
-    }
-
 
     #endregion
 
@@ -231,16 +173,6 @@ namespace reexmonkey.xcal.domain.contracts
         RELTYPE RelationshipType { get; set; }
     }
 
-    public interface IURL : IPROPERTY
-    {
-        IURI Uri { get; set; }
-    }
-
-    public interface IUID : IPROPERTY
-    {
-        string Value {get; set;}
-    }
-
     #endregion
 
     #region Recurrence Component Properties
@@ -258,11 +190,6 @@ namespace reexmonkey.xcal.domain.contracts
         IEnumerable<IPERIOD> Periods { get; set; }
         ITZID TimeZoneId { get; set; }
         ValueFormat Format { get; set; }
-    }
-
-    public interface IRRULE: IPROPERTY
-    {
-        IRECUR Value { get; set; }
     }
 
     #endregion

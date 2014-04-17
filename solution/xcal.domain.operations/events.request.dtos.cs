@@ -43,7 +43,7 @@ namespace reexmonkey.xcal.domain.operations
     /// </summary>
     [DataContract]
     [Api ("Reschedules an event or events. This involves a change in terms of time or recurrence intervals and possibly the location or description.")]
-    [Route("/calendars/{ProductId}/event/reschedule", "PATCH", Summary="Reschedules an event or events", Notes="All the events must share the same UID")]
+    [Route("/calendars/{ProductId}/event/reschedule", "PATCH", Summary="Reschedules an event or events", Notes="All the events must share the same string")]
     public class RescheduleEvent : IReturn<VCALENDAR>
     {
         /// <summary>
@@ -230,7 +230,7 @@ namespace reexmonkey.xcal.domain.operations
         [DataMember]
         public string ProductId { get; set; }
 
-        public UID Uid { get; set; }
+        public string Uid { get; set; }
 
         [DataMember]
         public DATE_TIME StartDate { get; set; }
@@ -272,7 +272,7 @@ namespace reexmonkey.xcal.domain.operations
         public RECURRENCE_ID RecurrenceId { get; set; }
 
         [DataMember]
-        public RRULE RecurrenceRule { get; set; }
+        public RECUR RecurrenceRule { get; set; }
 
         [DataMember]
         public DATE_TIME EndDate { get; set; }
@@ -358,7 +358,7 @@ namespace reexmonkey.xcal.domain.operations
         public ORGANIZER Organizer {get; set;}
 
         [DataMember]
-        public UID Uid {get; set;}
+        public string Uid {get; set;}
 
         [DataMember]
         public List<COMMENT> Comments { get; set; }
@@ -369,7 +369,7 @@ namespace reexmonkey.xcal.domain.operations
         [DataMember]
         public List<VTIMEZONE> TimeZones{get; set;}
 
-        public RefreshEvent(string prodid, UID uid, ATTENDEE attendee, ORGANIZER organizer, DATE_TIME dtstamp, List<VTIMEZONE> timezones = null)
+        public RefreshEvent(string prodid, string uid, ATTENDEE attendee, ORGANIZER organizer, DATE_TIME dtstamp, List<VTIMEZONE> timezones = null)
         {
             this.ProductId = prodid;
             this.Uid = uid;

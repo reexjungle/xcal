@@ -69,6 +69,8 @@
     <Compile Include="alarm.cs" />
     <Compile Include="calendar.cs" />
     <Compile Include="event.cs" />
+    <Compile Include="icalendar.cs" />
+    <Compile Include="ievent.cs" />
     <Compile Include="parameters.cs" />
     <Compile Include="properties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

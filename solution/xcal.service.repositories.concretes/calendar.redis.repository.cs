@@ -191,14 +191,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     transaction.QueueCommand(x => x.Store(this.Dehydrate(entity)));
 
                 }
-                catch (RedisResponseException)
-                {
-                    throw;
-                }
-                catch (InvalidOperationException)
-                {
-                    throw;
-                }
+                catch (RedisResponseException) { throw; }
+                catch (RedisException) { throw; }
+                catch (InvalidOperationException) {    throw; }
             });
         }
 
@@ -416,5 +411,15 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return dry ?? full;
         }
 
+
+        public IEnumerable<string> GetKeys(int? skip = null)
+        {
+            if (skip == null) return this.redis.As<VCALENDAR>().GetAllKeys();
+            else
+            {
+                var keys = this.redis.As<VCALENDAR>().GetAllKeys();
+                return (!keys.NullOrEmpty()) ? keys.Skip(skip.Value).Take(take.Value) : keys;
+            }
+        }
     }
 }

@@ -27,7 +27,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                     LanguageId = Properties.Settings.Default.fpiLanguageId,
                     Description = Properties.Settings.Default.fpiDescription,
                     Authority = Properties.Settings.Default.fpiAuthority
-                }.GetNextKey().ToUrn(),
+                }.GetNextKey(),
 
                 Events = new List<VEVENT> 
                     {
@@ -61,7 +61,6 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
             Assert.AreNotEqual(published, null);
             Assert.AreEqual(published.Method, METHOD.PUBLISH);
-            Assert.AreEqual(published.Components.Count, 1);
 
             var pevent = published.Components[0] as VEVENT;
             Assert.AreNotEqual(pevent, null);

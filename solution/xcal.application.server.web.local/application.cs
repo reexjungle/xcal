@@ -65,7 +65,7 @@ namespace reexmonkey.xcal.application.server.web.local
             #region inject plugins
 
             //register all validators defined in the assembly of EventValidator
-            container.RegisterValidators(typeof(EventValidator).Assembly);
+            //container.RegisterValidators(typeof(EventValidator).Assembly);
 
             #endregion
 
@@ -101,25 +101,15 @@ namespace reexmonkey.xcal.application.server.web.local
                 dbfactory.Run(x =>
                 {
                     //create NLog database and table
-                    if (string.IsNullOrEmpty(x.Database))
-                    {
-                        x.CreateMySqlDatabase(Properties.Settings.Default.nlog_db_name, Properties.Settings.Default.overwrite_db);
-                        x.ChangeDatabase(Properties.Settings.Default.nlog_db_name);
-
-                    }
-                    else if (!x.Database.Equals(Properties.Settings.Default.nlog_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.nlog_db_name);
+                    x.CreateSchemaIfNotExists(Properties.Settings.Default.nlog_db_name, Properties.Settings.Default.overwrite_db);
+                    x.ChangeDatabase(Properties.Settings.Default.nlog_db_name);
+                    x.ConnectionString = string.Format("{0}; Database={1}", Properties.Settings.Default.mysql_server, Properties.Settings.Default.nlog_db_name);
                     x.CreateTableIfNotExists<NlogTable>();
 
-
                     //create elmah database, table and stored procedures
-                    if (string.IsNullOrEmpty(x.Database))
-                    {
-                        x.CreateMySqlDatabase(Properties.Settings.Default.elmah_db_name, Properties.Settings.Default.overwrite_db);
-                        x.ChangeDatabase(Properties.Settings.Default.elmah_db_name);
-
-                    }
-                    else if (!x.Database.Equals(Properties.Settings.Default.elmah_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.elmah_db_name);
-
+                    x.CreateSchemaIfNotExists(Properties.Settings.Default.elmah_db_name, Properties.Settings.Default.overwrite_db);
+                    x.ChangeDatabase(Properties.Settings.Default.elmah_db_name);
+                    x.ConnectionString = string.Format("{0}; Database={1}", Properties.Settings.Default.mysql_server, Properties.Settings.Default.elmah_db_name);
 
                     //execute initialization script on first run
                     if (!x.TableExists(Properties.Settings.Default.elmah_error_table))
@@ -160,39 +150,7 @@ namespace reexmonkey.xcal.application.server.web.local
 
             #endregion
 
-            #region  create main database and tables
-
-            try
-            {
-                dbfactory.Run(x =>
-                {
-                    if (string.IsNullOrEmpty(x.Database))
-                    {
-                        x.CreateMySqlDatabase(Properties.Settings.Default.main_db_name, Properties.Settings.Default.overwrite_db);
-                        x.ChangeDatabase(Properties.Settings.Default.main_db_name);
-
-                    }
-                    else if (!x.Database.Equals(Properties.Settings.Default.main_db_name, StringComparison.OrdinalIgnoreCase)) x.ChangeDatabase(Properties.Settings.Default.main_db_name);
-
-                    //Create core tables 
-                    x.CreateTables(false, typeof(VCALENDAR), typeof(VEVENT), typeof(AUDIO_ALARM), typeof(DISPLAY_ALARM), typeof(EMAIL_ALARM), typeof(ORGANIZER), typeof(ATTENDEE), typeof(COMMENT), typeof(RELATEDTO), typeof(ATTACH_BINARY), typeof(ATTACH_URI), typeof(CONTACT), typeof(RDATE), typeof(EXDATE), typeof(RECUR), typeof(RECURRENCE_ID), typeof(REQUEST_STATUS), typeof(RESOURCES));
-
-                    //Create 3NF relational tables
-                    x.CreateTables(false, typeof(REL_CALENDARS_EVENTS), typeof(REL_EVENTS_ATTACHBINS), typeof(REL_EVENTS_ATTACHURIS), typeof(REL_EVENTS_ATTENDEES), typeof(REL_EVENTS_AUDIO_ALARMS), typeof(REL_EVENTS_COMMENTS), typeof(REL_EVENTS_CONTACTS), typeof(REL_EVENTS_DISPLAY_ALARMS), typeof(REL_EVENTS_EMAIL_ALARMS), typeof(REL_EVENTS_EXDATES), typeof(REL_EVENTS_ORGANIZERS), typeof(REL_EVENTS_RDATES), typeof(REL_EVENTS_RECURRENCE_IDS), typeof(REL_EVENTS_RELATEDTOS), typeof(REL_EVENTS_REQSTATS), typeof(REL_EVENTS_RESOURCES), typeof(REL_EVENTS_RECURS), typeof(RELS_EALARMS_ATTACHBINS), typeof(RELS_EALARMS_ATTACHURIS), typeof(RELS_EALARMS_ATTENDEES));
-                });
-
-            }
-            catch (MySqlException ex)
-            {
-                container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString());
-            }
-            catch (Exception ex)
-            {
-                container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString(), ex);
-            }
-
-            #endregion
-
+           
             #endregion
 
             #region inject core repositories and create primary data sources on first run
@@ -200,6 +158,40 @@ namespace reexmonkey.xcal.application.server.web.local
 
             if (Properties.Settings.Default.primary_storage == StorageType.rdbms)
             {
+
+                #region  create main database and tables
+
+                try
+                {
+                    dbfactory.Run(x =>
+                    {
+                        x.CreateSchemaIfNotExists(Properties.Settings.Default.main_db_name, false);
+                        x.ChangeDatabase(Properties.Settings.Default.main_db_name);
+                        x.ConnectionString = string.Format("{0}; Database={1}", Properties.Settings.Default.mysql_server, Properties.Settings.Default.main_db_name);
+
+                        //Create core tables 
+                        x.CreateTableIfNotExists(typeof(VCALENDAR), typeof(VEVENT), typeof(AUDIO_ALARM), typeof(DISPLAY_ALARM), typeof(EMAIL_ALARM), typeof(ORGANIZER), typeof(ATTENDEE), typeof(COMMENT), typeof(RELATEDTO), typeof(ATTACH_BINARY), typeof(ATTACH_URI), typeof(CONTACT), typeof(RDATE), typeof(EXDATE), typeof(RECUR), typeof(RECURRENCE_ID), typeof(REQUEST_STATUS), typeof(RESOURCES));
+
+                        //Create 3NF relational tables
+                        x.CreateTableIfNotExists(typeof(REL_CALENDARS_EVENTS), typeof(REL_EVENTS_ATTACHBINS), typeof(REL_EVENTS_ATTACHURIS), typeof(REL_EVENTS_ATTENDEES), typeof(REL_EVENTS_AUDIO_ALARMS), typeof(REL_EVENTS_COMMENTS), typeof(REL_EVENTS_CONTACTS), typeof(REL_EVENTS_DISPLAY_ALARMS), typeof(REL_EVENTS_EMAIL_ALARMS), typeof(REL_EVENTS_EXDATES), typeof(REL_EVENTS_ORGANIZERS), typeof(REL_EVENTS_RDATES), typeof(REL_EVENTS_RECURRENCE_IDS), typeof(REL_EVENTS_RELATEDTOS), typeof(REL_EVENTS_REQSTATS), typeof(REL_EVENTS_RESOURCES), typeof(REL_EVENTS_RECURS), typeof(RELS_EALARMS_ATTACHBINS), typeof(RELS_EALARMS_ATTACHURIS), typeof(RELS_EALARMS_ATTENDEES));
+                    });
+
+                }
+                catch (MySqlException ex)
+                {
+                    container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString());
+                }
+                catch (InvalidOperationException ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString(), ex);
+                }
+
+                #endregion
+
                 #region inject ormlite repositories
 
                 container.Register<ICalendarRepository>(x => new CalendarOrmLiteRepository
@@ -209,6 +201,14 @@ namespace reexmonkey.xcal.application.server.web.local
                     EventRepository = x.Resolve<IEventRepository>(),
                     Take = Properties.Settings.Default.calendars_take
                 });
+
+                var ar = new AudioAlarmOrmLiteRepository()
+                {
+                    KeyGenerator = container.Resolve<IGuidKeyGenerator>(),
+                    DbConnectionFactory = container.Resolve<IDbConnectionFactory>(),
+                    Take = Properties.Settings.Default.alarms_take
+                };
+                ar.Take = 2;
 
                 container.Register<IEventRepository>(x => new EventOrmLiteRepository
                 {
@@ -220,21 +220,21 @@ namespace reexmonkey.xcal.application.server.web.local
                     Take = Properties.Settings.Default.events_take
                 });
 
-                container.Register<IAudioAlarmOrmLiteRepository>(x => new AudioAlarmOrmLiteRepository
+                container.Register<IAudioAlarmRepository>(x => new AudioAlarmOrmLiteRepository
                 {
                     KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
                     Take = Properties.Settings.Default.alarms_take
                 });
 
-                container.Register<IDisplayAlarmOrmLiteRepository>(x => new DisplayAlarmOrmLiteRepository
+                container.Register<IDisplayAlarmRepository>(x => new DisplayAlarmOrmLiteRepository
                 {
                     KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
                     Take = Properties.Settings.Default.alarms_take
                 });
 
-                container.Register<IEmailAlarmOrmLiteRepository>(x => new EmailAlarmOrmLiteRepository
+                container.Register<IEmailAlarmRepository>(x => new EmailAlarmOrmLiteRepository
                 {
                     KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),

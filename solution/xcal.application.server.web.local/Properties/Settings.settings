@@ -43,7 +43,7 @@
       <Value Profile="(Default)">xcal_nlog_local_db</Value>
     </Setting>
     <Setting Name="primary_storage" Type="reexmonkey.crosscut.goodies.concretes.StorageType" Scope="Application">
-      <Value Profile="(Default)">nosql</Value>
+      <Value Profile="(Default)">rdbms</Value>
     </Setting>
   </Settings>
 </SettingsFile>

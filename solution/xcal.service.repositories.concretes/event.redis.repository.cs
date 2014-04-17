@@ -447,19 +447,19 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                     #region retrieve attributes of entity
 
-                    var org = entity.Organizer as ORGANIZER;
-                    var rid = entity.RecurrenceId as RECURRENCE_ID;
-                    var rrule = entity.RecurrenceRule as RECUR;
-                    var attendees = entity.Attendees.OfType<ATTENDEE>();
+                    var org = entity.Organizer;
+                    var rid = entity.RecurrenceId;
+                    var rrule = entity.RecurrenceRule;
+                    var attendees = entity.Attendees;
                     var attachbins = entity.Attachments.OfType<ATTACH_BINARY>();
                     var attachuris = entity.Attachments.OfType<ATTACH_URI>();
-                    var contacts = entity.Contacts.OfType<CONTACT>();
-                    var comments = entity.Comments.OfType<COMMENT>();
-                    var rdates = entity.RecurrenceDates.OfType<RDATE>();
-                    var exdates = entity.ExceptionDates.OfType<EXDATE>();
-                    var relatedtos = entity.RelatedTos.OfType<RELATEDTO>();
-                    var resources = entity.Resources.OfType<RESOURCES>();
-                    var reqstats = entity.RequestStatuses.OfType<REQUEST_STATUS>();
+                    var contacts = entity.Contacts;
+                    var comments = entity.Comments;
+                    var rdates = entity.RecurrenceDates;
+                    var exdates = entity.ExceptionDates;
+                    var relatedtos = entity.RelatedTos;
+                    var resources = entity.Resources;
+                    var reqstats = entity.RequestStatuses;
                     var aalarms = entity.Alarms.OfType<AUDIO_ALARM>();
                     var dalarms = entity.Alarms.OfType<DISPLAY_ALARM>();
                     var ealarms = entity.Alarms.OfType<EMAIL_ALARM>();
@@ -798,28 +798,21 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             #region 1. retrieve attributes of entities
 
-            var orgs = entities.Where(x => x.Organizer != null && x.Organizer is ORGANIZER).Select(x => x.Organizer as ORGANIZER);
-            var rids = entities.Where(x => x.RecurrenceId != null && x.RecurrenceId is RECURRENCE_ID).Select(x => x.RecurrenceId as RECURRENCE_ID);
-            var rrules = entities.Where(x => x.RecurrenceRule != null && x.RecurrenceRule is RECUR).Select(x => x.RecurrenceRule as RECUR);
-            var attendees = entities.Where(x => !x.Attendees.NullOrEmpty() && !x.Attendees.OfType<ATTENDEE>().NullOrEmpty())
-                .SelectMany(x => x.Attendees.OfType<ATTENDEE>());
+            var orgs = entities.Where(x => x.Organizer != null).Select(x => x.Organizer);
+            var rids = entities.Where(x => x.RecurrenceId != null).Select(x => x.RecurrenceId);
+            var rrules = entities.Where(x => x.RecurrenceRule != null).Select(x => x.RecurrenceRule);
+            var attendees = entities.Where(x => !x.Attendees.NullOrEmpty()).SelectMany(x => x.Attendees);
             var attachbins = entities.Where(x => !x.Attachments.NullOrEmpty() && !x.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty())
                 .SelectMany(x => x.Attachments.OfType<ATTACH_BINARY>());
             var attachuris = entities.Where(x => !x.Attachments.NullOrEmpty() && !x.Attachments.OfType<ATTACH_URI>().NullOrEmpty())
                 .SelectMany(x => x.Attachments.OfType<ATTACH_URI>());
-            var contacts = entities.Where(x => !x.Contacts.NullOrEmpty() && !x.Contacts.OfType<CONTACT>().NullOrEmpty())
-                .SelectMany(x => x.Contacts.OfType<CONTACT>());
-            var comments = entities.Where(x => !x.Comments.NullOrEmpty() && !x.Comments.OfType<COMMENT>().NullOrEmpty())
-                .SelectMany(x => x.Comments.OfType<COMMENT>());
-            var rdates = entities.Where(x => !x.RecurrenceDates.NullOrEmpty() && !x.RecurrenceDates.OfType<RDATE>().NullOrEmpty())
-                .SelectMany(x => x.RecurrenceDates.OfType<RDATE>());
-            var exdates = entities.Where(x => !x.ExceptionDates.NullOrEmpty() && !x.ExceptionDates.OfType<EXDATE>().NullOrEmpty())
-                .SelectMany(x => x.ExceptionDates.OfType<EXDATE>());
-            var relatedtos = entities.Where(x => !x.RelatedTos.NullOrEmpty() && !x.RelatedTos.OfType<RELATEDTO>().NullOrEmpty())
-                .SelectMany(x => x.RelatedTos.OfType<RELATEDTO>());
-            var resources = entities.Where(x => !x.Resources.NullOrEmpty() && !x.Resources.OfType<RESOURCES>().NullOrEmpty())
-                .SelectMany(x => x.Resources.OfType<RESOURCES>());
-            var reqstats = entities.Where(x => !x.RequestStatuses.NullOrEmpty() && !x.RequestStatuses.OfType<REQUEST_STATUS>().NullOrEmpty()).SelectMany(x => x.RequestStatuses.OfType<REQUEST_STATUS>());
+            var contacts = entities.Where(x => !x.Contacts.NullOrEmpty()).SelectMany(x => x.Contacts);
+            var comments = entities.Where(x => !x.Comments.NullOrEmpty()).SelectMany(x => x.Comments);
+            var rdates = entities.Where(x => !x.RecurrenceDates.NullOrEmpty()).SelectMany(x => x.RecurrenceDates);
+            var exdates = entities.Where(x => !x.ExceptionDates.NullOrEmpty()).SelectMany(x => x.ExceptionDates);
+            var relatedtos = entities.Where(x => !x.RelatedTos.NullOrEmpty()).SelectMany(x => x.RelatedTos);
+            var resources = entities.Where(x => !x.Resources.NullOrEmpty()).SelectMany(x => x.Resources);
+            var reqstats = entities.Where(x => !x.Resources.NullOrEmpty()).SelectMany(x => x.RequestStatuses);
             var aalarms = entities.Where(x => !x.Alarms.NullOrEmpty() && !x.Alarms.OfType<AUDIO_ALARM>().NullOrEmpty())
                 .SelectMany(x => x.Alarms.OfType<AUDIO_ALARM>());
             var dalarms = entities.Where(x => !x.Alarms.NullOrEmpty() && !x.Alarms.OfType<DISPLAY_ALARM>().NullOrEmpty())
@@ -839,12 +832,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!orgs.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(orgs));
-                        var rorgs = entities.Where(x => x.Organizer != null && x.Organizer is ORGANIZER)
+                        var rorgs = entities.Where(x => x.Organizer != null)
                             .Select(e => new REL_EVENTS_ORGANIZERS
                             {
                                 Id = this.KeyGenerator.GetNextKey(),
                                 EventId = e.Id,
-                                OrganizerId = (e.Organizer as ORGANIZER).Id
+                                OrganizerId = e.Organizer.Id
                             });
 
                         var rclient = this.redis.As<REL_EVENTS_ORGANIZERS>();
@@ -857,12 +850,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!rids.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(rids));
-                        var rrids = entities.Where(x => x.RecurrenceId != null && x.RecurrenceId is RECURRENCE_ID)
+                        var rrids = entities.Where(x => x.RecurrenceId != null)
                             .Select(e => new REL_EVENTS_RECURRENCE_IDS
                             {
                                 Id = this.KeyGenerator.GetNextKey(),
                                 EventId = e.Id,
-                                RecurrenceId_Id = (e.RecurrenceId as RECURRENCE_ID).Id
+                                RecurrenceId_Id = e.RecurrenceId.Id
                             });
                         var rclient = this.redis.As<REL_EVENTS_RECURRENCE_IDS>();
                         var orrids = rclient.GetAll().Where(x => keys.Contains(x.EventId));
@@ -874,12 +867,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!rrules.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(rrules));
-                        var rrrules = entities.Where(x => x.RecurrenceRule != null && x.RecurrenceRule is RECUR)
+                        var rrrules = entities.Where(x => x.RecurrenceRule != null)
                             .Select(e => new REL_EVENTS_RECURS
                             {
                                 Id = this.KeyGenerator.GetNextKey(),
                                 EventId = e.Id,
-                                RecurrenceRuleId = (e.RecurrenceRule as RECUR).Id
+                                RecurrenceRuleId = e.RecurrenceRule.Id
                             });
 
                         var rclient = this.redis.As<REL_EVENTS_RECURS>();
@@ -892,8 +885,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!attendees.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(attendees));
-                        var rattendees = entities.Where(x => !x.Attendees.OfType<ATTENDEE>().NullOrEmpty())
-                            .SelectMany(e => e.Attendees.OfType<ATTENDEE>()
+                        var rattendees = entities.Where(x => !x.Attendees.NullOrEmpty())
+                            .SelectMany(e => e.Attendees
                                 .Select(x => new REL_EVENTS_ATTENDEES
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
@@ -947,8 +940,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!contacts.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(contacts));
-                        var rcontacts = entities.Where(x => !x.Contacts.OfType<CONTACT>().NullOrEmpty())
-                            .SelectMany(e => e.Contacts.OfType<CONTACT>()
+                        var rcontacts = entities.Where(x => !x.Contacts.NullOrEmpty())
+                            .SelectMany(e => e.Contacts
                                 .Select(x => new REL_EVENTS_CONTACTS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
@@ -965,8 +958,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!comments.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(comments));
-                        var rcomments = entities.Where(x => !x.Comments.OfType<COMMENT>().NullOrEmpty())
-                            .SelectMany(e => e.Comments.OfType<COMMENT>()
+                        var rcomments = entities.Where(x => !x.Comments.NullOrEmpty())
+                            .SelectMany(e => e.Comments
                                 .Select(x => new REL_EVENTS_COMMENTS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
@@ -983,8 +976,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!rdates.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(rdates));
-                        var rrdates = entities.Where(x => !x.RecurrenceDates.OfType<RDATE>().NullOrEmpty())
-                            .SelectMany(e => e.RecurrenceDates.OfType<RDATE>().Select(x => new REL_EVENTS_RDATES
+                        var rrdates = entities.Where(x => !x.RecurrenceDates.NullOrEmpty())
+                            .SelectMany(e => e.RecurrenceDates.Select(x => new REL_EVENTS_RDATES
                             {
                                 Id = this.KeyGenerator.GetNextKey(),
                                 EventId = e.Id,
@@ -1000,8 +993,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!exdates.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(exdates));
-                        var rexdates = entities.Where(x => !x.ExceptionDates.OfType<EXDATE>().NullOrEmpty())
-                            .SelectMany(e => e.ExceptionDates.OfType<EXDATE>().Select(x => new REL_EVENTS_EXDATES
+                        var rexdates = entities.Where(x => !x.ExceptionDates.NullOrEmpty())
+                            .SelectMany(e => e.ExceptionDates.Select(x => new REL_EVENTS_EXDATES
                             {
                                 Id = this.KeyGenerator.GetNextKey(),
                                 EventId = e.Id,
@@ -1017,8 +1010,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!relatedtos.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(relatedtos));
-                        var rrelateds = entities.Where(x => !x.RelatedTos.OfType<RELATEDTO>().NullOrEmpty())
-                            .SelectMany(e => e.RelatedTos.OfType<RELATEDTO>().Select(x => new REL_EVENTS_RELATEDTOS
+                        var rrelateds = entities.Where(x => !x.RelatedTos.NullOrEmpty())
+                            .SelectMany(e => e.RelatedTos.Select(x => new REL_EVENTS_RELATEDTOS
                             {
                                 Id = this.KeyGenerator.GetNextKey(),
                                 EventId = e.Id,
@@ -1034,8 +1027,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!resources.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(resources));
-                        var rresources = entities.Where(x => !x.Resources.OfType<RESOURCES>().NullOrEmpty())
-                            .SelectMany(e => e.Resources.OfType<RESOURCES>().Select(x => new REL_EVENTS_RESOURCES
+                        var rresources = entities.Where(x => !x.Resources.NullOrEmpty())
+                            .SelectMany(e => e.Resources.Select(x => new REL_EVENTS_RESOURCES
                             {
                                 Id = this.KeyGenerator.GetNextKey(),
                                 EventId = e.Id,
@@ -1051,8 +1044,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!reqstats.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(reqstats));
-                        var rreqstats = entities.Where(x => !x.RequestStatuses.OfType<REQUEST_STATUS>().NullOrEmpty())
-                            .SelectMany(e => e.RequestStatuses.OfType<REQUEST_STATUS>().Select(x => new REL_EVENTS_REQSTATS
+                        var rreqstats = entities.Where(x => !x.RequestStatuses.NullOrEmpty())
+                            .SelectMany(e => e.RequestStatuses.Select(x => new REL_EVENTS_REQSTATS
                             {
                                 Id = this.KeyGenerator.GetNextKey(),
                                 EventId = e.Id,
@@ -1264,7 +1257,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         if (selection.Contains(orgexpr.GetMemberName()))
                         {
                             //get events-organizers relations
-                            var org = source.Organizer as ORGANIZER;                                                
+                            var org = source.Organizer;                                                
                             if(org != null)
                             {
 
@@ -1286,7 +1279,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                         if(selection.Contains(ridexpr.GetMemberName()))
                         {
-                            var rid = source.RecurrenceId as RECURRENCE_ID;
+                            var rid = source.RecurrenceId;
                             if(rid != null)
                             {
                                 transaction.QueueCommand(x => this.redis.As<RECURRENCE_ID>().Store(rid));
@@ -1309,7 +1302,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                         if (selection.Contains(rruleexpr.GetMemberName()))
                         {
-                            var rrule = source.RecurrenceRule as RECUR;
+                            var rrule = source.RecurrenceRule;
                             if (rrule != null)
                             {
                                 transaction.QueueCommand(x => x.Store(rrule));
@@ -1331,7 +1324,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                         if (selection.Contains(attendsexpr.GetMemberName()))
                         {
-                            var attendees = source.Attendees.OfType<ATTENDEE>();
+                            var attendees = source.Attendees;
                             if (!attendees.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => this.redis.As<ATTENDEE>().StoreAll(attendees));
@@ -1391,7 +1384,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                         if (selection.Contains(contactsexpr.GetMemberName()))
                         {
-                            var contacts = source.Contacts.OfType<CONTACT>();
+                            var contacts = source.Contacts;
                             if (!contacts.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(contacts));
@@ -1411,7 +1404,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                         if (selection.Contains(commentsexpr.GetMemberName()))
                         {
-                            var comments = source.Contacts.OfType<COMMENT>();
+                            var comments = source.Contacts;
                             if (!comments.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(comments));
@@ -1431,7 +1424,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                         if (selection.Contains(rdatesexpr.GetMemberName()))
                         {
-                            var rdates = source.Contacts.OfType<RDATE>();
+                            var rdates = source.Contacts;
                             if (!rdates.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(rdates));
@@ -1451,7 +1444,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                         if (selection.Contains(exdatesexpr.GetMemberName()))
                         {
-                            var exdates = source.Contacts.OfType<EXDATE>();
+                            var exdates = source.ExceptionDates;
                             if (!exdates.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(exdates));
@@ -1471,7 +1464,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                         if (selection.Contains(relatedtosexpr.GetMemberName()))
                         {
-                            var relatedtos = source.Contacts.OfType<RELATEDTO>();
+                            var relatedtos = source.RelatedTos;
                             if (!relatedtos.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(relatedtos));
@@ -1491,7 +1484,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                         if (selection.Contains(resourcesexpr.GetMemberName()))
                         {
-                            var resources = source.Contacts.OfType<RESOURCES>();
+                            var resources = source.Resources;
                             if (!resources.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(resources));
@@ -1511,7 +1504,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                         if (selection.Contains(reqstatsexpr.GetMemberName()))
                         {
-                            var reqstats = source.Contacts.OfType<REQUEST_STATUS>();
+                            var reqstats = source.RequestStatuses;
                             if (!reqstats.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(reqstats));
@@ -1548,12 +1541,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
             #endregion
 
+            //TODO: rewrite this patch method - include section for patching primitives
+
         }
 
         public VEVENT Find(string key)
         {
-            var dry = this.redis.As<VEVENT>().GetById(key);
-            return dry;
+            return this.redis.As<VEVENT>().GetById(key);
         }
 
         public IEnumerable<VEVENT> Find(IEnumerable<string> keys, int? skip = null)

@@ -81,6 +81,14 @@ namespace reexmonkey.xcal.domain.models
             this.Encoding = ENCODING.BASE64;
         }
 
+        public ATTACH_BINARY(IATTACH<BINARY> attachment, ENCODING encoding = ENCODING.UNKNOWN, string id = null)
+        {
+            this.Id = id;
+            this.Encoding = encoding;
+            this.FormatType = attachment.FormatType;
+            this.Content = attachment.Content;
+        }
+
         public ATTACH_BINARY(string value, FMTTYPE format = null, ENCODING encoding = ENCODING.BASE64)
         {
             this.Id = Guid.NewGuid().ToString();
@@ -116,8 +124,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(ATTACH_BINARY other)
         {
             if (other == null) return false;
-            return this.Content == other.Content &&
-                this.FormatType == other.FormatType;
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -191,6 +198,12 @@ namespace reexmonkey.xcal.domain.models
 
         }
 
+        public ATTACH_URI(IATTACH<URI> attachment)
+        {
+            this.Content = attachment.Content;
+            this.FormatType = attachment.FormatType;
+        }
+
         /// <summary>
         /// Constructor on the base of CONTENT of the Attachment and it's TYPE 
         /// </summary>
@@ -220,8 +233,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(ATTACH_URI other)
         {
             if (other == null) return false;
-            return this.Content == other.Content &&
-                this.FormatType == other.FormatType;
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -303,6 +315,12 @@ namespace reexmonkey.xcal.domain.models
             this.Language = null;
         }
 
+        public CATEGORIES(ICATEGORIES categories)
+        {
+            this.Language = categories.Language;
+            this.Values = categories.Values;
+        }
+
         /// <summary>
         /// Constructor based on the TEXT and LANGUAGE properties of the class
         /// </summary>
@@ -336,7 +354,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(CATEGORIES other)
         {
             if (other == null) return false;
-            return this.Values.AreDuplicatesOf(other.Values);
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -410,6 +428,13 @@ namespace reexmonkey.xcal.domain.models
             this.Id = Guid.NewGuid().ToString();
         }
 
+        public COMMENT(ITEXT comment)
+        {
+            this.Language = comment.Language;
+            this.AlternativeText = comment.AlternativeText;
+            this.Text = comment.Text;
+        }
+
         /// <summary>
         /// Constructor specifying the Text, Alternative Text and Language of the Comment
         /// </summary>
@@ -442,9 +467,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(COMMENT other)
         {
             if (other == null) return false;
-            return this.AlternativeText == other.AlternativeText &&
-                this.Language == other.Language &&
-                this.Text == other.Text;
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -490,7 +513,6 @@ namespace reexmonkey.xcal.domain.models
     /// Provides a more complete Description of the calendar component, than  that, provided by SUMMARY
     /// </summary>
     [DataContract]
-    [Alias("Descriptions")]
     public class DESCRIPTION : ITEXT, IEquatable<DESCRIPTION>, IComparable<DESCRIPTION>
     {
 
@@ -528,6 +550,13 @@ namespace reexmonkey.xcal.domain.models
             this.Text = string.Empty;
             this.AlternativeText = null;
             this.Language = new LANGUAGE("en");
+        }
+
+        public DESCRIPTION(ITEXT description)
+        {
+            this.AlternativeText = description.AlternativeText;
+            this.Language = description.Language;
+            this.Text = description.Text;
         }
 
         /// <summary>
@@ -601,13 +630,8 @@ namespace reexmonkey.xcal.domain.models
     /// Specifies the information related to the global position for the activity spiecified by a calendar component
     /// </summary>
     [DataContract]
-    public class GEO : IGEO, IEquatable<GEO>, IContainsKey<string>
+    public class GEO : IGEO, IEquatable<GEO>
     {
-        /// <summary>
-        /// ID of the Geographical Position
-        /// </summary>
-        public string Id { get; set; }
-
         /// <summary>
         /// Longitude of the Geographical Position
         /// </summary>
@@ -635,6 +659,12 @@ namespace reexmonkey.xcal.domain.models
         {
             this.Longitude = new float();
             this.Latitude = new float();
+        }
+
+        public GEO(IGEO geo)
+        {
+            this.Latitude = geo.Latitude;
+            this.Longitude = geo.Longitude;
         }
 
         /// <summary>
@@ -690,7 +720,6 @@ namespace reexmonkey.xcal.domain.models
         }
     }
 
-
     /// <summary>
     /// Defines the intended venue for the activity defined by a calendar component
     /// </summary>
@@ -732,6 +761,13 @@ namespace reexmonkey.xcal.domain.models
             this.Text = string.Empty;
             this.AlternativeText = null;
             this.Language = null;
+        }
+
+        public LOCATION(ITEXT location)
+        {
+            this.AlternativeText = location.AlternativeText;
+            this.Language = location.Language;
+            this.Text = location.Text;
         }
 
         /// <summary>
@@ -819,7 +855,6 @@ namespace reexmonkey.xcal.domain.models
     /// Defines the Equipment or resources anticipated for an activity specified by a calendar component
     /// </summary>
     [DataContract]
-    [Alias("Resources")]
     public class RESOURCES : IRESOURCES, IEquatable<RESOURCES>, IContainsKey<string>
     {
         /// <summary>
@@ -861,6 +896,13 @@ namespace reexmonkey.xcal.domain.models
             this.Language = null;
         }
 
+        public RESOURCES(IRESOURCES resources)
+        {
+            this.AlternativeText = resources.AlternativeText;
+            this.Language = resources.Language;
+            this.Values = resources.Values;
+        }
+
         /// <summary>
         /// Constructor specifying the Text, Alternative Text and Language for Resource Property
         /// </summary>
@@ -897,7 +939,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(RESOURCES other)
         {
             if (other == null) return false;
-            return this.Values.AreDuplicatesOf(other.Values);
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -929,13 +971,8 @@ namespace reexmonkey.xcal.domain.models
     /// Defines the short summary or subject for the calendar component
     /// </summary>
     [DataContract]
-    public class SUMMARY : ITEXT, IEquatable<SUMMARY>, IComparable<SUMMARY>, IContainsKey<string>
+    public class SUMMARY : ITEXT, IEquatable<SUMMARY>, IComparable<SUMMARY>
     {
-        /// <summary>
-        /// ID of the current Summary (autoicrease)
-        /// </summary>
-        public string Id { get; set; }
-
         /// <summary>
         /// Text of the Summary
         /// </summary>
@@ -970,8 +1007,13 @@ namespace reexmonkey.xcal.domain.models
             this.Text = string.Empty;
             this.AlternativeText = null;
             this.Language = null;
-            this.Id = Guid.NewGuid().ToString();
+        }
 
+        public SUMMARY(ITEXT summary)
+        {
+            this.AlternativeText = summary.AlternativeText;
+            this.Language = summary.Language;
+            this.Text = summary.Text;
         }
 
         /// <summary>
@@ -983,8 +1025,6 @@ namespace reexmonkey.xcal.domain.models
             this.Text = text;
             this.AlternativeText = altrep;
             this.Language = language;
-            this.Id = Guid.NewGuid().ToString();
-
         }
 
         /// <summary>
@@ -1198,6 +1238,12 @@ namespace reexmonkey.xcal.domain.models
             this.Format = PriorityFormat.Integral;
         }
 
+        public PRIORITY(IPRIORITY priority)
+        {
+            this.Format = priority.Format;
+            this.Value = priority.Value;
+        }
+
         public PRIORITY(int value)
         {
             this.Value = value;
@@ -1271,317 +1317,12 @@ namespace reexmonkey.xcal.domain.models
 
     #region Date and Time Component Properties
 
-    //Date-Time Completed?
-    //Date-Time Due?
-
-
-    //[DataContract]
-    //[KnownType(typeof(DATE_TIME))]
-    //public class DTSTART : IDTSTART, IEquatable<DTSTART>, IComparable<DTSTART>
-    //{
-    //    private IDATE_TIME value;
-    //    private ValueFormat format;
-
-    //    [DataMember]
-    //    public IDATE_TIME Value
-    //    {
-    //        get { return this.value; }
-    //        set
-    //        {
-    //            if (value == null) throw new ArgumentNullException("datetime");
-    //            this.value = value;
-    //        }
-    //    }
-
-    //    [DataMember]
-    //    public ValueFormat Format
-    //    {
-    //        get { return this.format; }
-    //        set
-    //        {
-    //            if (value == ValueFormat.DATE || value == ValueFormat.DATE_TIME || value == ValueFormat.UNKNOWN) this.format = value;
-    //            else throw new ArgumentException("Invalid value format");
-    //        }
-    //    }
-
-    //    public DTSTART(IDATE_TIME value)
-    //    {
-    //        if (value == null) throw new ArgumentNullException("datetime");
-    //        this.value = value;
-    //        this.format =  ValueFormat.DATE_TIME;
-    //    }
-
-    //    public DTSTART(IDATE value)
-    //    {
-    //        if (value == null) throw new ArgumentNullException("date");
-    //        this.value = new DATE_TIME(value.FULLYEAR, value.MONTH, value.MDAY,0,0,0);
-    //        this.format =  ValueFormat.DATE;
-    //    }
-
-    //    public DTSTART(IDATE_TIME value, ITZID tzid)
-    //    {
-    //        if (value == null) throw new ArgumentNullException("date-time");
-    //        this.value = new DATE_TIME(value.FULLYEAR, value.MONTH, value.MDAY, value.HOUR, value.MINUTE, value.MINUTE, value.TimeFormat, value.TimeZoneId);
-    //        this.format = ValueFormat.UNKNOWN;
-    //    }
-
-    //    public bool Equals(DTSTART other)
-    //    {
-    //        return this.Value == other.Value && 
-    //            this.format == other.Format;
-    //    }
-
-    //    public override bool Equals(object obj)
-    //    {
-    //        if (obj == null) return false;
-    //        return this.Equals((DTSTART)(obj));
-    //    }
-
-    //    public override int GetHashCode()
-    //    {
-    //        return this.value.GetHashCode() ^
-    //            this.format.GetHashCode();
-    //    }
-
-    //    public int CompareTo(DTSTART other)
-    //    {
-    //        var x = new DATE_TIME(this.value.FULLYEAR, this.value.MONTH, this.value.MDAY, this.value.HOUR, this.value.MINUTE, this.value.SECOND, this.value.TimeFormat, this.value.TimeZoneId);
-    //        var y = new DATE_TIME(other.Value.FULLYEAR, other.Value.MONTH, other.Value.MDAY, other.Value.HOUR, other.Value.MINUTE, other.Value.SECOND, other.Value.TimeFormat, other.Value.TimeZoneId);
-    //        return x.CompareTo(y);
-    //    }
-
-    //    public override string ToString()
-    //    {
-    //        if (this.format == ValueFormat.DATE_TIME) return string.Format("DTSTART;VALUE=DATE-TIME:{0}{1}", this.value, Environment.NewLine);
-    //        else if (this.format == ValueFormat.DATE) return string.Format("DTSTART;VALUE=DATE:{0}{1}", new DATE(this.value.FULLYEAR, this.value.MONTH, this.value.MDAY), Environment.NewLine);
-    //        else if (this.format != ValueFormat.DATE_TIME && this.format != ValueFormat.DATE && this.value.TimeZoneId != null)
-    //            return string.Format("DTSTART;{0}:{1}{2}", this.value.TimeZoneId, this.value, Environment.NewLine);
-    //        return string.Format("DTSTART:{0}", this.value);
-    //    }
-
-    //    public static bool operator ==(DTSTART a, DTSTART b)
-    //    {
-    //        if ((object)a == null || (object)b == null) return object.Equals(a, b);
-    //        return a.Equals(b);
-    //    }
-
-    //    public static bool operator !=(DTSTART a, DTSTART b)
-    //    {
-    //        if (a == null || b == null) return !object.Equals(a, b);
-    //        return !a.Equals(b);
-    //    }
-
-    //    public static bool operator <(DTSTART a, DTSTART b)
-    //    {
-    //        return a.CompareTo(b) < 0;
-    //    }
-
-    //    public static bool operator >(DTSTART a, DTSTART b)
-    //    {
-    //        return a.CompareTo(b) > 0;
-    //    }
-
-    //    public bool IsDefault()
-    //    {
-    //        return this.value.IsDefault() && this.format == ValueFormat.UNKNOWN;
-    //    }
-    //}
-
-    //[DataContract]
-    //[KnownType(typeof(DATE_TIME))]
-    //public class DTEND : IDTEND, IEquatable<DTEND>, IComparable<DTEND>
-    //{
-    //    private IDATE_TIME value;
-    //    private ValueFormat format;
-
-    //    [DataMember]
-    //    public IDATE_TIME Value
-    //    {
-    //        get { return this.value;  }
-    //        set
-    //        {
-    //            if (value == null) throw new ArgumentNullException("date time");
-    //            this.value = value;
-    //        }
-    //    }
-
-    //    [DataMember]
-    //    public ValueFormat Format
-    //    {
-    //        get { return this.format; }
-    //        set
-    //        {
-    //            if (value == ValueFormat.DATE || value == ValueFormat.DATE_TIME || value == ValueFormat.UNKNOWN) this.format = value;
-    //            else throw new ArgumentException("Invalid value format");
-    //        }
-    //    }
-
-    //    public DTEND(IDATE_TIME value)
-    //    {
-    //        if (value == null) throw new ArgumentNullException("date time");
-    //        this.value = value;
-    //        this.format = ValueFormat.DATE_TIME;
-    //    }
-        
-    //    public DTEND (IDATE value)
-    //    {
-    //        if (value == null) throw new ArgumentNullException("date");
-    //        this.value = new DATE_TIME(value.FULLYEAR, value.MONTH, value.MDAY,0,0,0);
-    //        this.format = ValueFormat.DATE;
-    //    }
-
-    //    public DTEND(IDATE_TIME value, ITZID tzid)
-    //    {
-    //        if (value == null) throw new ArgumentNullException("tzid");
-    //        this.value = new DATE_TIME(value.FULLYEAR, value.MONTH, value.MDAY, 0, 0, 0);
-    //        this.format = ValueFormat.DATE;
-    //    }
-
-    //    public bool Equals(DTEND other)
-    //    {
-    //        return this.Value == other.Value && this.format == other.Format;
-    //    }
-
-    //    public override bool Equals(object obj)
-    //    {
-    //        if (obj == null) return false;
-    //        return this.Equals((DTEND)(obj));
-    //    }
-
-    //    public override int GetHashCode()
-    //    {
-    //        return this.value.GetHashCode() ^ this.format.GetHashCode();
-    //    }
-
-    //    public int CompareTo(DTEND other)
-    //    {
-    //        var x = new DATE_TIME(this);
-    //        var y = new DATE_TIME(other.Value.FULLYEAR, other.Value.MONTH, other.Value.MDAY, other.Value.HOUR, other.Value.MINUTE, other.Value.SECOND, other.Value.ValueFormat, other.Value.TimeZoneId);
-    //        return x.CompareTo(y);
-    //    }
-
-    //    public override string ToString()
-    //    {
-    //        if (this.format == ValueFormat.DATE_TIME) return string.Format("DTEND;VALUE=DATE-TIME:{0}{1}", this.value, Environment.NewLine);
-    //        else if (this.format == ValueFormat.DATE) return string.Format("DTEND;VALUE=DATE:{0}{1}", new DATE(this.value.FULLYEAR, this.value.MONTH, this.value.MDAY),Environment.NewLine);
-    //        else if (this.format != ValueFormat.DATE_TIME && this.format != ValueFormat.DATE && this.value.TimeZoneId != null)
-    //            return string.Format("DTEND;{0}:{1}{2}", this.value.TimeZoneId, this.value, Environment.NewLine);
-
-    //        return string.Format("DTEND:{0}", this.value);
-    //    }
-
-    //    public static bool operator ==(DTEND a, DTEND b)
-    //    {
-    //        if ((object)a == null || (object)b == null) return object.Equals(a, b);
-    //        return a.Equals(b);
-    //    }
-
-    //    public static bool operator !=(DTEND a, DTEND b)
-    //    {
-    //        if ((object)a == null || (object)b == null) return !object.Equals(a, b);
-    //        return !a.Equals(b);
-    //    }
-
-    //    public static bool operator <(DTEND a, DTEND b)
-    //    {
-    //        return a.CompareTo(b) < 0;
-    //    }
-
-    //    public static bool operator >(DTEND a, DTEND b)
-    //    {
-    //        return a.CompareTo(b) > 0;
-    //    }
-
-    //    public bool IsDefault()
-    //    {
-    //        return this.value.IsDefault() && this.format == ValueFormat.UNKNOWN;
-    //    }
-
-    //}
-
-    [DataContract]
-    [KnownType(typeof(DURATION))]
-    public class DURATIONPROP : IDURATIONPROP, IEquatable<DURATIONPROP>, IComparable<DURATIONPROP>
-    {
-        private DURATION value;
-
-        public IDURATION Value
-        {
-            get { return this.value; }
-            set
-            {
-                if (value.Sign != SignType.Positive) throw new ArgumentException("The duration MUST be positive");
-                this.value = (DURATION)value;
-            }
-        }
-
-        public DURATIONPROP(DURATION value)
-        {
-            this.value = value;
-        }
-
-        public bool Equals(DURATIONPROP other)
-        {
-            return this.Value == other.Value;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return this.Equals((DURATIONPROP)(obj));
-        }
-
-        public override int GetHashCode()
-        {
-            return this.value.GetHashCode();
-        }
-       
-        public int CompareTo(DURATIONPROP other)
-        {
-            return this.value.CompareTo((DURATION)other.Value);
-        }
-
-        public override string ToString()
-        {
-            return string.Format("DURATION:{0}", this.value);
-        }
-
-        public static bool operator ==(DURATIONPROP a, DURATIONPROP b)
-        {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(DURATIONPROP a, DURATIONPROP b)
-        {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
-            return !a.Equals(b);
-        }
-
-        public static bool operator <(DURATIONPROP a, DURATIONPROP b)
-        {
-            return a.CompareTo(b) < 0;
-        }
-
-        public static bool operator >(DURATIONPROP a, DURATIONPROP b)
-        {
-            return a.CompareTo(b) > 0;
-        }
-
-        public bool IsDefault()
-        {
-            return this.value.IsDefault();
-        }
-
-    }
-
-
     /// <summary>
     /// Defines one or more free or busy time intervals
     /// </summary>
     [DataContract]
     [KnownType(typeof(PERIOD))]
-    public class FREEBUSY : IFREEBUSY
+    public class FREEBUSY : IFREEBUSY, IContainsKey<string>
     {
         private IEnumerable<IPERIOD> periods;
         private FBTYPE type;
@@ -1657,125 +1398,15 @@ namespace reexmonkey.xcal.domain.models
 
     #region Time-zone Properties
 
-    [DataContract]
-    [KnownType(typeof(TZID))]
-    [Alias("TimeZoneIdProperties")]
-    public class TZIDPROP: ITZIDPROP, IEquatable<TZIDPROP>, IComparable<TZIDPROP>
-    {
-        private string value;
-
-        [DataMember]
-        public string Prefix { get; set; }
-
-        /// <summary>
-        /// Gets or sets the identifier for the time zone definition for a time component
-        /// </summary>
-        [DataMember]
-        public string Value 
-        {
-            get { return this.value; } 
-            set
-            {
-                if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value MUST neither be null or empty");
-                this.value = value;
-            }
-        }
-
-        [DataMember]
-        public bool GloballyUnique { get; set; }
-
-        public bool IsDefault()
-        {
-           return this.Value.Equals(string.Empty);
-        }
-
-        public TZIDPROP(string prefix, string value)
-        {
-            this.Prefix = prefix;
-            this.Value = value;
-            this.GloballyUnique = false;
-        }
-
-        public TZIDPROP(string value, bool unique =false)
-        {
-            this.Prefix = string.Empty;
-            this.Value = value;
-            this.GloballyUnique = unique;
-
-        }
-
-        public override string ToString()
-        {
-            if (this.GloballyUnique) return string.Format("TZID=/{0}", this.Value);
-            else return (!string.IsNullOrEmpty(this.Prefix))?
-                string.Format("TZID={0}/{1}", this.Prefix, this.Value):
-                string.Format("TZID={0}", this.Value);
-            
-        }
-
-        public bool Equals(TZIDPROP other)
-        {
-            if (other == null) return false;
-            return
-                this.Value == other.Value &&
-                this.GloballyUnique == other.GloballyUnique;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return this.Equals(obj as TZIDPROP);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.Value.GetHashCode();
-        }
-
-        public int CompareTo(TZIDPROP other)
-        {
-            return this.Value.CompareTo(other.Value);
-        }
-
-        public static bool operator ==(TZIDPROP a, TZIDPROP b)
-        {
-            if (a == null || b == null) return false;
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(TZIDPROP a, TZIDPROP b)
-        {
-            if (a == null || b == null) return false;
-            return !a.Equals(b);
-        }
-
-        public static bool operator <(TZIDPROP a, TZIDPROP b)
-        {
-            if (a == null || b == null) return false;
-            return a.CompareTo(b) < 0;
-        }
-
-        public static bool operator >(TZIDPROP a, TZIDPROP b)
-        {
-            if (a == null || b == null) return false;
-            return a.CompareTo(b) > 0;
-        }
-    }
-
     /// <summary>
     /// Specifies the customary designation for a time zone description
     /// </summary>
     [DataContract]
     [KnownType(typeof(LANGUAGE))]
-    public class TZNAME : ITZNAME, IEquatable<TZNAME>, IComparable<TZNAME>, IContainsKey<string>
+    public class TZNAME : ITZNAME, IEquatable<TZNAME>, IComparable<TZNAME>
     {
         private ILANGUAGE language;
         private string text;
-
-        /// <summary>
-        /// ID of the Time Zone Name
-        /// </summary>
-        public string Id{ get; set; }
 
         /// <summary>
         /// Language, inherent for this time zone
@@ -1817,6 +1448,12 @@ namespace reexmonkey.xcal.domain.models
         {
             this.text = text;
             this.language = language;
+        }
+
+        public TZNAME(ITZNAME tzname)
+        {
+            this.Language = tzname.Language;
+            this.Text = tzname.Text;
         }
 
         public bool Equals(TZNAME other)
@@ -1882,275 +1519,6 @@ namespace reexmonkey.xcal.domain.models
 
     }
 
-    /// <summary>
-    /// Specifies the offset that is in use prior to this time zone observance
-    /// </summary>
-    [DataContract]
-    [KnownType(typeof(UTC_OFFSET))]
-    public struct TZOFFSETFROM : ITZOFFSETFROM, IEquatable<TZOFFSETFROM>, IComparable<TZOFFSETFROM>
-    {
-        private UTC_OFFSET offset;
-
-        /// <summary>
-        /// Time Offset that is in use prior to current time zone observance
-        /// </summary>
-        [DataMember]
-        public IUTC_OFFSET Offset 
-        {
-            get { return this.offset; }
-            set { this.offset = (UTC_OFFSET)value; } 
-        }
-
-        /// <summary>
-        /// indicates, if the Time Zone Offset From property is set to dafault
-        /// </summary>
-        public bool IsDefault()
-        {
-            return this.offset.IsDefault();
-        }
-
-        /// <summary>
-        /// Constructor based on the Time offset
-        /// </summary>
-        /// <param name="offset">Time Offset that is in use prior to current time zone observance</param>
-        public TZOFFSETFROM(UTC_OFFSET offset)
-        {
-            this.offset = offset;
-        }
-
-        public bool Equals(TZOFFSETFROM other)
-        {
-            return (this.Offset == other.Offset);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return this.Equals((TZNAME)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.offset.GetHashCode();
-        }
-
-        public int CompareTo(TZOFFSETFROM other)
-        {
-            return this.offset.CompareTo((UTC_OFFSET)other.Offset);
-        }
-
-        public static bool operator ==(TZOFFSETFROM a, TZOFFSETFROM b)
-        {
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(TZOFFSETFROM a, TZOFFSETFROM b)
-        {
-            return !a.Equals(b);
-        }
-
-        public static bool operator <(TZOFFSETFROM a, TZOFFSETFROM b)
-        {
-            return a.CompareTo(b) < 0;
-        }
-
-        public static bool operator >(TZOFFSETFROM a, TZOFFSETFROM b)
-        {
-            return a.CompareTo(b) > 0;
-        }
-
-        /// <summary>
-        /// overloaded ToString Method
-        /// </summary>
-        /// <returns>String representation of the Time Zone Offset property in form of "TZOFFSETFROM:Offse
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.AppendFormat("TZOFFSETFROM:{0}", this.offset).AppendLine();
-            return sb.ToString();
-        }
-
-    }
-
-
-    /// <summary>
-    /// Specifies the offset that is in use in this time zone observance
-    /// </summary>
-    [DataContract]
-    [KnownType(typeof(UTC_OFFSET))]
-    public struct TZOFFSETTO : ITZOFFSETTO, IEquatable<TZOFFSETTO>, IComparable<TZOFFSETTO>
-    {
-        private UTC_OFFSET offset;
-
-        /// <summary>
-        /// Time offset that is in use in this time zone observance
-        /// </summary>
-        [DataMember]
-        public IUTC_OFFSET Offset
-        {
-            get { return this.offset; }
-            set { this.offset = (UTC_OFFSET)value; }
-        }
-        /// <summary>
-        /// indicates, if the Time Zone Offset To property is set to dafault
-        /// </summary>
-        public bool IsDefault()
-        {
-             return this.offset.IsDefault(); 
-        }
-
-        /// <summary>
-        /// Constructor based on the Time Offset
-        /// </summary>
-        /// <param name="offset">Time offset that is in use in this time zone observance</param>
-        public TZOFFSETTO(UTC_OFFSET offset)
-        {
-            this.offset = offset;
-        }
-
-        public bool Equals(TZOFFSETTO other)
-        {
-            return (this.Offset == other.Offset);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return this.Equals((TZNAME)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.offset.GetHashCode();
-        }
-
-        public int CompareTo(TZOFFSETTO other)
-        {
-            return this.offset.CompareTo((UTC_OFFSET)other.Offset);
-        }
-
-        public static bool operator ==(TZOFFSETTO a, TZOFFSETTO b)
-        {
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(TZOFFSETTO a, TZOFFSETTO b)
-        {
-            return !a.Equals(b);
-        }
-
-        public static bool operator <(TZOFFSETTO a, TZOFFSETTO b)
-        {
-            return a.CompareTo(b) < 0;
-        }
-
-        public static bool operator >(TZOFFSETTO a, TZOFFSETTO b)
-        {
-            return a.CompareTo(b) > 0;
-        }
-
-        /// Overloaded ToString Method
-        /// </summary>
-        /// <returns>String representatrion of the Time Zone Offset To property in form of "TZOFFSETTO:Offset"</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.AppendFormat("TZOFFSETTO:{0}", this.offset).AppendLine();
-            return sb.ToString();
-        }
-
-    }
-
-    /// <summary>
-    /// Provides a means for a "VTIMEZONE" component to point to a network location that can be used to retrieve an up-to-date version of itself
-    /// </summary>
-    [DataContract]
-    [KnownType(typeof(URI))]
-    public class TZURL : ITZURL, IEquatable<TZURL>, IComparable<TZURL>
-    {
-        private URI uri;
-
-        /// <summary>
-        /// Uniform Resource Identifier of the network location
-        /// </summary>
-        [DataMember]
-        public IURI Uri { get; set; }
-
-        /// <summary>
-        /// Indicates, if the TZURL property is set to dafault
-        /// </summary>
-        public bool IsDefault()
-        {
-             return this.uri.IsDefault();
-        }
-
-        /// <summary>
-        /// Constructor, specifying the URI
-        /// </summary>
-        /// <param name="uri"> Uniform Resource Identifier of the network location</param>
-        public TZURL(URI uri)
-        {
-            if (uri == null) throw new ArgumentNullException("uri");
-            this.uri = uri;
-        }
-
-        public bool Equals(TZURL other)
-        {
-            if (other == null) return false;
-            return this.Uri == other.Uri;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return this.Equals(obj as TZURL);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.uri.GetHashCode();
-        }
-
-        public int CompareTo(TZURL other)
-        {
-            return this.uri.CompareTo((URI)other.Uri);
-        }
-
-        public static bool operator ==(TZURL a, TZURL b)
-        {
-            if (a == null || b == null) return false;
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(TZURL a, TZURL b)
-        {
-            if (a == null || b == null) return false;
-            return !a.Equals(b);
-        }
-
-        public static bool operator <(TZURL a, TZURL b)
-        {
-            if (a == null || b == null) return false;
-            return a.CompareTo(b) < 0;
-        }
-
-        public static bool operator >(TZURL a, TZURL b)
-        {
-            if (a == null || b == null) return false;
-            return a.CompareTo(b) > 0;
-        }
-
-        /// <summary>
-        /// Overloaded ToString Method
-        /// </summary>
-        /// <returns>String representation of the TZURL property in form of "TZURL:Uri"</returns>
-        public override string ToString()
-        {
-            return string.Format("TZURL:{0}{1}", this.uri, Environment.NewLine);
-        }
-
-    }
-
     #endregion
 
     #region Relationship Component Properties
@@ -2159,7 +1527,6 @@ namespace reexmonkey.xcal.domain.models
     /// Defines an "Attendee" within a calendar component
     /// </summary>
     [DataContract]
-    [Alias("ATTENDEES")]
     [KnownType(typeof(MEMBER))]
     [KnownType(typeof(DELEGATED_FROM))]
     [KnownType(typeof(DELEGATED_TO))]
@@ -2339,18 +1706,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(ATTENDEE other)
         {
             if (other == null) return false;
-            return this.Address == other.Address &&
-                this.CalendarUserType == other.CalendarUserType &&
-                this.Member == other.Member &&
-                this.Role == other.Role &&
-                this.Participation == other.Participation &&
-                this.Rsvp == other.Rsvp &&
-                this.Delegate == other.Delegate &&
-                this.Delegator == other.Delegate &&
-                this.SentBy == other.SentBy &&
-                this.CN == other.CN &&
-                this.Directory == other.Directory &&
-                this.Language == other.Language;
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -2467,9 +1823,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(CONTACT other)
         {
             if (other == null) return false;
-            return this.Value == other.Value && 
-                this.AlternativeText == other.AlternativeText && 
-                this.Language == other.Language;
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -2507,14 +1861,8 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// ID of the Organizer
         /// </summary>
-        public string Id
-        {
-            get { return (this.Address != null)? this.Address.Path: null; }
-            set 
-            { 
-                if (this.Address != null) this.Address.Path = value; 
-            }
-        }
+        [DataMember]
+        public string Id { get; set; }
 
         /// <summary>
         /// Address of an Organizer
@@ -2603,8 +1951,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(ORGANIZER other)
         {
             if (other == null) return false;
-            return this.Address == other.Address && this.SentBy == other.SentBy && this.CN == other.CN
-                && this.Directory == other.Directory && this.Language == other.Language;
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -2640,7 +1987,6 @@ namespace reexmonkey.xcal.domain.models
     /// Identifies a specific instance of a recurring "VEVENT", "VTODO", "VJOURNAL" calendar component
     /// </summary>
     [DataContract]
-    [Alias("RECURRENCE_IDS")]
     [KnownType(typeof(DATE_TIME))]
     [KnownType(typeof(TZID))]
     public class RECURRENCE_ID : IRECURRENCE_ID, IEquatable<RECURRENCE_ID>, IContainsKey<string>
@@ -2722,9 +2068,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(RECURRENCE_ID other)
         {
             if (other == null) return false;
-            return this.Value == other.Value &&
-                this.TimeZoneId == other.TimeZoneId &&
-                this.Range == other.Range;
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -2760,7 +2104,6 @@ namespace reexmonkey.xcal.domain.models
     /// Represents the relationship or reference between one calendar component and another
     /// </summary>
     [DataContract]
-    [Alias("RELATEDTOS")]
     public class RELATEDTO : IRELATEDTO, IEquatable<RELATEDTO>, IContainsKey<string>
     {
         /// <summary>
@@ -2822,9 +2165,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(RELATEDTO other)
         {
             if (other == null) return false;
-            return
-                this.Reference == other.Reference &&
-                this.RelationshipType == other.RelationshipType;
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -2851,7 +2192,6 @@ namespace reexmonkey.xcal.domain.models
         }
 
     }
-
 
     [DataContract]
     public class URL : IURI, IEquatable<URL>, IComparable<URL>
@@ -2931,68 +2271,6 @@ namespace reexmonkey.xcal.domain.models
         }
     }
 
-
-    [DataContract]
-    public class UID : IUID, IEquatable<UID>
-    {
-        /// <summary>
-        /// Gets or sets the Uniform Resource Identifier (URI) that points to an alternative representation for a textual property value
-        /// </summary>
-        [DataMember]
-        public string Value { get; set; }
-
-        public bool IsDefault()
-        {
-            return string.IsNullOrEmpty(this.Value);
-        }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="uri">The textual representation of the URI value for the alternative text representation</param>
-        public UID(string value)
-        {
-            this.Value = value;
-        }
-
-        public bool Equals(UID other)
-        {
-            if (other == null) return false;
-            return (this.Value == other.Value);
-        }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.AppendFormat("UID:{0}", this.Value).AppendLine();
-            return sb.ToString();
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return this.Equals(obj as UID);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.Value.GetHashCode();
-        }
-
-        public static bool operator ==(UID uid, UID other)
-        {
-            if (other == null) return false;
-            return uid.Equals(other);
-        }
-
-        public static bool operator !=(UID uid, UID other)
-        {
-            if (other == null) return false;
-            return !uid.Equals(other);
-        }
-
-    }
-
     #endregion
 
     #region Recurrence Component properties
@@ -3001,12 +2279,11 @@ namespace reexmonkey.xcal.domain.models
     /// Defines the list of DATE-TIME exceptions for recurring events, to-dos, entries, or time zone definitions
     /// </summary>
     [DataContract]
-    [Alias("EXDATES")]
     [KnownType(typeof(TZID))]
     [KnownType(typeof(PERIOD))]
     public class EXDATE : IEXDATE, IEquatable<EXDATE>, IContainsKey<string>
     {
-        private TZID tzid;
+        private ITZID tzid;
 
         /// <summary>
         ///  ID of the Date-Time Exception
@@ -3022,7 +2299,7 @@ namespace reexmonkey.xcal.domain.models
         public ITZID TimeZoneId 
         {
             get { return this.tzid; }
-            set { this.tzid = (TZID)value; } 
+            set { this.tzid = value; } 
         
         }
 
@@ -3052,7 +2329,7 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         /// <param name="values">Set of Dates of Recurrence Exceptions</param>
         /// <param name="tzid"></param>
-        public EXDATE(IEnumerable<IDATE_TIME> values, TZID tzid, ValueFormat format = ValueFormat.UNKNOWN)
+        public EXDATE(IEnumerable<IDATE_TIME> values, ITZID tzid, ValueFormat format = ValueFormat.UNKNOWN)
         {
             this.DateTimes = values;
             this.TimeZoneId = tzid;
@@ -3081,9 +2358,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(EXDATE other)
         {
             if (other == null) return false;
-            return
-                this.DateTimes.AreDuplicatesOf(other.DateTimes) &&
-                this.Format == other.Format && this.TimeZoneId == other.TimeZoneId;
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -3120,12 +2395,11 @@ namespace reexmonkey.xcal.domain.models
     /// Defines the list of DATE-TIME values for recurring events, to-dos, journal entries or time-zone definitions
     /// </summary>
     [DataContract]
-    [Alias("RDATES")]
     [KnownType(typeof(TZID))]
     [KnownType(typeof(PERIOD))]
     public class RDATE : IRDATE, IEquatable<RDATE>, IContainsKey<string>
     {
-        private TZID tzid;
+        private ITZID tzid;
         private IEnumerable<IDATE_TIME> datetimes;
         private IEnumerable<IPERIOD> periods;
 
@@ -3203,7 +2477,7 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         /// <param name="values">List of DATE-TIME values for recurring events, to-dos, journal entries or time-zone definitions</param>
         /// <param name="tzid">ID of the current Time Zone</param>
-        public RDATE(IEnumerable<IDATE_TIME> values, TZID tzid = null, ValueFormat format = ValueFormat.UNKNOWN)
+        public RDATE(IEnumerable<IDATE_TIME> values, ITZID tzid = null, ValueFormat format = ValueFormat.UNKNOWN)
         {
             this.DateTimes = values;
             this.TimeZoneId = tzid;
@@ -3217,9 +2491,8 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         /// <param name="periods">List of Periods between recurring events, to-dos, journal entries or time-zone definitions</param>
         /// <param name="tzid">ID of the current Time Zone</param>
-        public RDATE(IEnumerable<IPERIOD> periods, TZID tzid = null, ValueFormat format = ValueFormat.UNKNOWN)
+        public RDATE(IEnumerable<IPERIOD> periods, ITZID tzid = null, ValueFormat format = ValueFormat.UNKNOWN)
         {
-            this.Id = Guid.NewGuid().ToString();
             this.DateTimes = new List<IDATE_TIME>();
             this.Periods = periods;
             this.TimeZoneId = tzid;
@@ -3261,10 +2534,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(RDATE other)
         {
             if (other == null) return false;
-            return this.datetimes.AreDuplicatesOf(other.DateTimes) &&
-                this.periods.AreDuplicatesOf(other.Periods) &&
-                this.TimeZoneId == other.TimeZoneId &&
-                this.Format == other.Format;
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -3294,71 +2564,6 @@ namespace reexmonkey.xcal.domain.models
         }
     }
 
-    [DataContract]
-    [Alias("RecurrenceRules")]
-    [KnownType(typeof(RECUR))]
-    public class RRULE: IRRULE, IEquatable<RRULE>, IContainsKey<string>
-    {
-        private IRECUR value;
-
-        [DataMember]
-        public IRECUR Value 
-        {
-            get { return this.value; } 
-            set
-            {
-                if (value == null) throw new ArgumentNullException("RECUR value MUST be non-null");
-                this.value = value;
-            }
-        }
-
-        public string Id { get; set; }
-
-        public RRULE(RECUR value)
-        {
-            this.Value = value;
-        }
-
-        public bool Equals(RRULE other)
-        {
-            if (other == null) return false;
-            return (this.Value == other.Value);
-        }
-
-        public override string ToString()
-        {
-            return string.Format("RRULE:{0}{1}", this.Value, Environment.NewLine);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return this.Equals(obj as RRULE);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.Value.GetHashCode();
-        }
-
-        public static bool operator ==(RRULE a, RRULE b)
-        {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(RRULE a, RRULE b)
-        {
-            if (a == null || b == null) return !object.Equals(a, b);
-            return !a.Equals(b);
-        }
-
-        public bool IsDefault()
-        {
-            return this.Value.IsDefault();
-        }
-    }
-
     #endregion
 
     #region Alarm Component Properties
@@ -3367,7 +2572,6 @@ namespace reexmonkey.xcal.domain.models
     /// Specifies, when the alarm will trigger
     /// </summary>
     [DataContract]
-    [Alias("Triggers")]
     [KnownType(typeof(DURATION))]
     [KnownType(typeof(DATE_TIME))]
     public class TRIGGER : ITRIGGER, IEquatable<TRIGGER>, IContainsKey<string>
@@ -3488,9 +2692,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(TRIGGER other)
         {
             if (other == null) return false;
-            return (this.Duration == other.Duration && 
-                this.DateTime == other.DateTime && 
-                this.Format == other.Format);
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -3528,393 +2730,7 @@ namespace reexmonkey.xcal.domain.models
         }
     }
 
-    [DataContract]
-    public struct REPEAT : IREPEAT, IEquatable<REPEAT>, IComparable<REPEAT>
-    {
-        private int value;
-
-        [DataMember]
-        public int Value
-        {
-            get { return this.value; }
-            set { this.value = 0; }
-        }
-
-        public REPEAT(int value)
-        {
-            this.value = value;
-        }
-
-        public bool Equals(REPEAT other)
-        {
-            return this.value == other.Value;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return this.Equals((REPEAT)(obj));
-        }
-
-        public override int GetHashCode()
-        {
-            return this.value.GetHashCode();
-        }
-
-        public int CompareTo(REPEAT other)
-        {
-            return this.value.CompareTo(other.Value);
-        }
-
-        public override string ToString()
-        {
-            return string.Format("REPEAT:{0}{1}", this.value, Environment.NewLine);
-        }
-
-        public static bool operator ==(REPEAT a, REPEAT b)
-        {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(REPEAT a, REPEAT b)
-        {
-            if (a == null || b == null) return !object.Equals(a, b);
-            return !a.Equals(b);
-        }
-
-        public static bool operator <(REPEAT a, REPEAT b)
-        {
-            return a.CompareTo(b) < 0;
-        }
-
-        public static bool operator >(REPEAT a, REPEAT b)
-        {
-            return a.CompareTo(b) > 0;
-        }
-
-        public bool IsDefault()
-        {
-            return this.value == 0;
-        }
-    }
-
     #endregion
-
-    #region Change Management Component Properties 
-		
-
-    //[DataContract]
-    //[KnownType(typeof(DATE_TIME))]
-    //public struct CREATED : ICREATED, IEquatable<CREATED>, IComparable<CREATED>
-    //{
-    //    private DATE_TIME value;
-
-    //    [DataMember]
-    //    public IDATE_TIME Value
-    //    {
-    //        get { return this.value; }
-    //        set 
-    //        {
-    //            if (value.TimeFormat != TimeFormat.Utc) throw new ArgumentException("Value MUST be specified in the UTC time format.");
-    //            this.value = (DATE_TIME) value; 
-    //        }
-    //    }
-
-    //    public CREATED(DATE_TIME value)
-    //    {
-    //        if (value.TimeFormat != TimeFormat.Utc) throw new ArgumentException("Value MUST be specified in the UTC time format.");
-    //        this.value = value;
-    //    }
-
-    //    public bool Equals(CREATED other)
-    //    {
-    //        return this.value == (DATE_TIME)other.Value;
-    //    }
-
-    //    public override bool Equals(object obj)
-    //    {
-    //        if (obj == null) return false;
-    //        return this.Equals((CREATED)(obj));
-    //    }
-
-    //    public override int GetHashCode()
-    //    {
-    //        return this.value.GetHashCode();
-    //    }
-
-    //    public int CompareTo(CREATED other)
-    //    {
-    //        return this.value.CompareTo((DATE_TIME)other.Value);
-    //    }
-
-    //    public override string ToString()
-    //    {
-    //        return string.Format("CREATED:{0}{1}", this.value, Environment.NewLine);
-    //    }
-
-    //    public static bool operator ==(CREATED a, CREATED b)
-    //    {
-    //        if ((object)a == null || (object)b == null) return object.Equals(a, b);
-    //        return a.Equals(b);
-    //    }
-
-    //    public static bool operator !=(CREATED a, CREATED b)
-    //    {
-    //        if (a == null || b == null) return !object.Equals(a, b);
-    //        return !a.Equals(b);
-    //    }
-
-    //    public static bool operator <(CREATED a, CREATED b)
-    //    {
-    //        return a.CompareTo(b) < 0;
-    //    }
-
-    //    public static bool operator >(CREATED a, CREATED b)
-    //    {
-    //        return a.CompareTo(b) > 0;
-    //    }
-
-    //    public bool IsDefault()
-    //    {
-    //        return this.value.IsDefault();
-    //    }
-    //}
-  
-    //[DataContract]
-    //[KnownType(typeof(DATE_TIME))]
-    //public struct DTSTAMP : IDTSTAMP
-    //{
-    //    private IDATE_TIME value;
-
-    //    [DataMember]
-    //    public IDATE_TIME Value
-    //    {
-    //        get { return this.value; }
-    //        set 
-    //        {
-    //            if (value.ValueFormat != TimeFormat.Utc) throw new ArgumentException("Value MUST be specified in the UTC time format.");
-    //            this.value = value; 
-    //        }
-    //    }
-
-    //    public DTSTAMP(DateTimeOffset value)
-    //    {
-    //        this.value = value.DateTime.ToDateTime<DATE_TIME>();
-    //    }
-
-    //    public DTSTAMP(IDATE_TIME value)
-    //    {
-    //        if (value.TimeFormat != TimeFormat.Utc) throw new ArgumentException("Value MUST be specified in the UTC time format.");
-    //        this.value = value;
-    //    }
-
-    //    public bool Equals(DTSTAMP other)
-    //    {
-    //        return this.value == other.Value;
-    //    }
-
-    //    public override bool Equals(object obj)
-    //    {
-    //        if (obj == null) return false;
-    //        return this.Equals((DTSTAMP)(obj));
-    //    }
-
-    //    public override int GetHashCode()
-    //    {
-    //        return this.value.GetHashCode();
-    //    }
-
-    //    public int CompareTo(DTSTAMP other)
-    //    {
-    //        var x = new DATE_TIME(this.value.FULLYEAR, this.value.MONTH, this.value.MDAY, this.value.HOUR, this.value.MINUTE, this.value.SECOND, this.value.ValueFormat, this.value.TimeZoneId);
-    //        var y = new DATE_TIME(other.Value.FULLYEAR, other.Value.MONTH, other.Value.MDAY, other.Value.HOUR, other.Value.MINUTE, other.Value.SECOND, other.Value.ValueFormat, other.Value.TimeZoneId);
-    //        return x.CompareTo(y);
-
-    //    }
-
-    //    public override string ToString()
-    //    {
-    //        return string.Format("DTSTAMP:{0}{1}", this.value, Environment.NewLine);
-    //    }
-
-    //    public static bool operator ==(DTSTAMP a, DTSTAMP b)
-    //    {
-    //        if ((object)a == null || (object)b == null) return object.Equals(a, b);
-    //        return a.Equals(b);
-    //    }
-
-    //    public static bool operator !=(DTSTAMP a, DTSTAMP b)
-    //    {
-    //        if (a == null || b == null) return !object.Equals(a, b);
-    //        return !a.Equals(b);
-    //    }
-
-    //    public static bool operator <(DTSTAMP a, DTSTAMP b)
-    //    {
-    //        return a.CompareTo(b) < 0;
-    //    }
-
-    //    public static bool operator >(DTSTAMP a, DTSTAMP b)
-    //    {
-    //        return a.CompareTo(b) > 0;
-    //    }
-
-    //    public bool IsDefault()
-    //    {
-    //        return this.value.IsDefault();
-    //    }
-    //}
-
-    //[DataContract]
-    //[KnownType(typeof(DATE_TIME))]
-    //public struct LASTMODIFIED : ILASTMODIFIED, IEquatable<LASTMODIFIED>, IComparable<LASTMODIFIED>
-    //{       
-    //    private DATE_TIME value;
-
-    //    [DataMember]
-    //    public IDATE_TIME Value
-    //    {
-    //        get { return this.value; }
-    //        set 
-    //        {
-    //            if (value.TimeFormat != TimeFormat.Utc) throw new ArgumentException("Value MUST be specified in the UTC time format.");
-    //            this.value = (DATE_TIME) value; 
-    //        }
-    //    }
-
-    //    public LASTMODIFIED(DATE_TIME value)
-    //    {
-    //        if (value.TimeFormat != TimeFormat.Utc) throw new ArgumentException("Value MUST be specified in the UTC time format.");
-    //        this.value = value;
-    //    }
-
-    //    public bool Equals(LASTMODIFIED other)
-    //    {
-    //        return this.value == (DATE_TIME)other.Value;
-    //    }
-
-    //    public override bool Equals(object obj)
-    //    {
-    //        if (obj == null) return false;
-    //        return this.Equals((LASTMODIFIED)(obj));
-    //    }
-
-    //    public override int GetHashCode()
-    //    {
-    //        return this.value.GetHashCode();
-    //    }
-
-    //    public int CompareTo(LASTMODIFIED other)
-    //    {
-    //        return this.value.CompareTo((DATE_TIME)other.Value);
-    //    }
-
-    //    public override string ToString()
-    //    {
-    //        return string.Format("LAST-MODIFIED:{0}{1}", this.value, Environment.NewLine);
-    //    }
-
-    //    public static bool operator ==(LASTMODIFIED a, LASTMODIFIED b)
-    //    {
-    //        if ((object)a == null || (object)b == null) return object.Equals(a, b);
-    //        return a.Equals(b);
-    //    }
-
-    //    public static bool operator !=(LASTMODIFIED a, LASTMODIFIED b)
-    //    {
-    //        if (a == null || b == null) return !object.Equals(a, b);
-    //        return !a.Equals(b);
-    //    }
-
-    //    public static bool operator <(LASTMODIFIED a, LASTMODIFIED b)
-    //    {
-    //        return a.CompareTo(b) < 0;
-    //    }
-
-    //    public static bool operator >(LASTMODIFIED a, LASTMODIFIED b)
-    //    {
-    //        return a.CompareTo(b) > 0;
-    //    }
-
-    //    public bool IsDefault()
-    //    {
-    //        return this.value.IsDefault();
-    //    }
-    //}
-
-    //[DataContract]
-    //public struct SEQUENCE : ISEQUENCE, IEquatable<SEQUENCE>, IComparable<SEQUENCE>
-    //{
-    //    private int value;
-
-    //    [DataMember]
-    //    public int Value
-    //    {
-    //        get { return this.value; }
-    //        set { this.value = 0; }
-    //    }
-
-    //    public SEQUENCE(int value)
-    //    {
-    //        this.value = value;
-    //    }
-
-    //    public bool Equals(SEQUENCE other)
-    //    {
-    //        return this.value == other.Value;
-    //    }
-
-    //    public override bool Equals(object obj)
-    //    {
-    //        if (obj == null) return false;
-    //        return this.Equals((SEQUENCE)(obj));
-    //    }
-
-    //    public override int GetHashCode()
-    //    {
-    //        return this.value.GetHashCode();
-    //    }
-
-    //    public int CompareTo(SEQUENCE other)
-    //    {
-    //        return this.value.CompareTo(other.Value);
-    //    }
-
-    //    public override string ToString()
-    //    {
-    //        return string.Format("LAST-MODIFIED:{0}{1}", this.value, Environment.NewLine);
-    //    }
-
-    //    public static bool operator ==(SEQUENCE a, SEQUENCE b)
-    //    {
-    //        if ((object)a == null || (object)b == null) return object.Equals(a, b);
-    //        return a.Equals(b);
-    //    }
-
-    //    public static bool operator !=(SEQUENCE a, SEQUENCE b)
-    //    {
-    //        if (a == null || b == null) return !object.Equals(a, b);
-    //        return !a.Equals(b);
-    //    }
-
-    //    public static bool operator <(SEQUENCE a, SEQUENCE b)
-    //    {
-    //        return a.CompareTo(b) < 0;
-    //    }
-
-    //    public static bool operator >(SEQUENCE a, SEQUENCE b)
-    //    {
-    //        return a.CompareTo(b) > 0;
-    //    }
-
-    //    public bool IsDefault()
-    //    {
-    //        return this.value == 0;
-    //    }
-    //}
-
-	#endregion
 
     #region Miscellaneous Component Properties
 
@@ -4050,9 +2866,6 @@ namespace reexmonkey.xcal.domain.models
         }
     }
 
- 
-
-
     [DataContract]
     public struct STATCODE: ISTATCODE, IEquatable<STATCODE>,IComparable<STATCODE>
     {
@@ -4162,7 +2975,6 @@ namespace reexmonkey.xcal.domain.models
     /// Defines the status code returned for a scheduling request
     /// </summary>
     [DataContract]
-    [Alias("RequestStatuses")]
     public class REQUEST_STATUS : IREQUEST_STATUS, IEquatable<REQUEST_STATUS>, IContainsKey<string>
     {
         /// <summary>
@@ -4243,11 +3055,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(REQUEST_STATUS other)
         {
             if (other == null) return false;
-            return
-                this.Code == other.Code &&
-                this.Description == other.Description &&
-                this.ExceptionData == other.ExceptionData &&
-                this.Language == other.Language;
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
