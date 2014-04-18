@@ -22,7 +22,7 @@ namespace reexmonkey.xcal.domain.models
     [KnownType(typeof(AUDIO_ALARM))]
     [KnownType(typeof(DISPLAY_ALARM))]
     [KnownType(typeof(EMAIL_ALARM))]
-    public class VEVENT : IEVENT, IEquatable<VEVENT>, IComparable<VEVENT>, IContainsKey<string>
+    public class VEVENT : ICOMPONENT, IEquatable<VEVENT>, IComparable<VEVENT>, IContainsKey<string>
     {
         private string uid;
         private DATE_TIME start;

@@ -25,7 +25,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class EventValidator: AbstractValidator<IEVENT>
+    public class EventValidator: AbstractValidator<VEVENT>
     {
         public EventValidator(): base()
         {
