@@ -63,8 +63,13 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
             VCALENDAR calendar = null;
             try
             {
-                calendar = (this.repository.Find(request.ProductId)) ?? 
-                    new VCALENDAR { ProdId = request.ProductId, Method = METHOD.PUBLISH };
+                calendar = (this.repository.Find(request.Id)) ?? 
+                    new VCALENDAR 
+                    { 
+                        Id = request.Id, 
+                        ProdId = request.ProductId, 
+                        Method = METHOD.PUBLISH 
+                    };
 
                 calendar.Components.AddRangeComplement(request.Events);
                 this.repository.Save(calendar);

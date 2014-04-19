@@ -21,6 +21,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             var sclient = new JsonServiceClient(Properties.Settings.Default.test_server);
             var published = sclient.Post<VCALENDAR>(new PublishEvent
             {
+                Id = new GuidKeyGenerator().GetNextKey(),
                 ProductId = new FPIKeyGenerator<string>()
                 {
                     Owner = Properties.Settings.Default.fpiOwner,

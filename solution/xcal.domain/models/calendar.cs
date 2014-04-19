@@ -22,18 +22,16 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// Gets or sets the product identifier. Neccesary as primary key in Ormlite
         /// </summary>
-        public string Id 
-        {
-            get { return prodid; }
-            set { this.prodid = value; }
-        }
+        [DataMember]
+        [Index(Unique = true)] 
+        public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier for the product that created the iCalendar object.
         /// This property is REQUIRED. This identifier should be guaranteed to be a globally unique identifier (GUID)
         /// </summary>
         [DataMember]
-        [Index(Unique = true)] 
+        [Index(Unique = false)] 
         public string ProdId
         { 
             get { return prodid; }

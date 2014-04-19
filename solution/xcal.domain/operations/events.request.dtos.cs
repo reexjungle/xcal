@@ -15,7 +15,7 @@ namespace reexmonkey.xcal.domain.operations
     /// </summary>
     [DataContract]
     [Api ("Post notification of an event. Used primarily as a method of advertising the existence of an  event.")]
-    [Route("/calendars/events/publish", "POST", Summary="Publishes an event")]
+    [Route("/calendars/{Id}/events/publish", "POST", Summary="Publishes an event")]
     public class PublishEvent : IReturn<VCALENDAR>
     {
         /// <summary>
@@ -35,6 +35,9 @@ namespace reexmonkey.xcal.domain.operations
         /// </summary>
         [DataMember]
         public string ProductId { get; set; }
+
+        [DataMember]
+        public string Id { get; set; }
        
     }
 
