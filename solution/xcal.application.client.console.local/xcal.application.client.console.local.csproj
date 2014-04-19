@@ -74,12 +74,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\xcal.domain.models\xcal.domain.csproj">
-      <Project>{5b708e08-1f69-4fde-9d99-afa3784a49d7}</Project>
-      <Name>xcal.domain</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="presentation\ui\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

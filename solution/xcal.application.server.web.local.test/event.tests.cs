@@ -33,7 +33,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                     {
                         new VEVENT
                         {
-                            Uid = new GuidKeyGenerator().GetNextKey(),
+                            Uid = "def123",//new GuidKeyGenerator().GetNextKey(),
                             Organizer = new ORGANIZER
                             {
                                 CN = "Emmanuel Ngwane",

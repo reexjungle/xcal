@@ -58,40 +58,8 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
 
         #region VEVENT services based on RFC 5546
 
-        public VCALENDAR Get(PublishEvent request)
+        public VCALENDAR Post(PublishEvent request)
         {
-
-            request.ProductId = "abc123";
-
-            request.Events = new List<VEVENT> 
-                    {
-                        new VEVENT
-                        {
-                            Uid = "def123",
-                            Organizer = new ORGANIZER
-                            {
-                                Id = "ngwanemk@gmail.com",
-                                CN = "Emmanuel Ngwane",
-                                Address = new URI(""),
-                                Language = new LANGUAGE("en")
-                            },
-                            Location = new TEXT
-                            {
-                                Text = "Düsseldorf",
-                                Language = new LANGUAGE("de", "DE")
-                            },
-
-                            Summary = new TEXT("Test Meeting"),
-                            Description = new TEXT("A test meeting for freaks"),
-                            Start = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc)),
-                            End = new DATE_TIME(new DateTime(2014, 6, 15, 18, 03, 08, 0, DateTimeKind.Utc)),
-                            Status = STATUS.CONFIRMED,
-                            Transparency = TRANSP.TRANSPARENT,
-                            Classification = CLASS.PUBLIC
-                        }
-                    
-                    };
-
             VCALENDAR calendar = null;
             try
             {

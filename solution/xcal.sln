@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web.hybrid", "xcal.application.server.web.hybrid\xcal.application.server.web.hybrid.csproj", "{47148FF0-D886-43B6-B7DF-BF5373C8D312}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.domain", "xcal.domain.models\xcal.domain.csproj", "{5B708E08-1F69-4FDE-9D99-AFA3784A49D7}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{994ADDCE-FC85-436E-8F9A-FCCE54BE307C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web.local", "xcal.application.server.web.local\xcal.application.server.web.local.csproj", "{22781B88-7BD4-4A97-B67D-3854AFBF6452}"
@@ -67,6 +65,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "crosscut.operations.contrac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "infrastructure.contracts", "infrastructure.contracts\infrastructure.contracts.csproj", "{82ED5F70-E1D9-456E-8686-C59306312726}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.domain", "xcal.domain\xcal.domain.csproj", "{5B708E08-1F69-4FDE-9D99-AFA3784A49D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,10 +85,6 @@ Global
 		{47148FF0-D886-43B6-B7DF-BF5373C8D312}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47148FF0-D886-43B6-B7DF-BF5373C8D312}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47148FF0-D886-43B6-B7DF-BF5373C8D312}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5B708E08-1F69-4FDE-9D99-AFA3784A49D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5B708E08-1F69-4FDE-9D99-AFA3784A49D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5B708E08-1F69-4FDE-9D99-AFA3784A49D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5B708E08-1F69-4FDE-9D99-AFA3784A49D7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{22781B88-7BD4-4A97-B67D-3854AFBF6452}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{22781B88-7BD4-4A97-B67D-3854AFBF6452}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22781B88-7BD4-4A97-B67D-3854AFBF6452}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -161,6 +157,10 @@ Global
 		{82ED5F70-E1D9-456E-8686-C59306312726}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82ED5F70-E1D9-456E-8686-C59306312726}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82ED5F70-E1D9-456E-8686-C59306312726}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B708E08-1F69-4FDE-9D99-AFA3784A49D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B708E08-1F69-4FDE-9D99-AFA3784A49D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B708E08-1F69-4FDE-9D99-AFA3784A49D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B708E08-1F69-4FDE-9D99-AFA3784A49D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
