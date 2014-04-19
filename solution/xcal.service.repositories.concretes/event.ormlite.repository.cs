@@ -156,7 +156,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var attachbins = entity.Attachments.OfType<ATTACH_BINARY>();
             var attachuris = entity.Attachments.OfType<ATTACH_URI>();
             var contacts = entity.Contacts;
-            var comments = entity.Comments.OfType<TEXT>();
+            var comments = entity.Comments;
             var rdates = entity.RecurrenceDates;
             var exdates = entity.ExceptionDates;
             var relateds = entity.RelatedTos;
