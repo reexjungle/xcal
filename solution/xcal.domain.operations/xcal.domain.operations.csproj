@@ -77,13 +77,9 @@
       <Project>{0188be5c-bafa-4fac-b068-11dcf7cd918e}</Project>
       <Name>foundation.essentials.contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\xcal.domain.contracts\xcal.domain.contracts.csproj">
-      <Project>{5cc7e3d9-702b-45a3-a413-a07d010c2651}</Project>
-      <Name>xcal.domain.contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\xcal.domain.models\xcal.domain.models.csproj">
+    <ProjectReference Include="..\xcal.domain.models\xcal.domain.csproj">
       <Project>{5b708e08-1f69-4fde-9d99-afa3784a49d7}</Project>
-      <Name>xcal.domain.models</Name>
+      <Name>xcal.domain</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

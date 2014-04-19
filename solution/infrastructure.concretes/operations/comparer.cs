@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using reexmonkey.foundation.essentials.contracts;
 
-namespace reexmonkey.foundation.essentials.concretes
+namespace reexmonkey.infrastructure.operations.concretes
 {
     public abstract class EqualByTId<TPrimary, TId> : IEqualityComparer<TPrimary>
         where TPrimary : IContainsKey<TId>

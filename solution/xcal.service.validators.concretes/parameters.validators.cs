@@ -5,18 +5,12 @@ using System.Text;
 using ServiceStack.FluentValidation;
 using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
+using reexmonkey.xcal.domain.models;
 
 namespace reexmonkey.xcal.service.validators.concretes
 {
-    public class AltrepValidator: AbstractValidator<IALTREP>
-    {
-        public AltrepValidator(): base()
-        {
-            //RuleFor(x => x).SetValidator(new UriValidator());
-        }
-    }
 
-    public class LanguageValidator: AbstractValidator<ILANGUAGE>
+    public class LanguageValidator: AbstractValidator<LANGUAGE>
     {
         public LanguageValidator(): base()
         {
@@ -24,7 +18,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class TimeZoneIdValidator : AbstractValidator<ITZID>
+    public class TimeZoneIdValidator : AbstractValidator<TZID>
     {
         public TimeZoneIdValidator()
             : base()
@@ -34,7 +28,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class DelegateValidator: AbstractValidator<IDELEGATE>
+    public class DelegateValidator: AbstractValidator<DELEGATE>
     {
         public DelegateValidator()
         {
@@ -44,7 +38,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class FormatTypeValidator: AbstractValidator<IFMTTYPE>
+    public class FormatTypeValidator: AbstractValidator<FMTTYPE>
     {
         public FormatTypeValidator()
         {

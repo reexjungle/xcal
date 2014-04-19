@@ -7,8 +7,8 @@
     <ProjectGuid>{5B708E08-1F69-4FDE-9D99-AFA3784A49D7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.xcal.domain.models</RootNamespace>
-    <AssemblyName>xcal.domain.models</AssemblyName>
+    <RootNamespace>reexmonkey.xcal.domain</RootNamespace>
+    <AssemblyName>xcal.domain</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -66,15 +66,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="alarm.cs" />
-    <Compile Include="calendar.cs" />
-    <Compile Include="event.cs" />
-    <Compile Include="icalendar.cs" />
-    <Compile Include="parameters.cs" />
-    <Compile Include="properties.cs" />
+    <Compile Include="contracts\alarm.cs" />
+    <Compile Include="contracts\calendar.cs" />
+    <Compile Include="contracts\components.cs" />
+    <Compile Include="contracts\enums.cs" />
+    <Compile Include="contracts\event.cs" />
+    <Compile Include="models\event.cs" />
+    <Compile Include="contracts\parameters.cs" />
+    <Compile Include="contracts\properties.cs" />
+    <Compile Include="contracts\timezone.cs" />
+    <Compile Include="contracts\values.cs" />
+    <Compile Include="models\alarm.cs" />
+    <Compile Include="models\calendar.cs" />
+    <Compile Include="extensions\translators.cs" />
+    <Compile Include="models\parameters.cs" />
+    <Compile Include="models\properties.cs" />
+    <Compile Include="operations\events.request.dtos.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="timezone.cs" />
-    <Compile Include="values.cs" />
+    <Compile Include="models\timezone.cs" />
+    <Compile Include="models\values.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -92,15 +102,8 @@
       <Project>{9b9036f7-c547-43d3-b1ec-bb0c5965dc12}</Project>
       <Name>infrastructure.concretes</Name>
     </ProjectReference>
-    <ProjectReference Include="..\xcal.domain.contracts\xcal.domain.contracts.csproj">
-      <Project>{5cc7e3d9-702b-45a3-a413-a07d010c2651}</Project>
-      <Name>xcal.domain.contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\xcal.domain.extensions\xcal.domain.extensions.csproj">
-      <Project>{42829410-cf99-4f3d-999c-29b6ac810143}</Project>
-      <Name>xcal.domain.extensions</Name>
-    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

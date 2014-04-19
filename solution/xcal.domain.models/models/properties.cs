@@ -42,7 +42,7 @@ namespace reexmonkey.xcal.domain.models
         /// Media Type of the resource in an Attachmant
         /// </summary>
         [DataMember]
-        public IFMTTYPE FormatType
+        public FMTTYPE FormatType
         {
             get { return this.format; }
             set { this.format = (FMTTYPE)value; }
@@ -62,13 +62,6 @@ namespace reexmonkey.xcal.domain.models
             }
         }
 
-        /// <summary>
-        /// Indicates, if the Attachment was dafaulted
-        /// </summary>
-        public bool IsDefault()
-        {
-            return this.Content.IsDefault();
-        }
 
         /// <summary>
         /// Default constructor
@@ -157,7 +150,7 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public class ATTACH_URI : IATTACH<URI>, IEquatable<ATTACH_URI>, IComparable<ATTACH_URI>, IContainsKey<string>
     {
-        private IFMTTYPE format;
+        private FMTTYPE format;
 
         /// <summary>
         /// ID of an Attachment for a particular Calendar component
@@ -168,7 +161,7 @@ namespace reexmonkey.xcal.domain.models
         /// Media Type of the resource in an Attachmant
         /// </summary>
         [DataMember]
-        public IFMTTYPE FormatType
+        public FMTTYPE FormatType
         {
             get { return this.format; }
             set { this.format = (FMTTYPE)value; }
@@ -209,7 +202,7 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         /// <param name="type">Type of the attached resource</param>
         /// <param name="content">URI of the attached content</param>
-        public ATTACH_URI(string type, URI content, IFMTTYPE format = null)
+        public ATTACH_URI(string type, URI content, FMTTYPE format = null)
         {
             this.FormatType = format;
             this.Content = content;
@@ -299,15 +292,7 @@ namespace reexmonkey.xcal.domain.models
         /// Language used for this category of calendar components
         /// </summary>
         [DataMember]
-        public ILANGUAGE Language { get; set; }
-
-        /// <summary>
-        /// Indicates, if the Category was dafaulted
-        /// </summary>
-        public bool IsDefault()
-        {
-            return this.Values.Count() == 0;
-        }
+        public LANGUAGE Language { get; set; }
 
         public CATEGORIES()
         {
@@ -326,7 +311,7 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         /// <param name="text">Description of the calendar component category or subtype</param>
         /// <param name="language">Language, used in a given category of calendar components</param>
-        public CATEGORIES(List<string> values, ILANGUAGE language = null)
+        public CATEGORIES(List<string> values, LANGUAGE language = null)
         {
             this.Values = values;
             this.Language = language;
@@ -385,7 +370,7 @@ namespace reexmonkey.xcal.domain.models
     /// Specify non-processing information intended to provide a comment to the calendar user
     /// </summary>
     [DataContract]
-    public class COMMENT : ITEXT, IEquatable<COMMENT>, IComparable<COMMENT>, IContainsKey<string>
+    public class TEXT : ITEXT, IEquatable<TEXT>, IComparable<TEXT>, IContainsKey<string>
     {
         /// <summary>
         /// ID of the Comment to the Calendar Component
@@ -402,33 +387,30 @@ namespace reexmonkey.xcal.domain.models
         /// Alternative Text of the Comment, can content more particular Description of a Calendar Component
         /// </summary>
         [DataMember]
-        public IALTREP AlternativeText { get; set; }
+        public URI AlternativeText { get; set; }
 
         /// <summary>
         /// Languge of the Comment
         /// </summary>
         [DataMember]
-        public ILANGUAGE Language { get; set; }
-
-        /// <summary>
-        /// Indicates, if the Comment is default or was set to default
-        /// </summary>
-        public bool IsDefault()
-        {
-            return this.Text.Equals(string.Empty) && this.AlternativeText.IsDefault();
-        }
+        public LANGUAGE Language { get; set; }
 
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public COMMENT()
+        public TEXT()
         {
             this.Text = string.Empty;
             this.AlternativeText = null;
-            this.Id = Guid.NewGuid().ToString();
         }
 
-        public COMMENT(ITEXT comment)
+        public TEXT(string text)
+        {
+            this.Text = text;
+            this.AlternativeText = null;
+        }
+
+        public TEXT(ITEXT comment)
         {
             this.Language = comment.Language;
             this.AlternativeText = comment.AlternativeText;
@@ -441,13 +423,11 @@ namespace reexmonkey.xcal.domain.models
         /// <param name="text">Text content of the comment</param>
         /// <param name="alt">Alternative text content of the comment</param>
         /// <param name="language">Language of the comment</param>
-        public COMMENT(string text, IALTREP altrep, ILANGUAGE language = null)
+        public TEXT(string text, URI altrep, LANGUAGE language = null)
         {
             this.Text = text;
             this.AlternativeText = altrep;
             this.Language = language;
-            this.Id = Guid.NewGuid().ToString();
-
         }
 
         /// <summary>
@@ -457,14 +437,13 @@ namespace reexmonkey.xcal.domain.models
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("COMMENT");
-            if (this.AlternativeText != null) sb.AppendFormat(";{0}", this.AlternativeText);
+            if (this.AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", this.AlternativeText);
             if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
             sb.AppendFormat(":{0}", this.Text).AppendLine();
             return sb.ToString();
         }
 
-        public bool Equals(COMMENT other)
+        public bool Equals(TEXT other)
         {
             if (other == null) return false;
             return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
@@ -473,7 +452,7 @@ namespace reexmonkey.xcal.domain.models
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            return this.Equals(obj as COMMENT);
+            return this.Equals(obj as TEXT);
         }
 
         public override int GetHashCode()
@@ -481,149 +460,32 @@ namespace reexmonkey.xcal.domain.models
             return this.Text.GetHashCode();
         }
 
-        public int CompareTo(COMMENT other)
+        public int CompareTo(TEXT other)
         {
             return this.Text.CompareTo(other.Text);
         }
 
-        public static bool operator ==(COMMENT a, COMMENT b)
+        public static bool operator ==(TEXT a, TEXT b)
         {
             if ((object)a == null || (object)b == null) return object.Equals(a, b);
             return a.Equals(b);
         }
 
-        public static bool operator !=(COMMENT a, COMMENT b)
+        public static bool operator !=(TEXT a, TEXT b)
         {
             if (a == null || b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
 
-        public static bool operator <(COMMENT a, COMMENT b)
+        public static bool operator <(TEXT a, TEXT b)
         {
             return a.CompareTo(b) < 0;
         }
 
-        public static bool operator >(COMMENT a, COMMENT b)
+        public static bool operator >(TEXT a, TEXT b)
         {
             return a.CompareTo(b) > 0;
         }
-    }
-
-    /// <summary>
-    /// Provides a more complete Description of the calendar component, than  that, provided by SUMMARY
-    /// </summary>
-    [DataContract]
-    public class DESCRIPTION : ITEXT, IEquatable<DESCRIPTION>, IComparable<DESCRIPTION>
-    {
-
-        /// <summary>
-        /// Text content of the Description
-        /// </summary>
-        [DataMember]
-        public string Text { get; set; }
-
-        /// <summary>
-        /// Alternative Text of the Description, can content more particular Description of a Calendar Component
-        /// </summary>
-        [DataMember]
-        public IALTREP AlternativeText { get; set; }
-
-        /// <summary>
-        /// Language of the Description
-        /// </summary>
-        [DataMember]
-        public ILANGUAGE Language { get; set; }
-
-        /// <summary>
-        /// Indicates if the description is Default or is set to Default
-        /// </summary>
-        public bool IsDefault()
-        {
-            return this.Text.Equals(string.Empty) && this.AlternativeText.IsDefault();
-        }
-
-        /// <summary>
-        /// Default Constructor
-        /// </summary>
-        public DESCRIPTION()
-        {
-            this.Text = string.Empty;
-            this.AlternativeText = null;
-            this.Language = new LANGUAGE("en");
-        }
-
-        public DESCRIPTION(ITEXT description)
-        {
-            this.AlternativeText = description.AlternativeText;
-            this.Language = description.Language;
-            this.Text = description.Text;
-        }
-
-        /// <summary>
-        /// Bonstructor based on the descripting Text
-        /// </summary>
-        public DESCRIPTION(string text, IALTREP altrep = null, ILANGUAGE lanugage = null)
-        {
-            this.Text = text;
-            this.AlternativeText = altrep;
-            this.Language = lanugage;
-        }
-        /// <summary>
-        /// Overloaded ToString Method
-        /// </summary>
-        /// <returns>String representation of the Description Property in form of "DESCRIPTION;AlternativeText;Language:Text"</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("DESCRIPTION");
-            if (this.AlternativeText != null) sb.AppendFormat(";{0}", this.AlternativeText);
-            if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
-            sb.AppendFormat(":{0}", this.Text);
-            return sb.ToString();
-        }
-
-        public bool Equals(DESCRIPTION other)
-        {
-            if (other == null) return false;
-            return this.Text == other.Text;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return this.Equals(obj as DESCRIPTION);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.Text.GetHashCode();
-        }
-
-        public int CompareTo(DESCRIPTION other)
-        {
-            return this.Text.CompareTo(other.Text);
-        }
-
-        public static bool operator ==(DESCRIPTION a, DESCRIPTION b)
-        {
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(DESCRIPTION a, DESCRIPTION b)
-        {
-            return !a.Equals(b);
-        }
-
-        public static bool operator <(DESCRIPTION a, DESCRIPTION b)
-        {
-            return a.CompareTo(b) < 0;
-        }
-
-        public static bool operator >(DESCRIPTION a, DESCRIPTION b)
-        {
-            return a.CompareTo(b) > 0;
-        }
-
     }
 
     /// <summary>
@@ -721,137 +583,6 @@ namespace reexmonkey.xcal.domain.models
     }
 
     /// <summary>
-    /// Defines the intended venue for the activity defined by a calendar component
-    /// </summary>
-    [DataContract]
-    public class LOCATION : ITEXT, IEquatable<LOCATION>, IComparable<LOCATION>
-    {
-
-        /// <summary>
-        /// Alternative Text, can represent the description of the Location
-        /// </summary>
-        [DataMember]
-        public IALTREP AlternativeText { get; set; }
-
-        /// <summary>
-        /// Language used in this Location
-        /// </summary>
-        [DataMember]
-        public ILANGUAGE Language { get; set; }
-
-        /// <summary>
-        /// Text with the name and other parameters, specifying the current location
-        /// </summary>
-        [DataMember]
-        public string Text { get; set; }
-
-        /// <summary>
-        /// Indicates if the Location property is set to Default
-        /// </summary>
-        public bool IsDefault()
-        {
-            return this.Text.Equals(string.Empty) && this.AlternativeText.IsDefault();
-        }
-
-        /// <summary>
-        /// Default Constructor
-        /// </summary>
-        public LOCATION()
-        {
-            this.Text = string.Empty;
-            this.AlternativeText = null;
-            this.Language = null;
-        }
-
-        public LOCATION(ITEXT location)
-        {
-            this.AlternativeText = location.AlternativeText;
-            this.Language = location.Language;
-            this.Text = location.Text;
-        }
-
-        /// <summary>
-        /// Constructor based on the Text parameter of location
-        /// </summary>
-        /// <param name="text">Text with the name and other parameters, specifying the current location</param>
-        public LOCATION(string text)
-        {
-            this.Text = text;
-            this.AlternativeText = null;
-        }
-
-        /// <summary>
-        /// Constructor specifying the Text, Alternative Text and Language for location Property
-        /// </summary>
-        /// <param name="text">Text with the name and other parameters, specifying the current location</param>
-        /// <param name="alt">Alternative Text, can represent the description of the Location</param>
-        /// <param name="language">Language used in cthe current Location</param>
-        public LOCATION(string text, IALTREP alt, ILANGUAGE language)
-        {
-            this.AlternativeText = alt;
-            this.Language = language;
-            this.Text = text;
-        }
-
-        /// <summary>
-        /// Overloaded ToString Method
-        /// </summary>
-        /// <returns>The String Representation of the Location property in form of "LOCATION;AlternativeText;Language:Text"</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("LOCATION");
-            if (this.AlternativeText != null) sb.AppendFormat(";{0}", this.AlternativeText);
-            if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
-            sb.AppendFormat(":{0}", this.Text);
-            return sb.ToString();
-        }
-
-        public bool Equals(LOCATION other)
-        {
-            if (other == null) return false;
-            return this.Text == other.Text;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return this.Equals(obj as LOCATION);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.Text.GetHashCode();
-        }
-
-        public int CompareTo(LOCATION other)
-        {
-            return this.Text.CompareTo(other.Text);
-        }
-
-        public static bool operator ==(LOCATION a, LOCATION b)
-        {
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(LOCATION a, LOCATION b)
-        {
-            return !a.Equals(b);
-        }
-
-        public static bool operator <(LOCATION a, LOCATION b)
-        {
-            return a.CompareTo(b) < 0;
-        }
-
-        public static bool operator >(LOCATION a, LOCATION b)
-        {
-            return a.CompareTo(b) > 0;
-        }
-
-    }
-
-    /// <summary>
     /// Defines the Equipment or resources anticipated for an activity specified by a calendar component
     /// </summary>
     [DataContract]
@@ -867,13 +598,13 @@ namespace reexmonkey.xcal.domain.models
         /// Alternative Text for a specified Resource, can content the Description of this resource
         /// </summary>
         [DataMember]
-        public IALTREP AlternativeText { get; set; }
+        public URI AlternativeText { get; set; }
 
         /// <summary>
         /// Language needed for a particular Resource
         /// </summary>
         [DataMember]
-        public ILANGUAGE Language { get; set; }
+        public LANGUAGE Language { get; set; }
 
         /// <summary>
         /// Name and other parameters, descripting a particular Resource
@@ -909,7 +640,7 @@ namespace reexmonkey.xcal.domain.models
         /// <param name="text">Text with the name and other parameters, specifying the current Resource</param>
         /// <param name="alt">Alternative Text, can represent particular the description of the Resource</param>
         /// <param name="language">Language nescessary for the Resource</param>
-        public RESOURCES(List<string> values, IALTREP alt, ILANGUAGE language)
+        public RESOURCES(List<string> values, URI alt, LANGUAGE language)
         {
             this.Values = values;
             this.AlternativeText = alt;
@@ -924,7 +655,7 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("RESOURCES");
-            if (this.AlternativeText != null) sb.AppendFormat(";{0}", this.AlternativeText);
+            if (this.AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", this.AlternativeText);
             if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
             sb.Append(":");
             var last = this.Values.Last();
@@ -966,123 +697,6 @@ namespace reexmonkey.xcal.domain.models
         }
 
     }
-
-    /// <summary>
-    /// Defines the short summary or subject for the calendar component
-    /// </summary>
-    [DataContract]
-    public class SUMMARY : ITEXT, IEquatable<SUMMARY>, IComparable<SUMMARY>
-    {
-        /// <summary>
-        /// Text of the Summary
-        /// </summary>
-        [DataMember]
-        public string Text { get; set; }
-
-        /// <summary>
-        /// Alternative Text, can content some additional information for the summary (URI for the summary)
-        /// </summary>
-        [DataMember]
-        public IALTREP AlternativeText { get; set; }
-
-        /// <summary>
-        /// Language of the summary
-        /// </summary>
-        [DataMember]
-        public ILANGUAGE Language { get; set; }
-
-        /// <summary>
-        /// Indicates, if the Summary property is set to Default
-        /// </summary>
-        public bool IsDefault()
-        {
-            return this.Text.Equals(string.Empty) && this.AlternativeText.IsDefault();
-        }
-
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public SUMMARY()
-        {
-            this.Text = string.Empty;
-            this.AlternativeText = null;
-            this.Language = null;
-        }
-
-        public SUMMARY(ITEXT summary)
-        {
-            this.AlternativeText = summary.AlternativeText;
-            this.Language = summary.Language;
-            this.Text = summary.Text;
-        }
-
-        /// <summary>
-        /// Constructor based on the Text of the summary
-        /// </summary>
-        /// <param name="text">Text of the Summary</param>
-        public SUMMARY(string text, IALTREP altrep = null, ILANGUAGE language = null)
-        {
-            this.Text = text;
-            this.AlternativeText = altrep;
-            this.Language = language;
-        }
-
-        /// <summary>
-        /// Overloaded ToString Method
-        /// </summary>
-        /// <returns>String representation of the SUMMARY property in form of "SUMMARY;AlternatuveText;Language:Text"</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("SUMMARY");
-            if (this.AlternativeText != null) sb.AppendFormat(";{0}", this.AlternativeText);
-            if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
-            sb.AppendFormat(":{0}", this.Text);
-            return sb.ToString();
-        }
-
-        public bool Equals(SUMMARY other)
-        {
-            if (other == null) return false;
-            return this.Text == other.Text;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return this.Equals(obj as SUMMARY);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.Text.GetHashCode();
-        }
-
-        public int CompareTo(SUMMARY other)
-        {
-            return this.Text.CompareTo(other.Text);
-        }
-
-        public static bool operator ==(SUMMARY a, SUMMARY b)
-        {
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(SUMMARY a, SUMMARY b)
-        {
-            return !a.Equals(b);
-        }
-
-        public static bool operator <(SUMMARY a, SUMMARY b)
-        {
-            return a.CompareTo(b) < 0;
-        }
-
-        public static bool operator >(SUMMARY a, SUMMARY b)
-        {
-            return a.CompareTo(b) > 0;
-        }
-    } 
 
     [DataContract]
     public class PRIORITY: IPRIORITY, IEquatable<PRIORITY>, IComparable<PRIORITY>
@@ -1321,10 +935,9 @@ namespace reexmonkey.xcal.domain.models
     /// Defines one or more free or busy time intervals
     /// </summary>
     [DataContract]
-    [KnownType(typeof(PERIOD))]
     public class FREEBUSY : IFREEBUSY, IContainsKey<string>
     {
-        private IEnumerable<IPERIOD> periods;
+        private List<PERIOD> periods;
         private FBTYPE type;
 
         /// <summary>
@@ -1342,7 +955,7 @@ namespace reexmonkey.xcal.domain.models
         /// Period of time, taken by a calendar component
         /// </summary>
         [DataMember]
-        public IEnumerable<IPERIOD> Periods 
+        public List<PERIOD> Periods 
         {
             get { return this.periods; } 
             set 
@@ -1354,18 +967,10 @@ namespace reexmonkey.xcal.domain.models
         }
 
         /// <summary>
-        /// Indicates, if the FreeBusy property of a calendar component is set to default
-        /// </summary>
-        public bool IsDefault()
-        {
-            return this.periods.Count() == 0 && this.type == FBTYPE.UNKNOWN;
-        }
-
-        /// <summary>
         /// Constructor based on the time interval
         /// </summary>
         /// <param name="period"></param>
-        public FREEBUSY(IEnumerable<IPERIOD> periods, FBTYPE type = FBTYPE.FREE)
+        public FREEBUSY(List<PERIOD> periods, FBTYPE type = FBTYPE.FREE)
         {
             var invalid = periods.Where(x => x.Start.TimeFormat != TimeFormat.Utc || x.End.TimeFormat != TimeFormat.Utc);
             if (!invalid.NullOrEmpty()) throw new ArgumentException("Time value MUST be in the UTC time format.");
@@ -1402,17 +1007,16 @@ namespace reexmonkey.xcal.domain.models
     /// Specifies the customary designation for a time zone description
     /// </summary>
     [DataContract]
-    [KnownType(typeof(LANGUAGE))]
     public class TZNAME : ITZNAME, IEquatable<TZNAME>, IComparable<TZNAME>
     {
-        private ILANGUAGE language;
+        private LANGUAGE language;
         private string text;
 
         /// <summary>
         /// Language, inherent for this time zone
         /// </summary>
         [DataMember]
-        public ILANGUAGE Language 
+        public LANGUAGE Language 
         {
             get { return this.language; }
             set { this.language = value; } 
@@ -1433,18 +1037,10 @@ namespace reexmonkey.xcal.domain.models
         }
 
         /// <summary>
-        /// Indicates, if the time zone name property is set to default
-        /// </summary>
-        public bool IsDefault()
-        {
-            return this.text == string.Empty; 
-        }
-
-        /// <summary>
         /// Constructor, based on the Name of the Time Zone
         /// </summary>
         /// <param name="text"></param>
-        public TZNAME(string text, ILANGUAGE language = null)
+        public TZNAME(string text, LANGUAGE language = null)
         {
             this.text = text;
             this.language = language;
@@ -1527,10 +1123,6 @@ namespace reexmonkey.xcal.domain.models
     /// Defines an "Attendee" within a calendar component
     /// </summary>
     [DataContract]
-    [KnownType(typeof(MEMBER))]
-    [KnownType(typeof(DELEGATED_FROM))]
-    [KnownType(typeof(DELEGATED_TO))]
-    [KnownType(typeof(URI))]
     public class ATTENDEE : IATTENDEE, IEquatable<ATTENDEE>, IContainsKey<string>
     {
 
@@ -1547,7 +1139,7 @@ namespace reexmonkey.xcal.domain.models
         /// Address of the Current Attendee
         /// </summary>
         [DataMember]
-        public IURI Address { get; set; }
+        public URI Address { get; set; }
 
         /// <summary>
         /// Calendar User Type of the Attendee
@@ -1559,7 +1151,7 @@ namespace reexmonkey.xcal.domain.models
         /// Membership of the Attendee
         /// </summary>
         [DataMember]
-        public IMEMBER Member {get; set;}
+        public MEMBER Member {get; set;}
 
         /// <summary>
         /// Participation Role of the Attendee
@@ -1583,19 +1175,19 @@ namespace reexmonkey.xcal.domain.models
         /// Specifies the Delegate for current Attendee
         /// </summary>
         [DataMember]
-        public IDELEGATE Delegate { get; set; }
+        public DELEGATE Delegatee { get; set; }
 
         /// <summary>
         /// Specifies the Delegator to the current Attendee
         /// </summary>
         [DataMember]
-        public IDELEGATE Delegator { get; set; }
+        public DELEGATE Delegator { get; set; }
 
         /// <summary>
         /// Specifyes the company or community that sends the Attendee
         /// </summary>
         [DataMember]
-        public IURI SentBy { get; set; }
+        public URI SentBy { get; set; }
 
         /// <summary>
         /// Common name of the Attendee
@@ -1607,32 +1199,13 @@ namespace reexmonkey.xcal.domain.models
         /// Specifies a reference to a directory entry associated with the current Attendee
         /// </summary>
         [DataMember]
-        public IURI Directory { get; set; }
+        public URI Directory { get; set; }
 
         /// <summary>
         /// Native Language of the current Attendee
         /// </summary>
         [DataMember]
-        public ILANGUAGE Language { get; set; }
-
-        /// <summary>
-        /// Gets true if the Attendee property is set to default
-        /// </summary>
-        public bool IsDefault()
-        {
-                return this.Address == null &&
-                this.CalendarUserType == CUTYPE.UNKNOWN &&
-                this.Member.Equals(string.Empty) &&
-                this.Role == ROLE.NON_PARTICIPANT &&
-                this.Participation.Equals(string.Empty) &&
-                this.Rsvp == BOOLEAN.UNKNOWN &&
-                this.Delegate == null &&
-                this.Delegator ==null &&
-                this.SentBy.Equals(string.Empty) &&
-                this.CN == null &&
-                this.Directory == null &&
-                this.Language == null;
-        }
+        public LANGUAGE Language { get; set; }
 
         public ATTENDEE()
         {
@@ -1642,7 +1215,7 @@ namespace reexmonkey.xcal.domain.models
             this.Role = ROLE.UNKNOWN;
             this.Participation = PARTSTAT.UNKNOWN;
             this.Rsvp = BOOLEAN.UNKNOWN;
-            this.Delegate = null;
+            this.Delegatee = null;
             this.Delegator = null;
             this.SentBy = null;
             this.CN = null;
@@ -1663,9 +1236,9 @@ namespace reexmonkey.xcal.domain.models
         /// <param name="sentby">Organisation sendin the Current Attendee</param>
         /// <param name="name">Name of the current Attendee</param>
         /// <param name="dir">Reference to a directory entry associated with the current Attendee</param>
-        public ATTENDEE(IURI address, CUTYPE cutype = CUTYPE.UNKNOWN, ROLE role = ROLE.UNKNOWN,
-            PARTSTAT partstat = PARTSTAT.UNKNOWN, BOOLEAN rsvp = BOOLEAN.UNKNOWN, IMEMBER member = null, IDELEGATE delegatee = null, IDELEGATE delegator = null,
-            IURI sentby = null, string cname = null, IURI dir = null, ILANGUAGE language = null)
+        public ATTENDEE(URI address, CUTYPE cutype = CUTYPE.UNKNOWN, ROLE role = ROLE.UNKNOWN,
+            PARTSTAT partstat = PARTSTAT.UNKNOWN, BOOLEAN rsvp = BOOLEAN.UNKNOWN, MEMBER member = null, DELEGATE delegatee = null, DELEGATE delegator = null,
+            URI sentby = null, string cname = null, URI dir = null, LANGUAGE language = null)
         {
             this.Address = address;
             this.CalendarUserType = cutype;
@@ -1673,7 +1246,7 @@ namespace reexmonkey.xcal.domain.models
             this.Role = role;
             this.Participation = partstat;
             this.Rsvp = rsvp;
-            this.Delegate = delegatee;
+            this.Delegatee = delegatee;
             this.Delegator = delegator;
             this.SentBy = sentby;
             this.CN = cname;
@@ -1693,13 +1266,13 @@ namespace reexmonkey.xcal.domain.models
             if (this.Role != ROLE.UNKNOWN) sb.AppendFormat(";{0}", this.Role);
             if (this.Rsvp != BOOLEAN.UNKNOWN) sb.AppendFormat(";{0}", this.Rsvp);
             if (!this.Member.IsDefault()) sb.AppendFormat(";{0}", this.Member);
-            if (!this.Delegate.IsDefault()) sb.AppendFormat(";{0}", this.Delegate);
-            if (!this.Delegator.IsDefault()) sb.AppendFormat(";{0}", this.Delegator);
-            if (this.SentBy != null ) sb.AppendFormat("SENT-BY=\"{0}\"", this.SentBy);
+            if (this.Delegatee != null) sb.AppendFormat(";DELEGATED-TO={0}", this.Delegatee);
+            if (this.Delegator != null) sb.AppendFormat(";DELEGATED-FROM={0}", this.Delegator);
+            if (this.SentBy != null ) sb.AppendFormat("SENT-BY=\"mailto:{0}\"", this.SentBy);
             if (!string.IsNullOrEmpty(this.CN)) sb.AppendFormat("CN={0}", this.CN);
             if (this.Directory != null) sb.AppendFormat("DIR={0}", this.Directory);            
             if (this.Language != null) sb.AppendFormat("{0}", this.Language);
-            sb.AppendFormat(":{0}", this.Address).AppendLine();
+            sb.AppendFormat(":mailto:{0}", this.Address).AppendLine();
             return sb.ToString();
         }
 
@@ -1723,8 +1296,8 @@ namespace reexmonkey.xcal.domain.models
                 this.Role.GetHashCode() ^
                 this.Rsvp.GetHashCode() ^
                 ((this.Member != null) ? this.Member.GetHashCode() : 0) ^
-                ((this.Delegate != null) ? this.Delegate.GetHashCode() : 0) ^ 
-                ((this.Delegator != null) ? this.Delegate.GetHashCode() : 0) ^ 
+                ((this.Delegatee != null) ? this.Delegatee.GetHashCode() : 0) ^ 
+                ((this.Delegator != null) ? this.Delegator.GetHashCode() : 0) ^ 
                 ((this.SentBy != null) ? this.SentBy.GetHashCode() : 0) ^
                 ((this.CN != null) ? this.Member.GetHashCode() : 0) ^               
                 ((this.Directory != null) ? this.Directory.GetHashCode() : 0) ^
@@ -1745,117 +1318,10 @@ namespace reexmonkey.xcal.domain.models
        
     }
 
-
-    /// <summary>
-    /// Represents the contact information or alternatively a reference to contact information associated with the calendar component
-    /// </summary>
-    [DataContract]
-    [KnownType(typeof(ALTREP))]
-    [KnownType(typeof(LANGUAGE))]
-    public class CONTACT : ICONTACT, IEquatable<CONTACT>, IContainsKey<string>
-    {
-        /// <summary>
-        /// ID of the Contact
-        /// </summary>
-        [DataMember]
-        public string Id{ get; set; }
-
-        /// <summary>
-        /// Contact Data in form of: Name\, Company\, Phone Nr
-        /// </summary>
-        [DataMember]
-        public string Value { get; set; }
-
-        /// <summary>
-        /// Alternative description of the contact, can content the URI pointing to an alternative form of contact information
-        /// </summary>
-        [DataMember]
-        public IALTREP AlternativeText { get; set; }
-
-        /// <summary>
-        /// Language used for contacting
-        /// </summary>
-        [DataMember]
-        public ILANGUAGE Language { get; set; }
-
-        /// <summary>
-        /// Indicates if the contact property is set to default
-        /// </summary>
-        public bool IsDefault()
-        {
-            return this.Value == string.Empty;  
-        }
-
-        public CONTACT()
-        {
-            this.Value = null;
-            this.AlternativeText = null;
-            this.Language = null;
-        }
-
-        /// <summary>
-        /// Constructor, setting all parameters of the contact.
-        /// </summary>
-        /// <param name="value">Contact Data in form of: Name\, Company\, Phone Nr</param>
-        /// <param name="alt">Alternative description of the contact, can content the URI pointing to an alternative form of contact information</param>
-        /// <param name="language">Language used for contacting</param>
-        public CONTACT(string value, IALTREP alt = null, ILANGUAGE language = null)
-        {
-            this.Value = value;
-            this.AlternativeText = alt;
-            this.Language = language;
-        }
-
-        /// <summary>
-        /// Overloaded ToString method
-        /// </summary>
-        /// <returns>String Representation of the Contact property in form of "CONTACT;AlternativeText;Language:Text"</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("CONTACT");
-            if (this.AlternativeText != null) sb.AppendFormat(";{0}", this.AlternativeText);
-            if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
-            sb.AppendFormat(":{0}", this.Value).AppendLine();
-            return sb.ToString();
-        }
-
-        public bool Equals(CONTACT other)
-        {
-            if (other == null) return false;
-            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return this.Equals(obj as CONTACT);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.Value.GetHashCode();
-        }
-
-        public static bool operator ==(CONTACT a, CONTACT b)
-        {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(CONTACT a, CONTACT b)
-        {
-            if (a == null || b == null) return !object.Equals(a, b);
-            return !a.Equals(b);
-        }
-    }
-
-
     /// <summary>
     /// Defines the Organizer for Calendar Component
     /// </summary>
     [DataContract]
-    [KnownType(typeof(URI))]
     public class ORGANIZER : IORGANIZER, IEquatable<ORGANIZER>, IContainsKey<string>
     {
         /// <summary>
@@ -1868,7 +1334,7 @@ namespace reexmonkey.xcal.domain.models
         /// Address of an Organizer
         /// </summary>
         [DataMember]
-        public IURI Address { get; set; }
+        public URI Address { get; set; }
 
         /// <summary>
         /// Common or Display Name associated with "Organizer"
@@ -1880,31 +1346,19 @@ namespace reexmonkey.xcal.domain.models
         /// Directory information associated with "Organizer"
         /// </summary>
         [DataMember]
-        public IURI Directory { get; set; }
+        public URI Directory { get; set; }
 
         /// <summary>
         /// Specifies another calendar user that is acting on behalf of the Organizer
         /// </summary>
         [DataMember]
-        public IURI SentBy { get; set; }
+        public URI SentBy { get; set; }
 
         /// <summary>
         /// Native Language of the Organizer
         /// </summary>
         [DataMember]
-        public ILANGUAGE Language { get; set; }
-
-        /// <summary>
-        /// Gets true, if the Organizer property is set to default
-        /// </summary>
-        public bool IsDefault()
-        {
-            return this.Address == null &&
-            this.CN.Equals(string.Empty) &&
-            this.Directory.Equals(string.Empty) &&
-            this.SentBy.Equals(string.Empty) &&
-            this.Language.Equals(string.Empty);
-        }
+        public LANGUAGE Language { get; set; }
              
         public ORGANIZER()
         {
@@ -1924,12 +1378,13 @@ namespace reexmonkey.xcal.domain.models
             this.Language = organizer.Language;
         }
 
-        public ORGANIZER(IURI address, IURI sentby, string cname = null, IURI dir = null, ILANGUAGE language = null)
+        public ORGANIZER(URI address, URI sentby, string cname = null, URI dir = null, LANGUAGE language = null)
         {
             this.Address = address;
             this.SentBy = sentby;
             this.CN = cname;
-            this.Directory = dir; 
+            this.Directory = dir;
+            this.Language = language;
         }
 
         /// <summary>
@@ -1987,14 +1442,12 @@ namespace reexmonkey.xcal.domain.models
     /// Identifies a specific instance of a recurring "VEVENT", "VTODO", "VJOURNAL" calendar component
     /// </summary>
     [DataContract]
-    [KnownType(typeof(DATE_TIME))]
-    [KnownType(typeof(TZID))]
     public class RECURRENCE_ID : IRECURRENCE_ID, IEquatable<RECURRENCE_ID>, IContainsKey<string>
     {        
         /// <summary>
         /// Original date time: settable only once
         /// </summary>
-        private IDATE_TIME value;
+        private DATE_TIME value;
 
         /// <summary>
         /// ID of the Recurrence
@@ -2005,7 +1458,7 @@ namespace reexmonkey.xcal.domain.models
         /// Gets or sets the Time when the original recurrence instance would occur
         /// </summary>
         [DataMember]
-        public IDATE_TIME Value 
+        public DATE_TIME Value 
         {
             get { return value; }
             set { this.value = value; }
@@ -2015,7 +1468,7 @@ namespace reexmonkey.xcal.domain.models
         /// ID of the  current Time Zone
         /// </summary>
         [DataMember]
-        public ITZID TimeZoneId { get; set; }
+        public TZID TimeZoneId { get; set; }
 
         /// <summary>
         /// Effective Range of te recurrentce instances from the instance specified by the "RECURRENCE_ID"
@@ -2023,18 +1476,9 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public RANGE Range { get; set; }
 
-        /// <summary>
-        /// Gets TRUE if the RECCURENCE_ID property is set to default
-        /// </summary>
-        public bool IsDefault()
-        {
-                return this.Value.IsDefault() && this.TimeZoneId.IsDefault() &&
-                this.Range == RANGE.THISANDFUTURE;
-        }
-
         public RECURRENCE_ID()
         {
-            this.Value = null;
+            this.Value = default(DATE_TIME);
             this.TimeZoneId = null;
             this.Range =  RANGE.UNKNOWN;
         }
@@ -2044,7 +1488,7 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         /// <param name="value"> Gets or sets the Time when the original recurrence instance would occur</param>
         /// <param name="tzid">ID of the  current Time Zone</param>
-        public RECURRENCE_ID(IDATE_TIME value, ITZID tzid = null, RANGE range = RANGE.THISANDFUTURE, ValueFormat format = ValueFormat.UNKNOWN)
+        public RECURRENCE_ID(DATE_TIME value, TZID tzid = null, RANGE range = RANGE.THISANDFUTURE, ValueFormat format = ValueFormat.UNKNOWN)
         {
             this.Value = value;
             this.TimeZoneId = tzid;
@@ -2123,15 +1567,6 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public RELTYPE RelationshipType { get; set; }
 
-        /// <summary>
-        /// Gets True if the Related_To property was set to dafault
-        /// </summary>
-        public bool IsDefault()
-        {
-
-           return this.Reference == string.Empty && this.RelationshipType == RELTYPE.UNKNOWN;
-        }
-
         public RELATEDTO()
         {
             this.Reference = null;
@@ -2193,83 +1628,6 @@ namespace reexmonkey.xcal.domain.models
 
     }
 
-    [DataContract]
-    public class URL : IURI, IEquatable<URL>, IComparable<URL>
-    {
-        public string Path { get; set; }
-
-        /// <summary>
-        /// Indicates, if the URL property is set to dafault
-        /// </summary>
-        public bool IsDefault()
-        {
-            return (this.Path == null);
-        }
-
-        /// <summary>
-        /// Constructor, specifying the URI
-        /// </summary>
-        /// <param name="uri"> Uniform Resource Identifier of the network location</param>
-        public URL(string path)
-        {
-            this.Path = path;
-        }
-
-        public bool Equals(URL other)
-        {
-            if (other == null) return false;
-            return this.Path.Equals(other.Path, StringComparison.OrdinalIgnoreCase);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return this.Equals(obj as URL);
-        }
-
-        public override int GetHashCode()
-        {
-            return (this.Path != null)? this.Path.GetHashCode(): 0;
-        }
-
-        public int CompareTo(URL other)
-        {
-            return this.Path.CompareTo(other.Path);
-        }
-
-        public static bool operator ==(URL a, URL b)
-        {
-            if (a == null || b == null) return false;
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(URL a, URL b)
-        {
-            if (a == null || b == null) return false;
-            return !a.Equals(b);
-        }
-
-        public static bool operator <(URL a, URL b)
-        {
-            if (a == null || b == null) return false;
-            return a.CompareTo(b) < 0;
-        }
-
-        public static bool operator >(URL a, URL b)
-        {
-            if (a == null || b == null) return false;
-            return a.CompareTo(b) > 0;
-        }
-
-        /// <summary>
-        /// Overloaded ToString Method
-        /// </summary>
-        /// <returns>String representation of the URL property in form of "URL:Uri"</returns>
-        public override string ToString()
-        {
-            return string.Format("URL:{0}{1}", this.Path, Environment.NewLine);
-        }
-    }
 
     #endregion
 
@@ -2279,11 +1637,9 @@ namespace reexmonkey.xcal.domain.models
     /// Defines the list of DATE-TIME exceptions for recurring events, to-dos, entries, or time zone definitions
     /// </summary>
     [DataContract]
-    [KnownType(typeof(TZID))]
-    [KnownType(typeof(PERIOD))]
     public class EXDATE : IEXDATE, IEquatable<EXDATE>, IContainsKey<string>
     {
-        private ITZID tzid;
+        private TZID tzid;
 
         /// <summary>
         ///  ID of the Date-Time Exception
@@ -2294,9 +1650,9 @@ namespace reexmonkey.xcal.domain.models
         /// Set of Dates of exceptions in a Recurrence
         /// </summary>
         [DataMember]
-        public IEnumerable<IDATE_TIME> DateTimes { get; set; }
+        public List<DATE_TIME> DateTimes { get; set; }
 
-        public ITZID TimeZoneId 
+        public TZID TimeZoneId 
         {
             get { return this.tzid; }
             set { this.tzid = value; } 
@@ -2309,17 +1665,9 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public ValueFormat Format { get; set; }
 
-        /// <summary>
-        /// Gets true if the EXDATE property is set to default
-        /// </summary>
-        public bool IsDefault()
-        {
-            return this.DateTimes.Count() == 0 && this.Format == ValueFormat.UNKNOWN && this.tzid == null;
-        }
-
         public EXDATE()
         {
-            this.DateTimes = new List<IDATE_TIME>();
+            this.DateTimes = new List<DATE_TIME>();
             this.TimeZoneId = null;
             this.Format = ValueFormat.UNKNOWN;
         }
@@ -2329,7 +1677,7 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         /// <param name="values">Set of Dates of Recurrence Exceptions</param>
         /// <param name="tzid"></param>
-        public EXDATE(IEnumerable<IDATE_TIME> values, ITZID tzid, ValueFormat format = ValueFormat.UNKNOWN)
+        public EXDATE(List<DATE_TIME> values, TZID tzid, ValueFormat format = ValueFormat.UNKNOWN)
         {
             this.DateTimes = values;
             this.TimeZoneId = tzid;
@@ -2395,13 +1743,11 @@ namespace reexmonkey.xcal.domain.models
     /// Defines the list of DATE-TIME values for recurring events, to-dos, journal entries or time-zone definitions
     /// </summary>
     [DataContract]
-    [KnownType(typeof(TZID))]
-    [KnownType(typeof(PERIOD))]
     public class RDATE : IRDATE, IEquatable<RDATE>, IContainsKey<string>
     {
-        private ITZID tzid;
-        private IEnumerable<IDATE_TIME> datetimes;
-        private IEnumerable<IPERIOD> periods;
+        private TZID tzid;
+        private List<DATE_TIME> datetimes;
+        private List<PERIOD> periods;
 
         /// <summary>
         /// ID of the list of DATE-TIME values for recurring events, to-dos, journal entries or time-zone definitions
@@ -2412,8 +1758,7 @@ namespace reexmonkey.xcal.domain.models
         /// List of DATE-TIME values for recurring events, to-dos, journal entries or time-zone definitions
         /// </summary>
         [DataMember]
-        [Ignore]
-        public IEnumerable<IDATE_TIME> DateTimes 
+        public List<DATE_TIME> DateTimes 
         {
             get { return this.datetimes; }
             set
@@ -2427,7 +1772,7 @@ namespace reexmonkey.xcal.domain.models
         /// List of Periods between recurring events, to-dos, journal entries or time-zone definitions
         /// </summary>
         [DataMember]
-        public IEnumerable<IPERIOD> Periods 
+        public List<PERIOD> Periods 
         {
             get { return this.periods; } 
             set
@@ -2441,7 +1786,7 @@ namespace reexmonkey.xcal.domain.models
         /// ID of the current time zone
         /// </summary>
         [DataMember]
-        public ITZID TimeZoneId 
+        public TZID TimeZoneId 
         {
             get { return this.tzid;}
             set { this.tzid = (TZID) value; } 
@@ -2453,22 +1798,11 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public ValueFormat Format { get; set; }
 
-        /// <summary>
-        /// Gets true if the RDATE property is set to default
-        /// </summary>
-        public bool IsDefault()
-        {
-                return this.DateTimes.Count() == 0 &&
-                this.Periods.Count() == 0 &&
-                this.TimeZoneId == null &&
-                this.Format ==  ValueFormat.UNKNOWN;
-        }
-
         public RDATE()
         {
-            this.DateTimes = new List<IDATE_TIME>();
+            this.DateTimes = new List<DATE_TIME>();
             this.TimeZoneId = null;
-            this.Periods = new List<IPERIOD>();
+            this.Periods = new List<PERIOD>();
             this.Format =  ValueFormat.UNKNOWN;
         }
 
@@ -2477,11 +1811,11 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         /// <param name="values">List of DATE-TIME values for recurring events, to-dos, journal entries or time-zone definitions</param>
         /// <param name="tzid">ID of the current Time Zone</param>
-        public RDATE(IEnumerable<IDATE_TIME> values, ITZID tzid = null, ValueFormat format = ValueFormat.UNKNOWN)
+        public RDATE(List<DATE_TIME> values, TZID tzid = null, ValueFormat format = ValueFormat.UNKNOWN)
         {
             this.DateTimes = values;
             this.TimeZoneId = tzid;
-            this.Periods = new List<IPERIOD>();
+            this.Periods = new List<PERIOD>();
             this.Format = format;
 
         }
@@ -2491,9 +1825,9 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         /// <param name="periods">List of Periods between recurring events, to-dos, journal entries or time-zone definitions</param>
         /// <param name="tzid">ID of the current Time Zone</param>
-        public RDATE(IEnumerable<IPERIOD> periods, ITZID tzid = null, ValueFormat format = ValueFormat.UNKNOWN)
+        public RDATE(List<PERIOD> periods, TZID tzid = null, ValueFormat format = ValueFormat.UNKNOWN)
         {
-            this.DateTimes = new List<IDATE_TIME>();
+            this.DateTimes = new List<DATE_TIME>();
             this.Periods = periods;
             this.TimeZoneId = tzid;
             this.Format = format;
@@ -2572,13 +1906,11 @@ namespace reexmonkey.xcal.domain.models
     /// Specifies, when the alarm will trigger
     /// </summary>
     [DataContract]
-    [KnownType(typeof(DURATION))]
-    [KnownType(typeof(DATE_TIME))]
     public class TRIGGER : ITRIGGER, IEquatable<TRIGGER>, IContainsKey<string>
     {
-        private IDURATION duration;
+        private DURATION duration;
         private RELATED related;
-        private IDATE_TIME datetime;
+        private DATE_TIME datetime;
         private ValueFormat vformat;
         private TriggerFormat tformat;
 
@@ -2591,7 +1923,7 @@ namespace reexmonkey.xcal.domain.models
         /// Duration between two alarm actions
         /// </summary>
         [DataMember]
-        public IDURATION Duration 
+        public DURATION Duration 
         {
             get { return duration; }
             set 
@@ -2606,7 +1938,7 @@ namespace reexmonkey.xcal.domain.models
         /// Date-Time, when the Alarm action must be invoked
         /// </summary>
         [DataMember]
-        public IDATE_TIME DateTime 
+        public DATE_TIME DateTime 
         {
             get { return this.datetime; }
             set 
@@ -2627,40 +1959,34 @@ namespace reexmonkey.xcal.domain.models
             set { this.vformat = value; } 
         }
 
-
-        /// <summary>
-        /// gets True if the Trigger property is set to Default
-        /// </summary>
-        public bool IsDefault()
+        [DataMember]
+        public RELATED Related
         {
-            return this.duration.IsDefault() &&
-            this.related == RELATED.UNKNOWN &&
-            this.datetime.IsDefault() &&
-            this.vformat == ValueFormat.UNKNOWN &&
-            this.tformat == TriggerFormat.Related;
+            get { return this.related; }
+            set { this.related = value; }
         }
 
         public TRIGGER()
         {
-            this.duration = null;
+            this.duration = default(DURATION);
             this.related = RELATED.UNKNOWN;
             this.vformat = ValueFormat.UNKNOWN;
             this.tformat = TriggerFormat.Related;
         }
 
-        public TRIGGER(IDURATION duration, RELATED related = RELATED.UNKNOWN, ValueFormat vformat = ValueFormat.UNKNOWN)
+        public TRIGGER(DURATION duration, RELATED related = RELATED.UNKNOWN, ValueFormat vformat = ValueFormat.UNKNOWN)
         {
             this.duration = duration;
             this.related = related;
             this.vformat = vformat;
-            this.datetime = null;
+            this.datetime = default(DATE_TIME);
             this.tformat = TriggerFormat.Related;
         }
 
-        public TRIGGER(IDATE_TIME datetime, ValueFormat vformat = ValueFormat.UNKNOWN)
+        public TRIGGER(DATE_TIME datetime, ValueFormat vformat = ValueFormat.UNKNOWN)
         {
 
-            this.duration = null;
+            this.duration = default(DURATION);
             this.related = RELATED.UNKNOWN;
             this.vformat = vformat;
             this.datetime = datetime;
@@ -2721,13 +2047,6 @@ namespace reexmonkey.xcal.domain.models
         }
 
 
-
-
-        public RELATED Related
-        {
-            get { return this.related; }
-            set { this.related = value; }
-        }
     }
 
     #endregion
@@ -2764,7 +2083,7 @@ namespace reexmonkey.xcal.domain.models
         /// List of any nescessary parameters
         /// </summary>
         [DataMember]
-        public IEnumerable<IPARAMETER> Parameters { get; set; }
+        public List<IPARAMETER> Parameters { get; set; }
 
         /// <summary>
         /// Gets true if the IANA+property is set to default
@@ -2778,7 +2097,7 @@ namespace reexmonkey.xcal.domain.models
         /// Constructor based on the value of the IANA-Property
         /// </summary>
         /// <param name="value"> The value assigned to the IANA-Property</param>
-        public IANA_PROPERTY(string name, TValue value, IEnumerable<IPARAMETER> parameters)
+        public IANA_PROPERTY(string name, TValue value, List<IPARAMETER> parameters)
         {
             this.Name = name;
             this.Value = value;            
@@ -2831,7 +2150,7 @@ namespace reexmonkey.xcal.domain.models
         /// List of any nescessary parameters
         /// </summary>
         [DataMember]
-        public IEnumerable<IPARAMETER> Parameters { get; set; }
+        public List<IPARAMETER> Parameters { get; set; }
 
         /// <summary>
         /// Gets true if the IANA+property is set to default
@@ -2845,7 +2164,7 @@ namespace reexmonkey.xcal.domain.models
         /// Constructor based on the value of the IANA-Property
         /// </summary>
         /// <param name="value"> The value assigned to the IANA-Property</param>
-        public XPROPERTY(string name, TValue value, IEnumerable<IPARAMETER> parameters)
+        public XPROPERTY(string name, TValue value, List<IPARAMETER> parameters)
         {
             this.Name = name;
             this.Value = value;            
@@ -3004,15 +2323,7 @@ namespace reexmonkey.xcal.domain.models
         /// Language for current request
         /// </summary>
         [DataMember]
-        public ILANGUAGE Language { get; set; }
-
-        /// <summary>
-        /// Gets true, if the REQUEST_STATUS property is set to default
-        /// </summary>
-        public bool IsDefault()
-        {
-                return this.Code.Equals(string.Empty) && this.Description.Equals(string.Empty) && this.ExceptionData.Equals(string.Empty);
-        }
+        public LANGUAGE Language { get; set; }
         
         public REQUEST_STATUS()
         {

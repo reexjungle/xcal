@@ -156,7 +156,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var attachbins = entity.Attachments.OfType<ATTACH_BINARY>();
             var attachuris = entity.Attachments.OfType<ATTACH_URI>();
             var contacts = entity.Contacts;
-            var comments = entity.Comments.OfType<COMMENT>();
+            var comments = entity.Comments.OfType<TEXT>();
             var rdates = entity.RecurrenceDates;
             var exdates = entity.ExceptionDates;
             var relateds = entity.RelatedTos;
@@ -1155,13 +1155,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                          e => e.Id == full.Id);
                     if (!attendees.NullOrEmpty()) attendees.AddRangeComplement(attendees);
 
-                    var comments = db.Select<COMMENT, VEVENT, REL_EVENTS_COMMENTS>(
+                    var comments = db.Select<TEXT, VEVENT, REL_EVENTS_COMMENTS>(
                         r => r.CommentId,
                         r => r.EventId,
                         e => e.Id == full.Id);
                     if(!comments.NullOrEmpty()) full.Comments.AddRangeComplement(comments);
 
-                    var contacts = db.Select<CONTACT, VEVENT, REL_EVENTS_CONTACTS>(
+                    var contacts = db.Select<TEXT, VEVENT, REL_EVENTS_CONTACTS>(
                         r => r.ContactId,
                         r => r.EventId,
                         e => e.Id == full.Id);
@@ -1261,10 +1261,10 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     var rids = (!rrids.Empty()) ? db.Select<RECURRENCE_ID>(q => Sql.In(q.Id, rrids.Select(r => r.RecurrenceId_Id).ToArray())) : null;
                     var rrules = (!rrrules.Empty()) ? db.Select<RECUR>(q => Sql.In(q.Id, rrrules.Select(r => r.RecurrenceRuleId).ToArray())) : null;
                     var attendees = (!rattendees.Empty()) ? db.Select<ATTENDEE>(q => Sql.In(q.Id, rattendees.Select(r => r.AttendeeId).ToArray())) : null;
-                    var comments = (!rcomments.Empty()) ? db.Select<COMMENT>(q => Sql.In(q.Id, rcomments.Select(r => r.CommentId).ToArray())) : null;
+                    var comments = (!rcomments.Empty()) ? db.Select<TEXT>(q => Sql.In(q.Id, rcomments.Select(r => r.CommentId).ToArray())) : null;
                     var attachbins = (!rattachbins.Empty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToArray())) : null;
                     var attachuris = (!rattachuris.Empty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachuris.Select(r => r.AttachmentId).ToArray())) : null;
-                    var contacts = (!rcontacts.Empty()) ? db.Select<CONTACT>(q => Sql.In(q.Id, rcontacts.Select(r => r.ContactId).ToArray())) : null;
+                    var contacts = (!rcontacts.Empty()) ? db.Select<TEXT>(q => Sql.In(q.Id, rcontacts.Select(r => r.ContactId).ToArray())) : null;
                     var exdates = (!rexdates.Empty()) ? db.Select<EXDATE>(q => Sql.In(q.Id, rexdates.Select(r => r.ExceptionDateId).ToArray())) : null;
                     var rdates = (!rrdates.Empty()) ? db.Select<RDATE>(q => Sql.In(q.Id, rrdates.Select(r => r.RecurrenceDateId).ToArray())) : null;
                     var relatedtos = (!rrelatedtos.Empty()) ? db.Select<RELATEDTO>(q => Sql.In(q.Id, rrelatedtos.Select(r => r.RelatedToId).ToArray())) : null;

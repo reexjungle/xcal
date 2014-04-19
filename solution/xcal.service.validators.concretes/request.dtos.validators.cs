@@ -56,7 +56,7 @@ namespace reexmonkey.xcal.service.validators.concretes
                 Must((x, y) => x.Comments.AreUnique()).
                 When(x => !x.Comments.NullOrEmpty());
 
-            RuleFor(x => x.Contacts).SetCollectionValidator(new ContactValidator()).
+            RuleFor(x => x.Contacts).SetCollectionValidator(new TextValidator()).
                 Must((x, y) => x.Contacts.AreUnique() && x.Contacts.Count() <= 1).
                 When(x => !x.Contacts.NullOrEmpty());
 
@@ -128,11 +128,11 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.Categories).NotNull().When(x => x.Categories != null);
             RuleFor(x => x.Classification).NotEqual(CLASS.UNKNOWN);
 
-            RuleFor(x => x.Comments.OfType<COMMENT>()).SetCollectionValidator(new TextValidator()).
-                Must((x, y) => x.Comments.OfType<COMMENT>().AreUnique(new EqualByStringId<COMMENT>())).
-                When(x => !x.Comments.OfType<COMMENT>().NullOrEmpty());
+            RuleFor(x => x.Comments.OfType<TEXT>()).SetCollectionValidator(new TextValidator()).
+                Must((x, y) => x.Comments.OfType<TEXT>().AreUnique()).
+                When(x => !x.Comments.OfType<TEXT>().NullOrEmpty());
 
-            RuleFor(x => x.Contacts.OfType<CONTACT>()).SetCollectionValidator(new ContactValidator()).
+            RuleFor(x => x.Contacts.OfType<TEXT>()).SetCollectionValidator(new TextValidator()).
                 Must((x, y) => x.Contacts.AreUnique() &&
                     x.Contacts.Count() <= 1).
                 When(x => !x.Contacts.NullOrEmpty());

@@ -40,17 +40,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="codedom.cs" />
-    <Compile Include="comparer.cs" />
-    <Compile Include="copy.cs" />
-    <Compile Include="encoders.cs" />
-    <Compile Include="file.cs" />
-    <Compile Include="generators.cs" />
+    <Compile Include="io\codedom.cs" />
+    <Compile Include="operations\comparer.cs" />
+    <Compile Include="io\copy.cs" />
+    <Compile Include="operations\encoders.cs" />
+    <Compile Include="io\file.cs" />
+    <Compile Include="operations\generators.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="reflectors.cs" />
-    <Compile Include="search.cs" />
-    <Compile Include="extensions.cs" />
-    <Compile Include="xml.cs" />
+    <Compile Include="operations\reflectors.cs" />
+    <Compile Include="operations\search.cs" />
+    <Compile Include="operations\utilities.cs" />
+    <Compile Include="io\xml.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\foundation.essentials.contracts\foundation.essentials.contracts.csproj">

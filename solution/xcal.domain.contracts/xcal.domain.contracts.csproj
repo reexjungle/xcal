@@ -42,6 +42,7 @@
     <Compile Include="enumerations.cs" />
     <Compile Include="alarm.cs" />
     <Compile Include="component.cs" />
+    <Compile Include="calendar.cs" />
     <Compile Include="parameters.cs" />
     <Compile Include="properties.cs" />
     <Compile Include="timezone.cs" />

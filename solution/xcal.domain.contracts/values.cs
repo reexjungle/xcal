@@ -282,7 +282,6 @@ namespace reexmonkey.xcal.domain.contracts
 
         ITZID TimeZoneId { get; set; }
 
-        IUTC_OFFSET Utc_Offset { get; set; }
     }
 
     /// <summary>

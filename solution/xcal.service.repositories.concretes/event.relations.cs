@@ -342,7 +342,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// <summary>
         /// Gets or sets the unique identifier of the related comment entity
         /// </summary>
-        [ForeignKey(typeof(COMMENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        [ForeignKey(typeof(TEXT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string CommentId { get; set; }
 
         public bool Equals(REL_EVENTS_COMMENTS other)
@@ -395,7 +395,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// <summary>
         /// Gets or sets the unique identifier of the related contact entity
         /// </summary>
-        [ForeignKey(typeof(CONTACT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        [ForeignKey(typeof(TEXT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string ContactId { get; set; }
 
         public bool Equals(REL_EVENTS_CONTACTS other)

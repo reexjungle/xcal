@@ -11,8 +11,6 @@ namespace reexmonkey.xcal.domain.models
 {
         
     [DataContract]
-    [KnownType(typeof(TRIGGER))]
-    [KnownType(typeof(DURATION))]
     [KnownType(typeof(ATTACH_BINARY))]
     [KnownType(typeof(ATTACH_URI))]
     public class AUDIO_ALARM : IAUDIO_ALARM, IEquatable<AUDIO_ALARM>, IContainsKey<string>
@@ -24,10 +22,10 @@ namespace reexmonkey.xcal.domain.models
         public ACTION Action { get; set; }
 
         [DataMember]
-        public ITRIGGER Trigger { get; set; }
+        public TRIGGER Trigger { get; set; }
 
         [DataMember]
-        public IDURATION Duration { get; set; }
+        public DURATION Duration { get; set; }
 
         [DataMember]
         public int Repeat { get; set; }
@@ -37,14 +35,14 @@ namespace reexmonkey.xcal.domain.models
 
         public AUDIO_ALARM(): base() { }
 
-        public AUDIO_ALARM(ACTION action, ITRIGGER trigger, IATTACH attachment = null)
+        public AUDIO_ALARM(ACTION action, TRIGGER trigger, IATTACH attachment = null)
         {
             this.Action = action;
             this.Trigger = trigger;
             this.Attachment = attachment;
         }
 
-        public AUDIO_ALARM(ACTION action, ITRIGGER trigger, IDURATION duration, int repeat, IATTACH attachment = null)
+        public AUDIO_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, IATTACH attachment = null)
         {
             this.Action = action;
             this.Trigger = trigger;
@@ -102,20 +100,9 @@ namespace reexmonkey.xcal.domain.models
             return !a.Equals(b);
         }
 
-        public bool IsDefault()
-        {
-            return this.Action == ACTION.UNKNOWN &&
-                ((this.Trigger != null) ? this.Trigger.IsDefault() : true) &&
-                ((this.Duration != null) ? this.Duration.IsDefault() : true) &&
-                (this.Repeat != -1) &&
-                ((this.Attachment != null) ? this.Attachment.IsDefault() : true);
-        }
     }
 
     [DataContract]
-    [KnownType(typeof(TRIGGER))]
-    [KnownType(typeof(DURATION))]
-    [KnownType(typeof(DESCRIPTION))]
     public class DISPLAY_ALARM : IDISPLAY_ALARM, IEquatable<DISPLAY_ALARM>, IContainsKey<string>
     {
         [DataMember]
@@ -125,27 +112,27 @@ namespace reexmonkey.xcal.domain.models
         public ACTION Action { get; set; }
 
         [DataMember]
-        public ITRIGGER Trigger { get; set; }
+        public TRIGGER Trigger { get; set; }
 
         [DataMember]
-        public IDURATION Duration { get; set; }
+        public DURATION Duration { get; set; }
 
         [DataMember]
         public int Repeat { get; set; }
 
         [DataMember]
-        public ITEXT Description { get; set; }
+        public TEXT Description { get; set; }
 
         public DISPLAY_ALARM(): base(){}
 
-        public DISPLAY_ALARM(ACTION action, ITRIGGER trigger, ITEXT description)
+        public DISPLAY_ALARM(ACTION action, TRIGGER trigger, TEXT description)
         {
             this.Action = action;
             this.Trigger = trigger;
             this.Description = description;
         }
 
-        public DISPLAY_ALARM(ACTION action, ITRIGGER trigger, IDURATION duration, int repeat, ITEXT description = null)
+        public DISPLAY_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, TEXT description = null)
         {
             this.Action = action;
             this.Trigger = trigger;
@@ -201,25 +188,11 @@ namespace reexmonkey.xcal.domain.models
             if (a == null || b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
-
-        public bool IsDefault()
-        {
-            return this.Action == ACTION.UNKNOWN &&
-                ((this.Trigger != null) ? this.Trigger.IsDefault() : true) &&
-                ((this.Duration != null) ? this.Duration.IsDefault() : true) &&
-                (this.Repeat != -1) &&
-                ((this.Description != null) ? this.Description.IsDefault() : true);
-
-        }
     }
 
     [DataContract]
-    [KnownType(typeof(TRIGGER))]
-    [KnownType(typeof(DURATION))]
     [KnownType(typeof(ATTACH_BINARY))]
     [KnownType(typeof(ATTACH_URI))]
-    [KnownType(typeof(DESCRIPTION))]
-    [KnownType(typeof(SUMMARY))]
     public class EMAIL_ALARM : IEMAIL_ALARM, IEquatable<EMAIL_ALARM>, IContainsKey<string>
     {
         [DataMember]
@@ -229,23 +202,23 @@ namespace reexmonkey.xcal.domain.models
         public ACTION Action { get; set; }
 
         [DataMember]
-        public ITRIGGER Trigger { get; set; }
+        public TRIGGER Trigger { get; set; }
 
         [DataMember]
-        public IDURATION Duration { get; set; }
+        public DURATION Duration { get; set; }
 
         [DataMember]
         public int Repeat { get; set; }
 
         [DataMember]
-        public ITEXT Description { get; set; }
+        public TEXT Description { get; set; }
 
         [DataMember]
-        public ITEXT Summary { get; set; }
+        public TEXT Summary { get; set; }
 
         [DataMember]
         [Ignore]
-        public List<IATTENDEE> Attendees { get; set; }
+        public List<ATTENDEE> Attendees { get; set; }
 
         [DataMember]
         [Ignore]
@@ -253,12 +226,12 @@ namespace reexmonkey.xcal.domain.models
 
         public EMAIL_ALARM() : base() 
         {
-            this.Attendees = new List<IATTENDEE>();
+            this.Attendees = new List<ATTENDEE>();
             this.Attachments = new List<IATTACH>();
         }
 
-        public EMAIL_ALARM(ACTION action, ITRIGGER trigger, ITEXT description, ITEXT summary, 
-            List<IATTENDEE> attendees, List<IATTACH> attachments = null)
+        public EMAIL_ALARM(ACTION action, TRIGGER trigger, TEXT description, TEXT summary, 
+            List<ATTENDEE> attendees, List<IATTACH> attachments = null)
         {
             this.Action = action;
             this.Trigger = trigger;
@@ -269,8 +242,8 @@ namespace reexmonkey.xcal.domain.models
 
         }
 
-        public EMAIL_ALARM(ACTION action, ITRIGGER trigger, IDURATION duration, int repeat, ITEXT description, ITEXT summary, 
-            List<IATTENDEE> attendees, List<IATTACH> attachments = null)
+        public EMAIL_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, TEXT description, TEXT summary, 
+            List<ATTENDEE> attendees, List<IATTACH> attachments = null)
         {
             this.Action = action;
             this.Trigger = trigger;
@@ -333,18 +306,6 @@ namespace reexmonkey.xcal.domain.models
         {
             if (a == null || b == null) return !object.Equals(a, b);
             return !a.Equals(b);
-        }
-
-        public bool IsDefault()
-        {
-            return this.Action == ACTION.UNKNOWN &&
-                ((this.Trigger != null) ? this.Trigger.IsDefault() : true) &&
-                ((this.Duration != null) ? this.Duration.IsDefault() : true) &&
-                (this.Repeat != -1) &&
-                ((this.Description != null)? this.Description.IsDefault(): true) &&
-                ((this.Summary != null)? this.Summary.IsDefault(): true) &&
-                this.Attendees.NullOrEmpty() &&
-                this.Attachments.NullOrEmpty();
         }
 
     }

@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using ServiceStack.FluentValidation;
 using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
+using reexmonkey.xcal.domain.models;
 
 namespace reexmonkey.xcal.service.validators.concretes
 {
@@ -35,7 +36,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class DateValidator: AbstractValidator<IDATE>
+    public class DateValidator: AbstractValidator<DATE>
     {
         public DateValidator()
         {
@@ -46,7 +47,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class DateTimeValidator: AbstractValidator<IDATE_TIME>
+    public class DateTimeValidator: AbstractValidator<DATE_TIME>
     {
         public DateTimeValidator()
         {
@@ -59,11 +60,10 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.SECOND).InclusiveBetween(0u, 60u);
             RuleFor(x => x.TimeFormat).NotEqual(TimeFormat.Utc).When(x => x.TimeZoneId != null);
             RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null || x.TimeFormat == TimeFormat.Utc);
-            RuleFor(x => x.Utc_Offset).SetValidator(new UtcOffsetValidator()).When(x => x.Utc_Offset != null);
         }
     }
 
-    public class TimeValidator: AbstractValidator<ITIME>
+    public class TimeValidator: AbstractValidator<TIME>
     {
         public TimeValidator()
         {
@@ -73,11 +73,10 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.SECOND).InclusiveBetween(0u, 60u);
             RuleFor(x => x.TimeFormat).NotEqual(TimeFormat.Utc).When(x => x.TimeZoneId != null);
             RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null || x.TimeFormat == TimeFormat.Utc);
-            RuleFor(x => x.Utc_Offset).SetValidator(new UtcOffsetValidator()).When(x => x.Utc_Offset != null);
         }
     }
 
-    public class DurationValidator: AbstractValidator<IDURATION>
+    public class DurationValidator: AbstractValidator<DURATION>
     {
         public DurationValidator()
         {
@@ -85,7 +84,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class PeriodValidator: AbstractValidator<IPERIOD>
+    public class PeriodValidator: AbstractValidator<PERIOD>
     {
         public PeriodValidator()
         {
@@ -96,7 +95,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class WeekDayNumValidator: AbstractValidator<IWEEKDAYNUM>
+    public class WeekDayNumValidator: AbstractValidator<WEEKDAYNUM>
     {
         public WeekDayNumValidator()
         {
@@ -106,7 +105,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class UriValidator : AbstractValidator<IURI>
+    public class UriValidator : AbstractValidator<URI>
     {
         public UriValidator()
             : base()
@@ -115,7 +114,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class RecurrenceValidator: AbstractValidator<IRECUR>
+    public class RecurrenceValidator: AbstractValidator<RECUR>
     {
         public RecurrenceValidator()
             : base()
@@ -128,7 +127,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class UtcOffsetValidator : AbstractValidator<IUTC_OFFSET>
+    public class UtcOffsetValidator : AbstractValidator<UTC_OFFSET>
     {
         public UtcOffsetValidator()
         {

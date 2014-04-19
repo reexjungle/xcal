@@ -42,12 +42,6 @@
     <Compile Include="translators.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\xcal.domain.contracts\xcal.domain.contracts.csproj">
-      <Project>{5cc7e3d9-702b-45a3-a413-a07d010c2651}</Project>
-      <Name>xcal.domain.contracts</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

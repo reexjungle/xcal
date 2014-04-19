@@ -18,10 +18,10 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.Url).SetValidator(new UriValidator()).When(x => x.Url != null);
             RuleFor(x => x.StandardTimes).SetCollectionValidator(new ObservanceValidator()).
                 Must((x, y) => y.AreUnique()).
-                When(x => !x.StandardTimes.OfType<STANDARD>().NullOrEmpty());
-            RuleFor(x => x.DaylightSaveTimes).SetCollectionValidator(new ObservanceValidator()).
+                When(x => !x.StandardTimes.NullOrEmpty());
+            RuleFor(x => x.DaylightTimes).SetCollectionValidator(new ObservanceValidator()).
                 Must((x, y) => y.AreUnique()).
-                When(x => !x.DaylightSaveTimes.OfType<DAYLIGHT>().NullOrEmpty());
+                When(x => !x.DaylightTimes.NullOrEmpty());
         }
     }
 

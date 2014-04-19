@@ -142,13 +142,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 var rcomments = this.redis.As<REL_EVENTS_COMMENTS>().GetAll().Where(x => x.EventId == full.Id);
                 if (!rcomments.NullOrEmpty())
                 {
-                    full.Comments.AddRangeComplement(this.redis.As<COMMENT>().GetValues(rcomments.Select(x => x.CommentId).ToList()));
+                    full.Comments.AddRangeComplement(this.redis.As<TEXT>().GetValues(rcomments.Select(x => x.CommentId).ToList()));
                 }
 
                 var rcontacts = this.redis.As<REL_EVENTS_CONTACTS>().GetAll().Where(x => x.EventId == full.Id);
                 if (!rcontacts.NullOrEmpty())
                 {
-                    full.Contacts.AddRangeComplement(this.redis.As<CONTACT>().GetValues(rcontacts.Select(x => x.ContactId).ToList()));
+                    full.Contacts.AddRangeComplement(this.redis.As<TEXT>().GetValues(rcontacts.Select(x => x.ContactId).ToList()));
                 }
 
                 var rrdates = this.redis.As<REL_EVENTS_RDATES>().GetAll().Where(x => x.EventId == full.Id);
@@ -241,8 +241,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var attachbins = (!rattachbins.Empty()) ? this.redis.As<ATTACH_BINARY>().GetByIds(rattachbins.Select(x => x.AttachmentId)) : null;
             var attachuris = (!rattachuris.Empty()) ? this.redis.As<ATTACH_URI>().GetByIds(rattachuris.Select(x => x.AttachmentId)) : null;
             var attendees = (!rattendees.Empty()) ? this.redis.As<ATTENDEE>().GetByIds(rattendees.Select(x => x.AttendeeId)) : null;
-            var comments = (!rcomments.Empty()) ? this.redis.As<COMMENT>().GetByIds(rcomments.Select(x => x.CommentId)) : null;
-            var contacts = (!rcontacts.Empty()) ? this.redis.As<CONTACT>().GetByIds(rcontacts.Select(x => x.ContactId)) : null;
+            var comments = (!rcomments.Empty()) ? this.redis.As<TEXT>().GetByIds(rcomments.Select(x => x.CommentId)) : null;
+            var contacts = (!rcontacts.Empty()) ? this.redis.As<TEXT>().GetByIds(rcontacts.Select(x => x.ContactId)) : null;
             var rdates = (!rrdates.Empty()) ? this.redis.As<RDATE>().GetByIds(rrdates.Select(x => x.RecurrenceDateId)) : null;
             var exdates = (!rexdates.Empty()) ? this.redis.As<EXDATE>().GetByIds(rexdates.Select(x => x.ExceptionDateId)) : null;
             var relatedtos = (!rrelatedtos.Empty()) ? this.redis.As<RELATEDTO>().GetByIds(rrelatedtos.Select(x => x.RelatedToId)) : null;
@@ -579,7 +579,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                     if (!contacts.NullOrEmpty())
                     {
-                        transaction.QueueCommand(x => this.redis.As<CONTACT>().StoreAll(contacts));
+                        transaction.QueueCommand(x => this.redis.As<TEXT>().StoreAll(contacts));
                         var rcontacts = contacts.Select(x => new REL_EVENTS_CONTACTS
                         {
                             Id = KeyGenerator.GetNextKey(),
@@ -597,7 +597,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                     if (!comments.NullOrEmpty())
                     {
-                        transaction.QueueCommand(x => this.redis.As<CONTACT>().StoreAll(contacts));
+                        transaction.QueueCommand(x => this.redis.As<TEXT>().StoreAll(contacts));
                         var rcontacts = comments.Select(x => new REL_EVENTS_CONTACTS
                         {
                             Id = KeyGenerator.GetNextKey(),

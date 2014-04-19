@@ -16,12 +16,12 @@ namespace reexmonkey.xcal.service.validators.concretes
         public TextValidator() : base()
         {
             RuleFor(x => x.Text).NotNull().When( x => x != null);
-            RuleFor(x => x.AlternativeText).SetValidator(new AltrepValidator()).When(x => x.AlternativeText != null);
+            RuleFor(x => x.AlternativeText).SetValidator(new UriValidator()).When(x => x.AlternativeText != null);
             RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
         }
     }
 
-    public class RecurrenceIdValidator: AbstractValidator<IRECURRENCE_ID>
+    public class RecurrenceIdValidator: AbstractValidator<RECURRENCE_ID>
     {
         public RecurrenceIdValidator(): base()
         {
@@ -31,18 +31,8 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class ContactValidator: AbstractValidator<ICONTACT>
-    {
-        public ContactValidator()
-        {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Value).NotNull().NotEmpty();
-            RuleFor(x => x.AlternativeText).SetValidator(new AltrepValidator()).When(x => x.AlternativeText != null);
-            RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
-        }
-    }
 
-    public class OrganizerValidator: AbstractValidator<IORGANIZER>
+    public class OrganizerValidator: AbstractValidator<ORGANIZER>
     {
         public OrganizerValidator(): base()
         {
@@ -50,7 +40,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class AttendeeValidator : AbstractValidator<IATTENDEE>
+    public class AttendeeValidator : AbstractValidator<ATTENDEE>
     {
         public AttendeeValidator()
             : base()
@@ -104,7 +94,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class ExceptionDateValidator: AbstractValidator<IEXDATE>
+    public class ExceptionDateValidator: AbstractValidator<EXDATE>
     {
         public ExceptionDateValidator()
         {
@@ -114,7 +104,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class RecurrenceDateValidator : AbstractValidator<IRDATE>
+    public class RecurrenceDateValidator : AbstractValidator<RDATE>
     {
         public RecurrenceDateValidator()
         {
@@ -125,7 +115,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class PriorityValidator : AbstractValidator<IPRIORITY>
+    public class PriorityValidator : AbstractValidator<PRIORITY>
     {
         public PriorityValidator()
         {
@@ -136,7 +126,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class RelatedToValidator: AbstractValidator<IRELATEDTO>
+    public class RelatedToValidator: AbstractValidator<RELATEDTO>
     {
         public RelatedToValidator()
         {
@@ -145,18 +135,18 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class ResourcesValidator: AbstractValidator<IRESOURCES>
+    public class ResourcesValidator: AbstractValidator<RESOURCES>
     {
         public ResourcesValidator()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Values).NotNull().NotEmpty();
-            RuleFor(x => x.AlternativeText).SetValidator(new AltrepValidator()).When(x => x.AlternativeText != null);
+            RuleFor(x => x.AlternativeText).SetValidator(new UriValidator()).When(x => x.AlternativeText != null);
             RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
         }
     }
 
-    public class TimeZoneNameValidator: AbstractValidator<ITZNAME>
+    public class TimeZoneNameValidator: AbstractValidator<TZNAME>
     {
         public TimeZoneNameValidator(): base()
         {
@@ -166,12 +156,12 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class ObservanceValidator: AbstractValidator<IObservance>
+    public class ObservanceValidator: AbstractValidator<OBSERVANCE>
     {
         public ObservanceValidator(): base()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.StartDate).NotNull();
+            RuleFor(x => x.Start).NotNull();
             RuleFor(x => x.TimeZoneOffsetFrom).SetValidator(new UtcOffsetValidator()).When(x => x.TimeZoneOffsetFrom != null);
             RuleFor(x => x.TimeZoneOffsetTo).SetValidator(new UtcOffsetValidator()).When(x => x.TimeZoneOffsetTo != null);
             RuleFor(x => x.RecurrenceRule).SetValidator(new RecurrenceValidator()).When(x => x.RecurrenceRule != null);
@@ -181,14 +171,14 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.Comments).SetCollectionValidator(new TextValidator()).
                 Must((x, y) => y.AreUnique()).
                 When(x => !x.Comments.NullOrEmpty());
-            RuleFor(x => x.Names).SetCollectionValidator(new TimeZoneNameValidator()).
-                Must((x, y) => x.Names.AreUnique()).
-                When(x => !x.Names.NullOrEmpty());
+            RuleFor(x => x.TimeZoneNames).SetCollectionValidator(new TimeZoneNameValidator()).
+                Must((x, y) => x.TimeZoneNames.AreUnique()).
+                When(x => !x.TimeZoneNames.NullOrEmpty());
             
         }
     }
 
-    public class TriggerValidator: AbstractValidator<ITRIGGER>
+    public class TriggerValidator: AbstractValidator<TRIGGER>
     {
         public TriggerValidator()
         {
