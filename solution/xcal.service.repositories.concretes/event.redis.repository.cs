@@ -1181,7 +1181,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 x.Start,
                 x.Created,
                 x.Description,
-                x.Geo,
+                Geo = x.Position,
                 x.LastModified,
                 x.Location,
                 x.Priority,

@@ -8,8 +8,6 @@ namespace reexmonkey.xcal.domain.contracts
     /// </summary>
     public interface IEVENT : ICOMPONENT
     {
-        string Id {get; set;}
-
         string Uid {get; set;}
 
         DATE_TIME Datestamp { get; set; }
@@ -22,7 +20,7 @@ namespace reexmonkey.xcal.domain.contracts
 
         TEXT Description { get; set; }
 
-        GEO Geo { get; set; }
+        GEO Position { get; set; }
 
         DATE_TIME LastModified { get; set; }
 

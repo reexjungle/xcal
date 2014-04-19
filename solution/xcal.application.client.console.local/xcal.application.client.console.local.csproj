@@ -68,13 +68,52 @@
     <Compile Include="presentation\logic\event.manager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="presentation\ui\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\foundation.essentials.concretes\foundation.essentials.concretes.csproj">
+      <Project>{eedf1367-a0fc-400a-a649-716261252b9e}</Project>
+      <Name>foundation.essentials.concretes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\foundation.essentials.contracts\foundation.essentials.contracts.csproj">
+      <Project>{0188be5c-bafa-4fac-b068-11dcf7cd918e}</Project>
+      <Name>foundation.essentials.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\infrastructure.concretes\infrastructure.concretes.csproj">
+      <Project>{9b9036f7-c547-43d3-b1ec-bb0c5965dc12}</Project>
+      <Name>infrastructure.concretes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\infrastructure.contracts\infrastructure.contracts.csproj">
+      <Project>{82ed5f70-e1d9-456e-8686-c59306312726}</Project>
+      <Name>infrastructure.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.domain\xcal.domain.csproj">
+      <Project>{5b708e08-1f69-4fde-9d99-afa3784a49d7}</Project>
+      <Name>xcal.domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.service.interfaces.concretes\xcal.service.interfaces.concretes.csproj">
+      <Project>{0b922294-6a3f-4232-a150-cac6bfc7bcfd}</Project>
+      <Name>xcal.service.interfaces.concretes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.service.interfaces.contracts\xcal.service.interfaces.contracts.csproj">
+      <Project>{0f139102-92d0-4d11-8a18-49757609ccbf}</Project>
+      <Name>xcal.service.interfaces.contracts</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

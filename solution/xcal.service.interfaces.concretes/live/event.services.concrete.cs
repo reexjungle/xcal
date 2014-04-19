@@ -60,10 +60,9 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
 
         public VCALENDAR Post(PublishEvent request)
         {
-            VCALENDAR calendar = null;
             try
             {
-                calendar = (this.repository.Find(request.Id)) ?? 
+                var calendar = (this.repository.Find(request.Id)) ?? 
                     new VCALENDAR 
                     { 
                         Id = request.Id, 
@@ -73,12 +72,13 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
 
                 calendar.Components.AddRangeComplement(request.Events);
                 this.repository.Save(calendar);
+                return repository.Hydrate(calendar);
             }
 
             catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); }
             catch (Exception ex) { this.logger.Error(ex.ToString()); }
-            return this.repository.Hydrate(calendar);
+            return null;
         }
 
         public VCALENDAR Patch(RescheduleEvent request)
@@ -112,7 +112,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
 
                 var patch = request.Events.FirstOrDefault();
                 this.repository.EventRepository.Patch(patch,
-                    x => new { x.Summary, x.Geo, x.Priority, x.Transparency, x.Status, x.Attendees, x.Attachments, x.Categories, x.Classification, x.Comments, x.Contacts, x.Sequence, x.LastModified },
+                    x => new { x.Summary, Geo = x.Position, x.Priority, x.Transparency, x.Status, x.Attendees, x.Attachments, x.Categories, x.Classification, x.Comments, x.Contacts, x.Sequence, x.LastModified },
                     p => p.Uid == patch.Uid);
 
                 calendar.Components.AddRangeComplement(request.Events);

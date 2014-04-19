@@ -2,7 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Funq;
+using reexmonkey.infrastructure.operations.contracts;
+using reexmonkey.infrastructure.operations.concretes;
+using ServiceStack.ServiceClient.Web;
+using xcal.application.client.console.local.presentation.logic;
 
 namespace xcal.application.client.console.local
 {
@@ -10,7 +16,32 @@ namespace xcal.application.client.console.local
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("***Welcome to xCal Client Console :) - build Version: {0}***");
+            //delay a bit
+            Thread.Sleep(2000);
+            var container = new Container();
+            var version = typeof(Program).GetAssembly().GetVersionInfo();
+            var fversion = typeof(Program).GetAssembly().GetFileVersionInfo();
+            container.Register<ServiceClientBase>(x => new JsonServiceClient(Properties.Settings.Default.server));
+            container.Register<IGuidKeyGenerator>(x => new GuidKeyGenerator());
+            container.Register<IFPIKeyGenerator>(x =>new FPIKeyGenerator<string>()
+            {
+                Owner = fversion.CompanyName,
+                LanguageId = Properties.Settings.Default.fpiLanguageId,
+                Description = Properties.Settings.Default.fpiDescription,
+                Authority = Properties.Settings.Default.fpiAuthority
+            });
+
+            Console.WriteLine("Welcome to xCal Client Console - Version: {0}.{1}.{2} r({3})", version.Major, version.Minor, version.Build, version.Revision );
+            Console.WriteLine("Please press any key to start");
+            Console.ReadKey();
+
+            var manager = new EventManager 
+            { 
+                FpiKeyGenerator = container.Resolve<IFPIKeyGenerator>(),
+                GuidKeyGenerator = container.Resolve<IGuidKeyGenerator>(),
+                ServiceClient = container.Resolve<ServiceClientBase>()
+            };
+            manager.PublishMinimalEvent();
 
             Console.WriteLine("Please press any key to close");
             Console.ReadKey();

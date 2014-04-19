@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Runtime.Serialization;
 using ServiceStack.DataAnnotations;
 using reexmonkey.foundation.essentials.contracts;
 using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
+
 
 namespace reexmonkey.xcal.domain.models
 {
@@ -439,7 +441,7 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             if (this.AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", this.AlternativeText);
             if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
-            sb.AppendFormat(":{0}", this.Text).AppendLine();
+            sb.AppendFormat(":{0}", this.Text);
             return sb.ToString();
         }
 
@@ -492,41 +494,34 @@ namespace reexmonkey.xcal.domain.models
     /// Specifies the information related to the global position for the activity spiecified by a calendar component
     /// </summary>
     [DataContract]
-    public class GEO : IGEO, IEquatable<GEO>
+    public struct GEO : IGEO, IEquatable<GEO>
     {
+        private float longitude;
+        private float latitude;
         /// <summary>
         /// Longitude of the Geographical Position
         /// </summary>
         [DataMember]
-        public float Longitude { get; set; }
+        public float Longitude 
+        { 
+            get {return this.longitude;}
+            set { this.longitude = value; } 
+        }
 
         /// <summary>
         /// Lattitude of the Geographical Position
         /// </summary>
         [DataMember]
-        public float Latitude { get; set; }
-
-        /// <summary>
-        /// Indicates if the Position is set to Default
-        /// </summary>
-        public bool IsDefault()
+        public float Latitude
         {
-            return this.Latitude.Equals(string.Empty) && this.Longitude.Equals(string.Empty);
-        }
-
-        /// <summary>
-        /// Default Constructor
-        /// </summary>
-        public GEO()
-        {
-            this.Longitude = new float();
-            this.Latitude = new float();
+            get { return this.latitude; }
+            set { this.latitude = value; }
         }
 
         public GEO(IGEO geo)
         {
-            this.Latitude = geo.Latitude;
-            this.Longitude = geo.Longitude;
+            this.latitude = geo.Latitude;
+            this.longitude = geo.Longitude;
         }
 
         /// <summary>
@@ -536,8 +531,24 @@ namespace reexmonkey.xcal.domain.models
         /// <param name="lat"></param>
         public GEO(float lon, float lat)
         {
-            this.Longitude = lon;
-            this.Latitude = lat;
+            this.longitude = lon;
+            this.latitude = lat;
+        }
+
+        public GEO(string value)
+        {
+            this.longitude = default(float);
+            this.latitude = default(float);
+
+            var pattern = @"^(?<lon>[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)(?<lat>[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)$";
+            if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
+            {
+                foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
+                {
+                    if (match.Groups["lon"].Success) this.Longitude = float.Parse(match.Groups["lon"].Value);
+                    if (match.Groups["lat"].Success) this.Latitude = float.Parse(match.Groups["lat"].Value);
+                }
+            }
         }
 
         /// <summary>
@@ -547,21 +558,20 @@ namespace reexmonkey.xcal.domain.models
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("GEO:{0};{1}", this.Latitude, this.Longitude).AppendLine();
+            sb.AppendFormat("GEO:{0};{1}", this.Latitude, this.Longitude);
             return sb.ToString();
         }
 
         public bool Equals(GEO other)
         {
             if (other == null) return false;
-            return this.Latitude == other.Latitude &&
-                this.Longitude == other.Longitude;
+            return this.Latitude == other.Latitude && this.Longitude == other.Longitude;
         }
 
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            return this.Equals(obj as GEO);
+            return this.Equals((GEO)obj);
         }
 
         public override int GetHashCode()
@@ -699,12 +709,13 @@ namespace reexmonkey.xcal.domain.models
     }
 
     [DataContract]
-    public class PRIORITY: IPRIORITY, IEquatable<PRIORITY>, IComparable<PRIORITY>
+    public struct PRIORITY: IPRIORITY, IEquatable<PRIORITY>, IComparable<PRIORITY>
     {
          
         private int value;
         private PRIORITYLEVEL level;
         private PRIORITYSCHEMA schema;
+        private PriorityFormat format;
    
         private int LevelToValue(PRIORITYLEVEL level)
         {
@@ -799,7 +810,11 @@ namespace reexmonkey.xcal.domain.models
         }
 
         [DataMember]
-        public PriorityFormat Format { get; set; }
+        public PriorityFormat Format 
+        {
+            get { return this.format; }
+            set { this.format = value; }
+        }
 
         [DataMember]
         public int Value 
@@ -838,42 +853,53 @@ namespace reexmonkey.xcal.domain.models
             }
         }
 
-        public bool IsDefault()
-        {
-            return this.level == PRIORITYLEVEL.UNKNOWN && 
-                this.value == 0 && 
-                this.schema == PRIORITYSCHEMA.UNKNOWN && 
-                this.Format == PriorityFormat.Integral;
-        }
-
-        public PRIORITY()
-        {
-            this.Value = 0;
-            this.Format = PriorityFormat.Integral;
-        }
-
         public PRIORITY(IPRIORITY priority)
         {
-            this.Format = priority.Format;
-            this.Value = priority.Value;
+            this.format = priority.Format;
+            this.value = priority.Value;
+            this.schema = priority.Schema;
+            this.level = priority.Level;
         }
 
         public PRIORITY(int value)
         {
-            this.Value = value;
-            this.Format = PriorityFormat.Integral;
+            this.format = PriorityFormat.Integral;
+            this.value = value;
+            this.schema = PRIORITYSCHEMA.UNKNOWN;
+            this.level = PRIORITYLEVEL.UNKNOWN;
         }
 
         public PRIORITY(PRIORITYLEVEL level)
         {
-            this.Level = level;
-            this.Format = PriorityFormat.Level;
+            this.format = PriorityFormat.Integral;
+            this.value = 0;
+            this.schema = PRIORITYSCHEMA.UNKNOWN;
+            this.level = level;
         }
 
         public PRIORITY(PRIORITYSCHEMA schema)
         {
-            this.Schema = schema;
-            this.Format = PriorityFormat.Schema;
+            this.format = PriorityFormat.Integral;
+            this.value = 0;
+            this.schema = schema;
+            this.level = PRIORITYLEVEL.UNKNOWN;
+        }
+
+        public PRIORITY(string value)
+        {
+            this.format = PriorityFormat.Integral;
+            this.value = 0;
+            this.schema = PRIORITYSCHEMA.UNKNOWN;
+            this.level = PRIORITYLEVEL.UNKNOWN;
+
+            var pattern = @"^(?<priority>PRIORITY:)?(?<value>\d)$$";
+            if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
+            {
+                foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
+                {
+                    if (match.Groups["value"].Success) this.value = int.Parse(match.Groups["value"].Value);
+                }
+            }
         }
 
         public override string ToString()
@@ -892,7 +918,7 @@ namespace reexmonkey.xcal.domain.models
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            return this.Equals(obj as PRIORITY);
+            return this.Equals((PRIORITY)obj);
         }
 
         public override int GetHashCode()
@@ -907,11 +933,13 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator ==(PRIORITY a, PRIORITY b)
         {
+            if ((object)a == null || (object)b == null) return object.Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(PRIORITY a, PRIORITY b)
         {
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -1452,6 +1480,7 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// ID of the Recurrence
         /// </summary>
+        [DataMember]       
         public string Id{ get; set; }
 
         /// <summary>
@@ -1461,7 +1490,11 @@ namespace reexmonkey.xcal.domain.models
         public DATE_TIME Value 
         {
             get { return value; }
-            set { this.value = value; }
+            set 
+            { 
+                this.value = value;
+                this.TimeZoneId = value.TimeZoneId;
+            }
         }
 
         /// <summary>
@@ -1488,11 +1521,10 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         /// <param name="value"> Gets or sets the Time when the original recurrence instance would occur</param>
         /// <param name="tzid">ID of the  current Time Zone</param>
-        public RECURRENCE_ID(DATE_TIME value, TZID tzid = null, RANGE range = RANGE.THISANDFUTURE, ValueFormat format = ValueFormat.UNKNOWN)
+        public RECURRENCE_ID(DATE_TIME value, RANGE range = RANGE.THISANDFUTURE)
         {
             this.Value = value;
-            this.TimeZoneId = tzid;
-            this.Range = RANGE.THISANDFUTURE;
+            this.Range = range;
         }
 
         /// <summary>
@@ -1504,8 +1536,8 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             sb.Append("RECURRENCE-ID");
             if (this.TimeZoneId != null) sb.AppendFormat(";{0}", this.TimeZoneId);
-            if (this.Range != RANGE.UNKNOWN) sb.AppendFormat(";{0}", this.Range);
-            sb.AppendFormat(":{0}", this.Value).AppendLine();
+            if (this.Range != RANGE.UNKNOWN) sb.AppendFormat(";RANGE={0}", this.Range);
+            sb.AppendFormat(":{0}", this.Value);
             return sb.ToString();
         }
 
@@ -1928,7 +1960,7 @@ namespace reexmonkey.xcal.domain.models
             get { return duration; }
             set 
             {
-                if (this.tformat != TriggerFormat.Related) throw new ArgumentException("Duration values are only allowed for relative triggers");
+                //if (this.tformat != TriggerFormat.Related) throw new ArgumentException("Duration values are only allowed for relative triggers");
                 this.duration = value;
                 this.tformat = TriggerFormat.Related;
             }
@@ -1943,7 +1975,7 @@ namespace reexmonkey.xcal.domain.models
             get { return this.datetime; }
             set 
             {
-                if (this.tformat != TriggerFormat.Absolute) throw new ArgumentException("Duration values are only allowed for absolute triggers");
+                //if (this.tformat != TriggerFormat.Absolute) throw new ArgumentException("Duration values are only allowed for absolute triggers");
                 this.datetime = value;
                 this.tformat = TriggerFormat.Absolute;
             }

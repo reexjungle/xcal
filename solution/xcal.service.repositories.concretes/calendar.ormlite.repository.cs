@@ -195,10 +195,21 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 {
                     try { transaction.Rollback(); }
                     catch (InvalidOperationException) { throw; }
+                    catch (ApplicationException) { throw; }
+                    catch (Exception) { throw; }
+                }
+                catch (ApplicationException) 
+                {
+                    try { transaction.Rollback(); }
+                    catch (InvalidOperationException) { throw; }
+                    catch (ApplicationException) { throw; }
+                    catch (Exception) { throw; }
                 }
                 catch (Exception)
                 {
                     try { transaction.Rollback(); }
+                    catch (InvalidOperationException) { throw; }
+                    catch (ApplicationException) { throw; }
                     catch (Exception) { throw; }
                 }
             } 

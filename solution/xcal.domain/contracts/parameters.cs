@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using reexmonkey.xcal.domain.models;
 
-
 namespace reexmonkey.xcal.domain.contracts
 {
     /// <summary>

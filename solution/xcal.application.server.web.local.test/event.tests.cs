@@ -19,24 +19,28 @@ namespace reexmonkey.xcal.application.server.web.dev.test
         public void PublishMinimalEvent()
         {
             var sclient = new JsonServiceClient(Properties.Settings.Default.test_server);
-            var published = sclient.Post<VCALENDAR>(new PublishEvent
-            {
-                Id = new GuidKeyGenerator().GetNextKey(),
-                ProductId = new FPIKeyGenerator<string>()
-                {
-                    Owner = Properties.Settings.Default.fpiOwner,
-                    LanguageId = Properties.Settings.Default.fpiLanguageId,
-                    Description = Properties.Settings.Default.fpiDescription,
-                    Authority = Properties.Settings.Default.fpiAuthority
-                }.GetNextKey(),
-
-                Events = new List<VEVENT> 
+            var events = new List<VEVENT> 
                     {
                         new VEVENT
                         {
-                            Uid = "def123",//new GuidKeyGenerator().GetNextKey(),
+                            Uid = new GuidKeyGenerator().GetNextKey(),
+                            RecurrenceId = new RECURRENCE_ID
+                            {
+                                Id = new GuidKeyGenerator().GetNextKey(),
+                                Range = RANGE.THISANDFUTURE,
+                                Value = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc))
+                            },
+                            RecurrenceRule = new RECUR
+                            {
+                                Id = new GuidKeyGenerator().GetNextKey(),
+                                FREQ = FREQ.DAILY,
+                                Format = RecurFormat.DateTime,
+                                UNTIL = new DATE_TIME(new DateTime(2014, 6, 25, 18, 03, 08, 0, DateTimeKind.Utc))
+                            },
+
                             Organizer = new ORGANIZER
                             {
+                                Id = new GuidKeyGenerator().GetNextKey(),
                                 CN = "Emmanuel Ngwane",
                                 Address = new URI("ngwanemk@gmail.com"),
                                 Language = new LANGUAGE("en")
@@ -56,7 +60,22 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                             Classification = CLASS.PUBLIC
                         }
                     
-                    },
+                    };
+
+            var eventstring = events[0].ToString();
+
+            var published = sclient.Post<VCALENDAR>(new PublishEvent
+            {
+                Id = new GuidKeyGenerator().GetNextKey(),
+                ProductId = new FPIKeyGenerator<string>()
+                {
+                    Owner = Properties.Settings.Default.fpiOwner,
+                    LanguageId = Properties.Settings.Default.fpiLanguageId,
+                    Description = Properties.Settings.Default.fpiDescription,
+                    Authority = Properties.Settings.Default.fpiAuthority
+                }.GetNextKey(),
+
+                Events = events,
                 TimeZones = null
             });
 

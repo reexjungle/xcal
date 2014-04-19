@@ -415,7 +415,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 x.Start,
                 x.Created,
                 x.Description,
-                x.Geo,
+                Geo = x.Position,
                 x.LastModified,
                 x.Location,
                 x.Priority,
@@ -1085,6 +1085,11 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                     transaction.Commit();
                 }
+                catch (NullReferenceException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (InvalidOperationException) { throw; }
+                }
                 catch (InvalidOperationException)
                 {
                     try { transaction.Rollback(); }
@@ -1230,7 +1235,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             List<VEVENT> full = null;
             try
             {
-                var keys = dry.Select(q => q.Id).ToArray();
+                var keys = dry.Select(q => q.Id).ToList();
                 full = db.Select<VEVENT>(q => Sql.In(q.Id, keys));
                 if (!full.NullOrEmpty())
                 {
@@ -1257,22 +1262,22 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                     #region 2. retrieve secondary entities
 
-                    var orgs = (!rorgs.Empty()) ? db.Select<ORGANIZER>(q => Sql.In(q.Id, rorgs.Select(r => r.OrganizerId).ToArray())) : null;
-                    var rids = (!rrids.Empty()) ? db.Select<RECURRENCE_ID>(q => Sql.In(q.Id, rrids.Select(r => r.RecurrenceId_Id).ToArray())) : null;
-                    var rrules = (!rrrules.Empty()) ? db.Select<RECUR>(q => Sql.In(q.Id, rrrules.Select(r => r.RecurrenceRuleId).ToArray())) : null;
-                    var attendees = (!rattendees.Empty()) ? db.Select<ATTENDEE>(q => Sql.In(q.Id, rattendees.Select(r => r.AttendeeId).ToArray())) : null;
-                    var comments = (!rcomments.Empty()) ? db.Select<TEXT>(q => Sql.In(q.Id, rcomments.Select(r => r.CommentId).ToArray())) : null;
-                    var attachbins = (!rattachbins.Empty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToArray())) : null;
-                    var attachuris = (!rattachuris.Empty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachuris.Select(r => r.AttachmentId).ToArray())) : null;
-                    var contacts = (!rcontacts.Empty()) ? db.Select<TEXT>(q => Sql.In(q.Id, rcontacts.Select(r => r.ContactId).ToArray())) : null;
-                    var exdates = (!rexdates.Empty()) ? db.Select<EXDATE>(q => Sql.In(q.Id, rexdates.Select(r => r.ExceptionDateId).ToArray())) : null;
-                    var rdates = (!rrdates.Empty()) ? db.Select<RDATE>(q => Sql.In(q.Id, rrdates.Select(r => r.RecurrenceDateId).ToArray())) : null;
-                    var relatedtos = (!rrelatedtos.Empty()) ? db.Select<RELATEDTO>(q => Sql.In(q.Id, rrelatedtos.Select(r => r.RelatedToId).ToArray())) : null;
-                    var reqstats = (!rreqstats.Empty()) ? db.Select<REQUEST_STATUS>(q => Sql.In(q.Id, rreqstats.Select(r => r.ReqStatsId).ToArray())) : null;
-                    var resources = (!rresources.Empty()) ? db.Select<RESOURCES>(q => Sql.In(q.Id, rresources.Select(r => r.ResourcesId).ToArray())) : null;
+                    var orgs = (!rorgs.Empty()) ? db.Select<ORGANIZER>(q => Sql.In(q.Id, rorgs.Select(r => r.OrganizerId).ToList())) : null;
+                    var rids = (!rrids.Empty()) ? db.Select<RECURRENCE_ID>(q => Sql.In(q.Id, rrids.Select(r => r.RecurrenceId_Id).ToList())) : null;
+                    var rrules = (!rrrules.Empty()) ? db.Select<RECUR>(q => Sql.In(q.Id, rrrules.Select(r => r.RecurrenceRuleId).ToList())) : null;
+                    var attendees = (!rattendees.Empty()) ? db.Select<ATTENDEE>(q => Sql.In(q.Id, rattendees.Select(r => r.AttendeeId).ToList())) : null;
+                    var comments = (!rcomments.Empty()) ? db.Select<TEXT>(q => Sql.In(q.Id, rcomments.Select(r => r.CommentId).ToList())) : null;
+                    var attachbins = (!rattachbins.Empty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToList())) : null;
+                    var attachuris = (!rattachuris.Empty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachuris.Select(r => r.AttachmentId).ToList())) : null;
+                    var contacts = (!rcontacts.Empty()) ? db.Select<TEXT>(q => Sql.In(q.Id, rcontacts.Select(r => r.ContactId).ToList())) : null;
+                    var exdates = (!rexdates.Empty()) ? db.Select<EXDATE>(q => Sql.In(q.Id, rexdates.Select(r => r.ExceptionDateId).ToList())) : null;
+                    var rdates = (!rrdates.Empty()) ? db.Select<RDATE>(q => Sql.In(q.Id, rrdates.Select(r => r.RecurrenceDateId).ToList())) : null;
+                    var relatedtos = (!rrelatedtos.Empty()) ? db.Select<RELATEDTO>(q => Sql.In(q.Id, rrelatedtos.Select(r => r.RelatedToId).ToList())) : null;
+                    var reqstats = (!rreqstats.Empty()) ? db.Select<REQUEST_STATUS>(q => Sql.In(q.Id, rreqstats.Select(r => r.ReqStatsId).ToList())) : null;
+                    var resources = (!rresources.Empty()) ? db.Select<RESOURCES>(q => Sql.In(q.Id, rresources.Select(r => r.ResourcesId).ToList())) : null;
                     var aalarms = (!raalarms.Empty()) ? this.AudioAlarmRepository.Find(raalarms.Select(x => x.AlarmId).ToList()) : null;
                     var dalarms = (!rdalarms.Empty()) ? this.DisplayAlarmRepository.Find(rdalarms.Select(x => x.AlarmId).ToList()) : null;
-                    var ealarms = (!realarms.Empty()) ? this.EmailAlarmRepository.Hydrate(this.EmailAlarmRepository.Find(realarms.Select(x => x.AlarmId).ToList())) : null;
+                    var ealarms = (!realarms.Empty()) ? this.EmailAlarmRepository.Find(realarms.Select(x => x.AlarmId).ToList()) : null;
 
                     #endregion
 
@@ -1451,6 +1456,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }
             catch (Exception) { throw; }
 
             return full ?? dry;
@@ -1463,6 +1469,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 return db.Count<VEVENT>(q => q.Id == key) != 0;
             }
             catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }
             catch (Exception) { throw; }
         }
 
@@ -1488,6 +1495,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }
             catch (Exception) { throw; }
             return keys;
         }

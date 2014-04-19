@@ -172,11 +172,15 @@ namespace reexmonkey.infrastructure.operations.concretes
             return references;
         }     
 
-        public static FileVersionInfo GetVersionInfo(this Assembly assembly)
+        public static FileVersionInfo GetFileVersionInfo(this Assembly assembly)
         {
             return FileVersionInfo.GetVersionInfo(assembly.Location); 
         }
 
+        public static Version GetVersionInfo(this Assembly assembly)
+        {
+            return assembly.GetName().Version;
+        }
         /// <summary>
         /// Gets the application path of current executing application
         /// </summary>

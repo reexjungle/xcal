@@ -22,10 +22,10 @@ namespace reexmonkey.xcal.domain.extensions
 
             if (value.Equals("GREGORIAN", StringComparison.OrdinalIgnoreCase)) return CALSCALE.GREGORIAN;
             else if (value.Equals("CHINESE", StringComparison.OrdinalIgnoreCase)) return CALSCALE.CHINESE;
-            else if (value.Equals("HEBREW")) return CALSCALE.HEBREW;
-            else if (value.Equals("INDIAN")) return CALSCALE.INDIAN;
-            else if (value.Equals("ISLAMIC")) return CALSCALE.ISLAMIC;
-            else if (value.Equals("JULIAN")) return CALSCALE.JULIAN;
+            else if (value.Equals("HEBREW", StringComparison.OrdinalIgnoreCase)) return CALSCALE.HEBREW;
+            else if (value.Equals("INDIAN", StringComparison.OrdinalIgnoreCase)) return CALSCALE.INDIAN;
+            else if (value.Equals("ISLAMIC", StringComparison.OrdinalIgnoreCase)) return CALSCALE.ISLAMIC;
+            else if (value.Equals("JULIAN", StringComparison.OrdinalIgnoreCase)) return CALSCALE.JULIAN;
             else return CALSCALE.UNKNOWN;
         }
 
@@ -62,10 +62,10 @@ namespace reexmonkey.xcal.domain.extensions
         /// <exception cref="TException&lt;ICalendar&gt;"> Thrown when the string value cannot be converted to CalendarUserType</exception>
         public static CUTYPE ToCUTYPE(this string value)
         {
-            if (value.Equals("GROUP")) return CUTYPE.GROUP;
-            else if (value.Equals("INDIVIDUAL")) return CUTYPE.INDIVIDUAL;
-            else if (value.Equals("RESOURCE")) return CUTYPE.RESOURCE;
-            else if (value.Equals("ROOM")) return CUTYPE.ROOM;
+            if (value.Equals("GROUP", StringComparison.OrdinalIgnoreCase)) return CUTYPE.GROUP;
+            else if (value.Equals("INDIVIDUAL", StringComparison.OrdinalIgnoreCase)) return CUTYPE.INDIVIDUAL;
+            else if (value.Equals("RESOURCE", StringComparison.OrdinalIgnoreCase)) return CUTYPE.RESOURCE;
+            else if (value.Equals("ROOM", StringComparison.OrdinalIgnoreCase)) return CUTYPE.ROOM;
             else return CUTYPE.UNKNOWN;
         }
 
@@ -77,10 +77,10 @@ namespace reexmonkey.xcal.domain.extensions
         /// <exception cref="ArgumentException"> Thrown when the string value cannot be converted to RoleType</exception>
         public static ROLE ToROLE(this string value)
         {
-            if (value.Equals("CHAIR")) return ROLE.CHAIR;
-            else if (value.Equals("NON_PARTICIPANT")) return ROLE.NON_PARTICIPANT;
-            else if (value.Equals("OPT_PARTICIPANT")) return ROLE.OPT_PARTICIPANT;
-            else if (value.Equals("REQ_PARTICIPANT")) return ROLE.REQ_PARTICIPANT;
+            if (value.Equals("CHAIR", StringComparison.OrdinalIgnoreCase)) return ROLE.CHAIR;
+            else if (value.Equals("NON_PARTICIPANT", StringComparison.OrdinalIgnoreCase)) return ROLE.NON_PARTICIPANT;
+            else if (value.Equals("OPT_PARTICIPANT", StringComparison.OrdinalIgnoreCase)) return ROLE.OPT_PARTICIPANT;
+            else if (value.Equals("REQ_PARTICIPANT", StringComparison.OrdinalIgnoreCase)) return ROLE.REQ_PARTICIPANT;
             else return ROLE.UNKNOWN;
         }
 
@@ -93,12 +93,12 @@ namespace reexmonkey.xcal.domain.extensions
         public static PARTSTAT ToPARTSTAT(this string value)
         {
             if (value.Equals(PARTSTAT.ACCEPTED.ToString())) return PARTSTAT.ACCEPTED;
-            else if (value.Equals("COMPLETED.ToString")) return PARTSTAT.COMPLETED;
-            else if (value.Equals("DECLINED")) return PARTSTAT.DELEGATED;
-            else if (value.Equals("DELEGATED")) return PARTSTAT.DELEGATED;
-            else if (value.Equals("IN_PROGRESS")) return PARTSTAT.IN_PROGRESS;
-            else if (value.Equals("NEEDS_ACTION")) return PARTSTAT.UNKNOWN;
-            else if (value.Equals("TENTATIVE")) return PARTSTAT.TENTATIVE;
+            else if (value.Equals("COMPLETED", StringComparison.OrdinalIgnoreCase)) return PARTSTAT.COMPLETED;
+            else if (value.Equals("DECLINED", StringComparison.OrdinalIgnoreCase)) return PARTSTAT.DELEGATED;
+            else if (value.Equals("DELEGATED", StringComparison.OrdinalIgnoreCase)) return PARTSTAT.DELEGATED;
+            else if (value.Equals("IN_PROGRESS", StringComparison.OrdinalIgnoreCase)) return PARTSTAT.IN_PROGRESS;
+            else if (value.Equals("NEEDS_ACTION", StringComparison.OrdinalIgnoreCase)) return PARTSTAT.UNKNOWN;
+            else if (value.Equals("TENTATIVE", StringComparison.OrdinalIgnoreCase)) return PARTSTAT.TENTATIVE;
             else return PARTSTAT.UNKNOWN;
         }
 
@@ -110,9 +110,9 @@ namespace reexmonkey.xcal.domain.extensions
         /// <exception cref="ArgumentException"> Thrown when the string value cannot be converted to RangeType</exception>
         public static RANGE ToRANGE(this string value)
         {
-            if (value.Equals("THISANDFUTURE")) return RANGE.THISANDFUTURE;
-            else if (value.Equals("THIS")) return RANGE.THIS;
-            else if (value.Equals("ALL")) return RANGE.ALL;
+            if (value.Equals("THISANDFUTURE", StringComparison.OrdinalIgnoreCase)) return RANGE.THISANDFUTURE;
+            else if (value.Equals("THIS", StringComparison.OrdinalIgnoreCase)) return RANGE.THIS;
+            else if (value.Equals("ALL", StringComparison.OrdinalIgnoreCase)) return RANGE.ALL;
             else return RANGE.UNKNOWN;
         }
 
@@ -124,13 +124,13 @@ namespace reexmonkey.xcal.domain.extensions
         /// <exception cref="ArgumentException"> Thrown when the string value cannot be converted to FrequencyType</exception>
         public static FREQ ToFREQ(this string value)
         {
-            if (value.Equals("DAILY")) return FREQ.DAILY;
-            else if (value.Equals("HOURLY")) return FREQ.HOURLY;
-            else if (value.Equals("MINUTELY")) return FREQ.MINUTELY;
-            else if (value.Equals("MONTHLY")) return FREQ.MONTHLY;
-            else if (value.Equals("SECONDLY")) return FREQ.SECONDLY;
-            else if (value.Equals("WEEKLY")) return FREQ.WEEKLY;
-            else if (value.Equals("YEARLY")) return FREQ.YEARLY;
+            if (value.Equals("DAILY", StringComparison.OrdinalIgnoreCase)) return FREQ.DAILY;
+            else if (value.Equals("HOURLY", StringComparison.OrdinalIgnoreCase)) return FREQ.HOURLY;
+            else if (value.Equals("MINUTELY", StringComparison.OrdinalIgnoreCase)) return FREQ.MINUTELY;
+            else if (value.Equals("MONTHLY", StringComparison.OrdinalIgnoreCase)) return FREQ.MONTHLY;
+            else if (value.Equals("SECONDLY", StringComparison.OrdinalIgnoreCase)) return FREQ.SECONDLY;
+            else if (value.Equals("WEEKLY", StringComparison.OrdinalIgnoreCase)) return FREQ.WEEKLY;
+            else if (value.Equals("YEARLY", StringComparison.OrdinalIgnoreCase)) return FREQ.YEARLY;
             else return FREQ.UNKNOWN;
         }
 
@@ -142,13 +142,13 @@ namespace reexmonkey.xcal.domain.extensions
         /// <exception cref="ArgumentException"> Thrown when the string value cannot be converted to WeekDayType</exception>
         public static WEEKDAY ToWEEKDAY(this string value)
         {
-            if (value.Equals("SU")) return WEEKDAY.SU;
-            else if (value.Equals("MO")) return WEEKDAY.MO;
-            else if (value.Equals("TU")) return WEEKDAY.TU;
-            else if (value.Equals("WE")) return WEEKDAY.WE;
-            else if (value.Equals("TH")) return WEEKDAY.TH;
-            else if (value.Equals("FR")) return WEEKDAY.FR;
-            else if (value.Equals("SA")) return WEEKDAY.SA;
+            if (value.Equals("SU", StringComparison.OrdinalIgnoreCase)) return WEEKDAY.SU;
+            else if (value.Equals("MO", StringComparison.OrdinalIgnoreCase)) return WEEKDAY.MO;
+            else if (value.Equals("TU", StringComparison.OrdinalIgnoreCase)) return WEEKDAY.TU;
+            else if (value.Equals("WE", StringComparison.OrdinalIgnoreCase)) return WEEKDAY.WE;
+            else if (value.Equals("TH", StringComparison.OrdinalIgnoreCase)) return WEEKDAY.TH;
+            else if (value.Equals("FR", StringComparison.OrdinalIgnoreCase)) return WEEKDAY.FR;
+            else if (value.Equals("SA", StringComparison.OrdinalIgnoreCase)) return WEEKDAY.SA;
             else return WEEKDAY.UNKNOWN;
         }
 

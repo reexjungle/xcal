@@ -78,25 +78,25 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator ==(TZID a, TZID b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return object.Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(TZID a, TZID b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
 
         public static bool operator <(TZID a, TZID b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return false;
             return a.CompareTo(b) < 0;
         }
 
         public static bool operator >(TZID a, TZID b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return false;
             return a.CompareTo(b) > 0;
         }
 
@@ -175,16 +175,16 @@ namespace reexmonkey.xcal.domain.models
             return this.TypeName.GetHashCode() ^ this.SubTypeName.GetHashCode();
         }
 
-        public static bool operator ==(FMTTYPE fmttype, FMTTYPE other)
+        public static bool operator ==(FMTTYPE a, FMTTYPE b)
         {
-            if (other == null) return false;
-            return fmttype.Equals(other);
+            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            return a.Equals(b);
         }
 
-        public static bool operator !=(FMTTYPE fmttype, FMTTYPE other)
+        public static bool operator !=(FMTTYPE a, FMTTYPE b)
         {
-            if (other == null) return false;
-            return !fmttype.Equals(other);
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            return !a.Equals(b);
         }
 
     }
@@ -271,16 +271,16 @@ namespace reexmonkey.xcal.domain.models
             return this.Tag.GetHashCode() ^ this.SubTag.GetHashCode();
         }
 
-        public static bool operator ==(LANGUAGE language, LANGUAGE other)
+        public static bool operator ==(LANGUAGE a, LANGUAGE b)
         {
-            if (other == null) return false;
-            return language.Equals(other);
+            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            return a.Equals(b);
         }
 
-        public static bool operator !=(LANGUAGE language, LANGUAGE other)
+        public static bool operator !=(LANGUAGE a, LANGUAGE b)
         {
-            if (other == null) return false;
-            return !language.Equals(other);
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            return !a.Equals(b);
         }
 
     }
@@ -369,13 +369,13 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator ==(DELEGATE x, DELEGATE y)
         {
-            if (x == null || y == null) return false;
+            if ((object)x == null || (object)y == null) return object.Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(DELEGATE x, DELEGATE y)
         {
-            if (x == null || y == null) return false;
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -479,13 +479,13 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator ==(MEMBER a, MEMBER b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return object.Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(MEMBER a, MEMBER b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
     }

@@ -93,7 +93,7 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator !=(BINARY a, BINARY b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null)  return !object.Equals(a, b);
             return !(a.Equals(b));
         }
 
@@ -177,7 +177,6 @@ namespace reexmonkey.xcal.domain.models
                     if (match.Groups["day"].Success) this.mday = uint.Parse(match.Groups["day"].Value);
                 }
             }
-            else throw new FormatException("Invalid this format. Please consult the definition of DATE in ICalendar Protocol RFC5545");
         }
 
         public DATE(IDATE date)
@@ -239,31 +238,31 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator !=(DATE a, DATE b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null)  return !object.Equals(a, b);
             return !a.Equals(b);
         }
 
         public static bool operator <(DATE a, DATE b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == -1;
         }
 
         public static bool operator <=(DATE a, DATE b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return (a.CompareTo(b) == -1 || a.CompareTo(b) == 0);
         }
 
         public static bool operator >(DATE a, DATE b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == 1;
         }
 
         public static bool operator >=(DATE a, DATE b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return (a.CompareTo(b) == 1 || a.CompareTo(b) == 0);
         }
 
@@ -550,7 +549,6 @@ namespace reexmonkey.xcal.domain.models
                     }
                 }
             }
-            //else throw new FormatException("Invalid DATE-TIME format. Please consult the definition of DATE-TIME in ICalendar Protocol RFC5545");
         }
 
         public DATE_TIME(IDATE_TIME datetime)
@@ -717,25 +715,25 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator <(DATE_TIME a, DATE_TIME b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == -1;
         }
 
         public static bool operator >(DATE_TIME a, DATE_TIME b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return false;
             return a.CompareTo(b) == 1;
         }
 
         public static bool operator <=(DATE_TIME a, DATE_TIME b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return false;
             return (a.CompareTo(b) == -1 || a.CompareTo(b) == 0);
         }
 
         public static bool operator >=(DATE_TIME a, DATE_TIME b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return (a.CompareTo(b) == 1 || a.CompareTo(b) == 0);
         }
 
@@ -897,8 +895,6 @@ namespace reexmonkey.xcal.domain.models
                     }
                 }
             }
-            else throw new FormatException("Invalid TIME format. Please consult the definition of TIME in ICalendar Protocol RFC5545");
-
         }
 
         public TIME(DATE_TIME datetime)
@@ -1018,25 +1014,25 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator <(TIME a, TIME b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == -1;
         }
 
         public static bool operator >(TIME a, TIME b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == 1;
         }
 
         public static bool operator <=(TIME a, TIME b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == -2;
         }
 
         public static bool operator >=(TIME a, TIME b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == 2;
         }
 
@@ -1160,7 +1156,6 @@ namespace reexmonkey.xcal.domain.models
                     else this.sign = SignType.Positive;
                 }
             }
-            else throw new FormatException("Invalid DURATION format. Please consult the definition of DURATION in ICalendar Protocol RFC5545");
         }
 
         public DURATION(IDURATION duration)
@@ -1277,25 +1272,25 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator <(DURATION a, DURATION b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == -1;
         }
 
         public static bool operator >(DURATION a, DURATION b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == 1;
         }
 
         public static bool operator <=(DURATION a, DURATION b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == 1 || a.CompareTo(b) == 0;
         }
 
         public static bool operator >=(DURATION a, DURATION b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == 1 || a.CompareTo(b) == 0;
 
         }
@@ -1360,8 +1355,6 @@ namespace reexmonkey.xcal.domain.models
                     if (match.Groups["weekday"].Success) this.Weekday = match.Groups["weekday"].Value.ToWEEKDAY();
                 }
             }
-            else throw new FormatException("Invalid WeekDayNum format. Please consult the definition of WeekDayNum in ICalendar Protocol RFC5545");
-
         }
 
         public WEEKDAYNUM(IWEEKDAYNUM weekdaynum)
@@ -1557,7 +1550,6 @@ namespace reexmonkey.xcal.domain.models
                     else if (match.Groups["plus"].Success) this.Sign = SignType.Positive;
                 }
             }
-            else throw new FormatException("Invalid UTC OFFSET format");
         }
 
         public UTC_OFFSET(uint hour, uint minute, uint second, SignType sign)
@@ -1706,25 +1698,25 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator <(UTC_OFFSET a, UTC_OFFSET b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == -1;
         }
 
         public static bool operator >(UTC_OFFSET a, UTC_OFFSET b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == 1;
         }
 
         public static bool operator <=(UTC_OFFSET a, UTC_OFFSET b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == -2;
         }
 
         public static bool operator >=(UTC_OFFSET a, UTC_OFFSET b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == 2;
         }
 
@@ -1744,6 +1736,7 @@ namespace reexmonkey.xcal.domain.models
 
 
     }
+    
     [DataContract]
     public struct PERIOD: IPERIOD, IEquatable<PERIOD>, IComparable<PERIOD>
     {
@@ -1897,25 +1890,25 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator <(PERIOD a, PERIOD b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == -2;
         }
 
         public static bool operator >(PERIOD a, PERIOD b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == 2;
         }
 
         public static bool operator <=(PERIOD a, PERIOD b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == -2 || a.CompareTo(b) == 0;
         }
 
         public static bool operator >=(PERIOD a, PERIOD b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null)  return false;
             return a.CompareTo(b) == 2 || a.CompareTo(b) == 0;
         }
 
@@ -2223,11 +2216,13 @@ namespace reexmonkey.xcal.domain.models
         public override string ToString()
         {
             var sb = new StringBuilder();
-
             sb.AppendFormat("FREQ={0};", this.FREQ);
             if (this.Format == RecurFormat.DateTime) sb.AppendFormat("UNTIL={0};", this.UNTIL);
-            else sb.AppendFormat("COUNT={0};", this.COUNT);
-            sb.AppendFormat("INTERVAL={0};", this.INTERVAL.ToString());
+            else
+            {
+                sb.AppendFormat("COUNT={0};", this.COUNT);
+                sb.AppendFormat("INTERVAL={0};", this.INTERVAL.ToString());
+            }
             if (this.BYSECOND.Count() != 0)
             {
                 sb.AppendFormat("BYSECOND=");
@@ -2328,7 +2323,7 @@ namespace reexmonkey.xcal.domain.models
                 }
             }
 
-            sb.AppendFormat("WKST={0};", this.WKST);
+            sb.AppendFormat("WKST={0}", this.WKST);
             return sb.ToString();
         }
 
