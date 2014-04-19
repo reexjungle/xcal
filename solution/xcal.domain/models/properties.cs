@@ -1777,7 +1777,7 @@ namespace reexmonkey.xcal.domain.models
             get { return this.periods; } 
             set
             {
-                if (!this.datetimes.NullOrEmpty() && !value.NullOrEmpty()) throw new ArgumentException("Date times and periods are mutually exclusive");
+                //if (!this.datetimes.NullOrEmpty() && !value.NullOrEmpty()) throw new ArgumentException("Date times and periods are mutually exclusive");
                 this.periods = value;               
             }
         }

@@ -550,7 +550,7 @@ namespace reexmonkey.xcal.domain.models
                     }
                 }
             }
-            else throw new FormatException("Invalid DATE-TIME format. Please consult the definition of DATE-TIME in ICalendar Protocol RFC5545");
+            //else throw new FormatException("Invalid DATE-TIME format. Please consult the definition of DATE-TIME in ICalendar Protocol RFC5545");
         }
 
         public DATE_TIME(IDATE_TIME datetime)
