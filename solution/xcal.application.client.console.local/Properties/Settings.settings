@@ -11,8 +11,5 @@
     <Setting Name="fpiLanguageId" Type="System.String" Scope="Application">
       <Value Profile="(Default)">EN</Value>
     </Setting>
-    <Setting Name="fpiAuthority" Type="reexmonkey.infrastructure.operations.contracts.Authority" Scope="Application">
-      <Value Profile="(Default)">None</Value>
-    </Setting>
   </Settings>
 </SettingsFile>

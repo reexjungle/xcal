@@ -28,7 +28,7 @@ namespace xcal.application.client.console.local
                 Owner = fversion.CompanyName,
                 LanguageId = Properties.Settings.Default.fpiLanguageId,
                 Description = Properties.Settings.Default.fpiDescription,
-                Authority = Properties.Settings.Default.fpiAuthority
+                Authority = Authority.None
             });
 
             Console.WriteLine("Welcome to xCal Client Console - Version: {0}.{1}.{2} r({3})", version.Major, version.Minor, version.Build, version.Revision );
