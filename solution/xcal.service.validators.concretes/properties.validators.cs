@@ -11,11 +11,12 @@ using reexmonkey.xcal.domain.models;
 namespace reexmonkey.xcal.service.validators.concretes
 {
 
-    public class TextValidator: AbstractValidator<ITEXT>
+    public class TextValidator: AbstractValidator<TEXT>
     {
         public TextValidator() : base()
         {
-            RuleFor(x => x.Text).NotNull().When( x => x != null);
+            CascadeMode = CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x.Text).Must((x,y) =>!string.IsNullOrEmpty(y));
             RuleFor(x => x.AlternativeText).SetValidator(new UriValidator()).When(x => x.AlternativeText != null);
             RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
         }
@@ -25,8 +26,9 @@ namespace reexmonkey.xcal.service.validators.concretes
     {
         public RecurrenceIdValidator(): base()
         {
-            RuleFor(x => x.Value).NotNull().When(x => x != null);
-            RuleFor(x => x.Range).NotEqual(RANGE.UNKNOWN).When(x => x != null);
+            CascadeMode = CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x.Value).SetValidator(new DateTimeValidator());
+            RuleFor(x => x.Range).NotEqual(RANGE.UNKNOWN);
             RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null);
         }
     }
@@ -36,7 +38,13 @@ namespace reexmonkey.xcal.service.validators.concretes
     {
         public OrganizerValidator(): base()
         {
-            RuleFor(x => x.Address).NotNull().When(x => x != null);
+            CascadeMode = CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x.Address).SetValidator(new EmailAddressValidator()).When(x => x.Address != null);
+            RuleFor(x => x.CN).Must((x, y) => !string.IsNullOrEmpty(y));
+            RuleFor(x => x.Directory).SetValidator(new UriValidator()).When(x => x.Directory != null);
+            RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
+            RuleFor(x => x.SentBy).SetValidator(new UriValidator()).When(x => x.SentBy != null);
+
         }
     }
 
@@ -45,7 +53,19 @@ namespace reexmonkey.xcal.service.validators.concretes
         public AttendeeValidator()
             : base()
         {
-            RuleFor(x => x.Address).NotNull().When(x => x != null);
+            CascadeMode = CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x.Address).SetValidator(new EmailAddressValidator()).When(x => x.Address != null);
+            RuleFor(x => x.CN).Must((x, y) => !string.IsNullOrEmpty(y));
+            RuleFor(x => x.Directory).SetValidator(new UriValidator()).When(x => x.Directory != null);
+            RuleFor(x => x.Delegatee).SetValidator(new DelegateValidator()).When(x => x.Delegatee != null);
+            RuleFor(x => x.Delegator).SetValidator(new DelegateValidator()).When(x => x.Delegator != null);
+            RuleFor(x => x.CalendarUserType).NotEqual(CUTYPE.UNKNOWN);
+            RuleFor(x => x.Participation).NotEqual(PARTSTAT.UNKNOWN);
+            RuleFor(x => x.Role).NotEqual(ROLE.UNKNOWN);
+            RuleFor(x => x.Member).SetValidator(new MemberValidator()).When(x => x.Member != null);
+            RuleFor(x => x.Rsvp).NotEqual(BOOLEAN.UNKNOWN);
+            RuleFor(x => x.SentBy).SetValidator(new UriValidator()).When(x => x.SentBy != null);
+            RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
         }
     }
 
@@ -66,9 +86,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         public AttachmentValidator()
             : base()
         {
-            RuleFor(x => x.FormatType)
-                .Must((x, y) => !string.IsNullOrEmpty(y.TypeName) && !string.IsNullOrEmpty(y.SubTypeName))
-                .When(x => x.FormatType != null);
+            RuleFor(x => x.FormatType).SetValidator(new FormatTypeValidator()).When(x => x.FormatType != null);
         }
     }
 
@@ -77,7 +95,6 @@ namespace reexmonkey.xcal.service.validators.concretes
         public AttachmentBinaryValidator(): base()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
-            //this.RegisterBaseValidator(new AttachhmentValidator());
             RuleFor(x => x.Content).NotNull().SetValidator(new BinaryValidator());
             RuleFor(x => x.Encoding).NotEqual(ENCODING.UNKNOWN);
         }
@@ -87,9 +104,6 @@ namespace reexmonkey.xcal.service.validators.concretes
     {
         public AttachmentUriValidator(): base()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
-            //this.RegisterBaseValidator(new AttachhmentValidator());
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Content).NotNull().SetValidator(new UriValidator());
         }
     }
@@ -98,7 +112,8 @@ namespace reexmonkey.xcal.service.validators.concretes
     {
         public ExceptionDateValidator()
         {
-            RuleFor(x => x.DateTimes).NotEmpty();
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x.DateTimes).Must((x,y) => !y.NullOrEmpty());
             RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null);
             RuleFor(x => x.Format).Must((x, y) => x.Format == ValueFormat.DATE_TIME || x.Format == ValueFormat.DATE);
         }
@@ -108,8 +123,9 @@ namespace reexmonkey.xcal.service.validators.concretes
     {
         public RecurrenceDateValidator()
         {
-            RuleFor(x => x.DateTimes).NotEmpty();
-            RuleFor(x => x.Periods).SetCollectionValidator(new PeriodValidator());
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x.DateTimes).SetCollectionValidator(new DateTimeValidator()).When(x => !x.DateTimes.NullOrEmpty());
+            RuleFor(x => x.Periods).SetCollectionValidator(new PeriodValidator()).When(x => !x.Periods.NullOrEmpty());
             RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null);
             RuleFor(x => x.Format).Must((x, y) => x.Format == ValueFormat.DATE_TIME || x.Format == ValueFormat.DATE);
         }
@@ -119,6 +135,7 @@ namespace reexmonkey.xcal.service.validators.concretes
     {
         public PriorityValidator()
         {
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Value).InclusiveBetween(0,9).When(x => x.Format == PriorityFormat.Integral);
             RuleFor(x => x.Level).NotEqual(PRIORITYLEVEL.UNKNOWN).When(x => x.Format == PriorityFormat.Level);
             RuleFor(x => x.Schema).NotEqual(PRIORITYSCHEMA.UNKNOWN).When(x => x.Format == PriorityFormat.Schema);
@@ -130,7 +147,6 @@ namespace reexmonkey.xcal.service.validators.concretes
     {
         public RelatedToValidator()
         {
-            RuleFor(x => x.Reference).NotNull();
             RuleFor(x => x.RelationshipType).NotEqual(RELTYPE.UNKNOWN);
         }
     }
@@ -140,7 +156,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         public ResourcesValidator()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Values).NotNull().NotEmpty();
+            RuleFor(x => x.Values).NotNull();
             RuleFor(x => x.AlternativeText).SetValidator(new UriValidator()).When(x => x.AlternativeText != null);
             RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
         }
@@ -161,7 +177,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         public ObservanceValidator(): base()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Start).NotNull();
+            RuleFor(x => x.Start).SetValidator(new DateTimeValidator());
             RuleFor(x => x.TimeZoneOffsetFrom).SetValidator(new UtcOffsetValidator()).When(x => x.TimeZoneOffsetFrom != null);
             RuleFor(x => x.TimeZoneOffsetTo).SetValidator(new UtcOffsetValidator()).When(x => x.TimeZoneOffsetTo != null);
             RuleFor(x => x.RecurrenceRule).SetValidator(new RecurrenceValidator()).When(x => x.RecurrenceRule != null);
@@ -174,7 +190,6 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.TimeZoneNames).SetCollectionValidator(new TimeZoneNameValidator()).
                 Must((x, y) => x.TimeZoneNames.AreUnique()).
                 When(x => !x.TimeZoneNames.NullOrEmpty());
-            
         }
     }
 

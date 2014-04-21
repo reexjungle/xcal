@@ -23,6 +23,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         public TimeZoneIdValidator()
             : base()
         {
+            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x =>x.Prefix).NotNull().When(x => x.GloballyUnique = false);
             RuleFor(x => x.Suffix).NotNull();
         }
@@ -42,10 +43,17 @@ namespace reexmonkey.xcal.service.validators.concretes
     {
         public FormatTypeValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.TypeName).NotNull().NotEmpty();
             RuleFor(x => x.SubTypeName).NotNull().NotEmpty();
         }
     }
 
+    public class MemberValidator: AbstractValidator<MEMBER>
+    {
+        public MemberValidator(): base()
+        {
+            RuleFor(x => x.Addresses).SetCollectionValidator(new UriValidator()).When(x => !x.Addresses.NullOrEmpty());
+        }
+    }
 }

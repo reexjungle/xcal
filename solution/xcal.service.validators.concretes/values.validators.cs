@@ -26,7 +26,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class BinaryValidator: AbstractValidator<IBINARY>
+    public class BinaryValidator: AbstractValidator<BINARY>
     {
         public BinaryValidator()
         {
