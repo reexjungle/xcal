@@ -107,38 +107,30 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public struct DATE : IDATE, IEquatable<DATE>, IComparable<DATE>
     {
-        private uint fullyear;
-        private uint month;
-        private uint mday;
+        private readonly uint fullyear, month, mday;
 
         /// <summary>
-        /// Gets or sets the 4-digit representation of a full year e.g. 2013 
+        /// Gets the 4-digit representation of a full year e.g. 2013 
         /// </summary>
-        [DataMember]
         public uint FULLYEAR
         {
             get { return fullyear; }
-            set { this.fullyear = value; }
         }
 
         /// <summary>
-        /// Gets or sets the 2-digit representation of a month
+        /// Gets the 2-digit representation of a month
         /// </summary>
-        [DataMember]
         public uint MONTH
         {
             get { return month; }
-            set { this.month = value; }
         }
 
         /// <summary>
-        /// Gets or sets the 2-digit representation of a month-day
+        /// Gets the 2-digit representation of a month-day
         /// </summary>
-        [DataMember]
         public uint MDAY
         {
             get { return mday; }
-            set { this.mday = value; }
         }
 
         public DATE(uint fullyear, uint month, uint mday)
@@ -268,156 +260,92 @@ namespace reexmonkey.xcal.domain.models
 
         public static DURATION operator -(DATE start, DATE end)
         {
-            var duration = new DURATION();
-            var x = start; var y = start;
-
-            if (start == end) return duration;
-
-            if (end < start)
-            {
-                x = end;
-                y = end;
-                duration.Sign = SignType.Negative;
-            }
-
-            if (x.MDAY < y.MDAY)
-            {
-                duration.DAYS = (start.MONTH.CountDays(start.FULLYEAR) + start.MDAY) - end.MDAY; // borrow a '1' (days base) from month and add to a.MDAY
-                if (start.MONTH > 1u) start.MONTH--;
-            }
-            else duration.DAYS = x.MDAY - y.MDAY;
-
-            if (x.MONTH < y.MONTH)
-            {
-                duration.WEEKS = 4 * ((x.MONTH + 12u) - y.MONTH); //borrow a '1'  (12 months) from year and add to month
-                if (x.FULLYEAR > 1u) x.FULLYEAR--;
-            }
-            else duration.WEEKS = 4 * (x.MONTH - y.MONTH);
-
-            if (x.FULLYEAR > 0u && x.FULLYEAR >= y.FULLYEAR) duration.WEEKS += 52 * (x.FULLYEAR - y.FULLYEAR);
-
-            return duration;
+           return new DURATION(end.ToDateTime() - start.ToDateTime());
         }
 
         public static DATE operator +(DATE start, DURATION duration)
         {
             if (duration.Sign == SignType.Negative)
             {
-                duration.Sign = SignType.Positive;
-                return start - duration;
+                var pduration = new DURATION(duration.WEEKS, duration.DAYS, duration.HOURS, duration.MINUTES, duration.SECONDS, SignType.Positive);
+                return start - pduration;
             }
-            var end = start.ToDateTime().Add(duration.ToTimeSpan());
-            return end.ToDATE();
+            return (start.ToDateTime().Add(duration.ToTimeSpan())).ToDATE();
         }
 
         public static DATE operator -(DATE end, DURATION duration)
         {
             if (duration.Sign == SignType.Negative) return end + duration;
-            var start = end.ToDateTime().Subtract(duration.ToTimeSpan());
-            return start.ToDATE();
+            return (end.ToDateTime().Subtract(duration.ToTimeSpan())).ToDATE();
         }
     }
 
     [DataContract]
     public struct DATE_TIME : IDATE_TIME, IEquatable<DATE_TIME>, IComparable<DATE_TIME>
     {
-        private uint hour;
-        private uint minute;
-        private uint second;
-        private uint fullyear;
-        private uint month;
-        private uint mday;
-        private TimeFormat format;
-        private TZID tzid;
+        private readonly uint hour, minute, second, fullyear, month, mday;
+        private readonly TimeFormat format;
+        private readonly TZID tzid;
 
         /// <summary>
-        /// Gets or sets the 4-digit representation of a full year e.g. 2013 
+        /// Gets the 4-digit representation of a full year e.g. 2013 
         /// </summary>
-        [DataMember]
         public uint FULLYEAR
         {
             get { return fullyear; }
-            set { this.fullyear = value; }
         }
 
         /// <summary>
-        /// Gets or sets the 2-digit representation of a month
+        /// Gets the 2-digit representation of a month
         /// </summary>
-        [DataMember]
         public uint MONTH
         {
             get { return month; }
-            set
-            {
-                this.month = value;
-            }
         }
 
         /// <summary>
-        /// Gets or sets the 2-digit representation of a month-day
+        /// Gets the 2-digit representation of a month-day
         /// </summary>
-        [DataMember]
         public uint MDAY
         {
             get { return mday; }
-            set
-            {
-                this.mday = value;
-            }
         }
 
         /// <summary>
-        /// Gets or sets the value of the hours
+        /// Gets the value of the hours
         /// </summary>
-        [DataMember]
         public uint HOUR
         {
             get { return this.hour; }
-            set
-            {
-                this.hour = value;
-            }
         }
 
         /// <summary>
-        /// Gets or sets the value of the minutes
+        /// Gets  the value of the minutes
         /// </summary>
-        [DataMember]
         public uint MINUTE
         {
             get { return this.minute; }
-            set
-            {
-                this.minute = value;
-            }
         }
 
         /// <summary>
-        /// Gets or sets the value of the seconds
+        /// Gets the value of the seconds
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the value &lt;0 and value &gt;60 </exception>
-        [DataMember]
         public uint SECOND
         {
             get { return this.second; }
-            set
-            {
-                this.second = value;
-            }
         }
 
         [DataMember]
         public TimeFormat TimeFormat
         {
             get { return this.format; }
-            set { this.format = value; }
         }
 
         [DataMember]
         public TZID TimeZoneId
         {
             get { return this.tzid; }
-            set { this.tzid = value; }
         }
 
         public DATE_TIME(uint fullyear, uint month, uint mday, uint hour, uint minute, uint second,
@@ -641,76 +569,23 @@ namespace reexmonkey.xcal.domain.models
         {
             if (duration.Sign == SignType.Negative)
             {
-                duration.Sign = SignType.Positive;
-                return start - duration;
+                var pduration = new DURATION(duration.WEEKS, duration.DAYS, duration.HOURS, duration.MINUTES, duration.SECONDS, SignType.Positive);
+                return start - pduration;
             }
-            if (duration == default(DURATION)) return start;
-            var end = start.ToDateTime().Add(duration.ToTimeSpan());
-            return end.ToDATE_TIME();
+            return (start.ToDateTime().Add(duration.ToTimeSpan())).ToDATE_TIME();
         }
 
         public static DATE_TIME operator -(DATE_TIME end, DURATION duration)
         {
             if (duration.Sign == SignType.Negative) return end + duration;
-            if (duration == default(DURATION)) return end;
-
-            var start = end.ToDateTime().Subtract(duration.ToTimeSpan());
-            return start.ToDATE_TIME();
+            return (end.ToDateTime().Subtract(duration.ToTimeSpan())).ToDATE_TIME(end.TimeZoneId);
         }
 
-        public static DURATION operator -(DATE_TIME start, DATE_TIME end)
+        public static DURATION operator -(DATE_TIME end, DATE_TIME start)
         {
-            var x = start;
-            var y = end;
-
-            var duration = new DURATION();
-            if (start == end) return duration;
-
-            if (start < end)
-            {
-                x = start; y = end;
-                duration.Sign = SignType.Negative;
-            }
-            else duration.Sign = SignType.Positive;
-
-            if (x.SECOND < y.SECOND)
-            {
-                duration.SECONDS = (x.SECOND + 60u) - y.SECOND;
-                if (x.MINUTE > 0u) x.MINUTE--;
-            }
-            else duration.SECONDS = x.SECOND - y.SECOND;
-
-            if (x.MINUTE < y.MINUTE)
-            {
-                duration.MINUTES = (x.MINUTE + 60u) - y.MINUTE;
-                if (x.MINUTE > 0u) x.HOUR--;
-            }
-            else duration.MINUTES = x.MINUTE - y.MINUTE;
-
-            if (x.HOUR < y.HOUR)
-            {
-                duration.HOURS = (x.HOUR + 24u) - y.HOUR;
-                if (x.MDAY > 1u) x.MDAY--;
-            }
-            else duration.HOURS = x.HOUR - y.HOUR;
-
-            if (x.MDAY < y.MDAY)
-            {
-                duration.DAYS = (x.MONTH.CountDays(x.FULLYEAR) + x.MDAY) - y.MDAY; // borrow a '1' (days base) from month and add to a.MDAY
-                if (x.MONTH > 1u) x.MONTH--;
-            }
-            else duration.DAYS = x.MDAY - y.MDAY;
-
-            if (x.MONTH < y.MONTH)
-            {
-                duration.WEEKS = 4 * ((x.MONTH + 12u) - y.MONTH); //borrow a '1'  (12 months) from year and add to month
-                if (x.FULLYEAR > 1u) x.FULLYEAR--;
-            }
-            else duration.WEEKS = 4 * (x.MONTH - y.MONTH);
-
-            if (x.FULLYEAR > 0u && x.FULLYEAR >= y.FULLYEAR) duration.WEEKS += 52 * (x.FULLYEAR - y.FULLYEAR);
-
-            return duration;
+            if (end > start) return new DURATION(end.ToDateTime() - start.ToDateTime());
+            else if (end < start) return new DURATION(start.ToDateTime() - end.ToDateTime());
+            else return new DURATION();
         }
 
         public static bool operator <(DATE_TIME a, DATE_TIME b)
@@ -755,80 +630,45 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public struct TIME : ITIME, IEquatable<TIME>, IComparable<TIME>
     {
-        private uint hour;
-        private uint minute;
-        private uint second;
-        private TimeFormat format;
-        private TZID tzid;
+        private readonly uint hour, minute, second;
+        private readonly TimeFormat format;
+        private readonly TZID tzid;
 
         /// <summary>
         /// Gets or sets the value of the hours
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the value &lt;0 and value &gt;23 </exception>
-        [DataMember]
         public uint HOUR
         {
             get { return this.hour; }
-            set
-            {
-                if (value >= 0 && value < 24) this.hour = value;
-                else throw new ArgumentOutOfRangeException();
-            }
         }
 
         /// <summary>
         /// Gets or sets the value of the minutes
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the value &lt;0 and value &gt;59 </exception>
-        [DataMember]
         public uint MINUTE
         {
             get { return this.minute; }
-            set
-            {
-                if (value >= 0 && value < 59) this.minute = value;
-                else throw new ArgumentOutOfRangeException();
-            }
         }
 
         /// <summary>
         /// Gets or sets the value of the seconds
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the value &lt;0 and value &gt;60 </exception>
-        [DataMember]
         public uint SECOND
         {
             get { return this.second; }
-            set
-            {
-                //Note the exceptional case of iCalendar specification that allows for the &quot;6oth&quot; positive leap second.
-                if (value >= 0 && value < 61) this.second = value;
-                else throw new ArgumentOutOfRangeException();
-            }
         }
 
-        [DataMember]
         public TimeFormat TimeFormat
         {
             get { return this.format; }
-            set
-            {
-                if (this.tzid == null && value == TimeFormat.LocalAndTimeZone) throw new ArgumentException("A Time Zone Reference is required for this date time format");
-                if (this.tzid != null && value == TimeFormat.Utc) throw new ArgumentException("Time Zone References MUST NOT be applied to UTC times!");
-                this.format = value;
-            }
         }
 
-        [DataMember]
         public TZID TimeZoneId
         {
             get { return this.tzid; }
-            set
-            {
-                if (this.format == TimeFormat.LocalAndTimeZone && value == null) throw new ArgumentException("Null Time Zone References are not allowed for the Local and Time Zone format");
-                if (this.format == TimeFormat.Utc) throw new ArgumentException("Time Zone References MUST NOT be applied to UTC times!");
-                this.tzid = value;
-            }
         }
 
         public TIME(uint hour, uint minute, uint second, TimeFormat format = TimeFormat.Local, TZID tzid = null)
@@ -962,54 +802,21 @@ namespace reexmonkey.xcal.domain.models
         {
             if (duration.Sign == SignType.Negative)
             {
-                duration.Sign = SignType.Positive;
-                return start - duration;
+                var pduration = new DURATION(duration.WEEKS, duration.DAYS, duration.HOURS, duration.MINUTES, duration.SECONDS, SignType.Positive);
+                return start - pduration;
             }
-
-            var end = start.ToTimeSpan().Add(duration.ToTimeSpan());
-            return end.ToTime();
+            return (start.ToTimeSpan().Add(duration.ToTimeSpan())).ToTIME(start.TimeZoneId);
         }
 
         public static TIME operator -(TIME end, DURATION duration)
         {
             if (duration.Sign == SignType.Negative) return end + duration;
-            if (end.HOUR < duration.HOURS) throw new ArgumentException("Time hour MUST be bigger or equal to duration hour!");
-
-            var start = end.ToTimeSpan().Add(duration.ToTimeSpan());
-            return start.ToTime();
+            return (end.ToTimeSpan().Subtract(duration.ToTimeSpan())).ToTIME(end.TimeZoneId);
         }
 
         public static DURATION operator -(TIME start, TIME end)
         {
-            var duration = new DURATION();
-            var x = start; var y = end;
-
-            if (start == end) return duration;
-
-            //check if end is earlier than start => reverse duration sign
-            if (end < start)
-            {
-                x = end;
-                y = start;
-                duration.Sign = SignType.Negative;
-            }
-
-            if (x.SECOND < y.SECOND)
-            {
-                duration.SECONDS = (x.SECOND + 60u) - y.SECOND;
-                if (y.MINUTE > 0u) x.MINUTE--;
-            }
-            else duration.SECONDS = x.SECOND - y.SECOND;
-
-            if (start.MINUTE < end.MINUTE)
-            {
-                duration.MINUTES = (x.MINUTE + 60u) - y.MINUTE;
-                if (x.MINUTE > 0u) x.HOUR--;
-            }
-            else duration.MINUTES = x.MINUTE - y.MINUTE;
-
-            if (x.HOUR >= y.HOUR) duration.HOURS = x.HOUR - y.HOUR;
-            return duration;
+            return new DURATION(end.ToTimeSpan() - start.ToTimeSpan());
         }
 
         public static bool operator <(TIME a, TIME b)
@@ -1055,52 +862,37 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public struct DURATION : IDURATION, IEquatable<DURATION>, IComparable<DURATION>
     {
-        private uint weeks, days, hours, minutes, seconds;
-        private SignType sign;
+        private readonly uint weeks, days, hours, minutes, seconds;
+        private readonly SignType sign;
 
-        [DataMember]
         public uint WEEKS
         {
             get { return weeks; }
-            set
-            {
-                this.weeks = value;
-            }
         }
 
-        [DataMember]
         public uint HOURS
         {
             get { return this.hours; }
-            set { this.hours = value; }
         }
 
-        [DataMember]
         public uint MINUTES
         {
             get { return this.minutes; }
-            set { this.minutes = value; }
         }
 
-        [DataMember]
         public uint SECONDS
         {
             get { return this.seconds; }
-            set { this.seconds = value; }
         }
 
-        [DataMember]
         public uint DAYS
         {
             get { return this.days; }
-            set { this.days = value; }
         }
 
-        [DataMember]
         public SignType Sign
         {
             get { return this.sign; }
-            set { this.sign = value; }
         }
 
         public DURATION(DURATION duration)
@@ -1113,7 +905,7 @@ namespace reexmonkey.xcal.domain.models
             this.sign = duration.Sign;
         }
 
-        public DURATION(uint weeks, uint days = 0, uint hours = 0, uint minutes = 0, uint seconds = 0, SignType sign = SignType.Positive)
+        public DURATION(uint weeks, uint days = 0, uint hours = 0, uint minutes = 0, uint seconds = 0, SignType sign = SignType.Neutral)
         {
             this.weeks = weeks;
             this.days = days;
@@ -1130,8 +922,10 @@ namespace reexmonkey.xcal.domain.models
             this.minutes = (uint)span.Minutes;
             this.seconds = (uint)span.Seconds;
             this.weeks = (uint)(span.TotalDays - (span.Days + (span.Hours / 24) + (span.Minutes / (24 * 60)) + (span.Seconds / (24 * 3600)) + (span.Milliseconds / (24 * 3600000)))) / 7u;
-            var sum = span.Days + (span.Hours / 24) + (span.Minutes / (24 * 60)) + (span.Seconds / (24 * 3600)) + (span.Milliseconds / (24 * 3600000));
-            this.sign = (sum >= 0) ? SignType.Positive : SignType.Negative;
+            var scheck = span.CompareTo(TimeSpan.Zero);
+            if (scheck > 0) this.sign = SignType.Positive;
+            else if (scheck < 0) this.sign = SignType.Negative;
+            else this.sign = SignType.Neutral;
         }
 
         public DURATION(string value)
@@ -1250,24 +1044,83 @@ namespace reexmonkey.xcal.domain.models
 
         public static DURATION operator +(DURATION a, DURATION b)
         {
-            var duration = new DURATION();
-            duration.DAYS = (a.DAYS + b.DAYS);
-            duration.SECONDS = (a.SECONDS + b.SECONDS);
-            duration.MINUTES = (a.MINUTES + b.MINUTES);
-            duration.HOURS = (a.MINUTES + b.MINUTES);
-            duration.WEEKS = (a.WEEKS + b.WEEKS);
-            return duration;
+            if (a.Sign == SignType.Negative)
+            {
+                if (b.Sign == SignType.Negative)
+                    return new DURATION(a.WEEKS + b.WEEKS, a.DAYS + b.DAYS, a.HOURS + b.HOURS, a.MINUTES + b.MINUTES, a.SECONDS + b.SECONDS, SignType.Negative);
+                else if (b.Sign == SignType.Positive)
+                    return b - a;
+                else 
+                    return new DURATION(a.WEEKS + b.WEEKS, a.DAYS + b.DAYS, a.HOURS + b.HOURS, a.MINUTES + b.MINUTES, a.SECONDS + b.SECONDS, SignType.Negative);
+            }
+            else if(a.Sign == SignType.Positive)
+            {
+                if (b.Sign == SignType.Negative) return a - b;
+                else
+                    return new DURATION(a.WEEKS + b.WEEKS, a.DAYS + b.DAYS, a.HOURS + b.HOURS, a.MINUTES + b.MINUTES, a.SECONDS + b.SECONDS, SignType.Positive);
+            }
+            else
+            {
+                if (b.Sign == SignType.Negative ) return a - b;
+                else
+                {
+                    var sign = SignType.Neutral;
+                    if (a > b) sign = SignType.Positive;
+                    else if (a < b) sign = SignType.Negative;
+                    return new DURATION(a.WEEKS + b.WEEKS, a.DAYS + b.DAYS, a.HOURS + b.HOURS, a.MINUTES + b.MINUTES, a.SECONDS + b.SECONDS, sign);
+                }
+            }
+
         }
 
         public static DURATION operator -(DURATION a, DURATION b)
         {
-            var duration = new DURATION();
-            duration.DAYS = (a.DAYS - b.DAYS);
-            duration.SECONDS = (a.SECONDS - b.SECONDS);
-            duration.MINUTES = (a.MINUTES - b.MINUTES);
-            duration.HOURS = (a.MINUTES - b.MINUTES);
-            duration.WEEKS = (a.WEEKS - b.WEEKS);
-            return duration;
+            if (a.Sign == SignType.Negative)
+            {
+                if (b.Sign == SignType.Negative)
+                {
+                    var sign = SignType.Neutral;
+                    if (b > a) sign = SignType.Positive;
+                    else if (b < a) sign = SignType.Negative;
+                    return new DURATION(b.WEEKS - a.WEEKS, b.DAYS - a.DAYS, b.HOURS - a.HOURS, b.MINUTES - a.MINUTES, b.SECONDS - a.SECONDS, sign);
+                }
+                else if (b.Sign == SignType.Positive)
+                    return new DURATION(a.WEEKS + a.WEEKS, a.DAYS + b.DAYS, a.HOURS + b.HOURS, a.MINUTES + b.MINUTES, a.SECONDS + b.SECONDS, SignType.Negative);
+                else
+                {
+                    var sign = SignType.Neutral;
+                    if (b > a) sign = SignType.Positive;
+                    else if (b < a) sign = SignType.Negative;
+                    return new DURATION(b.WEEKS - b.WEEKS, b.DAYS - a.DAYS, b.HOURS - b.HOURS, b.MINUTES - a.MINUTES, b.SECONDS - a.SECONDS, sign);
+
+                }
+            }
+            else if (a.Sign == SignType.Positive)
+            {
+                if (b.Sign == SignType.Negative)
+                    return new DURATION(a.WEEKS + b.WEEKS, a.DAYS + b.DAYS, a.HOURS + b.HOURS, a.MINUTES + b.MINUTES, a.SECONDS + b.SECONDS, SignType.Positive);
+                else
+                {
+                    var sign = SignType.Neutral;
+                    if (a > b) sign = SignType.Positive;
+                    else if (a < b) sign = SignType.Negative;
+                    return new DURATION(a.WEEKS - b.WEEKS, a.DAYS - b.DAYS, a.HOURS - b.HOURS, a.MINUTES - b.MINUTES, a.SECONDS - b.SECONDS, sign);
+                }
+            }
+            else
+            {
+                if (b.Sign == SignType.Negative)
+                {
+                    return new DURATION(a.WEEKS + b.WEEKS, a.DAYS + b.DAYS, a.HOURS + b.HOURS, a.MINUTES + b.MINUTES, a.SECONDS + b.SECONDS, SignType.Positive);
+                }
+                else
+                {
+                    var sign = SignType.Neutral;
+                    if (a > b) sign = SignType.Positive;
+                    else if (a < b) sign = SignType.Negative;
+                    return new DURATION(a.WEEKS - b.WEEKS, a.DAYS - b.DAYS, a.HOURS - b.HOURS, a.MINUTES - b.MINUTES, a.SECONDS - b.SECONDS, sign);
+                }
+            }
         }
 
         public static bool operator <(DURATION a, DURATION b)
@@ -1313,21 +1166,17 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public struct WEEKDAYNUM : IWEEKDAYNUM, IEquatable<WEEKDAYNUM>, IComparable<WEEKDAYNUM>
     {
-        private int ordweek;
-        private WEEKDAY weekday;
+        private readonly int ordweek;
+        private readonly WEEKDAY weekday;
 
-        [DataMember]
         public int OrdinalWeek
         {
             get { return this.ordweek; }
-            set { this.ordweek = value; }
         }
 
-        [DataMember]
         public WEEKDAY Weekday
         {
             get { return this.weekday; }
-            set { this.weekday = value; }
         }
 
         public WEEKDAYNUM(int ordweek, WEEKDAY weekday)
@@ -1351,8 +1200,8 @@ namespace reexmonkey.xcal.domain.models
                     {
                         if (match.Groups["sign"].Value == "-") mulitplier *= -1;
                     }
-                    if (match.Groups["ordwk"].Success) this.OrdinalWeek = mulitplier * int.Parse(match.Groups["ordwk"].Value);
-                    if (match.Groups["weekday"].Success) this.Weekday = match.Groups["weekday"].Value.ToWEEKDAY();
+                    if (match.Groups["ordwk"].Success) this.ordweek = mulitplier * int.Parse(match.Groups["ordwk"].Value);
+                    if (match.Groups["weekday"].Success) this.weekday = match.Groups["weekday"].Value.ToWEEKDAY();
                 }
             }
         }
@@ -1454,60 +1303,29 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public struct UTC_OFFSET : IUTC_OFFSET, IEquatable<UTC_OFFSET>, IComparable<UTC_OFFSET>
     {
-        private uint hour;
-        private uint minute;
-        private uint second;
-        private SignType sign;
+        private readonly uint hour, minute, second;
+        private readonly SignType sign;
 
-        [DataMember]
         public SignType Sign
         {
             get { return this.sign; }
-            set
-            {
-                if (value == SignType.Neutral) throw new ArgumentException("Sign must be Positive or Negative!");
-                this.sign = value;
-            }
         }
 
         /// <summary>
         /// Gets or sets the value of the hours
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the value &lt;0 and value &gt;23 </exception>
-        [DataMember]
         public uint HOUR
         {
             get { return this.hour; }
-            set
-            {
-                if (value >= 0 && value < 24)
-                {
-                    if (this.minute == 0 && this.second == 0 && value == 0)
-                        throw new ArgumentOutOfRangeException("Simultaneous zero values for hour, minute and second ARE NOT allowed!");
-                    this.hour = value;
-                }
-                else throw new ArgumentOutOfRangeException();
-            }
         }
 
         /// <summary>
         /// Gets or sets the value of the minutes
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the value &lt;0 and value &gt;59 </exception>
-        [DataMember]
         public uint MINUTE
         {
             get { return this.minute; }
-            set
-            {
-                if (value >= 0 && value < 59)
-                {
-                    if (this.hour == 0 && this.second == 0 && value == 0)
-                        throw new ArgumentOutOfRangeException("Simultaneous zero values for hour, minute and second ARE NOT allowed!");
-                    this.minute = value;
-                }
-                else throw new ArgumentOutOfRangeException();
-            }
         }
 
         /// <summary>
@@ -1518,17 +1336,6 @@ namespace reexmonkey.xcal.domain.models
         public uint SECOND
         {
             get { return this.second; }
-            set
-            {
-                //Note the exceptional case of iCalendar specification that allows for the &quot;6oth&quot; positive leap second.
-                if (value >= 0 && value < 61)
-                {
-                    if (this.hour == 0 && this.minute == 0 && value == 0)
-                        throw new ArgumentOutOfRangeException("Simultaneous zero values for hour, minute and second ARE NOT allowed!");
-                    this.second = value;
-                }
-                else throw new ArgumentOutOfRangeException();
-            }
         }
 
         public UTC_OFFSET(string value)
@@ -1543,11 +1350,11 @@ namespace reexmonkey.xcal.domain.models
             {
                 foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
                 {
-                    if (match.Groups["hours"].Success) this.HOUR = uint.Parse(match.Groups["hours"].Value);
-                    if (match.Groups["mins"].Success) this.MINUTE = uint.Parse(match.Groups["mins"].Value);
-                    if (match.Groups["secs"].Success) this.MINUTE = uint.Parse(match.Groups["secs"].Value);
-                    if (match.Groups["minus"].Success) this.Sign = SignType.Negative;
-                    else if (match.Groups["plus"].Success) this.Sign = SignType.Positive;
+                    if (match.Groups["hours"].Success) this.hour = uint.Parse(match.Groups["hours"].Value);
+                    if (match.Groups["mins"].Success) this.minute = uint.Parse(match.Groups["mins"].Value);
+                    if (match.Groups["secs"].Success) this.second = uint.Parse(match.Groups["secs"].Value);
+                    if (match.Groups["minus"].Success) this.sign = SignType.Negative;
+                    else if (match.Groups["plus"].Success) this.sign = SignType.Positive;
                 }
             }
         }
@@ -1567,27 +1374,18 @@ namespace reexmonkey.xcal.domain.models
             this.second = (uint)seconds;
             this.sign = SignType.Neutral;
 
-            if (hours > 0)
-            {
-                if (minutes > 0)
-                {
-                    if (seconds > 0) this.Sign = SignType.Positive;
-                    else if (seconds < 0) this.Sign = SignType.Negative;
-                    else this.Sign = SignType.Positive;
-                }
-                else if (minutes < 0) this.Sign = SignType.Negative;
-                else if (minutes == 0)
-                {
-                    if (seconds > 0) this.Sign = SignType.Positive;
-                    else if (seconds < 0) this.Sign = SignType.Negative;
-                    else this.Sign = SignType.Positive;
-                }
-            }
-            else if (hours < 0) this.Sign = SignType.Negative;
+            if (hours > 0) this.sign = SignType.Positive;
+            else if (hours < 0) this.sign = SignType.Negative;
             else if (hours == 0)
             {
-                if (minutes > 0 && seconds > 0) this.Sign = SignType.Positive;
-                else this.Sign = SignType.Negative;
+                if (minutes > 0) this.sign = SignType.Positive;
+                else if (minutes < 0) this.sign = SignType.Negative;
+                else if (minutes == 0)
+                {
+                    if (seconds > 0) this.sign = SignType.Positive;
+                    else if (seconds < 0) this.sign = SignType.Negative;
+                    else this.sign = SignType.Neutral;
+                }
             }
         }
 
@@ -1676,7 +1474,7 @@ namespace reexmonkey.xcal.domain.models
             else if (a.Sign == SignType.Neutral && b.Sign == SignType.Negative) sign = SignType.Negative;
             else if (a.Sign == SignType.Negative && b.Sign == SignType.Neutral) sign = SignType.Negative;
             else if (a.Sign == SignType.Neutral && b.Sign == SignType.Neutral) sign = SignType.Neutral;
-            var offset = new UTC_OFFSET((a.HOUR + b.HOUR) % 24, (a.MINUTE + b.MINUTE) % 60, (a.SECOND + b.SECOND) % 60, sign);
+            var offset = new UTC_OFFSET((a.HOUR + b.HOUR) % 24, (a.MINUTE + b.MINUTE) % 60u, (a.SECOND + b.SECOND) % 60u, sign);
             return offset;
         }
 
@@ -1691,8 +1489,7 @@ namespace reexmonkey.xcal.domain.models
             else if (a.Sign == SignType.Negative && b.Sign == SignType.Neutral) sign = SignType.Negative;
             else if (a.Sign == SignType.Neutral && b.Sign == SignType.Neutral) sign = SignType.Neutral;
 
-            //TODO: Re-implement correct negative modulo calculations (HINT: Check former geographical code)
-            var offset = new UTC_OFFSET(a.HOUR - b.HOUR, a.MINUTE - b.MINUTE, a.SECOND - b.SECOND, sign);
+            var offset = new UTC_OFFSET(a.HOUR - b.HOUR, (a.MINUTE - b.MINUTE).Modulo(60u), (a.SECOND - b.SECOND).Modulo(60u), sign);
             return offset;
         }
 
@@ -1740,39 +1537,23 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public struct PERIOD: IPERIOD, IEquatable<PERIOD>, IComparable<PERIOD>
     {
-        private DATE_TIME start, end;
-        private DURATION duration;
-        private PeriodFormat format;
+        private readonly DATE_TIME start, end;
+        private readonly DURATION duration;
+        private readonly PeriodFormat format;
 
-        [DataMember]
         public DATE_TIME Start
         {
             get { return start; }
-            set { this.start = value;}
         }
 
-        [DataMember]
         public DATE_TIME End
         {
             get { return end; }
-            set
-            {
-                this.end = value;
-                if (this.duration == default(DURATION)) this.duration = this.end - this.start;
-                this.format = PeriodFormat.Explicit;
-            }
         }
 
-        [DataMember]
         public DURATION Duration
         {
             get { return duration; }
-            set
-            {
-                this.duration = value;
-                if (this.end == default(DATE_TIME)) this.end = this.start + this.duration;
-                this.format = PeriodFormat.Start;
-            }
         }
 
         public PERIOD(string value)
@@ -1787,24 +1568,33 @@ namespace reexmonkey.xcal.domain.models
 
             try
             {
-                this.Start = new DATE_TIME(parts[0]);
-                this.End = new DATE_TIME(parts[1]);
+                this.start = new DATE_TIME(parts[0]);
+                this.end = new DATE_TIME(parts[1]);
+                this.duration = this.end - this.start;
             }
             catch (ArgumentException)
             {
-                try { this.Duration = new DURATION(parts[1]); }
+                try 
+                { 
+                    this.duration = new DURATION(parts[1]);
+                    this.end = this.start + this.duration;
+                }
                 catch (FormatException) { throw; }
                 catch (Exception) { throw; }
             }
             catch (FormatException)
             {
-                try { this.Duration = new DURATION(parts[1]); }
+                try 
+                { 
+                    this.duration = new DURATION(parts[1]);
+                    this.end = this.start + this.duration;
+                }
                 catch (FormatException) { throw; }
                 catch (Exception) { throw; }
             }
             catch (Exception)
             {
-                try { this.Duration = new DURATION(parts[1]); }
+                try { this.duration = new DURATION(parts[1]); }
                 catch (FormatException) { throw; }
                 catch (Exception) { throw; }
             }

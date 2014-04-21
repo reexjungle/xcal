@@ -80,7 +80,8 @@ namespace reexmonkey.xcal.domain.models
             set
             {
                 this.start = value;
-                if (this.end == null) this.end = start;
+                if (this.end == default(DATE_TIME))
+                    this.end = this.start;
             }
         }
 
@@ -139,10 +140,8 @@ namespace reexmonkey.xcal.domain.models
             set 
             { 
                 this.end = value;
-                if (this.start != null && this.end != null)
-                {
-                    this.duration = new DATE_TIME(this.end) - new DATE_TIME(this.start);
-                }
+                if (duration == default(DURATION)) 
+                    this.duration = this.end - this.start;
             }
         }
 
@@ -153,10 +152,7 @@ namespace reexmonkey.xcal.domain.models
             set
             {
                 this.duration = value;
-                if(this.start != null && this.duration != null)
-                {
-                    this.end = start + duration;
-                }
+                if(this.end == default(DATE_TIME)) this.end = start + duration;
             }
         }
 

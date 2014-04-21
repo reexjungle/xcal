@@ -20,14 +20,6 @@ namespace xcal.application.client.console.local.presentation.logic
         private ServiceClientBase sclient;
 
         public IGuidKeyGenerator GuidKeyGenerator { get; set; }
-        //{
-        //    get { return this.guidkeygen; }
-        //    set 
-        //    {
-        //        if (value == null) throw new ArgumentNullException("GuidKeyGenerator");
-        //        this.guidkeygen = value; 
-        //    }
-        //}
 
         public IFPIKeyGenerator FpiKeyGenerator
         {

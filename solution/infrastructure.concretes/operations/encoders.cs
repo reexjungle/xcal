@@ -128,5 +128,27 @@ namespace reexmonkey.infrastructure.operations.concretes
             return unicode;
 
         }
+
+        /// <summary>
+        /// Converts a Base64 string to its equivalent raw binary value.
+        /// </summary>
+        /// <param name="base64">The base64 text (encoded) that is to be decoded</param>
+        /// <returns>Raw binary data decoded from the Base64 text</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the plain text argument is null</exception>
+        /// <exception cref="ArgumentException">Thrown when conversion from Base64 to raw binary data fails</exception>
+        /// <exception cref="FormatException">Thrown when conversion from Base64 to raw binary data fails</exception>
+        public static IEnumerable<byte> DecodeToBytes(this string base64)
+        {
+            IEnumerable<byte> bytes = null;
+            try
+            {
+                bytes = Convert.FromBase64String(base64);
+            }
+            catch (ArgumentNullException) { throw; }
+            catch (FormatException) { throw; }
+            return bytes;
+
+        }
+
     }
 }

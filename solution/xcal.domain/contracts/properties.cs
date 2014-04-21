@@ -77,10 +77,10 @@ namespace reexmonkey.xcal.domain.contracts
 
     public interface IPRIORITY: IPROPERTY
     {
-        int Value { get; set; }
-        PriorityFormat Format { get; set; }
-        PRIORITYLEVEL Level { get; set; }
-        PRIORITYSCHEMA Schema { get; set; }
+        int Value { get; }
+        PriorityFormat Format { get; }
+        PRIORITYLEVEL Level { get;}
+        PRIORITYSCHEMA Schema { get; }
     }
 
     #endregion

@@ -393,11 +393,6 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public List<URI> Addresses { get; set; }
 
-        public bool IsDefault()
-        {
-             return this.Addresses.Count() == 0;
-        }
-
         /// <summary>
         /// Default Constructor.
         /// </summary>

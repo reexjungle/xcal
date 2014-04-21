@@ -712,10 +712,10 @@ namespace reexmonkey.xcal.domain.models
     public struct PRIORITY: IPRIORITY, IEquatable<PRIORITY>, IComparable<PRIORITY>
     {
          
-        private int value;
-        private PRIORITYLEVEL level;
-        private PRIORITYSCHEMA schema;
-        private PriorityFormat format;
+        private readonly int value;
+        private readonly PRIORITYLEVEL level;
+        private readonly PRIORITYSCHEMA schema;
+        private readonly PriorityFormat format;
    
         private int LevelToValue(PRIORITYLEVEL level)
         {
@@ -809,48 +809,24 @@ namespace reexmonkey.xcal.domain.models
             return value;
         }
 
-        [DataMember]
         public PriorityFormat Format 
         {
             get { return this.format; }
-            set { this.format = value; }
         }
 
-        [DataMember]
         public int Value 
         {
             get { return this.value; }
-            set
-            {
-                if (value < 0 || value > 9) throw new ArgumentOutOfRangeException("Priority values must lie between 0 and 9");
-                this.value = value;
-                this.level = this.ValueToLevel(this.value);
-                this.schema = this.ValueToSchema(this.value);
-            }
         }
 
-        [DataMember]
         public PRIORITYLEVEL Level 
         {
-            get { return this.level; } 
-            set
-            {
-                this.level = value;
-                this.value = this.LevelToValue(this.level);
-                this.schema = this.LevelToSchema(this.level);
-            }
+            get { return this.level; }
         }
 
-        [DataMember]
         public PRIORITYSCHEMA Schema
         {
             get { return this.schema; }
-            set
-            {
-                this.schema = value;
-                this.value = this.SchemaToValue(this.schema);
-                this.level = this.SchemaToLevel(this.schema);
-            }
         }
 
         public PRIORITY(IPRIORITY priority)
@@ -867,22 +843,28 @@ namespace reexmonkey.xcal.domain.models
             this.value = value;
             this.schema = PRIORITYSCHEMA.UNKNOWN;
             this.level = PRIORITYLEVEL.UNKNOWN;
+            this.schema = this.ValueToSchema(value);
+            this.level = this.ValueToLevel(value);
         }
 
         public PRIORITY(PRIORITYLEVEL level)
         {
-            this.format = PriorityFormat.Integral;
+            this.format = PriorityFormat.Level;
             this.value = 0;
             this.schema = PRIORITYSCHEMA.UNKNOWN;
             this.level = level;
+            this.value = this.LevelToValue(level);
+            this.schema = this.LevelToSchema(level);
         }
 
         public PRIORITY(PRIORITYSCHEMA schema)
         {
-            this.format = PriorityFormat.Integral;
+            this.format = PriorityFormat.Schema;
             this.value = 0;
             this.schema = schema;
             this.level = PRIORITYLEVEL.UNKNOWN;
+            this.value = this.SchemaToValue(schema);
+            this.level = this.SchemaToLevel(schema);
         }
 
         public PRIORITY(string value)
@@ -900,6 +882,9 @@ namespace reexmonkey.xcal.domain.models
                     if (match.Groups["value"].Success) this.value = int.Parse(match.Groups["value"].Value);
                 }
             }
+
+            this.schema = this.ValueToSchema(this.value);
+            this.level = this.ValueToLevel(this.value);
         }
 
         public override string ToString()
@@ -1293,7 +1278,7 @@ namespace reexmonkey.xcal.domain.models
             if (this.CalendarUserType != CUTYPE.UNKNOWN ) sb.AppendFormat(";CUTYPE={0}", this.CalendarUserType); 
             if (this.Role != ROLE.UNKNOWN) sb.AppendFormat(";{0}", this.Role);
             if (this.Rsvp != BOOLEAN.UNKNOWN) sb.AppendFormat(";{0}", this.Rsvp);
-            if (!this.Member.IsDefault()) sb.AppendFormat(";{0}", this.Member);
+            if (this.Member != null) sb.AppendFormat(";{0}", this.Member);
             if (this.Delegatee != null) sb.AppendFormat(";DELEGATED-TO={0}", this.Delegatee);
             if (this.Delegator != null) sb.AppendFormat(";DELEGATED-FROM={0}", this.Delegator);
             if (this.SentBy != null ) sb.AppendFormat("SENT-BY=\"mailto:{0}\"", this.SentBy);

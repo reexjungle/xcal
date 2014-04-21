@@ -33,19 +33,19 @@ namespace reexmonkey.xcal.domain.contracts
     public interface IDATE : IVALUE 
     {
         /// <summary>
-        /// Gets or sets the 4-digit representation of a full year e.g. 2013 
+        /// Gets the 4-digit representation of a full year e.g. 2013 
         /// </summary>
-        uint FULLYEAR { get; set; }
+        uint FULLYEAR { get; }
 
         /// <summary>
-        /// Gets or sets the 2-digit representation of a month
+        /// Gets the 2-digit representation of a month
         /// </summary>
-        uint MONTH { get; set; }
+        uint MONTH { get; }
 
         /// <summary>
-        /// Gets or sets the 2-digit representation of a month-day
+        /// Gets the 2-digit representation of a month-day
         /// </summary>
-        uint MDAY { get; set; }
+        uint MDAY { get;}
 
     }
 
@@ -64,31 +64,31 @@ namespace reexmonkey.xcal.domain.contracts
     public interface IDURATION : IVALUE
     {
         /// <summary>
-        /// Gets or sets the duration in weeks
+        /// Gets the duration in weeks
         /// </summary>
-        uint WEEKS { get; set; }
+        uint WEEKS { get;}
 
         /// <summary>
-        /// Gets or sets the duration in hours
+        /// Gets the duration in hours
         /// </summary>
-        uint HOURS { get; set; }
+        uint HOURS { get;}
 
         /// <summary>
-        /// Gets or sets the duration in minutes
+        /// Gets the duration in minutes
         /// </summary>
-        uint MINUTES { get; set; }
+        uint MINUTES { get;}
 
         /// <summary>
-        /// Gets or sets the duration in seconds
+        /// Gets the duration in seconds
         /// </summary>
-        uint SECONDS { get; set; }
+        uint SECONDS { get; }
 
         /// <summary>
-        /// Gets or sets the duration in days
+        /// Gets the duration in days
         /// </summary>
-        uint DAYS { get; set;}
+        uint DAYS { get; }
 
-        SignType Sign { get; set; }
+        SignType Sign { get;}
     }
 
     /// <summary>
@@ -100,17 +100,17 @@ namespace reexmonkey.xcal.domain.contracts
         /// <summary>
         /// Gets or sets the start of the period
         /// </summary>
-        DATE_TIME Start { get; set; }
+        DATE_TIME Start { get; }
 
         /// <summary>
         /// Gets or sets the end of the period.
         /// </summary>
-        DATE_TIME End { get; set; }
+        DATE_TIME End { get;}
 
         /// <summary>
         /// Gets or sets the duration of the period.
         /// </summary>
-        DURATION Duration { get; set; }
+        DURATION Duration { get;}
     }
 
     /// <summary>
@@ -121,12 +121,12 @@ namespace reexmonkey.xcal.domain.contracts
         /// <summary>
         /// Gets or sets the nth occurence of the day within the MONTHLY or YEARLY recurrence rule
         /// </summary>
-        int OrdinalWeek { get; set; }
+        int OrdinalWeek { get; }
 
         /// <summary>
         /// Gets or sets the weekday
         /// </summary>
-        WEEKDAY Weekday { get; set; }
+        WEEKDAY Weekday { get; }
     }
 
     /// <summary>
@@ -246,23 +246,23 @@ namespace reexmonkey.xcal.domain.contracts
     public interface ITIME : IVALUE
     {
         /// <summary>
-        /// Gets or sets the 2-digit representation of an hour
+        /// Gets the 2-digit representation of an hour
         /// </summary>
-        uint HOUR { get; set; }
+        uint HOUR { get; }
 
         /// <summary>
         /// Gets or sets the 2-digit representatio of a minute
         /// </summary>
-        uint MINUTE { get; set; }
+        uint MINUTE { get; }
 
         /// <summary>
         /// Gets or sets the 2-digit representation of a second
         /// </summary>
-        uint SECOND { get; set; }
+        uint SECOND { get;}
 
-        TimeFormat TimeFormat { get; set; }
+        TimeFormat TimeFormat { get;}
 
-        TZID TimeZoneId { get; set; }
+        TZID TimeZoneId { get;}
 
     }
 
@@ -279,22 +279,22 @@ namespace reexmonkey.xcal.domain.contracts
     /// </summary>
     public interface IUTC_OFFSET : IVALUE 
     {
-        SignType Sign { get; set; }
+        SignType Sign { get; }
 
         /// <summary>
         /// Gets or sets the 2-digit representation of an hour
         /// </summary>
-        uint HOUR { get; set; }
+        uint HOUR { get; }
 
         /// <summary>
         /// Gets or sets the 2-digit representation of a minute
         /// </summary>
-        uint MINUTE { get; set; }
+        uint MINUTE { get; }
 
         /// <summary>
         /// Gets or sets the 2-digit representation of a second
         /// </summary>
-        uint SECOND { get; set; }
+        uint SECOND { get; }
     }
 
 }

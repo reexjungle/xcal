@@ -194,8 +194,7 @@ namespace reexmonkey.xcal.domain.extensions
             if(tzinfo != null)
             {
                 if(value.Kind == DateTimeKind.Utc) throw new ArgumentException();
-                else if(value.Kind == DateTimeKind.Local) return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.LocalAndTimeZone);
-                else return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.Local);
+                else return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.LocalAndTimeZone);
             }
             else
             {
@@ -204,13 +203,25 @@ namespace reexmonkey.xcal.domain.extensions
             }
         }
 
+        public static DATE_TIME ToDATE_TIME(this DateTime value, TZID tzid)
+        {
+            if (tzid != null)
+            {
+                if (value.Kind == DateTimeKind.Utc) throw new ArgumentException("UTC Date Time not compatible with Local Time with Time Zone Id");
+                else return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.LocalAndTimeZone, tzid);            }
+            else
+            {
+                if (value.Kind == DateTimeKind.Utc) return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.Utc);
+                else return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.Local);
+            }
+        }
+
         public static TIME ToTIME(this DateTime value, TimeZoneInfo tzinfo = null)
         {
             if (tzinfo != null)
             {
                 if (value.Kind == DateTimeKind.Utc) throw new ArgumentException();
-                else if (value.Kind == DateTimeKind.Local) return new TIME( (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.LocalAndTimeZone);
-                else return new TIME((uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.Local);
+                else  return new TIME((uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.LocalAndTimeZone);
             }
             else
             {
@@ -232,8 +243,6 @@ namespace reexmonkey.xcal.domain.extensions
 
         public static DateTime ToDateTime(this DATE_TIME value)
         {
-            if (value == null) return new DateTime();
-
             if (value.TimeFormat == TimeFormat.Utc)
             {
                 return new DateTime((int)value.FULLYEAR, (int)value.MONTH, (int)value.MDAY,
@@ -265,20 +274,46 @@ namespace reexmonkey.xcal.domain.extensions
 
         public static DURATION ToDURATION(this TimeSpan span)
         {
-            var duration =new DURATION();
-            duration.DAYS = (uint)span.Days;
-            duration.HOURS = (uint)span.Hours;
-            duration.MINUTES = (uint)span.Minutes;
-            duration.SECONDS = (uint)span.Seconds;
-            duration.WEEKS = (uint)(span.TotalDays - (span.Days + (span.Hours / 24) + (span.Minutes / (24 * 60)) + (span.Seconds / (24 * 3600)) + (span.Milliseconds / (24 * 3600000)))) / 7u;
+            var days  = (uint)span.Days;
+            var hours = (uint)span.Hours;
+            var minutes = (uint)span.Minutes;
+            var seconds = (uint)span.Seconds;
+            var weeeks = (uint)(span.TotalDays - (span.Days + (span.Hours / 24) + (span.Minutes / (24 * 60)) + (span.Seconds / (24 * 3600)) + (span.Milliseconds / (24 * 3600000)))) / 7u;
             var sum = span.Days + (span.Hours / 24) + (span.Minutes / (24 * 60)) + (span.Seconds / (24 * 3600)) + (span.Milliseconds / (24 * 3600000));
-            duration.Sign = (sum >= 0) ? SignType.Positive : SignType.Negative;
-            return duration;
+            var sign = SignType.Neutral;
+            if (sum > 0) sign = SignType.Positive;
+            else if (sum < 0) sign = SignType.Negative;
+            return new DURATION(weeeks, days, hours, minutes, seconds, sign);
         }
 
-        public static TIME ToTime(this TimeSpan span)
+        public static TIME ToTIME(this TimeSpan span, TimeZoneInfo tzinfo = null, TimeFormat format = TimeFormat.Unknown)
         {
-            return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds);
+           if (tzinfo != null)
+           {
+               if (format == TimeFormat.Utc) throw new ArgumentException();
+               else if (format == TimeFormat.LocalAndTimeZone) return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds, format, tzinfo.ToTZID());
+               else return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds);
+           }
+           else
+           {
+               if (format == TimeFormat.Utc) return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds, format);
+               else return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds);
+           }
+        }
+
+        public static TIME ToTIME(this TimeSpan span, TZID tzid, TimeFormat format = TimeFormat.Unknown)
+        {
+            if (tzid != null)
+            {
+                if (format == TimeFormat.Utc) throw new ArgumentException();
+                else if (format == TimeFormat.LocalAndTimeZone) return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds, format, tzid);
+                else return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds);
+            }
+            else
+            {
+                if (format == TimeFormat.Utc) return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds, format);
+                else return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds);
+            }
         }
 
         public static TimeSpan ToTimeSpan(this DURATION duration)

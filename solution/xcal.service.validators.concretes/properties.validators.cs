@@ -39,7 +39,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         public OrganizerValidator(): base()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Address).SetValidator(new EmailAddressValidator()).When(x => x.Address != null);
+            RuleFor(x => x.Address).SetValidator(new UriValidator()).When(x => x.Address != null);
             RuleFor(x => x.CN).Must((x, y) => !string.IsNullOrEmpty(y));
             RuleFor(x => x.Directory).SetValidator(new UriValidator()).When(x => x.Directory != null);
             RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
@@ -54,7 +54,7 @@ namespace reexmonkey.xcal.service.validators.concretes
             : base()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Address).SetValidator(new EmailAddressValidator()).When(x => x.Address != null);
+            RuleFor(x => x.Address).SetValidator(new UriValidator()).When(x => x.Address != null);
             RuleFor(x => x.CN).Must((x, y) => !string.IsNullOrEmpty(y));
             RuleFor(x => x.Directory).SetValidator(new UriValidator()).When(x => x.Directory != null);
             RuleFor(x => x.Delegatee).SetValidator(new DelegateValidator()).When(x => x.Delegatee != null);
