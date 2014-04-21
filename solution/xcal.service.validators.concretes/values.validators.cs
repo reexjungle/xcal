@@ -10,21 +10,6 @@ using reexmonkey.xcal.domain.models;
 
 namespace reexmonkey.xcal.service.validators.concretes
 {
-    public class EmailAddressValidator : AbstractValidator<string>
-    {
-        public EmailAddressValidator()
-        {
-            Func<string, string, bool> matches = (x, y) =>
-            {
-                return Regex.IsMatch(x, y, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace);
-            };
-
-            var pattern = @"(?<value>(\w+)((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?))";
-
-            RuleFor(x => x).Must(x => matches(x, pattern));
-
-        }
-    }
 
     public class BinaryValidator: AbstractValidator<BINARY>
     {
@@ -110,7 +95,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         public UriValidator()
             : base()
         {
-            RuleFor(x => x).Must(x => Uri.IsWellFormedUriString(x.Path, UriKind.RelativeOrAbsolute)).When(x => x.Path != null);
+            RuleFor(x => x.Path).Must((x , y) => Uri.IsWellFormedUriString(y, UriKind.RelativeOrAbsolute)).When(x => x.Path != null);
         }
     }
 

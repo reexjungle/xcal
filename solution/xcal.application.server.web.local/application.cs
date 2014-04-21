@@ -65,7 +65,7 @@ namespace reexmonkey.xcal.application.server.web.local
             #region inject plugins
 
             //register all validators defined in the assembly of EventValidator
-            //container.RegisterValidators(typeof(EventValidator).Assembly);
+            container.RegisterValidators(typeof(EventValidator).Assembly);
 
             #endregion
 

@@ -237,12 +237,16 @@ namespace reexmonkey.xcal.domain.extensions
 
         public static DateTime ToDateTime(this DATE value)
         {
+            if (value == default(DATE)) return default(DateTime);
+
             if (value == null) return new DateTime();
             return new DateTime((int)value.FULLYEAR, (int)value.MONTH, (int)value.MDAY);
         }
 
         public static DateTime ToDateTime(this DATE_TIME value)
         {
+            if (value == default(DATE_TIME)) return default(DateTime);
+
             if (value.TimeFormat == TimeFormat.Utc)
             {
                 return new DateTime((int)value.FULLYEAR, (int)value.MONTH, (int)value.MDAY,
@@ -262,13 +266,13 @@ namespace reexmonkey.xcal.domain.extensions
 
         public static TimeSpan ToTimeSpan(this TIME value)
         {
-            if (value == null) return new TimeSpan();
+            if (value == default(TIME)) return new TimeSpan();
             return new TimeSpan((int)value.HOUR, (int)value.MINUTE, (int)value.SECOND);
         }
 
         public static TimeSpan ToTimeSpan(this DATE_TIME value)
         {
-            if (value == null) return new TimeSpan();
+            if (value == default(DATE_TIME)) return new TimeSpan();
             return new TimeSpan((int)value.HOUR, (int)value.MINUTE, (int)value.SECOND);
         }
 
@@ -318,7 +322,7 @@ namespace reexmonkey.xcal.domain.extensions
 
         public static TimeSpan ToTimeSpan(this DURATION duration)
         {
-            if (duration == null) throw new ArgumentNullException("duration");
+            if (duration == default(DURATION)) return new TimeSpan();
             return new TimeSpan((int)duration.DAYS, (int)duration.HOURS, (int)duration.MINUTES, (int)duration.SECONDS);
         }
 

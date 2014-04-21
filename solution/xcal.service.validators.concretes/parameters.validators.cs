@@ -33,9 +33,7 @@ namespace reexmonkey.xcal.service.validators.concretes
     {
         public DelegateValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Addresses).SetCollectionValidator(new UriValidator()).When(x => !x.Addresses.NullOrEmpty());
-            RuleFor(x => x.Addresses.Select(y => y.Path)).SetCollectionValidator(new EmailAddressValidator()).When(x => !x.Addresses.NullOrEmpty());
         }
     }
 

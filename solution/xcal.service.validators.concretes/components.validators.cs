@@ -9,7 +9,7 @@ using reexmonkey.xcal.domain.models;
 
 namespace reexmonkey.xcal.service.validators.concretes
 {
-    public class TimeZoneValidator: AbstractValidator<ITIMEZONE>
+    public class TimeZoneValidator: AbstractValidator<VTIMEZONE>
     {
         public TimeZoneValidator(): base()
         {
@@ -50,33 +50,30 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
-    public class AudioAlarmValidator:AbstractValidator<IAUDIO_ALARM>
+    public class AudioAlarmValidator:AbstractValidator<AUDIO_ALARM>
     {
         public AudioAlarmValidator()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x).SetValidator(new AlarmValidator());
             RuleFor(x => x.Attachment as ATTACH_BINARY).NotNull().SetValidator(new AttachmentBinaryValidator()).When(x => x.Attachment is ATTACH_BINARY);
             RuleFor(x => x.Attachment as ATTACH_URI).NotNull().SetValidator(new AttachmentUriValidator()).When(x => x.Attachment is ATTACH_URI);
         }
     }    
 
-    public class DisplayAlarmValidator:AbstractValidator<IDISPLAY_ALARM>
+    public class DisplayAlarmValidator:AbstractValidator<DISPLAY_ALARM>
     {
         public DisplayAlarmValidator()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x).SetValidator(new AlarmValidator());
             RuleFor(x => x.Description).NotNull().SetValidator(new TextValidator());
         }
     }
 
-    public class EmailAlarmValidator:AbstractValidator<IEMAIL_ALARM>
+    public class EmailAlarmValidator:AbstractValidator<EMAIL_ALARM>
     {
         public EmailAlarmValidator()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x).SetValidator(new AlarmValidator());
             RuleFor(x => x.Description).NotNull().SetValidator(new TextValidator());
             RuleFor(x => x.Summary).NotNull().SetValidator(new TextValidator());
             RuleFor(x => x.Attendees).NotNull().NotEmpty().SetCollectionValidator(new AttendeeValidator());
