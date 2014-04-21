@@ -336,13 +336,11 @@ namespace reexmonkey.xcal.domain.models
             get { return this.second; }
         }
 
-        [DataMember]
         public TimeFormat TimeFormat
         {
             get { return this.format; }
         }
 
-        [DataMember]
         public TZID TimeZoneId
         {
             get { return this.tzid; }
@@ -1332,7 +1330,6 @@ namespace reexmonkey.xcal.domain.models
         /// Gets or sets the value of the seconds
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the value &lt;0 and value &gt;60 </exception>
-        [DataMember]
         public uint SECOND
         {
             get { return this.second; }
