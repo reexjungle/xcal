@@ -160,11 +160,24 @@ namespace reexmonkey.xcal.domain.extensions
         /// <exception cref="ArgumentException"> Thrown when the string value cannot be converted to RelationshipType</exception>
         public static RELTYPE ToRELTYPE(this string value)
         {
-            if (value.Equals("CHILD")) return RELTYPE.CHILD;
-            else if (value.Equals("PARENT")) return RELTYPE.PARENT;
-            else if (value.Equals("SIBLING")) return RELTYPE.SIBLING;
-            else return RELTYPE.UNKNOWN;
+            if (value.Equals("CHILD", StringComparison.OrdinalIgnoreCase)) return RELTYPE.CHILD;
+            else if (value.Equals("PARENT", StringComparison.OrdinalIgnoreCase)) return RELTYPE.PARENT;
+            else if (value.Equals("SIBLING", StringComparison.OrdinalIgnoreCase)) return RELTYPE.SIBLING;
+            return RELTYPE.UNKNOWN;
 
+        }
+
+        public static BOOLEAN ToBOOLEAN(this string value)
+        {
+            if (value.Equals("TRUE", StringComparison.OrdinalIgnoreCase)) return BOOLEAN.TRUE;
+            else if (value.Equals("FALSE", StringComparison.OrdinalIgnoreCase)) return BOOLEAN.FALSE;
+            return BOOLEAN.UNKNOWN;
+        }
+
+        public static BOOLEAN ToBOOLEAN(this bool value)
+        {
+            if (value == true) return BOOLEAN.TRUE;
+            else return BOOLEAN.FALSE;
         }
 
         #endregion
