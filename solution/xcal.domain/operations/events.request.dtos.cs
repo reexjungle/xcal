@@ -242,13 +242,13 @@ namespace reexmonkey.xcal.domain.operations
         public CLASS Classification { get; set; }
 
         [DataMember]
-        public TEXTUAL Description { get; set; }
+        public DESCRIPTION Description { get; set; }
 
         [DataMember]
         public GEO Geo { get; set; }
 
         [DataMember]
-        public TEXTUAL Location { get; set; }
+        public LOCATION Location { get; set; }
 
         [DataMember]
         public ORGANIZER Organizer { get; set; }
@@ -263,7 +263,7 @@ namespace reexmonkey.xcal.domain.operations
         public STATUS Status { get; set; }
 
         [DataMember]
-        public ITEXTUAL Summary { get; set; }
+        public SUMMARY Summary { get; set; }
 
         [DataMember]
         public TRANSP Transparency { get; set; }
@@ -296,10 +296,10 @@ namespace reexmonkey.xcal.domain.operations
         public CATEGORIES Categories { get; set; }
 
         [DataMember]
-        public List<TEXTUAL> Comments { get; set; }
+        public List<COMMENT> Comments { get; set; }
 
         [DataMember]
-        public List<TEXTUAL> Contacts { get; set; }
+        public List<CONTACT> Contacts { get; set; }
 
         [DataMember]
         public List<EXDATE> ExceptionDates { get; set; }
@@ -364,7 +364,7 @@ namespace reexmonkey.xcal.domain.operations
         public string Uid {get; set;}
 
         [DataMember]
-        public List<TEXTUAL> Comments { get; set; }
+        public List<COMMENT> Comments { get; set; }
 
         [DataMember]
         public RECURRENCE_ID RecurId { get; set; }

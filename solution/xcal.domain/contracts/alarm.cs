@@ -27,13 +27,13 @@ namespace reexmonkey.xcal.domain.contracts
 
     public interface IDISPLAY_ALARM: IALARM
     {
-        TEXTUAL Description { get; set; }
+        DESCRIPTION Description { get; set; }
     }
 
     public interface IEMAIL_ALARM: IALARM
     {
-        TEXTUAL Description { get; set; }
-        TEXTUAL Summary { get; set; }
+        DESCRIPTION Description { get; set; }
+        SUMMARY Summary { get; set; }
         List<ATTENDEE> Attendees { get; set; }
         List<IATTACH> Attachments { get; set; }
     }

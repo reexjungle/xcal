@@ -15,7 +15,6 @@ namespace xcal.application.client.console.local.presentation.logic
 {
     public class EventManager
     {
-        private IGuidKeyGenerator guidkeygen;
         private IFPIKeyGenerator fpikeygen;
         private ServiceClientBase sclient;
 
