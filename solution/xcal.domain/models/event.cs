@@ -23,6 +23,7 @@ namespace reexmonkey.xcal.domain.models
     [KnownType(typeof(EMAIL_ALARM))]
     public class VEVENT : IEVENT, IEquatable<VEVENT>, IComparable<VEVENT>, IContainsKey<string>
     {
+        private string id;
         private DATE_TIME start;
         private DATE_TIME end;
         private DURATION duration;
@@ -31,46 +32,31 @@ namespace reexmonkey.xcal.domain.models
         /// Gets or sets the unique identifier of the event. It is synonymous to the &quot;Uid&quot; property of the event. 
         /// </summary>
         [DataMember]
-        [Index(Unique = true)] 
-        public string Id
+        [Index(Unique = true)]
+        public string Id 
         {
             get 
             {
-                if (this.RecurrenceId == null) return this.Uid;
-                else return string.Format("{0}/{1}", this.Uid, this.RecurrenceId.Id);
-            }
-            set
-            {
-                try
+                if (string.IsNullOrEmpty(this.id))
                 {
-                    var pattern = @"^(?<uid>(\p{L})+)((?<separator>\/)(?<rid>(\p{L})+))?$";
-                    if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
-                    {
-                        foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
-                        {
-                            if (match.Groups["uid"].Success) this.Uid = match.Groups["uid"].Value;
-                            if (match.Groups["rid"].Success)
-                            {
-                                if(this.RecurrenceId != null) this.RecurrenceId.Id = match.Groups["rid"].Value;
-                            }
-                        }
-                    }
+                    return this.RecurrenceId != null
+                        ? string.Format("{0}/{1}", this.Uid, this.RecurrenceId.Id)
+                        : this.Uid;
                 }
-                catch (ArgumentNullException){ throw; }
-                catch (ArgumentOutOfRangeException){ throw; }
-                catch (ArgumentException){ throw; }
-                catch (Exception){ throw; }
+                else return this.id;
             }
+            set { this.id = value; }
         }
 
         /// <summary>
         /// Gets or sets the unique identifier of the event.
         /// </summary>
         [DataMember]
-        [Index(Unique = true)]
+        [Index(Unique = false)]
         public string Uid { get; set; }
 
         [DataMember]
+        [Index(Unique = false)]
         public DATE_TIME Datestamp { get; set; }
 
         [DataMember]
@@ -92,7 +78,7 @@ namespace reexmonkey.xcal.domain.models
         public DATE_TIME Created { get; set; }
 
         [DataMember]
-        public TEXT Description { get; set; }
+        public DESCRIPTION Description { get; set; }
 
         [DataMember]
         public GEO Position { get; set; }
@@ -101,7 +87,7 @@ namespace reexmonkey.xcal.domain.models
         public DATE_TIME LastModified { get; set; }
 
         [DataMember]
-        public TEXT Location { get; set; }
+        public LOCATION Location { get; set; }
 
         [DataMember]
         [Ignore]
@@ -117,7 +103,7 @@ namespace reexmonkey.xcal.domain.models
         public STATUS Status { get; set; }
 
         [DataMember]
-        public TEXT Summary { get; set; }
+        public SUMMARY Summary { get; set; }
 
         [DataMember]
         public TRANSP Transparency { get; set; }
@@ -169,11 +155,11 @@ namespace reexmonkey.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public List<TEXT> Comments { get; set; }
+        public List<COMMENT> Comments { get; set; }
 
         [DataMember]
         [Ignore]
-        public List<TEXT> Contacts { get; set; }
+        public List<CONTACT> Contacts { get; set; }
 
         [DataMember]
         [Ignore]
@@ -215,8 +201,8 @@ namespace reexmonkey.xcal.domain.models
             this.LastModified = new DATE_TIME(DateTime.UtcNow);
         }
 
-        public VEVENT(DATE_TIME dtstamp, string uid, DATE_TIME start, DATE_TIME end,  PRIORITY priority, ORGANIZER organizer = null, TEXT location = null, 
-            STATUS status = STATUS.NEEDS_ACTION, TEXT summary = null, TRANSP transparency = TRANSP.TRANSPARENT,
+        public VEVENT(DATE_TIME dtstamp, string uid, DATE_TIME start, DATE_TIME end,  PRIORITY priority, ORGANIZER organizer = null, LOCATION location = null, 
+            STATUS status = STATUS.NEEDS_ACTION, SUMMARY summary = null, TRANSP transparency = TRANSP.TRANSPARENT,
             RECURRENCE_ID recurid = null, RECUR rrule = null, List<ATTENDEE> attendees = null, CATEGORIES categories = null, List<RELATEDTO> relatedtos = null)
         {
             this.Datestamp = dtstamp;
@@ -237,8 +223,8 @@ namespace reexmonkey.xcal.domain.models
         }
 
 
-        public VEVENT(DATE_TIME dtstamp, string uid, DATE_TIME start, DURATION duration, PRIORITY priority, ORGANIZER organizer = null, TEXT location = null,
-             STATUS status = STATUS.NEEDS_ACTION, TEXT summary = null, TRANSP transparency = TRANSP.TRANSPARENT, RECURRENCE_ID recurid = null, RECUR rrule = null, List<ATTENDEE> attendees = null, CATEGORIES categories = null, List<RELATEDTO> relatedtos = null)
+        public VEVENT(DATE_TIME dtstamp, string uid, DATE_TIME start, DURATION duration, PRIORITY priority, ORGANIZER organizer = null, LOCATION location = null,
+             STATUS status = STATUS.NEEDS_ACTION, SUMMARY summary = null, TRANSP transparency = TRANSP.TRANSPARENT, RECURRENCE_ID recurid = null, RECUR rrule = null, List<ATTENDEE> attendees = null, CATEGORIES categories = null, List<RELATEDTO> relatedtos = null)
         {
             this.Datestamp = dtstamp;
             this.Uid = uid;
@@ -298,25 +284,23 @@ namespace reexmonkey.xcal.domain.models
 
             //primary reference
             equals = this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase);
-            if (this.RecurrenceId != null && other.RecurrenceId != null) 
-                equals = equals && this.RecurrenceId == other.RecurrenceId;
 
+            if(equals && this.RecurrenceId != null && other.RecurrenceId != null) equals = this.RecurrenceId == other.RecurrenceId;
+            
             //secondary reference if both events are equal by Uid/Recurrence Id
-            if(equals) equals = this.Sequence == other.Sequence;
+            if (equals)  equals = this.Sequence == other.Sequence;
 
             //tie-breaker
-            if(equals) equals = this.Datestamp == other.Datestamp;
+            if (equals) equals = this.Datestamp == other.Datestamp;
+
             return equals;
         }
 
         public int CompareTo(VEVENT other)
         {
-            var compare = 0;
-            compare = this.Sequence.CompareTo(other.Sequence);
-            if(compare == 0) //if sequences are equal
-            {
-                compare = this.Datestamp.CompareTo(other.Datestamp);
-            }
+            var compare = this.Uid.CompareTo(other.Uid);
+            if(compare == 0) compare = this.Sequence.CompareTo(other.Sequence);
+            if(compare == 0) compare = this.Datestamp.CompareTo(other.Datestamp);
             return compare;
         }
 
@@ -329,7 +313,10 @@ namespace reexmonkey.xcal.domain.models
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            var hash = this.Uid.GetHashCode();
+            if (this.RecurrenceId != null) hash = hash ^ this.RecurrenceId.GetHashCode();
+            hash = hash ^ this.Sequence.GetHashCode() ^ this.Datestamp.GetHashCode();
+            return hash;
         }
 
         public static bool operator ==(VEVENT a, VEVENT b)
@@ -368,15 +355,15 @@ namespace reexmonkey.xcal.domain.models
                 sb.AppendFormat("DTSTART:{0}", this.Start).AppendLine();
             if (this.Classification != CLASS.UNKNOWN) sb.AppendFormat("CLASS:{0}", this.Classification).AppendLine();
             sb.AppendFormat("CREATED:{0}", this.Created).AppendLine();
-            if (this.Description != null) sb.AppendFormat("DESCRIPTION{0}", this.Description).AppendLine();
+            if (this.Description != null) sb.Append(this.Description).AppendLine();
             if (this.Position != default(GEO)) sb.Append(this.Position).AppendLine();
             sb.AppendFormat("LAST-MODIFIED:{0}", this.LastModified).AppendLine();
-            if (this.Location != null) sb.AppendFormat("LOCATION{0}",this.Location).AppendLine();
+            if (this.Location != null) sb.Append(this.Location).AppendLine();
             if (this.Organizer != null) sb.Append(this.Organizer).AppendLine();
             if (this.Priority != null) sb.Append(this.Priority).AppendLine();
             sb.AppendFormat("SEQUENCE:{0}", this.Sequence).AppendLine();
             if (this.Status != STATUS.UNKNOWN) sb.AppendFormat("STATUS:{0}",this.Status).AppendLine();
-            if (this.Summary != null) sb.AppendFormat("SUMMARY{0}", this.Summary).AppendLine();
+            if (this.Summary != null) sb.Append(this.Summary).AppendLine();
             if (this.Transparency != TRANSP.UNKNOWN) sb.AppendFormat("TRANSP:{0}", this.Transparency).AppendLine();
             if (this.Url != null) sb.AppendFormat("URL:{0}", this.Url).AppendLine();
             if (this.RecurrenceId != null) sb.Append(this.RecurrenceId).AppendLine();

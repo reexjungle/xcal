@@ -76,12 +76,7 @@ namespace reexmonkey.xcal.domain.models
         public bool Equals(VCALENDAR other)
         {
             if (other == null) return false;
-            return
-                this.ProdId == other.ProdId &&
-                this.Calscale == other.Calscale &&
-                this.Version == other.Version &&
-                this.Components.OfType<VEVENT>().
-                AreDuplicatesOf(other.Components.OfType<VEVENT>());
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
@@ -93,8 +88,7 @@ namespace reexmonkey.xcal.domain.models
         public override int GetHashCode()
         {
             return
-                this.ProdId.GetHashCode() ^
-                ((this.Version != null)? this.Version.GetHashCode() : 0)^
+                this.ProdId.GetHashCode() ^ this.Version.GetHashCode() ^ this.Method.GetHashCode() ^
                 this.Components.GetHashCode();
         }
 
@@ -106,7 +100,7 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator !=(VCALENDAR a, VCALENDAR b)
         {
-            if (a == null || b == null) return !Object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -116,6 +110,7 @@ namespace reexmonkey.xcal.domain.models
             sb.Append("BEGIN:VCALENDAR").AppendLine();
             sb.AppendFormat("VERSION:{0}", this.Version).AppendLine();
             if(this.Calscale != CALSCALE.UNKNOWN) sb.AppendFormat("CALSCALE:{0}", this.Calscale).AppendLine();
+            if(this.Method != METHOD.UNKNOWN) sb.AppendFormat("METHOD:{0}", this.Method).AppendLine();
             sb.AppendFormat("PRODID:{0}", this.ProdId).AppendLine();
             foreach (var x in Components) if(x != null) sb.Append(x.ToString()).AppendLine();
             sb.Append("END:VCALENDAR");

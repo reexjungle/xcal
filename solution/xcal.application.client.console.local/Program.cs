@@ -16,8 +16,6 @@ namespace xcal.application.client.console.local
     {
         static void Main(string[] args)
         {
-            //delay a bit
-            Thread.Sleep(2000);
             var container = new Container();
             var version = typeof(Program).GetAssembly().GetVersionInfo();
             var fversion = typeof(Program).GetAssembly().GetFileVersionInfo();

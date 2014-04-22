@@ -13,7 +13,7 @@ namespace reexmonkey.xcal.domain.contracts
         UTC_OFFSET TimeZoneOffsetFrom { get; set; }
         UTC_OFFSET TimeZoneOffsetTo { get; set; }
         RECUR RecurrenceRule { get; set; }
-        List<TEXT> Comments { get; set; }
+        List<TEXTUAL> Comments { get; set; }
         List<RDATE> RecurrenceDates { get; set; }
         List<TZNAME> TimeZoneNames { get; set; }    
     }

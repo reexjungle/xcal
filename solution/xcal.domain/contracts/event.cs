@@ -18,13 +18,13 @@ namespace reexmonkey.xcal.domain.contracts
 
         DATE_TIME Created { get; set; }
 
-        TEXT Description { get; set; }
+        DESCRIPTION Description { get; set; }
 
         GEO Position { get; set; }
 
         DATE_TIME LastModified { get; set; }
 
-        TEXT Location { get; set; }
+        LOCATION Location { get; set; }
 
         ORGANIZER Organizer { get; set; }
 
@@ -34,7 +34,7 @@ namespace reexmonkey.xcal.domain.contracts
 
         STATUS Status { get; set; }
 
-        TEXT Summary { get; set; }
+        SUMMARY Summary { get; set; }
 
         TRANSP Transparency { get; set; }
 
@@ -54,9 +54,9 @@ namespace reexmonkey.xcal.domain.contracts
 
         CATEGORIES Categories { get; set; }
 
-        List<TEXT> Comments { get; set; }
+        List<COMMENT> Comments { get; set; }
 
-        List<TEXT> Contacts { get; set; }
+        List<CONTACT> Contacts { get; set; }
 
         List<EXDATE> ExceptionDates { get; set; }
 

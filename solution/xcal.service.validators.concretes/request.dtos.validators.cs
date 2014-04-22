@@ -127,11 +127,11 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.Categories).NotNull().When(x => x.Categories != null);
             RuleFor(x => x.Classification).NotEqual(CLASS.UNKNOWN);
 
-            RuleFor(x => x.Comments.OfType<TEXT>()).SetCollectionValidator(new TextValidator()).
-                Must((x, y) => x.Comments.OfType<TEXT>().AreUnique()).
-                When(x => !x.Comments.OfType<TEXT>().NullOrEmpty());
+            RuleFor(x => x.Comments.OfType<TEXTUAL>()).SetCollectionValidator(new TextValidator()).
+                Must((x, y) => x.Comments.OfType<TEXTUAL>().AreUnique()).
+                When(x => !x.Comments.OfType<TEXTUAL>().NullOrEmpty());
 
-            RuleFor(x => x.Contacts.OfType<TEXT>()).SetCollectionValidator(new TextValidator()).
+            RuleFor(x => x.Contacts.OfType<TEXTUAL>()).SetCollectionValidator(new TextValidator()).
                 Must((x, y) => x.Contacts.AreUnique() &&
                     x.Contacts.Count() <= 1).
                 When(x => !x.Contacts.NullOrEmpty());

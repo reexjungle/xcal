@@ -11,7 +11,7 @@ using reexmonkey.xcal.domain.models;
 namespace reexmonkey.xcal.service.validators.concretes
 {
 
-    public class TextValidator: AbstractValidator<TEXT>
+    public class TextValidator: AbstractValidator<TEXTUAL>
     {
         public TextValidator() : base()
         {

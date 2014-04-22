@@ -372,7 +372,11 @@ namespace reexmonkey.xcal.domain.models
     /// Specify non-processing information intended to provide a comment to the calendar user
     /// </summary>
     [DataContract]
-    public class TEXT : ITEXT, IEquatable<TEXT>, IComparable<TEXT>, IContainsKey<string>
+    [KnownType(typeof(COMMENT))]
+    [KnownType(typeof(CONTACT))]
+    [KnownType(typeof(SUMMARY))]
+    [KnownType(typeof(DESCRIPTION))]
+    public abstract class TEXTUAL : ITEXTUAL, IEquatable<TEXTUAL>, IComparable<TEXTUAL>, IContainsKey<string>
     {
         /// <summary>
         /// ID of the Comment to the Calendar Component
@@ -400,23 +404,23 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public TEXT()
+        public TEXTUAL()
         {
             this.Text = string.Empty;
             this.AlternativeText = null;
         }
 
-        public TEXT(string text)
+        public TEXTUAL(string text)
         {
             this.Text = text;
             this.AlternativeText = null;
         }
 
-        public TEXT(ITEXT comment)
+        public TEXTUAL(ITEXTUAL value)
         {
-            this.Language = comment.Language;
-            this.AlternativeText = comment.AlternativeText;
-            this.Text = comment.Text;
+            this.Language = value.Language;
+            this.AlternativeText = value.AlternativeText;
+            this.Text = value.Text;
         }
 
         /// <summary>
@@ -425,27 +429,14 @@ namespace reexmonkey.xcal.domain.models
         /// <param name="text">Text content of the comment</param>
         /// <param name="alt">Alternative text content of the comment</param>
         /// <param name="language">Language of the comment</param>
-        public TEXT(string text, URI altrep, LANGUAGE language = null)
+        public TEXTUAL(string text, URI altrep, LANGUAGE language = null)
         {
             this.Text = text;
             this.AlternativeText = altrep;
             this.Language = language;
         }
 
-        /// <summary>
-        /// Overlaoded ToString method
-        /// </summary>
-        /// <returns>String representation of the Comment property in form of "COMMENT;AlternativeText;Language:Text"</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            if (this.AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", this.AlternativeText);
-            if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
-            sb.AppendFormat(":{0}", this.Text);
-            return sb.ToString();
-        }
-
-        public bool Equals(TEXT other)
+        public bool Equals(TEXTUAL other)
         {
             if (other == null) return false;
             return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
@@ -454,7 +445,7 @@ namespace reexmonkey.xcal.domain.models
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            return this.Equals(obj as TEXT);
+            return this.Equals(obj as TEXTUAL);
         }
 
         public override int GetHashCode()
@@ -462,31 +453,112 @@ namespace reexmonkey.xcal.domain.models
             return this.Text.GetHashCode();
         }
 
-        public int CompareTo(TEXT other)
+        public int CompareTo(TEXTUAL other)
         {
             return this.Text.CompareTo(other.Text);
         }
 
-        public static bool operator ==(TEXT a, TEXT b)
+        public static bool operator ==(TEXTUAL a, TEXTUAL b)
         {
             if ((object)a == null || (object)b == null) return object.Equals(a, b);
             return a.Equals(b);
         }
 
-        public static bool operator !=(TEXT a, TEXT b)
+        public static bool operator !=(TEXTUAL a, TEXTUAL b)
         {
             if (a == null || b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
 
-        public static bool operator <(TEXT a, TEXT b)
+        public static bool operator <(TEXTUAL a, TEXTUAL b)
         {
             return a.CompareTo(b) < 0;
         }
 
-        public static bool operator >(TEXT a, TEXT b)
+        public static bool operator >(TEXTUAL a, TEXTUAL b)
         {
             return a.CompareTo(b) > 0;
+        }
+    }
+
+
+    [DataContract]
+    public class DESCRIPTION: TEXTUAL
+    {
+        public DESCRIPTION() : base() { }
+        public DESCRIPTION(string text) : base(text) { }
+        public DESCRIPTION(string text, URI altrep, LANGUAGE language = null): base(text, altrep, language) { }
+        public override string ToString()
+        {
+            var sb = new StringBuilder("DESCRIPTION");
+            if (this.AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", this.AlternativeText);
+            if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
+            sb.AppendFormat(":{0}", this.Text);
+            return sb.ToString();
+        }
+    }
+
+    [DataContract]
+    public class COMMENT : TEXTUAL
+    {
+        public COMMENT() : base() { }
+        public COMMENT(string text) : base(text) { }
+        public COMMENT(string text, URI altrep, LANGUAGE language = null) : base(text, altrep, language) { }
+        public override string ToString()
+        {
+            var sb = new StringBuilder("COMMENT");
+            if (this.AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", this.AlternativeText);
+            if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
+            sb.AppendFormat(":{0}", this.Text);
+            return sb.ToString();
+        }
+    }
+
+    [DataContract]
+    public class CONTACT : TEXTUAL
+    {
+        public CONTACT() : base() { }
+        public CONTACT(string text) : base(text) { }
+        public CONTACT(string text, URI altrep, LANGUAGE language = null) : base(text, altrep, language) { }
+        public override string ToString()
+        {
+            var sb = new StringBuilder("CONTACT");
+            if (this.AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", this.AlternativeText);
+            if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
+            sb.AppendFormat(":{0}", this.Text);
+            return sb.ToString();
+        }
+    }
+
+    [DataContract]
+    public class SUMMARY : TEXTUAL
+    {
+        public SUMMARY() : base() { }
+        public SUMMARY(string text) : base(text) { }
+        public SUMMARY(string text, URI altrep, LANGUAGE language = null) : base(text, altrep, language) { }
+        public override string ToString()
+        {
+            var sb = new StringBuilder("SUMMARY");
+            if (this.AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", this.AlternativeText);
+            if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
+            sb.AppendFormat(":{0}", this.Text);
+            return sb.ToString();
+        }
+    }
+
+    [DataContract]
+    public class LOCATION : TEXTUAL
+    {
+        public LOCATION() : base() { }
+        public LOCATION(string text) : base(text) { }
+        public LOCATION(string text, URI altrep, LANGUAGE language = null) : base(text, altrep, language) { }
+        public override string ToString()
+        {
+            var sb = new StringBuilder("LOCATION");
+            if (this.AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", this.AlternativeText);
+            if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
+            sb.AppendFormat(":{0}", this.Text);
+            return sb.ToString();
         }
     }
 

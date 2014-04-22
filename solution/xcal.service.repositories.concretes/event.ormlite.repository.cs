@@ -117,6 +117,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                return db.Select<VEVENT>(q => q.Id == key).FirstOrDefault();
             }
             catch (InvalidOperationException) { throw; }
+            catch (ArgumentException) { throw; }
             catch (Exception) { throw; }
         }
 
@@ -128,6 +129,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 return db.Select<VEVENT>(q => Sql.In(q.Id, dkeys), skip, take);
             }
             catch (InvalidOperationException) { throw; }
+            catch (ArgumentException) { throw; }
             catch (Exception) { throw; }
         }
 
@@ -1118,103 +1120,103 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public VEVENT Hydrate(VEVENT dry)
         {
-            VEVENT full = null;
+            VEVENT full = dry;
             try
             {
-                full = db.Select<VEVENT>(q => q.Id == dry.Id).FirstOrDefault();
-                if(full != null)
+                var okey = db.SelectParam<VEVENT, string>(q => q.Id, p => p.Id == dry.Id).FirstOrDefault();
+                if(!string.IsNullOrEmpty(okey))
                 {
                     var orgs = db.Select<ORGANIZER, VEVENT, REL_EVENTS_ORGANIZERS>(
                         r => r.OrganizerId,
                         r => r.EventId,
-                        e => e.Id == full.Id);
+                        e => e.Id == okey);
                     if (!orgs.NullOrEmpty()) full.Organizer = orgs.FirstOrDefault();
 
                     var rids = db.Select<RECURRENCE_ID, VEVENT, REL_EVENTS_RECURRENCE_IDS>(
                         r => r.RecurrenceId_Id,
                         r => r.EventId,
-                        e => e.Id == full.Id);
+                        e => e.Id == okey);
                     if (!rids.NullOrEmpty()) full.RecurrenceId = rids.FirstOrDefault();
 
                     var rrules = db.Select<RECUR, VEVENT, REL_EVENTS_RECURS>(
                         r => r.RecurrenceRuleId,
                         r => r.EventId,
-                        e => e.Id == full.Id);
+                        e => e.Id == okey);
                     if (!rrules.NullOrEmpty()) full.RecurrenceRule = rrules.FirstOrDefault();
 
                     var attachbins = db.Select<ATTACH_BINARY, VEVENT, REL_EVENTS_ATTACHBINS>(
                        r => r.AttachmentId,
                        r => r.EventId,
-                       e => e.Id == full.Id);
+                       e => e.Id == okey);
                     if (!attachbins.NullOrEmpty()) full.Attachments.AddRangeComplement(attachbins);
 
                     var attachuris = db.Select<ATTACH_URI, VEVENT, REL_EVENTS_ATTACHURIS>(
                        r => r.AttachmentId,
                        r => r.EventId,
-                       e => e.Id == full.Id);
+                       e => e.Id == okey);
                     if (!attachuris.NullOrEmpty()) full.Attachments.AddRangeComplement(attachuris);
 
                     var attendees = db.Select<ATTENDEE, VEVENT, REL_EVENTS_ATTENDEES>(
                          r => r.AttendeeId,
                          r => r.EventId,
-                         e => e.Id == full.Id);
+                         e => e.Id == okey);
                     if (!attendees.NullOrEmpty()) attendees.AddRangeComplement(attendees);
 
-                    var comments = db.Select<TEXT, VEVENT, REL_EVENTS_COMMENTS>(
+                    var comments = db.Select<COMMENT, VEVENT, REL_EVENTS_COMMENTS>(
                         r => r.CommentId,
                         r => r.EventId,
-                        e => e.Id == full.Id);
+                        e => e.Id == okey);
                     if(!comments.NullOrEmpty()) full.Comments.AddRangeComplement(comments);
 
-                    var contacts = db.Select<TEXT, VEVENT, REL_EVENTS_CONTACTS>(
+                    var contacts = db.Select<CONTACT, VEVENT, REL_EVENTS_CONTACTS>(
                         r => r.ContactId,
                         r => r.EventId,
-                        e => e.Id == full.Id);
+                        e => e.Id == okey);
                     if(!contacts.NullOrEmpty()) full.Contacts.AddRangeComplement(contacts);
 
                     var rdates = db.Select<RDATE, VEVENT, REL_EVENTS_RDATES>(
                         r => r.RecurrenceDateId,
                         r => r.EventId,
-                        e => e.Id == full.Id);
+                        e => e.Id == okey);
                     if(!rdates.NullOrEmpty()) full.RecurrenceDates.AddRangeComplement(rdates);
 
                     var exdates = db.Select<EXDATE, VEVENT, REL_EVENTS_EXDATES>(
                         r => r.ExceptionDateId,
                         r => r.EventId,
-                        e => e.Id == full.Id);
+                        e => e.Id == okey);
                     if(!exdates.NullOrEmpty())full.ExceptionDates.AddRangeComplement(exdates);
 
                    var relatedtos= db.Select<RELATEDTO, VEVENT, REL_EVENTS_RELATEDTOS>(
                         r => r.RelatedToId,
                         r => r.EventId,
-                        e => e.Id == full.Id);
+                        e => e.Id == okey);
                     full.RelatedTos.AddRangeComplement(relatedtos);
 
                     var reqstats = db.Select<REQUEST_STATUS, VEVENT, REL_EVENTS_REQSTATS>(
                         r => r.ReqStatsId,
                         r => r.EventId,
-                        e => e.Id == full.Id);
+                        e => e.Id == okey);
                     full.RequestStatuses.AddRangeComplement(reqstats);
 
                     var resources = db.Select<RESOURCES, VEVENT, REL_EVENTS_RESOURCES>(
                         r => r.ResourcesId,
                         r => r.EventId,
-                        e => e.Id == dry.Uid);
+                        e => e.Id == okey);
                     if (!resources.NullOrEmpty()) full.Resources.AddRangeComplement(resources);
 
-                    var raalarms = this.db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.Id == full.Id);
+                    var raalarms = this.db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.Id == okey);
                     if (!raalarms.NullOrEmpty())
                     {
                         full.Alarms.AddRangeComplement(this.AudioAlarmRepository.Find(raalarms.Select(x => x.AlarmId).ToList()));
                     }
 
-                    var rdalarms = this.db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.Id == full.Id);
+                    var rdalarms = this.db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.Id == okey);
                     if (!rdalarms.NullOrEmpty())
                     {
                         full.Alarms.AddRangeComplement(this.DisplayAlarmRepository.Find(rdalarms.Select(x => x.AlarmId).ToList()));
                     }
 
-                    var realarms = this.db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.Id == full.Id);
+                    var realarms = this.db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.Id == okey);
                     if (!realarms.NullOrEmpty())
                     {
                         full.Alarms.AddRangeComplement(this.EmailAlarmRepository
@@ -1235,28 +1237,29 @@ namespace reexmonkey.xcal.service.repositories.concretes
             List<VEVENT> full = null;
             try
             {
-                var keys = dry.Select(q => q.Id).ToList();
-                full = db.Select<VEVENT>(q => Sql.In(q.Id, keys));
-                if (!full.NullOrEmpty())
+                full = dry.ToList();
+                var keys = full.Select(q => q.Id).ToArray();  
+                var okeys = db.SelectParam<VEVENT, string>(q => q.Id, p => Sql.In(p.Id, keys));
+                if (!okeys.NullOrEmpty())
                 {
                     #region 1. retrieve relationships
 
-                    var rorgs = this.db.Select<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.EventId, keys));
-                    var rrids = this.db.Select<REL_EVENTS_RECURRENCE_IDS>(q => Sql.In(q.EventId, keys));
-                    var rrrules = this.db.Select<REL_EVENTS_RECURS>(q => Sql.In(q.EventId, keys));
-                    var rattendees = this.db.Select<REL_EVENTS_ATTENDEES>(q => Sql.In(q.EventId, keys));
-                    var rcomments = this.db.Select<REL_EVENTS_COMMENTS>(q => Sql.In(q.EventId, keys));
-                    var rattachbins = this.db.Select<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.EventId, keys));
-                    var rattachuris = this.db.Select<REL_EVENTS_ATTACHURIS>(q => Sql.In(q.EventId, keys));
-                    var rcontacts = this.db.Select<REL_EVENTS_CONTACTS>(q => Sql.In(q.EventId, keys));
-                    var rexdates = this.db.Select<REL_EVENTS_EXDATES>(q => Sql.In(q.EventId, keys));
-                    var rrdates = this.db.Select<REL_EVENTS_RDATES>(q => Sql.In(q.EventId, keys));
-                    var rrelatedtos = this.db.Select<REL_EVENTS_RELATEDTOS>(q => Sql.In(q.EventId, keys));
-                    var rreqstats = this.db.Select<REL_EVENTS_REQSTATS>(q => Sql.In(q.EventId, keys));
-                    var rresources = this.db.Select<REL_EVENTS_RESOURCES>(q => Sql.In(q.EventId, keys));
-                    var raalarms = this.db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.EventId, keys));
-                    var rdalarms = this.db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.EventId, keys));
-                    var realarms = this.db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.EventId, keys)); 
+                    var rorgs = this.db.Select<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.EventId, okeys));
+                    var rrids = this.db.Select<REL_EVENTS_RECURRENCE_IDS>(q => Sql.In(q.EventId, okeys));
+                    var rrrules = this.db.Select<REL_EVENTS_RECURS>(q => Sql.In(q.EventId, okeys));
+                    var rattendees = this.db.Select<REL_EVENTS_ATTENDEES>(q => Sql.In(q.EventId, okeys));
+                    var rcomments = this.db.Select<REL_EVENTS_COMMENTS>(q => Sql.In(q.EventId, okeys));
+                    var rattachbins = this.db.Select<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.EventId, okeys));
+                    var rattachuris = this.db.Select<REL_EVENTS_ATTACHURIS>(q => Sql.In(q.EventId, okeys));
+                    var rcontacts = this.db.Select<REL_EVENTS_CONTACTS>(q => Sql.In(q.EventId, okeys));
+                    var rexdates = this.db.Select<REL_EVENTS_EXDATES>(q => Sql.In(q.EventId, okeys));
+                    var rrdates = this.db.Select<REL_EVENTS_RDATES>(q => Sql.In(q.EventId, okeys));
+                    var rrelatedtos = this.db.Select<REL_EVENTS_RELATEDTOS>(q => Sql.In(q.EventId, okeys));
+                    var rreqstats = this.db.Select<REL_EVENTS_REQSTATS>(q => Sql.In(q.EventId, okeys));
+                    var rresources = this.db.Select<REL_EVENTS_RESOURCES>(q => Sql.In(q.EventId, okeys));
+                    var raalarms = this.db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.EventId, okeys));
+                    var rdalarms = this.db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.EventId, okeys));
+                    var realarms = this.db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.EventId, okeys)); 
 
                     #endregion
 
@@ -1266,10 +1269,10 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     var rids = (!rrids.Empty()) ? db.Select<RECURRENCE_ID>(q => Sql.In(q.Id, rrids.Select(r => r.RecurrenceId_Id).ToList())) : null;
                     var rrules = (!rrrules.Empty()) ? db.Select<RECUR>(q => Sql.In(q.Id, rrrules.Select(r => r.RecurrenceRuleId).ToList())) : null;
                     var attendees = (!rattendees.Empty()) ? db.Select<ATTENDEE>(q => Sql.In(q.Id, rattendees.Select(r => r.AttendeeId).ToList())) : null;
-                    var comments = (!rcomments.Empty()) ? db.Select<TEXT>(q => Sql.In(q.Id, rcomments.Select(r => r.CommentId).ToList())) : null;
+                    var comments = (!rcomments.Empty()) ? db.Select<COMMENT>(q => Sql.In(q.Id, rcomments.Select(r => r.CommentId).ToList())) : null;
                     var attachbins = (!rattachbins.Empty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToList())) : null;
                     var attachuris = (!rattachuris.Empty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachuris.Select(r => r.AttachmentId).ToList())) : null;
-                    var contacts = (!rcontacts.Empty()) ? db.Select<TEXT>(q => Sql.In(q.Id, rcontacts.Select(r => r.ContactId).ToList())) : null;
+                    var contacts = (!rcontacts.Empty()) ? db.Select<CONTACT>(q => Sql.In(q.Id, rcontacts.Select(r => r.ContactId).ToList())) : null;
                     var exdates = (!rexdates.Empty()) ? db.Select<EXDATE>(q => Sql.In(q.Id, rexdates.Select(r => r.ExceptionDateId).ToList())) : null;
                     var rdates = (!rrdates.Empty()) ? db.Select<RDATE>(q => Sql.In(q.Id, rrdates.Select(r => r.RecurrenceDateId).ToList())) : null;
                     var relatedtos = (!rrelatedtos.Empty()) ? db.Select<RELATEDTO>(q => Sql.In(q.Id, rrelatedtos.Select(r => r.RelatedToId).ToList())) : null;

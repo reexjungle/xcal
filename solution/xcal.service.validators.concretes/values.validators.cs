@@ -94,7 +94,19 @@ namespace reexmonkey.xcal.service.validators.concretes
     {
         public EmailValidator(): base()
         {
-            //TODO:
+            RuleFor(x => x.Path).Must((x,y) => this.IsValid(x.Path)).When(x => !string.IsNullOrWhiteSpace(x.Path) 
+                || !string.IsNullOrEmpty(x.Path));
+        }
+
+        private bool IsValid(string email)
+        {
+            try
+            {
+                var pattern = @"^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$";
+                return Regex.IsMatch(email, pattern, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
+            }
+            catch (ArgumentNullException) { throw;  }
+            catch (ArgumentException) { throw; }
         }
     }
 

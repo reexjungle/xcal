@@ -72,7 +72,8 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
 
                 calendar.Components.AddRangeComplement(request.Events);
                 this.repository.Save(calendar);
-                return repository.Hydrate(calendar);
+
+                return this.repository.Hydrate(this.repository.Find(calendar.Id));
             }
 
             catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); }

@@ -48,7 +48,7 @@ namespace reexmonkey.xcal.domain.contracts
         LANGUAGE Language { get; set; }
     }
 
-    public interface ITEXT : IPROPERTY
+    public interface ITEXTUAL : IPROPERTY
     {
         URI AlternativeText { get; set; }
 

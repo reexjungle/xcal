@@ -121,18 +121,18 @@ namespace reexmonkey.xcal.domain.models
         public int Repeat { get; set; }
 
         [DataMember]
-        public TEXT Description { get; set; }
+        public TEXTUAL Description { get; set; }
 
         public DISPLAY_ALARM(): base(){}
 
-        public DISPLAY_ALARM(ACTION action, TRIGGER trigger, TEXT description)
+        public DISPLAY_ALARM(ACTION action, TRIGGER trigger, TEXTUAL description)
         {
             this.Action = action;
             this.Trigger = trigger;
             this.Description = description;
         }
 
-        public DISPLAY_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, TEXT description = null)
+        public DISPLAY_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, TEXTUAL description = null)
         {
             this.Action = action;
             this.Trigger = trigger;
@@ -211,10 +211,10 @@ namespace reexmonkey.xcal.domain.models
         public int Repeat { get; set; }
 
         [DataMember]
-        public TEXT Description { get; set; }
+        public TEXTUAL Description { get; set; }
 
         [DataMember]
-        public TEXT Summary { get; set; }
+        public TEXTUAL Summary { get; set; }
 
         [DataMember]
         [Ignore]
@@ -230,7 +230,7 @@ namespace reexmonkey.xcal.domain.models
             this.Attachments = new List<IATTACH>();
         }
 
-        public EMAIL_ALARM(ACTION action, TRIGGER trigger, TEXT description, TEXT summary, 
+        public EMAIL_ALARM(ACTION action, TRIGGER trigger, TEXTUAL description, TEXTUAL summary, 
             List<ATTENDEE> attendees, List<IATTACH> attachments = null)
         {
             this.Action = action;
@@ -242,7 +242,7 @@ namespace reexmonkey.xcal.domain.models
 
         }
 
-        public EMAIL_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, TEXT description, TEXT summary, 
+        public EMAIL_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, TEXTUAL description, TEXTUAL summary, 
             List<ATTENDEE> attendees, List<IATTACH> attachments = null)
         {
             this.Action = action;

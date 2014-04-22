@@ -304,7 +304,7 @@ namespace reexmonkey.technical.data.concretes.extensions.ormlite
 
             using (var reader = db.Exec(cmd => cmd.ExecReader(sb.ToString())))
             {
-                return reader.ConvertToList<TParam>();
+                return reader.ReadToList<TParam>();
             }
         }
 

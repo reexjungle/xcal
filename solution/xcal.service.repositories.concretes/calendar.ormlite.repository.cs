@@ -85,22 +85,23 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public VCALENDAR Hydrate(VCALENDAR dry)
         {
-            VCALENDAR full = null;
+            VCALENDAR full = dry;
             try
             {
-                full = db.Select<VCALENDAR>(q => q.Id == dry.Id).FirstOrDefault();
-                if (full != null)
+                var okey = db.SelectParam<VCALENDAR, string>(q => q.Id, p => p.Id == dry.Id).FirstOrDefault();
+                if (!string.IsNullOrEmpty(okey))
                 {
-                    var revents = this.db.Select<REL_CALENDARS_EVENTS>(q => q.CalendarId == full.Id);
+                    var revents = this.db.Select<REL_CALENDARS_EVENTS>(q => q.CalendarId == okey);
                     if (!revents.NullOrEmpty())
                     {
                         var events = this.EventRepository.Find(revents.Select(x => x.EventId).ToList());
-                        full.Components.AddRangeComplement(this.EventRepository.Hydrate(events));
+                        full.Components.AddRangeComplement(this.EventRepository.Hydrate( events));
                     }
                 }
-
             }
+            catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }
             catch (Exception) { throw; }
 
             return full ?? dry;
@@ -108,27 +109,35 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public IEnumerable<VCALENDAR> Hydrate(IEnumerable<VCALENDAR> dry)
         {
-            IEnumerable<VCALENDAR> full = null;
-            var keys = dry.Select(x => x.Id).Distinct().ToList();
-            full = db.Select<VCALENDAR>(q => Sql.In(q.Id, keys));
-            if (!full.NullOrEmpty())
+            IEnumerable<VCALENDAR> full = dry;
+            try
             {
-                var revents = this.db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, keys));
-                if (!revents.NullOrEmpty())
+                full = dry.ToList();
+                var keys = full.Select(q => q.Id).ToArray();
+                var okeys = db.SelectParam<VCALENDAR, string>(q => q.Id, p => Sql.In(p.Id, keys));
+                if (!okeys.NullOrEmpty())
                 {
-                    var events = this.EventRepository.Hydrate(this.EventRepository.Find(revents.Select(x => x.EventId))).ToList();
-                    full.Select(x =>
+                    var revents = this.db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, okeys));
+                    if (!revents.NullOrEmpty())
                     {
-                        var xevents = from y in events
-                                      join r in revents on y.Id equals r.EventId
-                                      join c in full on r.CalendarId equals c.Id
-                                      where c.Id == x.Id
-                                      select y;
-                        if (!xevents.NullOrEmpty()) x.Components.AddRangeComplement(xevents);
-                        return x;
-                    });
+                        var events = this.EventRepository.Hydrate(this.EventRepository.Find(revents.Select(x => x.EventId))).ToList();
+                        full.Select(x =>
+                        {
+                            var xevents = from y in events
+                                          join r in revents on y.Id equals r.EventId
+                                          join c in full on r.CalendarId equals c.Id
+                                          where c.Id == x.Id
+                                          select y;
+                            if (!xevents.NullOrEmpty()) x.Components.AddRangeComplement(xevents);
+                            return x;
+                        });
+                    }
                 }
             }
+            catch (ArgumentNullException) { throw; }
+            catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }
+            catch (Exception) { throw; }
             return full ?? dry;
         }
 

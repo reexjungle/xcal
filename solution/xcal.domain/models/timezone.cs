@@ -100,7 +100,7 @@ namespace reexmonkey.xcal.domain.models
         public RECUR RecurrenceRule { get; set; }
 
         [DataMember]
-        public List<TEXT> Comments { get; set; }
+        public List<TEXTUAL> Comments { get; set; }
 
         [DataMember]
         public List<RDATE> RecurrenceDates { get; set; }
@@ -114,7 +114,7 @@ namespace reexmonkey.xcal.domain.models
             this.TimeZoneOffsetFrom = from;
             this.TimeZoneOffsetTo = to;
             this.RecurrenceDates = new List<RDATE>();
-            this.Comments = new List<TEXT>();
+            this.Comments = new List<TEXTUAL>();
             this.TimeZoneNames = new List<TZNAME>();
         }
 
@@ -125,7 +125,7 @@ namespace reexmonkey.xcal.domain.models
                 (this.TimeZoneOffsetFrom) == (other.TimeZoneOffsetFrom) &&
                 (this.TimeZoneOffsetTo) == (other.TimeZoneOffsetTo) &&
                 (this.RecurrenceRule) == (other.RecurrenceRule ) &&
-                this.Comments.OfType<TEXT>().AreDuplicatesOf(other.Comments.OfType<TEXT>()) &&
+                this.Comments.OfType<TEXTUAL>().AreDuplicatesOf(other.Comments.OfType<TEXTUAL>()) &&
                 this.RecurrenceDates.OfType<RDATE>().AreDuplicatesOf(other.RecurrenceDates.OfType<RDATE>()) &&
                 this.TimeZoneNames.OfType<TZNAME>().AreDuplicatesOf(other.TimeZoneNames.OfType<TZNAME>());
         }
