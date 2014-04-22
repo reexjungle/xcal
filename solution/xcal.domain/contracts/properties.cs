@@ -62,8 +62,8 @@ namespace reexmonkey.xcal.domain.contracts
 
     public interface IGEO : IPROPERTY
     {
-        float Longitude { get; set; }
-        float Latitude { get; set; }
+        float Longitude { get; }
+        float Latitude { get; }
     } 
  
     public interface IRESOURCES : IPROPERTY

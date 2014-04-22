@@ -17,12 +17,10 @@ namespace reexmonkey.xcal.service.validators.concretes
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.ProductId).NotNull().NotEmpty();
-            RuleFor(x => x.Events).Must((x, y) => !x.Events.NullOrEmpty()).WithMessage("Events MUST NOT NEITHER be null NOR empty");
-            RuleFor(x => x.Events).SetCollectionValidator(new PublishedEventValidator());
-            RuleFor(x => x.TimeZones).Must((x, y) => !x.TimeZones.NullOrEmpty()).When(x => !x.Events.NullOrEmpty() && x.Events.FirstOrDefault().Datestamp.TimeFormat == TimeFormat.LocalAndTimeZone);
+            RuleFor(x => x.Events).Must((x, y) => !x.Events.NullOrEmpty()).WithMessage("Events MUST NOT NEITHER be null NOR empty").SetCollectionValidator(new PublishedEventValidator());
             RuleFor(x => x.TimeZones).SetCollectionValidator(new TimeZoneValidator()).
                 Must((x, y) => y.AreUnique()).
-                When(x => !x.TimeZones.NullOrEmpty());
+                When(x => !x.TimeZones.NullOrEmpty() && !x.Events.NullOrEmpty() && x.Events.FirstOrDefault().Datestamp.TimeFormat == TimeFormat.LocalAndTimeZone);
         }
     }
 
@@ -31,8 +29,8 @@ namespace reexmonkey.xcal.service.validators.concretes
         public PublishedEventValidator()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Datestamp).NotNull();
-            RuleFor(x => x.Start).NotNull();
+            RuleFor(x => x.Datestamp).NotEqual(default(DATE_TIME));
+            RuleFor(x => x.Start).NotEqual(default(DATE_TIME));
             RuleFor(x => x.Organizer).NotNull().SetValidator(new OrganizerValidator());
             RuleFor(x => x.Summary).NotNull().SetValidator(new TextValidator());
             RuleFor(x => x.Uid).NotNull().NotEmpty();
@@ -61,8 +59,9 @@ namespace reexmonkey.xcal.service.validators.concretes
                 When(x => !x.Contacts.NullOrEmpty());
 
             RuleFor(x => x.Description).SetValidator(new TextValidator()).When(x => x.Description != null);
-            RuleFor(x => x.End).NotNull().Unless(x => x.Duration != null);
-            RuleFor(x => x.Duration).NotNull().Unless(x => x.End != null);
+            RuleFor(x => x.End).NotEqual(default(DATE_TIME)).Unless(x => x.Duration != default(DURATION));
+            RuleFor(x => x.Duration).NotEqual(default(DURATION)).Unless(x => x.End != default(DATE_TIME));
+            RuleFor(x => x.End).Must((x, y) => x.End >= x.Start);
 
             RuleFor(x => x.ExceptionDates).SetCollectionValidator(new ExceptionDateValidator()).
                 Must((x, y) => x.ExceptionDates.AreUnique()).

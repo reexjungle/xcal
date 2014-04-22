@@ -79,7 +79,7 @@ namespace xcal.application.client.console.local.presentation.logic
 
             var events = new List<VEVENT> { pevent };
             var eventstring = pevent.ToString();
-
+            
             var published = sclient.Post<VCALENDAR>(new PublishEvent
             {
                 Id = this.GuidKeyGenerator.GetNextKey(),
@@ -87,6 +87,8 @@ namespace xcal.application.client.console.local.presentation.logic
                 Events = events,
                 TimeZones = null
             });
+
+            var publishedstring = published.ToString();
 
         }
     }

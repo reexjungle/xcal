@@ -285,8 +285,10 @@ namespace reexmonkey.xcal.domain.extensions
             var weeeks = (uint)(span.TotalDays - (span.Days + (span.Hours / 24) + (span.Minutes / (24 * 60)) + (span.Seconds / (24 * 3600)) + (span.Milliseconds / (24 * 3600000)))) / 7u;
             var sum = span.Days + (span.Hours / 24) + (span.Minutes / (24 * 60)) + (span.Seconds / (24 * 3600)) + (span.Milliseconds / (24 * 3600000));
             var sign = SignType.Neutral;
-            if (sum > 0) sign = SignType.Positive;
-            else if (sum < 0) sign = SignType.Negative;
+            var scheck = span.CompareTo(TimeSpan.Zero);
+            if (scheck > 0) sign = SignType.Positive;
+            else if (scheck < 0) sign = SignType.Negative;
+            else sign = SignType.Neutral;
             return new DURATION(weeeks, days, hours, minutes, seconds, sign);
         }
 
@@ -323,7 +325,9 @@ namespace reexmonkey.xcal.domain.extensions
         public static TimeSpan ToTimeSpan(this DURATION duration)
         {
             if (duration == default(DURATION)) return new TimeSpan();
-            return new TimeSpan((int)duration.DAYS, (int)duration.HOURS, (int)duration.MINUTES, (int)duration.SECONDS);
+            return duration.Sign == SignType.Negative
+                ? (new TimeSpan((int)duration.DAYS, (int)duration.HOURS, (int)duration.MINUTES, (int)duration.SECONDS)).Negate()
+                : new TimeSpan((int)duration.DAYS, (int)duration.HOURS, (int)duration.MINUTES, (int)duration.SECONDS);
         }
 
         #endregion

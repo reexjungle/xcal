@@ -1002,39 +1002,43 @@ namespace reexmonkey.xcal.domain.models
 
         public int CompareTo(DURATION other)
         {
-            if (other == null) return -2; //undefined
-            var w = this.weeks + (this.days / 7) + (this.hours / 168) + (this.minutes / 10080) + (this.seconds / 604800);
-            var ow = other.WEEKS + (other.DAYS / 7) + (other.HOURS / 168) + (other.MINUTES / 10080) + (other.SECONDS / 604800);
-            if (w < ow) return -1;
-            else if (w > ow) return 1;
-            else
-            {
-                var d = this.days + (this.hours / 24) + (this.minutes / 1440) + (this.seconds / 86400);
-                var od = other.DAYS + (other.HOURS / 24) + (other.MINUTES / 1440) + (other.SECONDS / 86400);
-                if (d < od) return -1;
-                else if (d > od) return 1;
-                else
-                {
-                    var h = this.hours + (this.minutes / 60) + (this.seconds / 3600);
-                    var oh = other.HOURS + (other.MINUTES / 60) + (other.SECONDS / 3600);
-                    if (h < oh) return -1;
-                    else if (h > oh) return 1;
-                    else
-                    {
-                        var m = this.minutes + (this.seconds / 60);
-                        var om = this.minutes + (this.seconds / 60);
-                        if (m < om) return -1;
-                        else if (m > om) return 1;
-                        else
-                        {
-                            if (this.seconds < other.SECONDS) return -1;
-                            else if (this.seconds > other.SECONDS) return 1;
-                            else return 0;
-                        }
+            var span = (this.sign == SignType.Negative) ? this.ToTimeSpan().Negate(): this.ToTimeSpan();
+            var ospan = (other.Sign == SignType.Negative) ? other.ToTimeSpan().Negate() : other.ToTimeSpan();
+            return span.CompareTo(ospan);
 
-                    }
-                }
-            }
+            //if (other == null) return -2; //undefined
+            //var w = this.weeks + (this.days / 7) + (this.hours / 168) + (this.minutes / 10080) + (this.seconds / 604800);
+            //var ow = other.WEEKS + (other.DAYS / 7) + (other.HOURS / 168) + (other.MINUTES / 10080) + (other.SECONDS / 604800);
+            //if (w < ow) return -1;
+            //else if (w > ow) return 1;
+            //else
+            //{
+            //    var d = this.days + (this.hours / 24) + (this.minutes / 1440) + (this.seconds / 86400);
+            //    var od = other.DAYS + (other.HOURS / 24) + (other.MINUTES / 1440) + (other.SECONDS / 86400);
+            //    if (d < od) return -1;
+            //    else if (d > od) return 1;
+            //    else
+            //    {
+            //        var h = this.hours + (this.minutes / 60) + (this.seconds / 3600);
+            //        var oh = other.HOURS + (other.MINUTES / 60) + (other.SECONDS / 3600);
+            //        if (h < oh) return -1;
+            //        else if (h > oh) return 1;
+            //        else
+            //        {
+            //            var m = this.minutes + (this.seconds / 60);
+            //            var om = this.minutes + (this.seconds / 60);
+            //            if (m < om) return -1;
+            //            else if (m > om) return 1;
+            //            else
+            //            {
+            //                if (this.seconds < other.SECONDS) return -1;
+            //                else if (this.seconds > other.SECONDS) return 1;
+            //                else return 0;
+            //            }
+
+            //        }
+            //    }
+            //}
 
         }
 
@@ -1130,19 +1134,19 @@ namespace reexmonkey.xcal.domain.models
         public static bool operator >(DURATION a, DURATION b)
         {
             if ((object)a == null || (object)b == null)  return false;
-            return a.CompareTo(b) == 1;
+            return a.CompareTo(b) > 0;
         }
 
         public static bool operator <=(DURATION a, DURATION b)
         {
             if ((object)a == null || (object)b == null)  return false;
-            return a.CompareTo(b) == 1 || a.CompareTo(b) == 0;
+            return a.CompareTo(b) < 0 || a.CompareTo(b) == 0;
         }
 
         public static bool operator >=(DURATION a, DURATION b)
         {
             if ((object)a == null || (object)b == null)  return false;
-            return a.CompareTo(b) == 1 || a.CompareTo(b) == 0;
+            return a.CompareTo(b) > 0 || a.CompareTo(b) == 0;
 
         }
 
@@ -1727,15 +1731,15 @@ namespace reexmonkey.xcal.domain.models
         private uint count;
         private uint interval;
         private WEEKDAY wkst;
-        private List<uint> bysecond = new List<uint>();
-        private List<uint> byminute = new List<uint>();
-        private List<uint> byhour = new List<uint>();
-        private List<WEEKDAYNUM> byday = new List<WEEKDAYNUM>();
-        private List<int> bymonthday = new List<int>();
-        private List<int> byyearday = new List<int>();
-        private List<int> byweekno = new List<int>();
-        private List<uint> bymonth = new List<uint>();
-        private List<int> bysetpos = new List<int>();
+        private List<uint> bysecond;
+        private List<uint> byminute;
+        private List<uint> byhour;
+        private List<WEEKDAYNUM> byday;
+        private List<int> bymonthday;
+        private List<int> byyearday;
+        private List<int> byweekno;
+        private List<uint> bymonth;
+        private List<int> bysetpos;
 
         #endregion
 
@@ -2010,7 +2014,7 @@ namespace reexmonkey.xcal.domain.models
                 sb.AppendFormat("COUNT={0};", this.COUNT);
                 sb.AppendFormat("INTERVAL={0};", this.INTERVAL.ToString());
             }
-            if (this.BYSECOND.Count() != 0)
+            if (!this.BYSECOND.NullOrEmpty())
             {
                 sb.AppendFormat("BYSECOND=");
                 foreach (var val in this.BYSECOND)

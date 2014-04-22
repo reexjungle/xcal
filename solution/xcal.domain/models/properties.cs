@@ -496,26 +496,23 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public struct GEO : IGEO, IEquatable<GEO>
     {
-        private float longitude;
-        private float latitude;
+        private readonly float longitude;
+        private readonly float latitude;
+
         /// <summary>
         /// Longitude of the Geographical Position
         /// </summary>
-        [DataMember]
         public float Longitude 
         { 
             get {return this.longitude;}
-            set { this.longitude = value; } 
         }
 
         /// <summary>
         /// Lattitude of the Geographical Position
         /// </summary>
-        [DataMember]
         public float Latitude
         {
             get { return this.latitude; }
-            set { this.latitude = value; }
         }
 
         public GEO(IGEO geo)
@@ -545,8 +542,8 @@ namespace reexmonkey.xcal.domain.models
             {
                 foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
                 {
-                    if (match.Groups["lon"].Success) this.Longitude = float.Parse(match.Groups["lon"].Value);
-                    if (match.Groups["lat"].Success) this.Latitude = float.Parse(match.Groups["lat"].Value);
+                    if (match.Groups["lon"].Success) this.longitude = float.Parse(match.Groups["lon"].Value);
+                    if (match.Groups["lat"].Success) this.latitude = float.Parse(match.Groups["lat"].Value);
                 }
             }
         }
@@ -587,7 +584,7 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator !=(GEO a, GEO b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
     }

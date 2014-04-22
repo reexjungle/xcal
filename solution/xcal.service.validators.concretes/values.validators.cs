@@ -90,6 +90,14 @@ namespace reexmonkey.xcal.service.validators.concretes
         }
     }
 
+    public class EmailValidator: AbstractValidator<URI>
+    {
+        public EmailValidator(): base()
+        {
+            //TODO:
+        }
+    }
+
     public class UriValidator : AbstractValidator<URI>
     {
         public UriValidator()
