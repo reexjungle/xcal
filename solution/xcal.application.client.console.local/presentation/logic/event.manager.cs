@@ -81,7 +81,7 @@ namespace xcal.application.client.console.local.presentation.logic
             
             var published = sclient.Post<VCALENDAR>(new PublishEvent
             {
-                Id = this.GuidKeyGenerator.GetNextKey(),
+                CalendarId = this.GuidKeyGenerator.GetNextKey(),
                 ProductId = this.FpiKeyGenerator.GetNextKey(),
                 Events = events,
                 TimeZones = null

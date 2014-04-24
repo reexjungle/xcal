@@ -99,6 +99,7 @@ namespace reexmonkey.xcal.domain.contracts
     {
         UNKNOWN,
         BINARY,
+        BOOLEAN,
         CAL_ADDRESS,
         DATE, 
         DATE_TIME, 

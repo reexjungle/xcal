@@ -70,9 +70,9 @@ namespace reexmonkey.xcal.domain.contracts
 
         List<IALARM> Alarms { get; set; }
 
-        List<IIANA_PROPERTY> IANAProperties { get; set; }
+        List<IANA_PROPERTY> IANA { get; set; }
 
-        List<IXPROPERTY> XProperties { get; set; }
+        List<X_PROPERTY> NonStandard { get; set; }
 
     }
 

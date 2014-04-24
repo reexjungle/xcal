@@ -375,6 +375,7 @@ namespace reexmonkey.xcal.domain.models
     [KnownType(typeof(COMMENT))]
     [KnownType(typeof(CONTACT))]
     [KnownType(typeof(SUMMARY))]
+    [KnownType(typeof(LOCATION))]
     [KnownType(typeof(DESCRIPTION))]
     public abstract class TEXTUAL : ITEXTUAL, IEquatable<TEXTUAL>, IComparable<TEXTUAL>, IContainsKey<string>
     {
@@ -2144,20 +2145,12 @@ namespace reexmonkey.xcal.domain.models
     /// </summary>
     /// <typeparam name="TValue">Specific Value Type</typeparam>
     [DataContract]
-    public abstract class IANA_PROPERTY<TValue> : IIANA_PROPERTY<TValue>
+    [KnownType(typeof(IANA_PROPERTY))]
+    [KnownType(typeof(X_PROPERTY))]
+    public abstract class MISC_PROPERTY<TValue> : IMISC_PROPERTY<TValue>
     {
-        private string name;
-
         [DataMember]
-        public string Name 
-        {
-            get { return this.name; }
-            set 
-            {
-                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("Name of IANA-Property MUST neither be null nor empty.");
-                this.name = value; 
-            }
-        }
+        public string Name {get; set;}
 
         /// <summary>
         /// The value assigned to the IANA-Property
@@ -2169,21 +2162,21 @@ namespace reexmonkey.xcal.domain.models
         /// List of any nescessary parameters
         /// </summary>
         [DataMember]
+        [Ignore]
         public List<IPARAMETER> Parameters { get; set; }
 
-        /// <summary>
-        /// Gets true if the IANA+property is set to default
-        /// </summary>
-        public bool IsDefault()
+        public ValueFormat Format { get; set; }
+
+        public MISC_PROPERTY()
         {
-            return this.Value.Equals(default(TValue)) && this.Parameters.Count() == 0;
+
         }
 
         /// <summary>
         /// Constructor based on the value of the IANA-Property
         /// </summary>
         /// <param name="value"> The value assigned to the IANA-Property</param>
-        public IANA_PROPERTY(string name, TValue value, List<IPARAMETER> parameters)
+        public MISC_PROPERTY(string name, TValue value, List<IPARAMETER> parameters)
         {
             this.Name = name;
             this.Value = value;            
@@ -2199,77 +2192,31 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             sb.Append(this.Name);
             foreach (var parameter in this.Parameters) sb.AppendFormat(";{0}", parameter);
-            sb.AppendFormat(":{0}", this.Value);
+            if(this.Format == ValueFormat.UNKNOWN) sb.AppendFormat(":{0}", this.Value);
+            else sb.AppendFormat("VALUE={0}:{1}", this.Format, this.Value);
             return sb.ToString();
         }
+
     }
 
-    /// <summary>
-    /// Non-Standard Properties; Any Property with a "X-" prefix
-    /// </summary>
-    /// <typeparam name="TValue">Specific Value Type</typeparam>
     [DataContract]
-    public abstract class XPROPERTY<TValue> : IXPROPERTY<TValue>
+    public class IANA_PROPERTY: MISC_PROPERTY<object>
     {
-        private string name;
+        public IANA_PROPERTY() : base() { }
 
-        [DataMember]
-        public string Name 
-        {
-            get { return this.name; }
-            set 
-            {
-                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("Name of X-Property MUST niether be null nor empty.");
-                if (value.Length < 3) throw new ArgumentException("X-Property name must be at least 3 characters long!");
-                if (value.Substring(0, 2).Equals("X-", StringComparison.OrdinalIgnoreCase)) throw new ArgumentException("First two characters of X-Property must be\"X-\"!");
-                this.name = value; 
-            }
-        }
-
-        /// <summary>
-        /// The value assigned to the IANA-Property
-        /// </summary>
-        [DataMember]
-        public TValue Value { get; set; }
-
-        /// <summary>
-        /// List of any nescessary parameters
-        /// </summary>
-        [DataMember]
-        public List<IPARAMETER> Parameters { get; set; }
-
-        /// <summary>
-        /// Gets true if the IANA+property is set to default
-        /// </summary>
-        public bool IsDefault()
-        {
-            return this.Value.Equals(default(TValue)) && this.Parameters.Count() == 0;
-        }
-
-        /// <summary>
-        /// Constructor based on the value of the IANA-Property
-        /// </summary>
-        /// <param name="value"> The value assigned to the IANA-Property</param>
-        public XPROPERTY(string name, TValue value, List<IPARAMETER> parameters)
-        {
-            this.Name = name;
-            this.Value = value;            
-            this.Parameters = parameters;
-        }
-
-        /// <summary>
-        /// Overloaded ToString method
-        /// </summary>
-        /// <returns>String Representation of the X-Property in form of "Key;semicolon separated Parameters:value"</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.AppendFormat("X-REEXMONKEY-{0}", this.Name);
-            foreach (var parameter in this.Parameters) sb.AppendFormat(";{0}", parameter);
-            sb.AppendFormat(":{0}", this.Value);
-            return sb.ToString();
-        }
+        public IANA_PROPERTY(string key, object value, List<IPARAMETER> parameters): base(key, value, parameters) { }
     }
+
+    [DataContract]
+    public class X_PROPERTY : MISC_PROPERTY<object>
+    {
+        public X_PROPERTY() : base() { }
+
+        public X_PROPERTY(string name, object value, List<IPARAMETER> parameters) : base(name, value, parameters) { }
+
+
+    }
+
 
     [DataContract]
     public struct STATCODE: ISTATCODE, IEquatable<STATCODE>,IComparable<STATCODE>

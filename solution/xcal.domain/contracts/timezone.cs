@@ -13,7 +13,7 @@ namespace reexmonkey.xcal.domain.contracts
         UTC_OFFSET TimeZoneOffsetFrom { get; set; }
         UTC_OFFSET TimeZoneOffsetTo { get; set; }
         RECUR RecurrenceRule { get; set; }
-        List<TEXTUAL> Comments { get; set; }
+        List<COMMENT> Comments { get; set; }
         List<RDATE> RecurrenceDates { get; set; }
         List<TZNAME> TimeZoneNames { get; set; }    
     }
@@ -23,8 +23,8 @@ namespace reexmonkey.xcal.domain.contracts
         TZID TimeZoneId { get; set; }
         URI Url { get; set; }
         DATE_TIME LastModified { get; set; }
-        List<OBSERVANCE> StandardTimes { get; set; }
-        List<OBSERVANCE> DaylightTimes { get; set; }
+        List<STANDARD> StandardTimes { get; set; }
+        List<DAYLIGHT> DaylightTimes { get; set; }
     }
 
 

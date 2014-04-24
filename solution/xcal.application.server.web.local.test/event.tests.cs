@@ -66,7 +66,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
             var published = sclient.Post<VCALENDAR>(new PublishEvent
             {
-                Id = new GuidKeyGenerator().GetNextKey(),
+                CalendarId = new GuidKeyGenerator().GetNextKey(),
                 ProductId = new FPIKeyGenerator<string>()
                 {
                     Owner = Properties.Settings.Default.fpiOwner,

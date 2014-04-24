@@ -15,7 +15,7 @@ namespace reexmonkey.xcal.domain.operations
     /// </summary>
     [DataContract]
     [Api ("Post notification of an event. Used primarily as a method of advertising the existence of an  event.")]
-    [Route("/calendars/{Id}/events/publish", "POST", Summary="Publishes an event")]
+    [Route("/calendars/{CalendarId}/events/publish", "POST", Summary="Publishes an event")]
     public class PublishEvent : IReturn<VCALENDAR>
     {
         /// <summary>
@@ -37,7 +37,7 @@ namespace reexmonkey.xcal.domain.operations
         public string ProductId { get; set; }
 
         [DataMember]
-        public string Id { get; set; }
+        public string CalendarId { get; set; }
        
     }
 
@@ -46,7 +46,7 @@ namespace reexmonkey.xcal.domain.operations
     /// </summary>
     [DataContract]
     [Api ("Reschedules an event or events. This involves a change in terms of time or recurrence intervals and possibly the location or description.")]
-    [Route("/calendars/{ProductId}/event/reschedule", "PATCH", Summary="Reschedules an event or events", Notes="All the events must share the same string")]
+    [Route("/calendars/{CalendarId}/event/reschedule", "PATCH", Summary="Reschedules an event or events", Notes="All the events must share the same string")]
     public class RescheduleEvent : IReturn<VCALENDAR>
     {
         /// <summary>
@@ -66,6 +66,8 @@ namespace reexmonkey.xcal.domain.operations
         /// </summary>
         [DataMember]
         public string ProductId { get; set; }
+
+        public string CalendarId { get; set; }
 
     }
 

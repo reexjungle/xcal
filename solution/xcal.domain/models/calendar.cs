@@ -15,6 +15,9 @@ namespace reexmonkey.xcal.domain.models
     /// </summary>
     [DataContract]
     [KnownType(typeof(VEVENT))]
+    [KnownType(typeof(VTIMEZONE))]
+    [KnownType(typeof(IANA_COMPONENT))]
+    [KnownType(typeof(X_COMPONENT))]
     public class VCALENDAR : ICALENDAR, IEquatable<VCALENDAR>, IContainsKey<string>
     {
         private string prodid;
@@ -109,9 +112,9 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             sb.Append("BEGIN:VCALENDAR").AppendLine();
             sb.AppendFormat("VERSION:{0}", this.Version).AppendLine();
+            sb.AppendFormat("PRODID:{0}", this.ProdId).AppendLine();
             if(this.Calscale != CALSCALE.UNKNOWN) sb.AppendFormat("CALSCALE:{0}", this.Calscale).AppendLine();
             if(this.Method != METHOD.UNKNOWN) sb.AppendFormat("METHOD:{0}", this.Method).AppendLine();
-            sb.AppendFormat("PRODID:{0}", this.ProdId).AppendLine();
             foreach (var x in Components) if(x != null) sb.Append(x.ToString()).AppendLine();
             sb.Append("END:VCALENDAR");
             return sb.ToString();

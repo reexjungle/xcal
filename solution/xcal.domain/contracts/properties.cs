@@ -188,23 +188,16 @@ namespace reexmonkey.xcal.domain.contracts
 
     #region Miscellaneous Component Properties
 
-    public interface IIANA_PROPERTY : IPROPERTY { }
+    public interface IMISC_PROPERTY<TValue> : IPROPERTY 
+    { 
 
-    public interface IIANA_PROPERTY<TValue>: IIANA_PROPERTY
-    {
         string Name { get; set; }
         List<IPARAMETER> Parameters { get; set; }
-        TValue Value { get; set; }
+        TValue Value { get; set; }   
+        ValueFormat Format {get; set; }
     }
 
-    public interface  IXPROPERTY: IPROPERTY { }
-
-    public interface IXPROPERTY<TValue>: IXPROPERTY
-    {
-        string Name { get; set; }
-        List<IPARAMETER> Parameters { get; set; }
-        TValue Value { get; set; }
-    }
+    public interface IMISC_PROPERTY : IMISC_PROPERTY<object> { }
 
     /// <summary>
     /// Specifies an interface for a return status code

@@ -187,11 +187,11 @@ namespace reexmonkey.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public List<IIANA_PROPERTY> IANAProperties { get; set; }
+        public List<IANA_PROPERTY> IANA { get; set; }
 
         [DataMember]
         [Ignore]
-        public List<IXPROPERTY> XProperties { get; set; }
+        public List<X_PROPERTY> NonStandard { get; set; }
 
         public VEVENT()
         {
@@ -274,8 +274,8 @@ namespace reexmonkey.xcal.domain.models
             this.Categories = value.Categories;
             this.RelatedTos = value.RelatedTos;
             this.Alarms = value.Alarms;
-            this.IANAProperties = value.IANAProperties;
-            this.XProperties = value.XProperties;
+            this.IANA = value.IANA;
+            this.NonStandard = value.NonStandard;
         }
 
         public bool Equals(VEVENT other)
@@ -429,14 +429,14 @@ namespace reexmonkey.xcal.domain.models
                 foreach (var rdate in this.RecurrenceDates) if (rdate != null) sb.Append(rdate).AppendLine();
             }
 
-            if (!this.IANAProperties.NullOrEmpty())
+            if (!this.IANA.NullOrEmpty())
             {
-                foreach (var iana in this.IANAProperties) if (iana != null) sb.Append(iana).AppendLine();
+                foreach (var iana in this.IANA) if (iana != null) sb.Append(iana).AppendLine();
             }
 
-            if (!this.XProperties.NullOrEmpty())
+            if (!this.NonStandard.NullOrEmpty())
             {
-                foreach (var xprop in this.XProperties) if (xprop != null) sb.Append(xprop).AppendLine();
+                foreach (var xprop in this.NonStandard) if (xprop != null) sb.Append(xprop).AppendLine();
             }
 
             sb.Append("END:VEVENT");

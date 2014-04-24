@@ -62,10 +62,10 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
         {
             try
             {
-                var calendar = (this.repository.Find(request.Id)) ?? 
+                var calendar = (this.repository.Find(request.CalendarId)) ?? 
                     new VCALENDAR 
                     { 
-                        Id = request.Id, 
+                        Id = request.CalendarId, 
                         ProdId = request.ProductId, 
                         Method = METHOD.PUBLISH 
                     };
@@ -84,11 +84,20 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
 
         public VCALENDAR Patch(RescheduleEvent request)
         {
-            VCALENDAR calendar = null;
             try
             {
-                calendar = (this.repository.Find(request.ProductId)) ??
-                    new VCALENDAR { ProdId = request.ProductId, Method = METHOD.REQUEST };
+                VCALENDAR calendar = null;
+
+                calendar = (this.repository.Find(request.CalendarId)) ??
+                    new VCALENDAR 
+                    { 
+                        Id = request.CalendarId,
+                        ProdId = request.ProductId, 
+                        Method = METHOD.REQUEST 
+                    };
+
+                //patch recurrent events
+                var recurring = request.Events.Any(x => x.RecurrenceId != null);
 
                 var source = request.Events.FirstOrDefault();
                 this.repository.EventRepository.Patch(source,
@@ -98,9 +107,10 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 calendar.Components.AddRangeComplement(request.Events);
                 this.repository.Save(calendar);
             }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
-            return calendar;
+            catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); }
+            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); }
+            catch (Exception ex) { this.logger.Error(ex.ToString()); }
+            return null;
         }
 
         public VCALENDAR Put(UpdateEvent request)

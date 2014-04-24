@@ -24,10 +24,10 @@ namespace reexmonkey.xcal.domain.models
         public DATE_TIME LastModified { get; set; }
 
         [DataMember]
-        public List<OBSERVANCE> StandardTimes { get; set; }
+        public List<STANDARD> StandardTimes { get; set; }
 
         [DataMember]
-        public List<OBSERVANCE> DaylightTimes { get; set; }
+        public List<DAYLIGHT> DaylightTimes { get; set; }
 
         public bool Equals(VTIMEZONE other)
         {
@@ -83,7 +83,9 @@ namespace reexmonkey.xcal.domain.models
     }
 
     [DataContract]
-    public class OBSERVANCE: IOBSERVANCE, IEquatable<OBSERVANCE>, IContainsKey<string>
+    [KnownType(typeof(STANDARD))]
+    [KnownType(typeof(DAYLIGHT))]
+    public abstract class OBSERVANCE: IOBSERVANCE, IEquatable<OBSERVANCE>, IContainsKey<string>
     {
         public string Id { get; set; }
 
@@ -100,7 +102,7 @@ namespace reexmonkey.xcal.domain.models
         public RECUR RecurrenceRule { get; set; }
 
         [DataMember]
-        public List<TEXTUAL> Comments { get; set; }
+        public List<COMMENT> Comments { get; set; }
 
         [DataMember]
         public List<RDATE> RecurrenceDates { get; set; }
@@ -108,32 +110,27 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public List<TZNAME> TimeZoneNames { get; set; }
 
+        public OBSERVANCE() { }
+
         public OBSERVANCE(DATE_TIME start, UTC_OFFSET from, UTC_OFFSET to)
         {
             this.Start = start;
             this.TimeZoneOffsetFrom = from;
             this.TimeZoneOffsetTo = to;
-            this.RecurrenceDates = new List<RDATE>();
-            this.Comments = new List<TEXTUAL>();
-            this.TimeZoneNames = new List<TZNAME>();
         }
 
         public bool Equals(OBSERVANCE other)
         {
             if (other == null) return false;
-            return this.Start == other.Start &&
-                (this.TimeZoneOffsetFrom) == (other.TimeZoneOffsetFrom) &&
-                (this.TimeZoneOffsetTo) == (other.TimeZoneOffsetTo) &&
-                (this.RecurrenceRule) == (other.RecurrenceRule ) &&
-                this.Comments.OfType<TEXTUAL>().AreDuplicatesOf(other.Comments.OfType<TEXTUAL>()) &&
-                this.RecurrenceDates.OfType<RDATE>().AreDuplicatesOf(other.RecurrenceDates.OfType<RDATE>()) &&
-                this.TimeZoneNames.OfType<TZNAME>().AreDuplicatesOf(other.TimeZoneNames.OfType<TZNAME>());
+            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
+            if (!(obj is OBSERVANCE)) return false;
             return this.Equals(obj as OBSERVANCE);
+
         }
 
         public override int GetHashCode()
@@ -151,24 +148,57 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator !=(OBSERVANCE a, OBSERVANCE b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
+
+
+    }
+
+    [DataContract]
+    public class STANDARD: OBSERVANCE
+    {
+        public STANDARD(): base() {}
+
+        public STANDARD(DATE_TIME start, UTC_OFFSET from, UTC_OFFSET to): base(start, from , to) { }
+        
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("BEGIN:STANDARD").AppendLine();
+            sb.Append(this.Start).AppendLine();
+            sb.AppendFormat("TZOFFSETFROM", this.TimeZoneOffsetFrom).AppendLine();
+            sb.AppendFormat("TZOFFSETTO", this.TimeZoneOffsetTo).AppendLine();
+            if (this.RecurrenceRule != null) sb.Append(this.RecurrenceRule).AppendLine();
+            this.RecurrenceDates.ForEach(x => sb.Append(x).AppendLine());
+            this.Comments.ForEach(x => sb.Append(x).AppendLine());
+            this.TimeZoneNames.ForEach(x => sb.Append(x).AppendLine());
+            sb.Append("END:STANDARD");
+            return sb.ToString();
+        }
+    }
+
+    [DataContract]
+    public class DAYLIGHT : OBSERVANCE
+    {
+        public DAYLIGHT() : base() { }
+
+        public DAYLIGHT(DATE_TIME start, UTC_OFFSET from, UTC_OFFSET to) : base(start, from, to) { }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
+            sb.Append("BEGIN:DAYLIGHT").AppendLine();
             sb.Append(this.Start).AppendLine();
             sb.AppendFormat("TZOFFSETFROM", this.TimeZoneOffsetFrom).AppendLine();
             sb.AppendFormat("TZOFFSETTO", this.TimeZoneOffsetTo).AppendLine();
-            if(this.RecurrenceRule != null) sb.Append(this.RecurrenceRule).AppendLine();
+            if (this.RecurrenceRule != null) sb.Append(this.RecurrenceRule).AppendLine();
             this.RecurrenceDates.ForEach(x => sb.Append(x).AppendLine());
             this.Comments.ForEach(x => sb.Append(x).AppendLine());
             this.TimeZoneNames.ForEach(x => sb.Append(x).AppendLine());
+            sb.Append("END:DAYLIGHT");
             return sb.ToString();
         }
-
-
     }
 
 }
