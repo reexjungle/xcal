@@ -176,11 +176,17 @@ namespace reexmonkey.xcal.application.server.web.local
                         x.CreateTableIfNotExists(typeof(REL_CALENDARS_EVENTS), typeof(REL_EVENTS_ATTACHBINS), typeof(REL_EVENTS_ATTACHURIS), typeof(REL_EVENTS_ATTENDEES), typeof(REL_EVENTS_AUDIO_ALARMS), typeof(REL_EVENTS_COMMENTS), typeof(REL_EVENTS_CONTACTS), typeof(REL_EVENTS_DISPLAY_ALARMS), typeof(REL_EVENTS_EMAIL_ALARMS), typeof(REL_EVENTS_EXDATES), typeof(REL_EVENTS_ORGANIZERS), typeof(REL_EVENTS_RDATES), typeof(REL_EVENTS_RECURRENCE_IDS), typeof(REL_EVENTS_RELATEDTOS), typeof(REL_EVENTS_REQSTATS), typeof(REL_EVENTS_RESOURCES), typeof(REL_EVENTS_RECURS), typeof(RELS_EALARMS_ATTACHBINS), typeof(RELS_EALARMS_ATTACHURIS), typeof(RELS_EALARMS_ATTENDEES));
                     });
 
-                }
+                }                
                 catch (MySqlException ex)
                 {
-                    container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString());
-                }
+                    try { 
+                        container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString());
+                    }
+                    catch (NLog.NLogConfigurationException e)
+                    {
+                        System.Diagnostics.Debug.WriteLine(e.ToString());
+                    }
+                }                
                 catch (InvalidOperationException ex)
                 {
                     System.Diagnostics.Debug.WriteLine(ex.Message);
