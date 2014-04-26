@@ -95,7 +95,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!revents.NullOrEmpty())
                     {
                         var events = this.EventRepository.Find(revents.Select(x => x.EventId).ToList());
-                        full.Components.AddRangeComplement(this.EventRepository.Hydrate( events));
+                        full.Events.AddRangeComplement(this.EventRepository.Hydrate( events));
                     }
                 }
             }
@@ -128,7 +128,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                           join c in full on r.CalendarId equals c.Id
                                           where c.Id == x.Id
                                           select y;
-                            if (!xevents.NullOrEmpty()) x.Components.AddRangeComplement(xevents);
+                            if (!xevents.NullOrEmpty()) x.Events.AddRangeComplement(xevents);
                             return x;
                         });
                     }
@@ -182,7 +182,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 try
                 {
                     db.Save<VCALENDAR>(entity, transaction);
-                    var events = entity.Components.OfType<VEVENT>();
+                    var events = entity.Events;
                     if (!events.NullOrEmpty())
                     {
                         this.EventRepository.SaveAll(events);
@@ -238,7 +238,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 x.Calscale
             };
 
-            Expression<Func<VCALENDAR, object>> relations = x => new {  x.Components };
+            Expression<Func<VCALENDAR, object>> relations = x => new {  Components = x.Events };
 
             //4. Get list of selected relationals
             var srelation = relations.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
@@ -259,13 +259,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                     if (!srelation.NullOrEmpty())
                     {
-                        Expression<Func<VCALENDAR, object>> componentsexpr = y => y.Components;
+                        Expression<Func<VCALENDAR, object>> componentsexpr = y => y.Events;
 
                         #region save relational aggregate attributes of entities
 
                         if (selection.Contains(componentsexpr.GetMemberName()))
                         {
-                            var events = source.Components.OfType<VEVENT>();
+                            var events = source.Events;
                             if (!events.NullOrEmpty()) this.EventRepository.SaveAll(events);
 
 
@@ -343,9 +343,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public void SaveAll(IEnumerable<VCALENDAR> entities)
         {
 
-            var events = entities.Where(x => !x.Components.NullOrEmpty() && !x.Components.OfType<VEVENT>().NullOrEmpty())
-                .SelectMany(x => x.Components.OfType<VEVENT>());
-
+            var events = entities.Where(x => !x.Events.NullOrEmpty()).SelectMany(x => x.Events);
             using (var transaction = db.OpenTransaction())
             {
                 try
@@ -354,8 +352,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     {
                         var keys = entities.Select(x => x.Id).ToArray();
                         this.EventRepository.SaveAll(events);
-                        var revents = entities.Where(x => !x.Components.OfType<VEVENT>().NullOrEmpty())
-                            .SelectMany(c => c.Components.OfType<VEVENT>().Select(x => new REL_CALENDARS_EVENTS
+                        var revents = entities.Where(x => !x.Events.NullOrEmpty()).SelectMany(c => c.Events.Select(x => new REL_CALENDARS_EVENTS
                             {
                                 Id = this.KeyGenerator.GetNextKey(),
                                 CalendarId = c.Id,
@@ -427,7 +424,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public VCALENDAR Dehydrate(VCALENDAR full)
         {
             var dry = full;
-            if (!dry.Components.NullOrEmpty()) dry.Components.Clear();
+            if (!dry.Events.NullOrEmpty()) dry.Events.Clear();
             return dry;
         }
 

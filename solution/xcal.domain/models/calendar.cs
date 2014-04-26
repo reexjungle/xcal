@@ -14,19 +14,13 @@ namespace reexmonkey.xcal.domain.models
     /// Represents a core Calendar type
     /// </summary>
     [DataContract]
-    [KnownType(typeof(VEVENT))]
-    [KnownType(typeof(VTIMEZONE))]
-    [KnownType(typeof(IANA_COMPONENT))]
-    [KnownType(typeof(X_COMPONENT))]
     public class VCALENDAR : ICALENDAR, IEquatable<VCALENDAR>, IContainsKey<string>
     {
-        private string prodid;
-
         /// <summary>
         /// Gets or sets the product identifier. Neccesary as primary key in Ormlite
         /// </summary>
         [DataMember]
-        [Index(Unique = true)] 
+        [Index(Unique = true)]
         public string Id { get; set; }
 
         /// <summary>
@@ -34,12 +28,8 @@ namespace reexmonkey.xcal.domain.models
         /// This property is REQUIRED. This identifier should be guaranteed to be a globally unique identifier (GUID)
         /// </summary>
         [DataMember]
-        [Index(Unique = false)] 
-        public string ProdId
-        { 
-            get { return prodid; }
-            set { prodid = value; }        
-        }
+        [Index(Unique = false)]
+        public string ProdId { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier corresponding to the highest version number or the minimum and maximum range of the iCalendar
@@ -62,9 +52,47 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public METHOD Method { get; set; }
 
+        /// <summary>
+        /// Gets or sets the events of the iCalendar core object
+        /// </summary>
         [DataMember]
         [Ignore]
-        public List<ICOMPONENT> Components { get; set; }
+        public List<VEVENT> Events { get; set; }
+
+        /// <summary>
+        /// Gets or sets the to-dos of the iCalendar core object
+        /// </summary>
+        [Ignore]
+        public List<VTODO> ToDos { get; set; }
+
+        /// <summary>
+        /// Gets or sets the free or busy time information groups of the iCalendar core object
+        /// </summary>
+        [Ignore]
+        public List<VFREEBUSY> FreeBusies { get; set; }
+
+        /// <summary>
+        /// Gets or sets the journals of the iCalendar core object
+        /// </summary>
+        public List<VJOURNAL> Journals { get; set; }
+
+        /// <summary>
+        /// Gets or sets the timezones of the iCalendar core object
+        /// </summary>
+        [Ignore]
+        public List<VTIMEZONE> TimeZones { get; set; }
+
+        /// <summary>
+        /// Gets or sets the timezones of the iCalendar core object
+        /// </summary>
+        [Ignore]
+        public List<IANA_COMPONENT> IanaComponents { get; set; }
+
+        /// <summary>
+        /// Gets or sets the X-components of the iCalendar core object
+        /// </summary>
+        [Ignore]
+        public List<X_COMPONENT> XComponents { get; set; }
 
         /// <summary>
         /// Default Constructor of the iCalendar core object
@@ -73,7 +101,6 @@ namespace reexmonkey.xcal.domain.models
         {
             this.Version = "2.0";
             this.Calscale = CALSCALE.GREGORIAN;
-            this.Components = new List<ICOMPONENT>();
         }
 
         public bool Equals(VCALENDAR other)
@@ -92,7 +119,7 @@ namespace reexmonkey.xcal.domain.models
         {
             return
                 this.ProdId.GetHashCode() ^ this.Version.GetHashCode() ^ this.Method.GetHashCode() ^
-                this.Components.GetHashCode();
+                this.Events.GetHashCode();
         }
 
         public static bool operator ==(VCALENDAR a, VCALENDAR b)
@@ -115,7 +142,13 @@ namespace reexmonkey.xcal.domain.models
             sb.AppendFormat("PRODID:{0}", this.ProdId).AppendLine();
             if(this.Calscale != CALSCALE.UNKNOWN) sb.AppendFormat("CALSCALE:{0}", this.Calscale).AppendLine();
             if(this.Method != METHOD.UNKNOWN) sb.AppendFormat("METHOD:{0}", this.Method).AppendLine();
-            foreach (var x in Components) if(x != null) sb.Append(x.ToString()).AppendLine();
+            foreach (var x in Events) if(x != null) sb.Append(x.ToString()).AppendLine();
+            foreach (var x in ToDos) if (x != null) sb.Append(x.ToString()).AppendLine();
+            foreach (var x in FreeBusies) if (x != null) sb.Append(x.ToString()).AppendLine();
+            foreach (var x in Journals) if (x != null) sb.Append(x.ToString()).AppendLine();
+            foreach (var x in TimeZones) if (x != null) sb.Append(x.ToString()).AppendLine();
+            foreach (var x in IanaComponents) if (x != null) sb.Append(x.ToString()).AppendLine();
+            foreach (var x in XComponents) if (x != null) sb.Append(x.ToString()).AppendLine();
             sb.Append("END:VCALENDAR");
             return sb.ToString();
         }

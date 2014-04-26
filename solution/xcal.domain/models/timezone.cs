@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
+using ServiceStack.DataAnnotations;
+
 using reexmonkey.foundation.essentials.contracts;
 using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
@@ -24,9 +26,11 @@ namespace reexmonkey.xcal.domain.models
         public DATE_TIME LastModified { get; set; }
 
         [DataMember]
+        [Ignore]
         public List<STANDARD> StandardTimes { get; set; }
 
         [DataMember]
+        [Ignore]
         public List<DAYLIGHT> DaylightTimes { get; set; }
 
         public bool Equals(VTIMEZONE other)
@@ -99,12 +103,15 @@ namespace reexmonkey.xcal.domain.models
         public UTC_OFFSET TimeZoneOffsetTo { get; set; }
 
         [DataMember]
+        [Ignore]
         public RECUR RecurrenceRule { get; set; }
 
         [DataMember]
+        [Ignore]
         public List<COMMENT> Comments { get; set; }
 
         [DataMember]
+        [Ignore]
         public List<RDATE> RecurrenceDates { get; set; }
 
         [DataMember]

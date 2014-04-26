@@ -83,7 +83,11 @@
     <Compile Include="event.relations.cs" />
     <Compile Include="event.ormlite.repository.cs" />
     <Compile Include="event.redis.repository.cs" />
+    <Compile Include="freebusy.relations.cs" />
+    <Compile Include="journal.relations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="timezone.relations.cs" />
+    <Compile Include="todo.relations.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\crosscut.operations.concretes\crosscut.operations.concretes.csproj">

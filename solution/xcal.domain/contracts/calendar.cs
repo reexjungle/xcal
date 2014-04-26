@@ -31,16 +31,45 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         CALSCALE Calscale { get; set; }
 
-
         /// <summary>
         /// Gets or sets the calendar method used for the calendar information specified in the iCalendar object.
         /// </summary>
         METHOD Method { get; set; }
 
         /// <summary>
-        /// Gets or sets the components of the iCalendar core object
+        /// Gets or sets the events of the iCalendar core object
         /// </summary>
-        List<ICOMPONENT> Components { get; set; }
+        List<VEVENT> Events { get; set; }
+
+        /// <summary>
+        /// Gets or sets the to-dos of the iCalendar core object
+        /// </summary>
+        List<VTODO> ToDos { get; set; }
+
+        /// <summary>
+        /// Gets or sets the free or busy time information groups of the iCalendar core object
+        /// </summary>
+        List<VFREEBUSY> FreeBusies { get; set; }
+
+        /// <summary>
+        /// Gets or sets the journals of the iCalendar core object
+        /// </summary>
+        List<VJOURNAL> Journals { get; set; }
+
+        /// <summary>
+        /// Gets or sets the timezones of the iCalendar core object
+        /// </summary>
+        List<VTIMEZONE> TimeZones { get; set; }
+
+        /// <summary>
+        /// Gets or sets the timezones of the iCalendar core object
+        /// </summary>
+        List<IANA_COMPONENT> IanaComponents { get; set; }
+
+        /// <summary>
+        /// Gets or sets the X-components of the iCalendar core object
+        /// </summary>
+        List<X_COMPONENT> XComponents { get; set; }
 
     }
 

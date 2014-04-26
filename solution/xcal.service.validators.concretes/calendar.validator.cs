@@ -15,7 +15,7 @@ namespace reexmonkey.xcal.service.validators.concretes
         {
             RuleFor(x => x.ProdId).NotNull().NotEmpty();
             RuleFor(x => x.Version).NotNull().NotEmpty();
-            RuleFor(x => x.Components).NotNull().NotEmpty();
+            RuleFor(x => x.Events).NotNull().NotEmpty();
         }
     }
 }

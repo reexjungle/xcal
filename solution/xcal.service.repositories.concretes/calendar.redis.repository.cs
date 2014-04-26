@@ -85,7 +85,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 if (!revents.NullOrEmpty())
                 {
                     var events = this.EventRepository.Find(revents.Select(x => x.EventId).ToList());
-                    full.Components.AddRangeComplement(this.EventRepository.Hydrate(events));
+                    full.Events.AddRangeComplement(this.EventRepository.Hydrate(events));
                 }
             }
             return full ?? dry;
@@ -111,7 +111,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                      join c in full on r.CalendarId equals c.Id
                                      where c.Id == x.Id
                                      select y;
-                       if (!xevents.NullOrEmpty()) x.Components.AddRangeComplement(xevents);
+                       if (!xevents.NullOrEmpty()) x.Events.AddRangeComplement(xevents);
                        return x;
                    });
                 }
@@ -170,7 +170,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 {
                     var keys = this.redis.As<VCALENDAR>().GetAllKeys().ToArray();
                     if (!keys.NullOrEmpty()) this.redis.Watch(keys);
-                    var events = entity.Components.OfType<VEVENT>();
+                    var events = entity.Events;
                     if (!events.NullOrEmpty())
                     {
                         this.EventRepository.SaveAll(events);
@@ -213,7 +213,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
             Expression<Func<VCALENDAR, object>> relations = x => new
             {
-                x.Components
+                Events = x.Events
             };
 
             //4. Get list of selected relationals
@@ -238,10 +238,10 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                     if (!srelation.NullOrEmpty())
                     {
-                        Expression<Func<VCALENDAR, object>> compexr = y => y.Components;
-                        if (selection.Contains(compexr.GetMemberName()))
+                        Expression<Func<VCALENDAR, object>> eventsexr = y => y.Events;
+                        if (selection.Contains(eventsexr.GetMemberName()))
                         {
-                            var events = source.Components.OfType<VEVENT>();
+                            var events = source.Events;
                             if (!events.NullOrEmpty())
                             {
                                 var eventkeys = events.Select(x => x.Id).ToArray();
@@ -320,12 +320,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     transaction.QueueCommand(x => x.StoreAll(entities));
 
                     //save events
-                    var events = entities.SelectMany(x => x.Components.OfType<VEVENT>());
+                    var events = entities.SelectMany(x => x.Events.OfType<VEVENT>());
                     if (!events.NullOrEmpty())
                     {
                         this.EventRepository.SaveAll(events);
-                        var revents = entities.Where(x => !x.Components.OfType<VEVENT>().NullOrEmpty())
-                            .SelectMany(c => c.Components.OfType<VEVENT>()
+                        var revents = entities.Where(x => !x.Events.OfType<VEVENT>().NullOrEmpty())
+                            .SelectMany(c => c.Events.OfType<VEVENT>()
                                 .Select(x => new REL_CALENDARS_EVENTS 
                                 { 
                                     Id = this.KeyGenerator.GetNextKey(), 
@@ -390,7 +390,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var dry = full;
             try
             {
-                if(!dry.Components.NullOrEmpty()) dry.Components.Clear();
+                if(!dry.Events.NullOrEmpty()) dry.Events.Clear();
             }
             catch (ArgumentNullException) { throw; }
             return dry;
@@ -403,7 +403,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             {
                 dry = full.Select(x => 
                 {
-                    if (!x.Components.NullOrEmpty()) x.Components.Clear();
+                    if (!x.Events.NullOrEmpty()) x.Events.Clear();
                     return x;
                 });
             }

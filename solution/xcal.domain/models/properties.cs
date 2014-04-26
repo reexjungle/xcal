@@ -9,7 +9,6 @@ using reexmonkey.foundation.essentials.contracts;
 using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
 
-
 namespace reexmonkey.xcal.domain.models
 {
 
@@ -1018,11 +1017,8 @@ namespace reexmonkey.xcal.domain.models
     /// Defines one or more free or busy time intervals
     /// </summary>
     [DataContract]
-    public class FREEBUSY : IFREEBUSY, IContainsKey<string>
+    public class FREEBUSY_PROPERTY : IFREEBUSY_PROPERTY, IContainsKey<string>
     {
-        private List<PERIOD> periods;
-        private FBTYPE type;
-
         /// <summary>
         /// ID of a free od busy time interval
         /// </summary>
@@ -1038,27 +1034,22 @@ namespace reexmonkey.xcal.domain.models
         /// Period of time, taken by a calendar component
         /// </summary>
         [DataMember]
-        public List<PERIOD> Periods 
+        public List<PERIOD> Periods { get; set; }
+
+
+        public FREEBUSY_PROPERTY()
         {
-            get { return this.periods; } 
-            set 
-            {
-                var invalid = value.Where(x => x.Start.TimeFormat != TimeFormat.Utc || x.End.TimeFormat != TimeFormat.Utc);
-                if (!invalid.NullOrEmpty()) throw new ArgumentException("Time value MUST be in the UTC time format.");
-                this.periods = value;
-            }
+
         }
 
         /// <summary>
         /// Constructor based on the time interval
         /// </summary>
         /// <param name="period"></param>
-        public FREEBUSY(List<PERIOD> periods, FBTYPE type = FBTYPE.FREE)
+        public FREEBUSY_PROPERTY(List<PERIOD> periods, FBTYPE type = FBTYPE.FREE)
         {
-            var invalid = periods.Where(x => x.Start.TimeFormat != TimeFormat.Utc || x.End.TimeFormat != TimeFormat.Utc);
-            if (!invalid.NullOrEmpty()) throw new ArgumentException("Time value MUST be in the UTC time format.");
-            this.periods = periods;
-            this.type = type;
+            this.Periods = periods;
+            this.Type = type;
         }
 
         /// <summary>
@@ -1069,13 +1060,17 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("FREEBUSY");
-            if (this.type != FBTYPE.UNKNOWN) sb.AppendFormat(";{0}", this.type);
+            if (this.Type != FBTYPE.UNKNOWN) sb.AppendFormat(";{0}", this.Type);
             sb.Append(":");
-            var last = this.periods.Last();
-            foreach(var period in this.periods)
+
+            if (!this.Periods.NullOrEmpty())
             {
-                if (period != last) sb.AppendFormat("{0}, ", period);
-                else sb.AppendFormat("{0}", period);
+                var last = this.Periods.Last();
+                foreach (var period in this.Periods)
+                {
+                    if (period != last) sb.AppendFormat("{0}, ", period);
+                    else sb.AppendFormat("{0}", period);
+                } 
             }
             return sb.ToString();
         }

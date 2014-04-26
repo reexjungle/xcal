@@ -71,7 +71,10 @@
     <Compile Include="contracts\components.cs" />
     <Compile Include="contracts\enums.cs" />
     <Compile Include="contracts\event.cs" />
+    <Compile Include="contracts\freebusy.cs" />
+    <Compile Include="contracts\journal.cs" />
     <Compile Include="contracts\misc.cs" />
+    <Compile Include="contracts\todo.cs" />
     <Compile Include="models\event.cs" />
     <Compile Include="contracts\parameters.cs" />
     <Compile Include="contracts\properties.cs" />
@@ -80,9 +83,12 @@
     <Compile Include="models\alarm.cs" />
     <Compile Include="models\calendar.cs" />
     <Compile Include="extensions\translators.cs" />
+    <Compile Include="models\freebusy.cs" />
+    <Compile Include="models\journal.cs" />
     <Compile Include="models\misc.cs" />
     <Compile Include="models\parameters.cs" />
     <Compile Include="models\properties.cs" />
+    <Compile Include="models\todo.cs" />
     <Compile Include="operations\calendar.request.dtos.cs" />
     <Compile Include="operations\events.request.dtos.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

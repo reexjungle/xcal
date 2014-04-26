@@ -82,7 +82,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             Assert.AreNotEqual(published, null);
             Assert.AreEqual(published.Method, METHOD.PUBLISH);
 
-            var pevent = published.Components[0] as VEVENT;
+            var pevent = published.Events[0] as VEVENT;
             Assert.AreNotEqual(pevent, null);
             Assert.AreEqual(pevent.Start.ToString(), "20140615T160701Z");
             Assert.AreEqual(pevent.Duration.ToString(), "PT1H56M7S");

@@ -70,7 +70,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                         Method = METHOD.PUBLISH 
                     };
 
-                calendar.Components.AddRangeComplement(request.Events);
+                calendar.Events.AddRangeComplement(request.Events);
                 this.repository.Save(calendar);
 
                 return this.repository.Hydrate(this.repository.Find(calendar.Id));
@@ -104,7 +104,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                     x => new { x.Start, x.End, x.Description, x.Location, x.RecurrenceRule, x.Sequence, x.LastModified },
                     p => p.Uid == source.Uid);
 
-                calendar.Components.AddRangeComplement(request.Events);
+                calendar.Events.AddRangeComplement(request.Events);
                 this.repository.Save(calendar);
             }
             catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); }
@@ -126,7 +126,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                     x => new { x.Summary, Geo = x.Position, x.Priority, x.Transparency, x.Status, x.Attendees, x.Attachments, x.Categories, x.Classification, x.Comments, x.Contacts, x.Sequence, x.LastModified },
                     p => p.Uid == patch.Uid);
 
-                calendar.Components.AddRangeComplement(request.Events);
+                calendar.Events.AddRangeComplement(request.Events);
                 this.repository.Save(calendar);
             }
             catch (InvalidOperationException) { throw; }
