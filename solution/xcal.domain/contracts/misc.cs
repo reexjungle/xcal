@@ -7,6 +7,6 @@ namespace reexmonkey.xcal.domain.contracts
 {
     public interface IMISC_COMPONENT: ICOMPONENT
     {
-        string Name { get; set; }
+        string TokenName { get; set; }
     }
 }

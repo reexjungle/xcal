@@ -87,7 +87,7 @@ namespace reexmonkey.xcal.domain.contracts
 
     #region Date and Time Component Properties
 
-    public interface IFREEBUSY_PROPERTY : IPROPERTY
+    public interface IFREEBUSY_INFO : IPROPERTY
     {
         FBTYPE Type { get; set; }
 

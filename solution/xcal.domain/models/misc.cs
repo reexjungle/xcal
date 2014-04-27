@@ -11,10 +11,10 @@ using reexmonkey.xcal.domain.contracts;
 namespace reexmonkey.xcal.domain.models
 {
     [DataContract]
-    public class IANA_COMPONENT: IMISC_COMPONENT
+    public class IANA_COMPONENTS: IMISC_COMPONENT
     {
         [DataMember]
-        public string Name { get; set; }
+        public string TokenName { get; set; }
 
         [DataMember]
         [Ignore]
@@ -24,19 +24,19 @@ namespace reexmonkey.xcal.domain.models
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("BEGIN:{0}", this.Name).AppendLine();
+            sb.AppendFormat("BEGIN:{0}", this.TokenName).AppendLine();
             foreach (var line in this.ContentLines) sb.Append(line);
-            sb.AppendFormat("END:{0}", this.Name).AppendLine();
+            sb.AppendFormat("END:{0}", this.TokenName).AppendLine();
             return sb.ToString();
         }
 
     }
 
     [DataContract]
-    public class X_COMPONENT : IMISC_COMPONENT
+    public class XCOMPONENTS : IMISC_COMPONENT
     {
         [DataMember]
-        public string Name { get; set; }
+        public string TokenName { get; set; }
 
         [DataMember]
         [Ignore]
@@ -45,9 +45,9 @@ namespace reexmonkey.xcal.domain.models
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("BEGIN:{0}", this.Name).AppendLine();
+            sb.AppendFormat("BEGIN:{0}", this.TokenName).AppendLine();
             foreach (var line in this.ContentLines) sb.Append(line);
-            sb.AppendFormat("END:{0}", this.Name).AppendLine();
+            sb.AppendFormat("END:{0}", this.TokenName).AppendLine();
             return sb.ToString();
         }
 

@@ -115,6 +115,7 @@ namespace reexmonkey.xcal.domain.models
         public List<RDATE> RecurrenceDates { get; set; }
 
         [DataMember]
+        [Ignore]
         public List<TZNAME> TimeZoneNames { get; set; }
 
         public OBSERVANCE() { }

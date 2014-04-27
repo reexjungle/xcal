@@ -53,7 +53,7 @@ namespace reexmonkey.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public List<FREEBUSY_PROPERTY> FreeBusyProperties { get; set; }
+        public List<FREEBUSY_INFO> FreeBusyProperties { get; set; }
 
         [DataMember]
         [Ignore]

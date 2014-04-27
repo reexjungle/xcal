@@ -74,6 +74,7 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// Gets or sets the journals of the iCalendar core object
         /// </summary>
+        [Ignore]
         public List<VJOURNAL> Journals { get; set; }
 
         /// <summary>
@@ -86,13 +87,13 @@ namespace reexmonkey.xcal.domain.models
         /// Gets or sets the timezones of the iCalendar core object
         /// </summary>
         [Ignore]
-        public List<IANA_COMPONENT> IanaComponents { get; set; }
+        public List<IANA_COMPONENTS> IanaComponents { get; set; }
 
         /// <summary>
         /// Gets or sets the X-components of the iCalendar core object
         /// </summary>
         [Ignore]
-        public List<X_COMPONENT> XComponents { get; set; }
+        public List<XCOMPONENTS> XComponents { get; set; }
 
         /// <summary>
         /// Default Constructor of the iCalendar core object
@@ -101,6 +102,13 @@ namespace reexmonkey.xcal.domain.models
         {
             this.Version = "2.0";
             this.Calscale = CALSCALE.GREGORIAN;
+            this.Events = new List<VEVENT>();
+            this.TimeZones = new List<VTIMEZONE>();
+            this.ToDos = new List<VTODO>();
+            this.Journals = new List<VJOURNAL>();
+            this.FreeBusies = new List<VFREEBUSY>();
+            this.IanaComponents = new List<IANA_COMPONENTS>();
+            this.XComponents = new List<XCOMPONENTS>();
         }
 
         public bool Equals(VCALENDAR other)

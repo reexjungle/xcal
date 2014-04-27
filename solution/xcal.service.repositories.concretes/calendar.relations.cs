@@ -270,7 +270,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    public class REL_CALENDARS_IANA_COMPONENTS : IEquatable<REL_CALENDARS_IANA_COMPONENTS>
+    public class REL_CALENDARS_IANAC : IEquatable<REL_CALENDARS_IANAC>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the calendar-time zone relation
@@ -287,10 +287,10 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// <summary>
         /// Gets or sets the unique identifier of the related time zone entity
         /// </summary>
-        [ForeignKey(typeof(IANA_COMPONENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        [ForeignKey(typeof(IANA_COMPONENTS), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string IanaId { get; set; }
 
-        public bool Equals(REL_CALENDARS_IANA_COMPONENTS other)
+        public bool Equals(REL_CALENDARS_IANAC other)
         {
             if (other == null) return false;
             return (this.CalendarId.Equals(other.CalendarId, StringComparison.OrdinalIgnoreCase) &&
@@ -300,7 +300,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            var rel = obj as REL_CALENDARS_IANA_COMPONENTS;
+            var rel = obj as REL_CALENDARS_IANAC;
             if (rel == null) return false;
             return this.Equals(rel);
         }
@@ -310,20 +310,20 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return this.CalendarId.GetHashCode() ^ this.IanaId.GetHashCode();
         }
 
-        public static bool operator ==(REL_CALENDARS_IANA_COMPONENTS x, REL_CALENDARS_IANA_COMPONENTS y)
+        public static bool operator ==(REL_CALENDARS_IANAC x, REL_CALENDARS_IANAC y)
         {
             if ((object)x == null || (object)y == null) return object.Equals(x, y);
             return x.Equals(y);
         }
 
-        public static bool operator !=(REL_CALENDARS_IANA_COMPONENTS x, REL_CALENDARS_IANA_COMPONENTS y)
+        public static bool operator !=(REL_CALENDARS_IANAC x, REL_CALENDARS_IANAC y)
         {
             if (x == null || y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_CALENDARS_X_COMPONENTS : IEquatable<REL_CALENDARS_X_COMPONENTS>
+    public class REL_CALENDARS_XC : IEquatable<REL_CALENDARS_XC>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the calendar-x-component relation
@@ -340,10 +340,10 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// <summary>
         /// Gets or sets the unique identifier of the related x-component entity
         /// </summary>
-        [ForeignKey(typeof(X_COMPONENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        [ForeignKey(typeof(XCOMPONENTS), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string XComponentId { get; set; }
 
-        public bool Equals(REL_CALENDARS_X_COMPONENTS other)
+        public bool Equals(REL_CALENDARS_XC other)
         {
             if (other == null) return false;
             return (this.CalendarId.Equals(other.CalendarId, StringComparison.OrdinalIgnoreCase) &&
@@ -353,7 +353,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            var rel = obj as REL_CALENDARS_X_COMPONENTS;
+            var rel = obj as REL_CALENDARS_XC;
             if (rel == null) return false;
             return this.Equals(rel);
         }
@@ -363,13 +363,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return this.CalendarId.GetHashCode() ^ this.XComponentId.GetHashCode();
         }
 
-        public static bool operator ==(REL_CALENDARS_X_COMPONENTS x, REL_CALENDARS_X_COMPONENTS y)
+        public static bool operator ==(REL_CALENDARS_XC x, REL_CALENDARS_XC y)
         {
             if ((object)x == null || (object)y == null) return object.Equals(x, y);
             return x.Equals(y);
         }
 
-        public static bool operator !=(REL_CALENDARS_X_COMPONENTS x, REL_CALENDARS_X_COMPONENTS y)
+        public static bool operator !=(REL_CALENDARS_XC x, REL_CALENDARS_XC y)
         {
             if (x == null || y == null) return !object.Equals(x, y);
             return !x.Equals(y);

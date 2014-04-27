@@ -24,7 +24,7 @@ namespace reexmonkey.xcal.domain.operations
         public string ProductId { get; set; }
 
         [DataMember]
-        public X_COMPONENT Tag { get; set; }
+        public XCOMPONENTS Tag { get; set; }
 
         [DataMember]
         public List<VTIMEZONE> TimeZones { get; set; }
@@ -84,7 +84,7 @@ namespace reexmonkey.xcal.domain.operations
         [DataMember]
         public string ProductId { get; set; }
 
-        public X_COMPONENT Tag { get; set; }
+        public XCOMPONENTS Tag { get; set; }
 
         public List<VTIMEZONE> TimeZones { get; set; }
     }
@@ -105,7 +105,7 @@ namespace reexmonkey.xcal.domain.operations
         [DataMember]
         public string ProductId { get; set; }
 
-        public X_COMPONENT Tag { get; set; }
+        public XCOMPONENTS Tag { get; set; }
 
         public List<VTIMEZONE> TimeZones { get; set; }
     }

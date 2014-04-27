@@ -273,7 +273,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
     }
 
-    public class REL_FREEBUSIES_PROPERTIES : IEquatable<REL_FREEBUSIES_PROPERTIES>
+    public class REL_FREEBUSIES_INFOS : IEquatable<REL_FREEBUSIES_INFOS>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-contact relation
@@ -290,36 +290,36 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// <summary>
         /// Gets or sets the unique identifier of the related contact entity
         /// </summary>
-        [ForeignKey(typeof(FREEBUSY_PROPERTY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string FreeBusyPropertyId { get; set; }
+        [ForeignKey(typeof(FREEBUSY_INFO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string InfoId { get; set; }
 
-        public bool Equals(REL_FREEBUSIES_PROPERTIES other)
+        public bool Equals(REL_FREEBUSIES_INFOS other)
         {
             if (other == null) return false;
             return (this.FreeBusyId.Equals(other.FreeBusyId, StringComparison.OrdinalIgnoreCase) &&
-                this.FreeBusyPropertyId.Equals(other.FreeBusyPropertyId, StringComparison.OrdinalIgnoreCase));
+                this.InfoId.Equals(other.InfoId, StringComparison.OrdinalIgnoreCase));
         }
 
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            var rel = obj as REL_FREEBUSIES_PROPERTIES;
+            var rel = obj as REL_FREEBUSIES_INFOS;
             if (rel == null) return false;
             return this.Equals(rel);
         }
 
         public override int GetHashCode()
         {
-            return this.FreeBusyId.GetHashCode() ^ this.FreeBusyPropertyId.GetHashCode();
+            return this.FreeBusyId.GetHashCode() ^ this.InfoId.GetHashCode();
         }
 
-        public static bool operator ==(REL_FREEBUSIES_PROPERTIES x, REL_FREEBUSIES_PROPERTIES y)
+        public static bool operator ==(REL_FREEBUSIES_INFOS x, REL_FREEBUSIES_INFOS y)
         {
             if ((object)x == null || (object)y == null) return object.Equals(x, y);
             return x.Equals(y);
         }
 
-        public static bool operator !=(REL_FREEBUSIES_PROPERTIES x, REL_FREEBUSIES_PROPERTIES y)
+        public static bool operator !=(REL_FREEBUSIES_INFOS x, REL_FREEBUSIES_INFOS y)
         {
             if ((object)x == null || y == (object)null) return !object.Equals(x, y);
             return !x.Equals(y);

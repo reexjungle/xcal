@@ -1017,11 +1017,12 @@ namespace reexmonkey.xcal.domain.models
     /// Defines one or more free or busy time intervals
     /// </summary>
     [DataContract]
-    public class FREEBUSY_PROPERTY : IFREEBUSY_PROPERTY, IContainsKey<string>
+    public class FREEBUSY_INFO : IFREEBUSY_INFO, IContainsKey<string>
     {
         /// <summary>
         /// ID of a free od busy time interval
         /// </summary>
+        [DataMember]
         public string Id{ get; set; }
 
         /// <summary>
@@ -1034,10 +1035,11 @@ namespace reexmonkey.xcal.domain.models
         /// Period of time, taken by a calendar component
         /// </summary>
         [DataMember]
+        [Ignore]
         public List<PERIOD> Periods { get; set; }
 
 
-        public FREEBUSY_PROPERTY()
+        public FREEBUSY_INFO()
         {
 
         }
@@ -1046,7 +1048,7 @@ namespace reexmonkey.xcal.domain.models
         /// Constructor based on the time interval
         /// </summary>
         /// <param name="period"></param>
-        public FREEBUSY_PROPERTY(List<PERIOD> periods, FBTYPE type = FBTYPE.FREE)
+        public FREEBUSY_INFO(List<PERIOD> periods, FBTYPE type = FBTYPE.FREE)
         {
             this.Periods = periods;
             this.Type = type;
@@ -2160,6 +2162,7 @@ namespace reexmonkey.xcal.domain.models
         [Ignore]
         public List<IPARAMETER> Parameters { get; set; }
 
+        [DataMember]
         public ValueFormat Format { get; set; }
 
         public MISC_PROPERTY()

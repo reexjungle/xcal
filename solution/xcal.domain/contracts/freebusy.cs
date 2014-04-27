@@ -24,7 +24,7 @@ namespace reexmonkey.xcal.domain.contracts
 
         List<COMMENT> Comments { get; set; }
 
-        List<FREEBUSY_PROPERTY> FreeBusyProperties { get; set; }
+        List<FREEBUSY_INFO> FreeBusyProperties { get; set; }
 
         List<REQUEST_STATUS> RequestStatuses { get; set; }
 

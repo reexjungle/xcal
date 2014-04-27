@@ -67,7 +67,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                     { 
                         Id = request.CalendarId, 
                         ProdId = request.ProductId, 
-                        Method = METHOD.PUBLISH 
+                        Method = METHOD.PUBLISH,
                     };
 
                 calendar.Events.AddRangeComplement(request.Events);
