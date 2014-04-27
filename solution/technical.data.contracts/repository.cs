@@ -33,7 +33,7 @@ namespace reexmonkey.technical.data.contracts
         /// <param name="keys">Unique identifiers for retrieving the entities</param>
         /// <param name="skip">The page number of the retrieved entities when the results are paged</param>
         /// <returns>Found entities from the repository </returns>
-        IEnumerable<TEntity> Find(IEnumerable<TKey> keys, int? skip = null);
+        IEnumerable<TEntity> FindAll(IEnumerable<TKey> keys, int? skip = null);
 
         /// <summary>
         /// Gets all entities from the repository

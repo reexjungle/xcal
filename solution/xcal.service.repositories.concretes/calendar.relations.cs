@@ -287,7 +287,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// <summary>
         /// Gets or sets the unique identifier of the related time zone entity
         /// </summary>
-        [ForeignKey(typeof(IANA_COMPONENTS), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        [ForeignKey(typeof(IANA_COMPONENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string IanaId { get; set; }
 
         public bool Equals(REL_CALENDARS_IANAC other)
@@ -340,7 +340,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         /// <summary>
         /// Gets or sets the unique identifier of the related x-component entity
         /// </summary>
-        [ForeignKey(typeof(XCOMPONENTS), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        [ForeignKey(typeof(XCOMPONENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string XComponentId { get; set; }
 
         public bool Equals(REL_CALENDARS_XC other)

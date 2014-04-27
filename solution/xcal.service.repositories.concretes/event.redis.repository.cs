@@ -184,20 +184,20 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 var raalarms = this.redis.As<REL_EVENTS_AUDIO_ALARMS>().GetAll().Where(x => x.EventId == full.Id);
                 if(!raalarms.NullOrEmpty())
                 {
-                    full.Alarms.AddRangeComplement(this.AudioAlarmRepository.Find(raalarms.Select(x => x.AlarmId).ToList()));
+                    full.Alarms.AddRangeComplement(this.AudioAlarmRepository.FindAll(raalarms.Select(x => x.AlarmId).ToList()));
                 }
 
                 var rdalarms = this.redis.As<REL_EVENTS_DISPLAY_ALARMS>().GetAll().Where(x => x.EventId == full.Id);
                 if (!rdalarms.NullOrEmpty())
                 {
-                    full.Alarms.AddRangeComplement(this.DisplayAlarmRepository.Find(rdalarms.Select(x => x.AlarmId).ToList()));
+                    full.Alarms.AddRangeComplement(this.DisplayAlarmRepository.FindAll(rdalarms.Select(x => x.AlarmId).ToList()));
                 }
 
                 var realarms = this.redis.As<REL_EVENTS_EMAIL_ALARMS>().GetAll().Where(x => x.EventId == full.Id);
                 if (!realarms.NullOrEmpty())
                 {
                     full.Alarms.AddRangeComplement(this.EmailAlarmRepository
-                        .Hydrate(this.EmailAlarmRepository.Find(realarms.Select(x => x.AlarmId).ToList()))); 
+                        .Hydrate(this.EmailAlarmRepository.FindAll(realarms.Select(x => x.AlarmId).ToList()))); 
                 }
             }
 
@@ -248,9 +248,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var relatedtos = (!rrelatedtos.Empty()) ? this.redis.As<RELATEDTO>().GetByIds(rrelatedtos.Select(x => x.RelatedToId)) : null;
             var reqstats = (!rreqstats.Empty()) ? this.redis.As<REQUEST_STATUS>().GetByIds(rreqstats.Select(x => x.ReqStatsId)) : null;
             var resources = (!rresources.Empty()) ? this.redis.As<RESOURCES>().GetByIds(rresources.Select(x => x.ResourcesId)) : null;
-            var aalarms = (!raalarms.Empty()) ? this.AudioAlarmRepository.Find(raalarms.Select(x => x.AlarmId)) : null;
-            var dalarms = (!rdalarms.Empty()) ? this.DisplayAlarmRepository.Find(rdalarms.Select(x => x.AlarmId)) : null;
-            var ealarms = (!realarms.Empty()) ? this.EmailAlarmRepository.Hydrate(this.EmailAlarmRepository.Find(realarms.Select(x => x.AlarmId))) : null;
+            var aalarms = (!raalarms.Empty()) ? this.AudioAlarmRepository.FindAll(raalarms.Select(x => x.AlarmId)) : null;
+            var dalarms = (!rdalarms.Empty()) ? this.DisplayAlarmRepository.FindAll(rdalarms.Select(x => x.AlarmId)) : null;
+            var ealarms = (!realarms.Empty()) ? this.EmailAlarmRepository.Hydrate(this.EmailAlarmRepository.FindAll(realarms.Select(x => x.AlarmId))) : null;
 
             #endregion
 
@@ -1550,7 +1550,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return this.redis.As<VEVENT>().GetById(key);
         }
 
-        public IEnumerable<VEVENT> Find(IEnumerable<string> keys, int? skip = null)
+        public IEnumerable<VEVENT> FindAll(IEnumerable<string> keys, int? skip = null)
         {
             IEnumerable<VEVENT> dry = null;
             

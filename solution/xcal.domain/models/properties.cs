@@ -2144,6 +2144,11 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     [KnownType(typeof(IANA_PROPERTY))]
     [KnownType(typeof(X_PROPERTY))]
+    [KnownType(typeof(TZID))]
+    [KnownType(typeof(FMTTYPE))]
+    [KnownType(typeof(LANGUAGE))]
+    [KnownType(typeof(DELEGATE))]
+    [KnownType(typeof(MEMBER))]
     public abstract class MISC_PROPERTY<TValue> : IMISC_PROPERTY<TValue>
     {
         [DataMember]

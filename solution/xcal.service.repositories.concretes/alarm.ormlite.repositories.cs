@@ -92,7 +92,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return dry;
         }
 
-        public IEnumerable<AUDIO_ALARM> Find(IEnumerable<string> keys,  int? skip = null)
+        public IEnumerable<AUDIO_ALARM> FindAll(IEnumerable<string> keys,  int? skip = null)
         {
             IEnumerable<AUDIO_ALARM> dry = null;
 
@@ -290,7 +290,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return dry;
         }
 
-        public IEnumerable<DISPLAY_ALARM> Find(IEnumerable<string> keys, int? skip = null)
+        public IEnumerable<DISPLAY_ALARM> FindAll(IEnumerable<string> keys, int? skip = null)
         {
             IEnumerable<DISPLAY_ALARM> dry = null;
 
@@ -575,7 +575,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public IEnumerable<EMAIL_ALARM> Find(IEnumerable<string> keys, int? skip = null)
+        public IEnumerable<EMAIL_ALARM> FindAll(IEnumerable<string> keys, int? skip = null)
         {
             try
             {

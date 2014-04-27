@@ -79,15 +79,15 @@ namespace xcal.application.client.console.local.presentation.logic
             var events = new List<VEVENT> { pevent };
             var eventstring = pevent.ToString();
             
-            var published = sclient.Post<VCALENDAR>(new PublishEvent
-            {
-                CalendarId = this.GuidKeyGenerator.GetNextKey(),
-                ProductId = this.FpiKeyGenerator.GetNextKey(),
-                Events = events,
-                TimeZones = null
-            });
+            //var published = sclient.Post<VCALENDAR>(new PublishEvent
+            //{
+            //    CalendarId = this.GuidKeyGenerator.GetNextKey(),
+            //    ProductId = this.FpiKeyGenerator.GetNextKey(),
+            //    Events = events,
+            //    TimeZones = null
+            //});
 
-            var publishedstring = published.ToString();
+            //var publishedstring = published.ToString();
 
         }
     }

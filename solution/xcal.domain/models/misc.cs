@@ -11,7 +11,7 @@ using reexmonkey.xcal.domain.contracts;
 namespace reexmonkey.xcal.domain.models
 {
     [DataContract]
-    public class IANA_COMPONENTS: IMISC_COMPONENT
+    public class IANA_COMPONENT: IMISC_COMPONENT
     {
         [DataMember]
         public string TokenName { get; set; }
@@ -20,6 +20,10 @@ namespace reexmonkey.xcal.domain.models
         [Ignore]
         List<IANA_PROPERTY> ContentLines { get; set; }
 
+        public IANA_COMPONENT()
+        {
+            this.ContentLines = new List<IANA_PROPERTY>();
+        }
 
         public override string ToString()
         {
@@ -33,7 +37,7 @@ namespace reexmonkey.xcal.domain.models
     }
 
     [DataContract]
-    public class XCOMPONENTS : IMISC_COMPONENT
+    public class XCOMPONENT : IMISC_COMPONENT
     {
         [DataMember]
         public string TokenName { get; set; }
@@ -41,6 +45,11 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         [Ignore]
         List<X_PROPERTY> ContentLines { get; set; }
+
+        public XCOMPONENT()
+        {
+            this.ContentLines = new List<X_PROPERTY>();
+        }
 
         public override string ToString()
         {

@@ -76,7 +76,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return this.redis.As<AUDIO_ALARM>().GetValue(key);
         }
 
-        public IEnumerable<AUDIO_ALARM> Find(IEnumerable<string> keys, int? skip = null)
+        public IEnumerable<AUDIO_ALARM> FindAll(IEnumerable<string> keys, int? skip = null)
         {
             IEnumerable<AUDIO_ALARM> dry = null;
             var cclient = this.redis.As<AUDIO_ALARM>();
@@ -306,7 +306,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return this.redis.As<DISPLAY_ALARM>().GetValue(key);
         }
 
-        public IEnumerable<DISPLAY_ALARM> Find(IEnumerable<string> keys, int? skip = null)
+        public IEnumerable<DISPLAY_ALARM> FindAll(IEnumerable<string> keys, int? skip = null)
         {
             IEnumerable<DISPLAY_ALARM> dry = null;
             var cclient = this.redis.As<DISPLAY_ALARM>();
@@ -631,7 +631,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return this.redis.As<EMAIL_ALARM>().GetValue(key);
         }
 
-        public IEnumerable<EMAIL_ALARM> Find(IEnumerable<string> keys, int? skip = null)
+        public IEnumerable<EMAIL_ALARM> FindAll(IEnumerable<string> keys, int? skip = null)
         {
             IEnumerable<EMAIL_ALARM> dry = null;
             var cclient = this.redis.As<EMAIL_ALARM>();

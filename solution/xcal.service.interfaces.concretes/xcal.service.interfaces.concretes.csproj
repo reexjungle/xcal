@@ -73,6 +73,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="live\calendar.services.concretes.cs" />
     <Compile Include="live\event.services.concrete.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -84,6 +85,14 @@
     <ProjectReference Include="..\foundation.essentials.contracts\foundation.essentials.contracts.csproj">
       <Project>{0188be5c-bafa-4fac-b068-11dcf7cd918e}</Project>
       <Name>foundation.essentials.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\infrastructure.concretes\infrastructure.concretes.csproj">
+      <Project>{9b9036f7-c547-43d3-b1ec-bb0c5965dc12}</Project>
+      <Name>infrastructure.concretes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\infrastructure.contracts\infrastructure.contracts.csproj">
+      <Project>{82ed5f70-e1d9-456e-8686-c59306312726}</Project>
+      <Name>infrastructure.contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\technical.data.contracts\technical.data.contracts.csproj">
       <Project>{3346db20-5077-4fc8-93ee-e4a590bcc1d0}</Project>

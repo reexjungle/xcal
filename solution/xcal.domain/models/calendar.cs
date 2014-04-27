@@ -62,38 +62,44 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// Gets or sets the to-dos of the iCalendar core object
         /// </summary>
+        [DataMember]
         [Ignore]
         public List<VTODO> ToDos { get; set; }
 
         /// <summary>
         /// Gets or sets the free or busy time information groups of the iCalendar core object
         /// </summary>
+        [DataMember]
         [Ignore]
         public List<VFREEBUSY> FreeBusies { get; set; }
 
         /// <summary>
         /// Gets or sets the journals of the iCalendar core object
         /// </summary>
+        [DataMember]
         [Ignore]
         public List<VJOURNAL> Journals { get; set; }
 
         /// <summary>
         /// Gets or sets the timezones of the iCalendar core object
         /// </summary>
+        [DataMember]
         [Ignore]
         public List<VTIMEZONE> TimeZones { get; set; }
 
         /// <summary>
         /// Gets or sets the timezones of the iCalendar core object
         /// </summary>
+        [DataMember]
         [Ignore]
-        public List<IANA_COMPONENTS> IanaComponents { get; set; }
+        public List<IANA_COMPONENT> IanaComponents { get; set; }
 
         /// <summary>
         /// Gets or sets the X-components of the iCalendar core object
         /// </summary>
+        [DataMember]
         [Ignore]
-        public List<XCOMPONENTS> XComponents { get; set; }
+        public List<XCOMPONENT> XComponents { get; set; }
 
         /// <summary>
         /// Default Constructor of the iCalendar core object
@@ -107,8 +113,8 @@ namespace reexmonkey.xcal.domain.models
             this.ToDos = new List<VTODO>();
             this.Journals = new List<VJOURNAL>();
             this.FreeBusies = new List<VFREEBUSY>();
-            this.IanaComponents = new List<IANA_COMPONENTS>();
-            this.XComponents = new List<XCOMPONENTS>();
+            this.IanaComponents = new List<IANA_COMPONENT>();
+            this.XComponents = new List<XCOMPONENT>();
         }
 
         public bool Equals(VCALENDAR other)

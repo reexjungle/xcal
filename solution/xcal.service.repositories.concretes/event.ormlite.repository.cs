@@ -121,7 +121,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public IEnumerable<VEVENT> Find(IEnumerable<string> keys, int? skip = null)
+        public IEnumerable<VEVENT> FindAll(IEnumerable<string> keys, int? skip = null)
         {
             try
             {
@@ -1207,20 +1207,20 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     var raalarms = this.db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.Id == okey);
                     if (!raalarms.NullOrEmpty())
                     {
-                        full.Alarms.AddRangeComplement(this.AudioAlarmRepository.Find(raalarms.Select(x => x.AlarmId).ToList()));
+                        full.Alarms.AddRangeComplement(this.AudioAlarmRepository.FindAll(raalarms.Select(x => x.AlarmId).ToList()));
                     }
 
                     var rdalarms = this.db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.Id == okey);
                     if (!rdalarms.NullOrEmpty())
                     {
-                        full.Alarms.AddRangeComplement(this.DisplayAlarmRepository.Find(rdalarms.Select(x => x.AlarmId).ToList()));
+                        full.Alarms.AddRangeComplement(this.DisplayAlarmRepository.FindAll(rdalarms.Select(x => x.AlarmId).ToList()));
                     }
 
                     var realarms = this.db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.Id == okey);
                     if (!realarms.NullOrEmpty())
                     {
                         full.Alarms.AddRangeComplement(this.EmailAlarmRepository
-                            .Hydrate(this.EmailAlarmRepository.Find(realarms.Select(x => x.AlarmId).ToList())));
+                            .Hydrate(this.EmailAlarmRepository.FindAll(realarms.Select(x => x.AlarmId).ToList())));
                     }
                 }
 
@@ -1278,9 +1278,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     var relatedtos = (!rrelatedtos.Empty()) ? db.Select<RELATEDTO>(q => Sql.In(q.Id, rrelatedtos.Select(r => r.RelatedToId).ToList())) : null;
                     var reqstats = (!rreqstats.Empty()) ? db.Select<REQUEST_STATUS>(q => Sql.In(q.Id, rreqstats.Select(r => r.ReqStatsId).ToList())) : null;
                     var resources = (!rresources.Empty()) ? db.Select<RESOURCES>(q => Sql.In(q.Id, rresources.Select(r => r.ResourcesId).ToList())) : null;
-                    var aalarms = (!raalarms.Empty()) ? this.AudioAlarmRepository.Find(raalarms.Select(x => x.AlarmId).ToList()) : null;
-                    var dalarms = (!rdalarms.Empty()) ? this.DisplayAlarmRepository.Find(rdalarms.Select(x => x.AlarmId).ToList()) : null;
-                    var ealarms = (!realarms.Empty()) ? this.EmailAlarmRepository.Find(realarms.Select(x => x.AlarmId).ToList()) : null;
+                    var aalarms = (!raalarms.Empty()) ? this.AudioAlarmRepository.FindAll(raalarms.Select(x => x.AlarmId).ToList()) : null;
+                    var dalarms = (!rdalarms.Empty()) ? this.DisplayAlarmRepository.FindAll(rdalarms.Select(x => x.AlarmId).ToList()) : null;
+                    var ealarms = (!realarms.Empty()) ? this.EmailAlarmRepository.FindAll(realarms.Select(x => x.AlarmId).ToList()) : null;
 
                     #endregion
 

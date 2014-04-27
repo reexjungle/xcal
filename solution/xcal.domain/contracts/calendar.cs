@@ -64,12 +64,12 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// Gets or sets the timezones of the iCalendar core object
         /// </summary>
-        List<IANA_COMPONENTS> IanaComponents { get; set; }
+        List<IANA_COMPONENT> IanaComponents { get; set; }
 
         /// <summary>
         /// Gets or sets the X-components of the iCalendar core object
         /// </summary>
-        List<XCOMPONENTS> XComponents { get; set; }
+        List<XCOMPONENT> XComponents { get; set; }
 
     }
 

@@ -64,28 +64,28 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
             var eventstring = events[0].ToString();
 
-            var published = sclient.Post<VCALENDAR>(new PublishEvent
-            {
-                CalendarId = new GuidKeyGenerator().GetNextKey(),
-                ProductId = new FPIKeyGenerator<string>()
-                {
-                    Owner = Properties.Settings.Default.fpiOwner,
-                    LanguageId = Properties.Settings.Default.fpiLanguageId,
-                    Description = Properties.Settings.Default.fpiDescription,
-                    Authority = Properties.Settings.Default.fpiAuthority
-                }.GetNextKey(),
+            //var published = sclient.Post<VCALENDAR>(new PublishEvent
+            //{
+            //    CalendarId = new GuidKeyGenerator().GetNextKey(),
+            //    ProductId = new FPIKeyGenerator<string>()
+            //    {
+            //        Owner = Properties.Settings.Default.fpiOwner,
+            //        LanguageId = Properties.Settings.Default.fpiLanguageId,
+            //        Description = Properties.Settings.Default.fpiDescription,
+            //        Authority = Properties.Settings.Default.fpiAuthority
+            //    }.GetNextKey(),
 
-                Events = events,
-                TimeZones = null
-            });
+            //    Events = events,
+            //    TimeZones = null
+            //});
 
-            Assert.AreNotEqual(published, null);
-            Assert.AreEqual(published.Method, METHOD.PUBLISH);
+            //Assert.AreNotEqual(published, null);
+            //Assert.AreEqual(published.Method, METHOD.PUBLISH);
 
-            var pevent = published.Events[0] as VEVENT;
-            Assert.AreNotEqual(pevent, null);
-            Assert.AreEqual(pevent.Start.ToString(), "20140615T160701Z");
-            Assert.AreEqual(pevent.Duration.ToString(), "PT1H56M7S");
+            //var pevent = published.Events[0] as VEVENT;
+            //Assert.AreNotEqual(pevent, null);
+            //Assert.AreEqual(pevent.Start.ToString(), "20140615T160701Z");
+            //Assert.AreEqual(pevent.Duration.ToString(), "PT1H56M7S");
             
         }
     }
