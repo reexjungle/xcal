@@ -103,7 +103,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             try
             {
-               return db.Select<VEVENT>(q => q.Id == key).FirstOrDefault();
+               var dry = db.Select<VEVENT>(q => q.Id == key).FirstOrDefault();
+               return dry != null ? this.Hydrate(dry) : dry;
             }
             catch (InvalidOperationException) { throw; }
             catch (ArgumentException) { throw; }
@@ -114,8 +115,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             try
             {
-                var dkeys = keys.ToArray();
-                return db.Select<VEVENT>(q => Sql.In(q.Id, dkeys), skip, take);
+                var dry = db.Select<VEVENT>(q => Sql.In(q.Id, keys.ToArray()), skip, take);
+                return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
             }
             catch (InvalidOperationException) { throw; }
             catch (ArgumentException) { throw; }
@@ -124,15 +125,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public IEnumerable<VEVENT> Get(int? skip = null, int? take  = null)
         {
-            IEnumerable<VEVENT> dry = null;
             try
             {
-                dry = db.Select<VEVENT>(skip, take);
+                var dry = db.Select<VEVENT>(skip, take);
+                return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
             }
             catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }
             catch (Exception) { throw; }
-
-            return dry;
         }
 
         public void Save(VEVENT entity)
@@ -804,6 +804,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 db.Delete<VEVENT>(q => q.Id == key);
             }
             catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }
             catch (Exception) { throw; }
         }
 
@@ -1210,7 +1211,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!realarms.NullOrEmpty())
                     {
                         full.Alarms.AddRangeComplement(this.EmailAlarmRepository
-                            .Hydrate(this.EmailAlarmRepository.FindAll(realarms.Select(x => x.AlarmId).ToList())));
+                            .HydrateAll(this.EmailAlarmRepository.FindAll(realarms.Select(x => x.AlarmId).ToList())));
                     }
                 }
 
@@ -1222,7 +1223,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         }
 
-        public IEnumerable<VEVENT> Hydrate(IEnumerable<VEVENT> dry)
+        public IEnumerable<VEVENT> HydrateAll(IEnumerable<VEVENT> dry)
         {
             List<VEVENT> full = null;
             try
@@ -1481,41 +1482,55 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public IEnumerable<string> GetKeys(int? skip = null, int? take = null)
         {
-            IEnumerable<string> keys = null;
             try
             {
-                keys = db.SelectParam<VEVENT>(q => q.Id, skip, take);
+               return db.SelectParam<VEVENT>(q => q.Id, skip, take);
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
             catch (Exception) { throw; }
-            return keys;
         }
 
         public IEnumerable<VEVENT> Dehydrate(IEnumerable<VEVENT> full)
         {
-            var dry = full.Select(x => {  return this.Dehydrate(x); });
-            return dry;
+            try
+            {
+                var dry = full.Select(x => { return this.Dehydrate(x); });
+                return dry;
+            }
+            catch (ArgumentNullException)
+            {
+                
+                throw;
+            }
         }
 
         public VEVENT Dehydrate(VEVENT full)
         {
-            var dry = full;
-            dry.Organizer = null;
-            dry.RecurrenceId = null;
-            dry.RecurrenceRule = null;
-            if(!dry.Attendees.NullOrEmpty()) dry.Attendees.Clear();
-            if (!dry.Attachments.NullOrEmpty()) dry.Attachments.Clear();
-            if (!dry.Contacts.NullOrEmpty()) dry.Contacts.Clear();
-            if (!dry.Comments.NullOrEmpty()) dry.Comments.Clear();
-            if (!dry.RecurrenceDates.NullOrEmpty()) dry.RecurrenceDates.Clear();
-            if (!dry.ExceptionDates.NullOrEmpty()) dry.ExceptionDates.Clear();
-            if (!dry.RelatedTos.NullOrEmpty()) dry.RelatedTos.Clear();
-            if (!dry.RequestStatuses.NullOrEmpty()) dry.RequestStatuses.Clear();
-            if (!dry.Resources.NullOrEmpty()) dry.Resources.Clear();
-            if (!dry.Alarms.NullOrEmpty()) dry.Alarms.Clear();
-            return dry;
+            try
+            {
+                var dry = full;
+                dry.Organizer = null;
+                dry.RecurrenceId = null;
+                dry.RecurrenceRule = null;
+                if (!dry.Attendees.NullOrEmpty()) dry.Attendees.Clear();
+                if (!dry.Attachments.NullOrEmpty()) dry.Attachments.Clear();
+                if (!dry.Contacts.NullOrEmpty()) dry.Contacts.Clear();
+                if (!dry.Comments.NullOrEmpty()) dry.Comments.Clear();
+                if (!dry.RecurrenceDates.NullOrEmpty()) dry.RecurrenceDates.Clear();
+                if (!dry.ExceptionDates.NullOrEmpty()) dry.ExceptionDates.Clear();
+                if (!dry.RelatedTos.NullOrEmpty()) dry.RelatedTos.Clear();
+                if (!dry.RequestStatuses.NullOrEmpty()) dry.RequestStatuses.Clear();
+                if (!dry.Resources.NullOrEmpty()) dry.Resources.Clear();
+                if (!dry.Alarms.NullOrEmpty()) dry.Alarms.Clear();
+                return dry;
+            }
+            catch (ArgumentNullException)
+            {
+                
+                throw;
+            }
         }
     }
 }

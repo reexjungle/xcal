@@ -83,7 +83,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!revents.NullOrEmpty())
                     {
                         var events = this.EventRepository.FindAll(revents.Select(x => x.EventId).ToList());
-                        full.Events.AddRangeComplement(this.EventRepository.Hydrate( events));
+                        full.Events.AddRangeComplement(this.EventRepository.HydrateAll( events));
                     }
                 }
             }
@@ -108,7 +108,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     var revents = this.db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, okeys));
                     if (!revents.NullOrEmpty())
                     {
-                        var events = this.EventRepository.Hydrate(this.EventRepository.FindAll(revents.Select(x => x.EventId))).ToList();
+                        var events = this.EventRepository.HydrateAll(this.EventRepository.FindAll(revents.Select(x => x.EventId))).ToList();
                         full.Select(x =>
                         {
                             var xevents = from y in events
@@ -133,7 +133,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             try
             {
-                return db.Select<VCALENDAR>(q => q.Id == key).FirstOrDefault();
+                var dry = db.Select<VCALENDAR>(q => q.Id == key).FirstOrDefault();
+                return dry != null ? this.Hydrate(dry) : dry;
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; }
@@ -143,23 +144,24 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             try
             {
-                return db.Select<VCALENDAR>(q => Sql.In(q.Id, keys.ToArray()), skip.Value, take.Value);
+                var dry = db.Select<VCALENDAR>(q => Sql.In(q.Id, keys.ToArray()), skip.Value, take.Value);
+                return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
             }
             catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }
             catch (Exception) { throw; }
         }
 
         public IEnumerable<VCALENDAR> Get(int? skip = null, int? take = null)
         {
-            IEnumerable<VCALENDAR> dry = null;
             try
             {
-                dry = db.Select<VCALENDAR>(skip, take);
+                var dry = db.Select<VCALENDAR>(skip, take);
+                return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
             }
             catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }
             catch (Exception) { throw; }
-
-            return dry;
         }
 
         public void Save(VCALENDAR entity)
@@ -238,7 +240,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
             using (var transaction = db.BeginTransaction())
             {
-
                 try
                 {
                     var keys = (filter != null)
@@ -379,6 +380,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 else db.DeleteAll<VCALENDAR>();
             }
             catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }
             catch (Exception) { throw; }
         }
 
@@ -389,6 +391,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 return db.Count<VCALENDAR>(q => q.Id == key) != 0;
             }
             catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }
             catch (Exception) { throw; }
         }
 
@@ -402,33 +405,54 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 else return db.Count<VCALENDAR>(q => Sql.In(q.Id, dkeys)) != 0;
             }
             catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }
             catch (Exception) { throw; }
         }
 
         public IEnumerable<VCALENDAR> Dehydrate(IEnumerable<VCALENDAR> full)
         {
-            var dry = full.Select(x => { return this.Dehydrate(x); });
-            return dry;
+            try
+            {
+                return full.Select(x => { return this.Dehydrate(x); });
+
+            }
+            catch (ArgumentNullException)
+            {
+                
+                throw;
+            }
         }
 
         public VCALENDAR Dehydrate(VCALENDAR full)
         {
-            var dry = full;
-            if (!dry.Events.NullOrEmpty()) dry.Events.Clear();
-            return dry;
+            try
+            {
+                var dry = full;
+                if (!dry.Events.NullOrEmpty()) dry.Events.Clear();
+                if (!dry.ToDos.NullOrEmpty()) dry.ToDos.Clear();
+                if (!dry.Journals.NullOrEmpty()) dry.Journals.Clear();
+                if (!dry.TimeZones.NullOrEmpty()) dry.TimeZones.Clear();
+                if (!dry.IanaComponents.NullOrEmpty()) dry.IanaComponents.Clear();
+                if (!dry.XComponents.NullOrEmpty()) dry.XComponents.Clear();
+                return dry;
+            }
+            catch (ArgumentNullException)
+            {
+                
+                throw;
+            }
         }
 
         public IEnumerable<string> GetKeys(int? skip = null, int? take = null)
         {
-            IEnumerable<string> keys = null;
             try
             {
-                keys = db.SelectParam<VCALENDAR>(q => q.Id, skip, take);
+                return db.SelectParam<VCALENDAR>(q => q.Id, skip, take);
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }
             catch (Exception) { throw; }
-            return keys;
         }
     }
 }

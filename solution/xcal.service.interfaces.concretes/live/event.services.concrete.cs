@@ -97,12 +97,12 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
             throw new NotImplementedException();
         }
 
-        public VEVENT Get(GetEvent request)
+        public VEVENT Get(FindEvent request)
         {
             throw new NotImplementedException();
         }
 
-        public List<VEVENT> Get(GetEvents request)
+        public List<VEVENT> Get(FindEvents request)
         {
             throw new NotImplementedException();
         }

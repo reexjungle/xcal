@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using ServiceStack.ServiceHost;
+using reexmonkey.infrastructure.io.contracts;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 
@@ -150,15 +151,31 @@ namespace reexmonkey.xcal.domain.operations
 
     [DataContract]
     [Route("/calendars/batch/find", "GET")]
-    [Route("/calendars/batch/find/{Page}", "GET")]
-    [Route("/calendars/batch/find/page/{Page}", "GET")]
-    public class FindCalendars : IReturn<List<VCALENDAR>>
+    [Route("/calendars/batch/find/{Page}/{Size}", "GET")]
+    [Route("/calendars/batch/find/page/{Page}/size/{Size}", "GET")]
+    public class FindCalendars : IReturn<List<VCALENDAR>>, IPaginated<int>
     {
         [DataMember]
         public List<string> CalendarIds { get; set; }
 
         [DataMember]
         public int? Page { get; set; }
+
+        [DataMember]
+        public int? Size { get; set; }
+    }
+
+
+    [DataContract]
+    [Route("/calendars/{Page}/{Size}", "GET")]
+    [Route("/calendars/page/{Page}/size/{Size}", "GET")]
+    public class GetCalendars: IReturn<List<VCALENDAR>>, IPaginated<int>
+    {
+        [DataMember]
+        public int? Page { get; set; }
+
+        [DataMember]
+        public int? Size { get; set; }
     }
 
 }

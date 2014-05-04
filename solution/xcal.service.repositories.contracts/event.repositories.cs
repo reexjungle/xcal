@@ -43,7 +43,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// </summary>
         /// <param name="dry">The sparse events entities to be populated</param>
         /// <returns>Populated event entities</returns>
-        IEnumerable<VEVENT> Hydrate(IEnumerable<VEVENT> dry);
+        IEnumerable<VEVENT> HydrateAll(IEnumerable<VEVENT> dry);
 
         /// <summary>
         /// Depopulates aggregate entities from event

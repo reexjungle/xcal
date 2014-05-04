@@ -128,7 +128,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// </summary>
         /// <param name="dry">The sparse email alarm entities to be populated</param>
         /// <returns>Populated event entities</returns>
-        IEnumerable<EMAIL_ALARM> Hydrate(IEnumerable<EMAIL_ALARM> dry);
+        IEnumerable<EMAIL_ALARM> HydrateAll(IEnumerable<EMAIL_ALARM> dry);
 
         /// <summary>
         /// Depopulates aggregate entities from email alarm

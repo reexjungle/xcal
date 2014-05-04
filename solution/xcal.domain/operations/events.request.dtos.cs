@@ -290,7 +290,7 @@ namespace reexmonkey.xcal.domain.operations
 
     [DataContract]
     [Route("/calendars/events/{EventId}/get", "GET")]
-    public class GetEvent : IReturn<VEVENT>
+    public class FindEvent : IReturn<VEVENT>
     {
         [DataMember]
         public string EventId { get; set; }
@@ -301,7 +301,7 @@ namespace reexmonkey.xcal.domain.operations
     [Route("/calendars/events/batch/get/{Page}/{Take}", "GET")]
     [Route("/calendars/events/batch/get/page/{Page}/{Take}", "GET")]
     [Route("/calendars/events/batch/get/page/{Page}/take/{Take}", "GET")]
-    public class GetEvents : IReturn<List<VEVENT>>
+    public class FindEvents : IReturn<List<VEVENT>>
     {
         [DataMember]
         public List<string> EventIds { get; set; }

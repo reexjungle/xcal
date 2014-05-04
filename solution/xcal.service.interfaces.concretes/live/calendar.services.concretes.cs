@@ -66,7 +66,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 if (!this.repository.ContainsKey(request.Calendar.Id))
                 {
                     this.repository.Save(request.Calendar);
-                    return this.repository.Hydrate(request.Calendar);
+                    return this.repository.Find(request.Calendar.Id);
                 }
                 return request.Calendar;
             }
@@ -83,7 +83,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 if(!this.repository.ContainsKeys(keys, ExpectationMode.pessimistic))
                 {
                     this.repository.SaveAll(request.Calendars);
-                    return this.repository.HydrateAll(request.Calendars).ToList();
+                    return this.repository.FindAll(keys).ToList();
                 }
                 return request.Calendars;
             }
@@ -99,7 +99,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 if (this.repository.ContainsKey(request.Calendar.Id))
                 {
                     this.repository.Save(request.Calendar);
-                    return this.repository.Hydrate(request.Calendar);
+                    return this.repository.Find(request.Calendar.Id);
                 }
                 return request.Calendar;
             }
@@ -116,7 +116,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 if (this.repository.ContainsKeys(keys, ExpectationMode.pessimistic))
                 {
                     this.repository.SaveAll(request.Calendars);
-                    return this.repository.HydrateAll(request.Calendars).ToList();
+                    return this.repository.FindAll(keys).ToList();
                 }
                 return request.Calendars;
             }
@@ -160,8 +160,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 var fieldexpr = fieldstr.CompileToExpressionFunc<VCALENDAR, object>(CodeDomLanguage.csharp, Utilities.GetReferencedAssemblyNamesFromEntryAssembly());
                 this.repository.Patch(source, fieldexpr, request.CalendarId.ToSingleton());
 
-                var calendar = this.repository.Find(request.CalendarId);
-                return (calendar != null)? this.repository.Hydrate(calendar): calendar;
+                return this.repository.Find(request.CalendarId);
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -204,7 +203,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 this.repository.Patch(source, fieldexpr, request.CalendarIds);
 
                 var calendars = this.repository.FindAll(request.CalendarIds);
-                return !calendars.NullOrEmpty() ? this.repository.HydrateAll(calendars).ToList() : null;
+                return !calendars.NullOrEmpty() ? calendars.ToList() : new List<VCALENDAR>();
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -237,8 +236,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
         {
             try
             {
-                var calendar = this.repository.Find(request.CalendarId);
-                return calendar != null? this.repository.Hydrate(calendar): calendar;
+                return this.repository.Find(request.CalendarId);
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -250,12 +248,29 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
             try
             {
                 IEnumerable<VCALENDAR> calendars = null;
-                //if (request.Page != null && this.repository.Take != null)
-                //    calendars = this.repository.FindAll(request.CalendarIds, (request.Page.Value - 1) * this.repository.Take.Value);
-                //else 
-                //    calendars = this.repository.FindAll(request.CalendarIds);
+                if (request.Page != null && request.Size != null)
+                    calendars = this.repository.FindAll(request.CalendarIds, (request.Page.Value - 1) * request.Size.Value, request.Size.Value);
+                else
+                    calendars = this.repository.FindAll(request.CalendarIds);
 
-                return !calendars.NullOrEmpty() ? this.repository.HydrateAll(calendars).ToList() : new List<VCALENDAR>();
+                return !calendars.NullOrEmpty() ? calendars.ToList() : new List<VCALENDAR>();
+            }
+            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
+        }
+
+        public List<VCALENDAR> Get (GetCalendars request)
+        {
+            try
+            {
+                IEnumerable<VCALENDAR> calendars = null;
+                if (request.Page != null && request.Size != null)
+                    calendars = this.repository.Get((request.Page.Value - 1) * request.Size.Value, request.Size.Value);
+                else
+                    calendars = this.repository.Get();
+
+                return !calendars.NullOrEmpty() ? calendars.ToList() : new List<VCALENDAR>();
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }

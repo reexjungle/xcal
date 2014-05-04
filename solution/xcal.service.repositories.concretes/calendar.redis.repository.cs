@@ -74,7 +74,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 if (!revents.NullOrEmpty())
                 {
                     var events = this.EventRepository.FindAll(revents.Select(x => x.EventId).ToList());
-                    full.Events.AddRangeComplement(this.EventRepository.Hydrate(events));
+                    full.Events.AddRangeComplement(this.EventRepository.HydrateAll(events));
                 }
             }
             return full ?? dry;
@@ -89,7 +89,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 var revents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => keys.Contains(x.CalendarId));
                 if(!revents.NullOrEmpty())
                 {
-                   var events = this.EventRepository.Hydrate(this.EventRepository.FindAll(revents.Select(x => x.EventId))).ToList();
+                   var events = this.EventRepository.HydrateAll(this.EventRepository.FindAll(revents.Select(x => x.EventId))).ToList();
                    full.Select(x =>
                    {
                        var xevents = from y in events
@@ -294,7 +294,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             if (selection.Contains(methodexpr.GetMemberName())) x.Method = source.Method;
                         });
 
-                        transaction.QueueCommand(x => x.StoreAll(entities));
+                        transaction.QueueCommand(x => x.StoreAll(this.Dehydrate(entities)));
                     }
 
                     #endregion

@@ -29,8 +29,8 @@ namespace reexmonkey.xcal.service.interfaces.contracts.live
 
         void Delete(DeleteEvents request);
 
-        VEVENT Get(GetEvent request);
+        VEVENT Get(FindEvent request);
 
-        List<VEVENT> Get(GetEvents request);
+        List<VEVENT> Get(FindEvents request);
     }
 }
