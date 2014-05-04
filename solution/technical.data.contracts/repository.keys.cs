@@ -15,9 +15,10 @@ namespace reexmonkey.technical.data.contracts
         /// <summary>
         /// Gets the keys from the non-relational repository
         /// </summary>
-        /// <param name="skip">The page count of the retrieved keys, when the results are paginated</param>
+        /// <param name="skip">The number of results to skip</param>
+        /// <param name="take">The number of results per page to retrieve</param>
         /// <returns></returns>
-        IEnumerable<TKey> GetKeys(int? skip = null);
+        IEnumerable<TKey> GetKeys(int? skip = null, int? take = null);
     }
 
  

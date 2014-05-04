@@ -14,8 +14,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
     public interface IEventRepository: 
         IReadRepository<VEVENT, string>,
         IWriteRepository<VEVENT, string>,
-        IReadRepositoryKeys<string>,
-        IPaginated<int>
+        IReadRepositoryKeys<string>
     {
         /// <summary>
         /// Gets or sets the audio alarm repository

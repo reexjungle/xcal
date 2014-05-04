@@ -141,29 +141,24 @@ namespace reexmonkey.xcal.domain.operations
     }
 
     [DataContract]
-    [Route("/calendars/{CalendarId}/get", "GET")]
-    public class GetCalendar : IReturn<VCALENDAR>
+    [Route("/calendars/{CalendarId}/find", "GET")]
+    public class FindCalendar : IReturn<VCALENDAR>
     {
         [DataMember]
         public string CalendarId { get; set; }
     }
 
     [DataContract]
-    [Route("/calendars/batch/get", "GET")]
-    [Route("/calendars/batch/get/{Page}/{Take}", "GET")]
-    [Route("/calendars/batch/get/page/{Page}/{Take}", "GET")]
-    [Route("/calendars/batch/get/page/{Page}/take/{Take}", "GET")]
-    public class GetCalendars : IReturn<List<VCALENDAR>>
+    [Route("/calendars/batch/find", "GET")]
+    [Route("/calendars/batch/find/{Page}", "GET")]
+    [Route("/calendars/batch/find/page/{Page}", "GET")]
+    public class FindCalendars : IReturn<List<VCALENDAR>>
     {
         [DataMember]
         public List<string> CalendarIds { get; set; }
 
         [DataMember]
         public int? Page { get; set; }
-
-        [DataMember]
-        public int? Take { get; set; }
-
     }
 
 }

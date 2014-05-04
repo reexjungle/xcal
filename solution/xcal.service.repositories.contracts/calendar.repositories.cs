@@ -10,8 +10,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
     public interface ICalendarRepository:
         IReadRepository<VCALENDAR, string>,
         IWriteRepository<VCALENDAR, string>,
-        IReadRepositoryKeys<string>,
-        IPaginated<int>
+        IReadRepositoryKeys<string>
     {
         /// <summary>
         /// Gets or sets the repository of addressing the event aggregate root
@@ -30,8 +29,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// </summary>
         /// <param name="dry">The sparse calendar entities to be populated</param>
         /// <returns>Populated calendar entities</returns>
-        IEnumerable<VCALENDAR> Hydrate(IEnumerable<VCALENDAR> dry);
-
+        IEnumerable<VCALENDAR> HydrateAll(IEnumerable<VCALENDAR> dry);
 
         /// <summary>
         /// Depopulates aggregate entities from a calendar 

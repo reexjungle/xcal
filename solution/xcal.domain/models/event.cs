@@ -29,7 +29,7 @@ namespace reexmonkey.xcal.domain.models
         private DURATION duration;
 
         /// <summary>
-        /// Gets or sets the unique identifier of the event. It is synonymous to the &quot;Uid&quot; property of the event. 
+        /// Gets or sets the unique identifier of the event.. 
         /// </summary>
         [DataMember]
         [Index(Unique = true)]
@@ -49,7 +49,7 @@ namespace reexmonkey.xcal.domain.models
         }
 
         /// <summary>
-        /// Gets or sets the unique identifier of the event.
+        /// Gets or sets the unique identifier of a non-recurrent event.
         /// </summary>
         [DataMember]
         [Index(Unique = false)]
@@ -187,18 +187,18 @@ namespace reexmonkey.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public List<IANA_PROPERTY> IANA { get; set; }
+        public List<IANA_PROPERTY> IANAProperties { get; set; }
 
         [DataMember]
         [Ignore]
-        public List<X_PROPERTY> NonStandard { get; set; }
+        public List<X_PROPERTY> XProperties { get; set; }
 
         public VEVENT()
         {
             this.RecurrenceId = null;
             this.Datestamp = new DATE_TIME(DateTime.UtcNow);
-            this.Created = new DATE_TIME(DateTime.UtcNow);
-            this.LastModified = new DATE_TIME(DateTime.UtcNow);
+            this.Created = this.Datestamp;
+            this.LastModified = this.Datestamp;
         }
 
         public VEVENT(DATE_TIME dtstamp, string uid, DATE_TIME start, DATE_TIME end,  PRIORITY priority, ORGANIZER organizer = null, LOCATION location = null, 
@@ -274,8 +274,8 @@ namespace reexmonkey.xcal.domain.models
             this.Categories = value.Categories;
             this.RelatedTos = value.RelatedTos;
             this.Alarms = value.Alarms;
-            this.IANA = value.IANA;
-            this.NonStandard = value.NonStandard;
+            this.IANAProperties = value.IANAProperties;
+            this.XProperties = value.XProperties;
         }
 
         public bool Equals(VEVENT other)
@@ -429,14 +429,14 @@ namespace reexmonkey.xcal.domain.models
                 foreach (var rdate in this.RecurrenceDates) if (rdate != null) sb.Append(rdate).AppendLine();
             }
 
-            if (!this.IANA.NullOrEmpty())
+            if (!this.IANAProperties.NullOrEmpty())
             {
-                foreach (var iana in this.IANA) if (iana != null) sb.Append(iana).AppendLine();
+                foreach (var iana in this.IANAProperties) if (iana != null) sb.Append(iana).AppendLine();
             }
 
-            if (!this.NonStandard.NullOrEmpty())
+            if (!this.XProperties.NullOrEmpty())
             {
-                foreach (var xprop in this.NonStandard) if (xprop != null) sb.Append(xprop).AppendLine();
+                foreach (var xprop in this.XProperties) if (xprop != null) sb.Append(xprop).AppendLine();
             }
 
             sb.Append("END:VEVENT");

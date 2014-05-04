@@ -31,6 +31,7 @@ namespace reexmonkey.xcal.domain.models
         public int Repeat { get; set; }
 
         [DataMember]
+        [Ignore]
         public IATTACH Attachment { get; set; }
 
         public AUDIO_ALARM(): base() { }
@@ -62,13 +63,13 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             sb.Append("BEGIN:VALARM").AppendLine();
             sb.AppendFormat("ACTION:{0}", this.Action).AppendLine();
-            if(this.Trigger != null) sb.AppendFormat("{0}", this.Trigger).AppendLine();
+            if(this.Trigger != null) sb.Append(this.Trigger).AppendLine();
             if (this.Duration != null && this.Repeat != -1)
             {
                 sb.AppendFormat("{0}", this.Duration).AppendLine();
                 sb.AppendFormat("REPEAT:{0}", this.Repeat).AppendLine();
             }
-            if(this.Attachment != null)  sb.AppendFormat("{0}", this.Attachment).AppendLine();
+            if(this.Attachment != null)  sb.Append(this.Attachment).AppendLine();
             sb.Append("END:VALARM").AppendLine();
             return sb.ToString();
         }
@@ -82,8 +83,8 @@ namespace reexmonkey.xcal.domain.models
         public override int GetHashCode()
         {
             return this.Action.GetHashCode() ^
-                ((this.Trigger != null)? this.Trigger.GetHashCode(): 0)^ 
-                ((this.Duration != null)? this.Duration.GetHashCode(): 0)^
+                ((this.Trigger != null)? this.Trigger.GetHashCode(): 0)^
+                this.Duration.GetHashCode()^
                 this.Repeat.GetHashCode() ^
                 ((this.Attachment != null)? this.Attachment.GetHashCode(): 0);
         }

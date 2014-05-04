@@ -28,8 +28,8 @@ namespace reexmonkey.xcal.service.interfaces.contracts.live
 
         void Delete(DeleteCalendars request);
 
-        VCALENDAR Get(GetCalendar request);
+        VCALENDAR Get(FindCalendar request);
 
-        List<VCALENDAR> Get(GetCalendars request);
+        List<VCALENDAR> Get(FindCalendars request);
     }
 }

@@ -24,7 +24,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
     {
         private IDbConnection conn = null;
         private IDbConnectionFactory factory = null;
-        private int? take = null;
         private IKeyGenerator<string> keygen;
 
         private IDbConnection db
@@ -40,15 +39,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 this.factory = value;
             }
         }
-        public int? Take
-        {
-            get { return this.take; }
-            set 
-            {
-                if (value == null) throw new ArgumentNullException("Null pages");
-                this.take = value; 
-            }
-        }
+
         public IKeyGenerator<string> KeyGenerator
         {
             get { return this.keygen; }
@@ -92,16 +83,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
         }
 
         public EventOrmLiteRepository() { }
-        public EventOrmLiteRepository(IDbConnectionFactory factory, int? take)
+        public EventOrmLiteRepository(IDbConnectionFactory factory)
         {
             this.DbConnectionFactory = factory;
-            this.Take = take;
         }
         public EventOrmLiteRepository(IDbConnection connection, int? take)
         {
             if (connection == null) throw new ArgumentNullException("connection");
             this.conn = connection; 
-            this.Take = take;
         }
 
         //cleanup
@@ -121,7 +110,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public IEnumerable<VEVENT> FindAll(IEnumerable<string> keys, int? skip = null)
+        public IEnumerable<VEVENT> FindAll(IEnumerable<string> keys, int? skip = null, int? take = null)
         {
             try
             {
@@ -133,7 +122,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public IEnumerable<VEVENT> Get(int? skip = null)
+        public IEnumerable<VEVENT> Get(int? skip = null, int? take  = null)
         {
             IEnumerable<VEVENT> dry = null;
             try
@@ -405,7 +394,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         }
 
-        public void Patch(VEVENT source, Expression<Func<VEVENT, object>> fields, Expression<Func<VEVENT, bool>> predicate = null)
+        public void Patch(VEVENT source, Expression<Func<VEVENT, object>> fields, IEnumerable<string> filter = null)
         {
             #region construct anonymous fields using expression lambdas
             
@@ -460,9 +449,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 try
                 {
 
-                    string[] keys = null;
-                    keys = (predicate != null)
-                        ? db.SelectParam<VEVENT>(q => q.Id, predicate).ToArray()
+                    var keys = (filter != null)
+                        ? db.SelectParam<VEVENT, string>(q => q.Id, p => Sql.In(p.Id, filter.ToArray())).ToArray()
                         : db.SelectParam<VEVENT>(q => q.Id).ToArray();
 
                     if (!srelation.NullOrEmpty())
@@ -772,7 +760,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                         var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
                         var patchexpr = patchstr.CompileToExpressionFunc<VEVENT, object>(CodeDomLanguage.csharp, Utilities.GetReferencedAssemblyNamesFromEntryAssembly());
-                        db.UpdateOnly<VEVENT, object>(source, patchexpr, predicate);
+
+                        if (!keys.NullOrEmpty()) db.UpdateOnly<VEVENT, object>(source, patchexpr, q => Sql.In(q.Id, keys.ToArray()));
+                        else db.UpdateOnly<VEVENT, object>(source, patchexpr);
 
                         #endregion
                     }
@@ -1489,7 +1479,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public IEnumerable<string> GetKeys(int? skip = null)
+        public IEnumerable<string> GetKeys(int? skip = null, int? take = null)
         {
             IEnumerable<string> keys = null;
             try

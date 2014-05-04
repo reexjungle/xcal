@@ -21,7 +21,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
     {
         private IDbConnection conn = null;
         private IDbConnectionFactory factory = null;
-        private int? take = null;
         private IKeyGenerator<string> keygen;
         private IEventRepository eventrepository;
 
@@ -36,15 +35,6 @@ namespace reexmonkey.xcal.service.repositories.concretes
             {
                 if (value == null) throw new ArgumentNullException("Null factory");
                 this.factory = value;
-            }
-        }
-        public int? Take
-        {
-            get { return this.take; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("Null pages");
-                this.take = value;
             }
         }
         public IKeyGenerator<string> KeyGenerator
@@ -69,18 +59,16 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public CalendarOrmLiteRepository() { }
         
-        public CalendarOrmLiteRepository(IDbConnectionFactory factory, int? take)
+        public CalendarOrmLiteRepository(IDbConnectionFactory factory)
         {
             this.DbConnectionFactory = factory;
-            this.Take = take;
             this.conn = this.factory.OpenDbConnection();
         }
         
-        public CalendarOrmLiteRepository(IDbConnection connection, int? take)
+        public CalendarOrmLiteRepository(IDbConnection connection)
         {
             if (connection == null) throw new ArgumentNullException("connection");
             this.conn = connection; 
-            this.Take = take;
         }
 
         public VCALENDAR Hydrate(VCALENDAR dry)
@@ -107,7 +95,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return full ?? dry;
         }
 
-        public IEnumerable<VCALENDAR> Hydrate(IEnumerable<VCALENDAR> dry)
+        public IEnumerable<VCALENDAR> HydrateAll(IEnumerable<VCALENDAR> dry)
         {
             IEnumerable<VCALENDAR> full = dry;
             try
@@ -151,7 +139,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public IEnumerable<VCALENDAR> FindAll(IEnumerable<string> keys, int? skip = null)
+        public IEnumerable<VCALENDAR> FindAll(IEnumerable<string> keys, int? skip = null, int? take = null)
         {
             try
             {
@@ -161,7 +149,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             catch (Exception) { throw; }
         }
 
-        public IEnumerable<VCALENDAR> Get(int? skip = null)
+        public IEnumerable<VCALENDAR> Get(int? skip = null, int? take = null)
         {
             IEnumerable<VCALENDAR> dry = null;
             try
@@ -225,7 +213,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         }
 
-        public void Patch(VCALENDAR source, Expression<Func<VCALENDAR, object>> fields, Expression<Func<VCALENDAR, bool>> predicate = null)
+        public void Patch(VCALENDAR source, Expression<Func<VCALENDAR, object>> fields, IEnumerable<string> filter = null)
         {
             #region construct anonymous fields using expression lambdas
             
@@ -253,8 +241,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                 try
                 {
-                    var keys = (predicate != null)
-                        ? db.SelectParam<VCALENDAR>(q => q.Id, predicate).ToArray()
+                    var keys = (filter != null)
+                        ? db.SelectParam<VCALENDAR, string>(q=> q.Id, p => Sql.In(p.Id, filter.ToArray())).ToArray()
                         : db.SelectParam<VCALENDAR>(q => q.Id).ToArray();
 
                     if (!srelation.NullOrEmpty())
@@ -294,7 +282,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                         var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
                         var patchexpr = patchstr.CompileToExpressionFunc<VCALENDAR, object>(CodeDomLanguage.csharp, Utilities.GetReferencedAssemblyNamesFromEntryAssembly());
-                        db.UpdateOnly<VCALENDAR, object>(source, patchexpr, predicate);
+
+                        if(!keys.NullOrEmpty()) db.UpdateOnly<VCALENDAR, object>(source, patchexpr, q =>Sql.In(q.Id, keys.ToArray()));
+                        else db.UpdateOnly<VCALENDAR, object>(source, patchexpr);
 
                         #endregion
 
@@ -428,7 +418,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
             return dry;
         }
 
-        public IEnumerable<string> GetKeys(int? skip = null)
+        public IEnumerable<string> GetKeys(int? skip = null, int? take = null)
         {
             IEnumerable<string> keys = null;
             try

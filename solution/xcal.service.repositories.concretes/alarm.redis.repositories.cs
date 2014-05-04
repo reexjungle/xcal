@@ -4,36 +4,26 @@ using System.Linq.Expressions;
 using System.Collections.Generic;
 using ServiceStack.Redis;
 using ServiceStack.Redis.Generic;
+using ServiceStack.Common;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.foundation.essentials.contracts;
 using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.infrastructure.operations.contracts;
 
+
 namespace reexmonkey.xcal.service.repositories.concretes
 {
     public class AudioAlarmRedisRepository: IAudioAlarmRedisRepository
     {
         private IRedisClientsManager manager;
-        private int? take = null;
         private IKeyGenerator<string> keygen;
-
         private IRedisClient client = null;
         private IRedisClient redis
         {
             get
             {
                 return (client != null) ? client : this.manager.GetClient();
-            }
-        }
-
-        public int? Take
-        {
-            get { return this.take; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("Take");
-                this.take = value;
             }
         }
 
@@ -73,35 +63,39 @@ namespace reexmonkey.xcal.service.repositories.concretes
  
         public AUDIO_ALARM Find(string key)
         {
-            return this.redis.As<AUDIO_ALARM>().GetValue(key);
+            return this.redis.As<AUDIO_ALARM>().GetById(key);
         }
 
-        public IEnumerable<AUDIO_ALARM> FindAll(IEnumerable<string> keys, int? skip = null)
+        public IEnumerable<AUDIO_ALARM> FindAll(IEnumerable<string> keys, int? skip = null, int? take = null)
         {
-            IEnumerable<AUDIO_ALARM> dry = null;
-            var cclient = this.redis.As<AUDIO_ALARM>();
-            var dkeys = keys.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-            if (cclient.GetAllKeys().Intersect(dkeys).Count() == dkeys.Count())
+            var allkeys = this.redis.As<AUDIO_ALARM>().GetAllKeys();
+            if (skip == null && take == null)
             {
-                dry = (skip != null) ?
-                    cclient.GetValues(dkeys).Skip(skip.Value).Take(take.Value)
-                    : cclient.GetValues(dkeys);
+                var filtered = !keys.NullOrEmpty()
+                    ? allkeys.Intersect(keys.Select(x => UrnId.GetStringId(x)))
+                    : new List<string>();
+                return this.redis.As<AUDIO_ALARM>().GetByIds(filtered);
             }
-            return dry;
+            else
+            {
+                var filtered = !keys.NullOrEmpty()
+                    ? allkeys.Intersect(keys.Select(x => UrnId.GetStringId(x)))
+                    : new List<string>();
+                return this.redis.As<AUDIO_ALARM>().GetByIds(filtered);
+            }
         }
 
-        public IEnumerable<AUDIO_ALARM> Get(int? skip = null)
+        public IEnumerable<AUDIO_ALARM> Get(int? skip = null, int? take = null)
         {
-            IEnumerable<AUDIO_ALARM> dry = null;
-            try
+            if (skip == null && take == null) return this.redis.As<AUDIO_ALARM>().GetAll();
+            else
             {
-                var cclient = this.redis.As<AUDIO_ALARM>();
-                dry = (skip != null) ?
-                    cclient.GetAll().Skip(skip.Value).Take(take.Value)
-                    : cclient.GetAll();
+                var allkeys = this.redis.As<AUDIO_ALARM>().GetAllKeys();
+                var selected = !allkeys.NullOrEmpty()
+                    ? allkeys.Skip(skip.Value).Take(take.Value)
+                    : allkeys;
+                return this.redis.As<AUDIO_ALARM>().GetValues(selected.ToList());
             }
-            catch (Exception) { throw; }
-            return dry;
         }
 
         public bool ContainsKey(string key)
@@ -120,22 +114,82 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public void Save(AUDIO_ALARM entity)
         {
-            using (var transaction = this.redis.CreateTransaction())
+            this.manager.ExecTrans(transaction =>
             {
                 try
                 {
-                    transaction.QueueCommand(x => x.Store(entity));
-                    transaction.Commit();
+                    var keys = this.redis.As<AUDIO_ALARM>().GetAllKeys().ToArray();
+                    if (!keys.NullOrEmpty()) this.redis.Watch(keys);
+
+                    #region save attributes and  relations
+
+                    if (entity.Attachment != null && entity.Attachment is ATTACH_BINARY)
+                    {
+                        var attachbin = entity.Attachment as ATTACH_BINARY;
+                        transaction.QueueCommand(x => x.Store(attachbin));
+                        var rattachbin = new REL_AALARMS_ATTACHBINS
+                        {
+                            Id = KeyGenerator.GetNextKey(),
+                            AlarmId = entity.Id,
+                            AttachmentId = attachbin.Id
+                        };
+                        var rclient = this.redis.As<REL_AALARMS_ATTACHBINS>();
+                        var orattachbin = rclient.GetAll().Where(x => x.AlarmId.Equals(entity.Id, StringComparison.OrdinalIgnoreCase));
+                        transaction.QueueCommand(x => rclient.StoreAll(
+                            !orattachbin.NullOrEmpty()
+                            ? rattachbin.ToSingleton().Except(orattachbin)
+                            : rattachbin.ToSingleton()));
+                    }
+
+                    if (entity.Attachment != null && entity.Attachment is ATTACH_URI)
+                    {
+                        var attachuri = entity.Attachment as ATTACH_URI;
+                        transaction.QueueCommand(x => x.Store(attachuri));
+                        var rattachuri = new REL_AALARMS_ATTACHURIS
+                        {
+                            Id = KeyGenerator.GetNextKey(),
+                            AlarmId = entity.Id,
+                            AttachmentId = attachuri.Id
+                        };
+                        var rclient = this.redis.As<REL_AALARMS_ATTACHURIS>();
+                        var orattachuri = rclient.GetAll().Where(x => x.AlarmId.Equals(entity.Id, StringComparison.OrdinalIgnoreCase));
+                        transaction.QueueCommand(x => rclient.StoreAll(
+                            !orattachuri.NullOrEmpty()
+                            ? rattachuri.ToSingleton().Except(orattachuri)
+                            : rattachuri.ToSingleton()));
+                    }
+                    
+                    #endregion   
+             
+                    transaction.QueueCommand(x => this.redis.As<AUDIO_ALARM>().Store(this.Dehydrate(entity)));
+                
                 }
-                catch (Exception)
+                catch (ArgumentNullException) { throw; }
+                catch (RedisResponseException)
                 {
-                    transaction.Rollback();
-                    throw;
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
                 }
-            }
+                catch (RedisException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
+                }
+                catch (InvalidOperationException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
+                }
+            });
         }
 
-        public void Patch(AUDIO_ALARM source, Expression<Func<AUDIO_ALARM, object>> fields, Expression<Func<AUDIO_ALARM, bool>> predicate = null)
+        public void Patch(AUDIO_ALARM source, Expression<Func<AUDIO_ALARM, object>> fields, IEnumerable<string> keys = null)
         {
             #region construct anonymous fields using expression lambdas
 
@@ -144,27 +198,76 @@ namespace reexmonkey.xcal.service.repositories.concretes
             Expression<Func<AUDIO_ALARM, object>> primitives = x => new
             {
                 x.Action,
-                x.Repeat,
-                x.Trigger,
                 x.Duration,
+                x.Trigger,
+                x.Repeat
+            };
+
+            Expression<Func<AUDIO_ALARM, object>> relations = x => new
+            {
                 x.Attachment
             };
 
+            //4. Get list of selected relationals
+            var srelation = relations.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase);
+
             //5. Get list of selected primitives
-            var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
+            var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase);
 
             #endregion
 
-            using (var transaction = this.redis.CreateTransaction())
+            this.manager.ExecTrans(transaction =>
             {
                 try
                 {
+                    var aclient = this.redis.As<AUDIO_ALARM>();
+                    var okeys = aclient.GetAllKeys().ToArray();
+                    if (!okeys.NullOrEmpty()) this.redis.Watch(okeys);
+
                     #region save (insert or update) relational attributes
 
-                    var cclient = this.redis.As<AUDIO_ALARM>();
-                    var keys = (predicate != null)
-                        ? cclient.GetAll().Where(predicate.Compile()).Select(x => x.Id).ToList()
-                        : cclient.GetAllKeys();
+                    if (!srelation.NullOrEmpty())
+                    {
+                        Expression<Func<AUDIO_ALARM, object>> attachsexpr = y => y.Attachment;
+                        if (selection.Contains(attachsexpr.GetMemberName()))
+                        {
+                            var attachbin = source.Attachment as ATTACH_BINARY;
+                            if (attachbin != null)
+                            {
+                                transaction.QueueCommand(x => x.Store(attachbin));
+                                var rattachbins = keys.Select(x => new REL_AALARMS_ATTACHBINS
+                                {
+                                    Id = KeyGenerator.GetNextKey(),
+                                    AlarmId = x,
+                                    AttachmentId = attachbin.Id
+                                });
+
+                                var orattachbins = this.redis.As<REL_AALARMS_ATTACHBINS>().GetAll().Where(x => keys.Contains(x.AlarmId));
+                                transaction.QueueCommand(x =>
+                                    x.StoreAll(!orattachbins.NullOrEmpty()
+                                    ? rattachbins.Except(orattachbins)
+                                    : rattachbins));
+                            }
+
+                            var attachuri = source.Attachment as ATTACH_URI;
+                            if (attachuri != null)
+                            {
+                                transaction.QueueCommand(x => x.Store(attachuri));
+                                var rattachuris= keys.Select(x => new REL_AALARMS_ATTACHURIS
+                                {
+                                    Id = KeyGenerator.GetNextKey(),
+                                    AlarmId = x,
+                                    AttachmentId = attachbin.Id
+                                });
+
+                                var orattachuris = this.redis.As<REL_AALARMS_ATTACHURIS>().GetAll().Where(x => keys.Contains(x.AlarmId));
+                                transaction.QueueCommand(x =>
+                                    x.StoreAll(!orattachuris.NullOrEmpty()
+                                    ? rattachuris.Except(orattachuris)
+                                    : rattachuris));
+                            }
+                        }
+                    }
 
                     #endregion
 
@@ -174,96 +277,277 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     {
                         Expression<Func<AUDIO_ALARM, object>> actionexpr = x => x.Action;
                         Expression<Func<AUDIO_ALARM, object>> repeatexpr = x => x.Repeat;
-                        Expression<Func<AUDIO_ALARM, object>> triggerexpr = x => x.Trigger;
                         Expression<Func<AUDIO_ALARM, object>> durationexpr = x => x.Duration;
-                        Expression<Func<AUDIO_ALARM, object>> attachexpr = x => x.Attachment;
+                        Expression<Func<AUDIO_ALARM, object>> triggerexpr = x => x.Trigger;
 
-
-                        var entities = cclient.GetValues(keys);
+                        var entities = aclient.GetByIds(keys).ToList();
                         entities.ForEach(x =>
                         {
                             if (selection.Contains(actionexpr.GetMemberName())) x.Action = source.Action;
                             if (selection.Contains(repeatexpr.GetMemberName())) x.Repeat = source.Repeat;
-                            if (selection.Contains(triggerexpr.GetMemberName())) x.Trigger = source.Trigger;
                             if (selection.Contains(durationexpr.GetMemberName())) x.Duration = source.Duration;
-                            if (selection.Contains(attachexpr.GetMemberName())) x.Attachment = source.Attachment;
+                            if (selection.Contains(triggerexpr.GetMemberName())) x.Trigger = source.Trigger;
                         });
 
-                        transaction.QueueCommand(x => x.StoreAll(entities));
+                        transaction.QueueCommand(x => x.StoreAll(this.Dehydrate(entities)));
                     }
 
                     #endregion
 
-                    transaction.Commit();
                 }
-                catch (Exception)
+                catch (ArgumentNullException) { throw; }
+                catch (RedisResponseException)
                 {
-                    transaction.Rollback();
-                    throw;
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
                 }
-            }
+                catch (RedisException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
+                }
+                catch (InvalidOperationException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
+                }
+            }); 
         }
 
         public void Erase(string key)
         {
-            var cclient = this.redis.As<AUDIO_ALARM>();
-            if (cclient.ContainsKey(key))cclient.DeleteById(key);
+            var aaclient = this.redis.As<AUDIO_ALARM>();
+            if (aaclient.ContainsKey(key))
+            {
+
+                var rattachbins = this.redis.As<REL_AALARMS_ATTACHBINS>().GetAll();
+                if (!rattachbins.NullOrEmpty()) this.redis.As<REL_AALARMS_ATTACHBINS>()
+                    .DeleteByIds(rattachbins.Where(x => x.AlarmId.Equals(key, StringComparison.OrdinalIgnoreCase)));
+
+                var rattachuris = this.redis.As<REL_AALARMS_ATTACHURIS>().GetAll();
+                if (!rattachuris.NullOrEmpty()) this.redis.As<REL_AALARMS_ATTACHURIS>()
+                    .DeleteByIds(rattachuris.Where(x => x.AlarmId.Equals(key, StringComparison.OrdinalIgnoreCase)));
+
+                aaclient.DeleteById(key);
+            }
         }
 
         public void SaveAll(IEnumerable<AUDIO_ALARM> entities)
         {
-            using (var transaction = this.redis.CreateTransaction())
+            this.manager.ExecTrans(transaction =>
             {
                 try
                 {
+                    var cclient = this.redis.As<AUDIO_ALARM>();
+
+                    //watch keys
+                    var okeys = cclient.GetAllKeys().ToArray();
+                    if (!okeys.NullOrEmpty()) this.redis.Watch(okeys);
+
                     //save calendar
                     var keys = entities.Select(c => c.Id);
                     transaction.QueueCommand(x => x.StoreAll(entities));
-                    transaction.Commit();
+
+                    //save attachments
+                    var attachbins = entities.Where(x => x.Attachment != null && x.Attachment is ATTACH_BINARY)
+                        .Select(x => x.Attachment as ATTACH_BINARY);
+                    if (!attachbins.NullOrEmpty())
+                    {
+                        transaction.QueueCommand(x => x.StoreAll(attachbins));
+                        var rattachbins = entities.Where(x => x.Attachment != null && x.Attachment is ATTACH_BINARY)
+                            .Select(x => new REL_AALARMS_ATTACHBINS
+                            {
+                                Id = this.KeyGenerator.GetNextKey(),
+                                AlarmId = x.Id,
+                                AttachmentId = (x.Attachment as ATTACH_BINARY).Id
+                            });
+
+                        var orattachbins = this.redis.As<REL_AALARMS_ATTACHBINS>().GetAll()
+                            .Where(x => keys.Contains(x.AlarmId));
+                        transaction.QueueCommand(x => x.StoreAll(!orattachbins.NullOrEmpty()
+                            ? rattachbins.Except(orattachbins)
+                            : rattachbins));
+                    }
+
+                    var attachuris = entities.Where(x => x.Attachment != null && x.Attachment is ATTACH_URI)
+                        .Select(x => x.Attachment as ATTACH_URI);
+                    if (!attachuris.NullOrEmpty())
+                    {
+                        transaction.QueueCommand(x => x.StoreAll(attachbins));
+                        var rattachuris = entities.Where(x => x.Attachment != null && x.Attachment is ATTACH_URI)
+                            .Select(x => new REL_AALARMS_ATTACHURIS
+                            {
+                                Id = this.KeyGenerator.GetNextKey(),
+                                AlarmId = x.Id,
+                                AttachmentId = (x.Attachment as ATTACH_URI).Id
+                            });
+
+                        var orattachuris = this.redis.As<REL_AALARMS_ATTACHURIS>().GetAll()
+                            .Where(x => keys.Contains(x.AlarmId));
+                        transaction.QueueCommand(x => x.StoreAll(!orattachuris.NullOrEmpty()
+                            ? rattachuris.Except(orattachuris)
+                            : rattachuris));
+                    }
+
+                    transaction.QueueCommand(x => x.StoreAll(this.Dehydrate(entities)));
                 }
-                catch (ArgumentNullException)
+                catch (ArgumentNullException) { throw; }
+                catch (RedisResponseException)
                 {
-                    transaction.Rollback();
-                    throw;
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
                 }
-            }
+                catch (RedisException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
+                }
+                catch (InvalidOperationException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
+                }
+            });
         }
 
         public void EraseAll(IEnumerable<string> keys = null)
         {
-            var cclient = this.redis.As<AUDIO_ALARM>();
-
-            if (keys == null)cclient.DeleteAll();
-            else
+            var aaclient = this.redis.As<AUDIO_ALARM>();
+            var allkeys = aaclient.GetAllKeys().Select(x => UrnId.GetStringId(x));
+            if (!allkeys.NullOrEmpty())
             {
-                var dkeys = keys.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-                cclient.DeleteByIds(dkeys);
+                var found = allkeys.Intersect(keys);
+                if(!found.NullOrEmpty())
+                {
+                    var rattachbins = this.redis.As<REL_AALARMS_ATTACHBINS>().GetAll();
+                    if (!rattachbins.NullOrEmpty()) this.redis.As<REL_AALARMS_ATTACHBINS>()
+                        .DeleteByIds(rattachbins.Where(x => found.Contains(x.AlarmId, StringComparer.OrdinalIgnoreCase)));
+
+                    var rattachuris = this.redis.As<REL_AALARMS_ATTACHURIS>().GetAll();
+                    if (!rattachuris.NullOrEmpty()) this.redis.As<REL_AALARMS_ATTACHURIS>()
+                        .DeleteByIds(rattachuris.Where(x => found.Contains(x.AlarmId, StringComparer.OrdinalIgnoreCase)));
+
+                    aaclient.DeleteByIds(found);
+                }
+
             }
+            else aaclient.DeleteAll();
+        }
+
+        public AUDIO_ALARM Hydrate(AUDIO_ALARM dry)
+        {
+            var full = dry;
+            try
+            {
+                if (full != null)
+                {
+                    var rattachbins = this.redis.As<REL_AALARMS_ATTACHBINS>().GetAll().Where(x => x.AlarmId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
+                    if (!rattachbins.NullOrEmpty()) full.Attachment = this.redis.As<ATTACH_BINARY>().GetById(rattachbins.FirstOrDefault().AttachmentId);
+
+                    var rattachuris = this.redis.As<REL_AALARMS_ATTACHURIS>().GetAll().Where(x => x.AlarmId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
+                    if (!rattachuris.NullOrEmpty()) full.Attachment = this.redis.As<ATTACH_URI>().GetById(rattachuris.FirstOrDefault().AttachmentId);
+                }
+            }
+            catch (ArgumentNullException) { throw; }
+
+            return full ?? dry;
+        }
+
+        public IEnumerable<AUDIO_ALARM> Hydrate(IEnumerable<AUDIO_ALARM> dry)
+        {
+            var full = dry.ToList();
+            var keys = full.Select(x => x.Id).Distinct().ToList();
+
+            #region 1. retrieve relationships
+
+            var rattachbins = this.redis.As<REL_EVENTS_ATTACHBINS>().GetAll().Where(x => keys.Contains(x.EventId)).ToList();
+            var rattachuris = this.redis.As<REL_EVENTS_ATTACHURIS>().GetAll().Where(x => keys.Contains(x.EventId)).ToList();
+
+            #endregion
+
+            #region 2. retrieve secondary entities
+
+            var attachbins = (!rattachbins.Empty()) ? this.redis.As<ATTACH_BINARY>().GetByIds(rattachbins.Select(x => x.AttachmentId)) : null;
+            var attachuris = (!rattachuris.Empty()) ? this.redis.As<ATTACH_URI>().GetByIds(rattachuris.Select(x => x.AttachmentId)) : null;
+
+            #endregion
+
+            #region 3. Use Linq to stitch secondary entities to primary entities
+
+            full.ForEach(x =>
+            {
+
+                if (!attachbins.NullOrEmpty())
+                {
+                    var xattachbins = from y in attachbins
+                                      join r in rattachbins on y.Id equals r.AttachmentId
+                                      join e in full on r.EventId equals e.Id
+                                      where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
+                                      select y;
+                    if (!xattachbins.NullOrEmpty()) x.Attachment = xattachbins.FirstOrDefault();
+
+                }
+
+                if (!attachuris.NullOrEmpty())
+                {
+                    var xattachuris = from y in attachuris
+                                      join r in rattachuris on y.Id equals r.AttachmentId
+                                      join e in full on r.EventId equals e.Id
+                                      where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
+                                      select y;
+                    if (!xattachuris.NullOrEmpty()) x.Attachment = xattachuris.FirstOrDefault();
+                }
+
+            });
+
+            #endregion
+
+            return full ?? dry;
+        }
+
+        public AUDIO_ALARM Dehydrate(AUDIO_ALARM full)
+        {
+            try
+            {
+                full.Attachment = null;
+            }
+            catch (ArgumentNullException) { throw; }
+            return full;        
+        }
+
+        public IEnumerable<AUDIO_ALARM> Dehydrate(IEnumerable<AUDIO_ALARM> full)
+        {
+            try
+            {
+                return full.Select(x => { return this.Dehydrate(x); });
+
+            }
+            catch (ArgumentNullException) { throw; }
         }
     }
 
     public class DisplayAlarmRedisRepository: IDisplayAlarmRedisRepository
     {
         private IRedisClientsManager manager;
-        private int? take = null;
         private IKeyGenerator<string> keygen;
-
         private IRedisClient client = null;
         private IRedisClient redis
         {
             get
             {
                 return (client != null) ? client : this.manager.GetClient();
-            }
-        }
-
-        public int? Take
-        {
-            get { return this.take; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("Take");
-                this.take = value;
             }
         }
 
@@ -303,35 +587,39 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public DISPLAY_ALARM Find(string key)
         {
-            return this.redis.As<DISPLAY_ALARM>().GetValue(key);
+            return this.redis.As<DISPLAY_ALARM>().GetById(key);
         }
 
-        public IEnumerable<DISPLAY_ALARM> FindAll(IEnumerable<string> keys, int? skip = null)
+        public IEnumerable<DISPLAY_ALARM> FindAll(IEnumerable<string> keys, int? skip = null, int? take = null)
         {
-            IEnumerable<DISPLAY_ALARM> dry = null;
-            var cclient = this.redis.As<DISPLAY_ALARM>();
-            var dkeys = keys.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-            if (cclient.GetAllKeys().Intersect(dkeys).Count() == dkeys.Count())
+            var allkeys = this.redis.As<DISPLAY_ALARM>().GetAllKeys();
+            if (skip == null && take == null)
             {
-                dry = (skip != null) ?
-                    cclient.GetValues(dkeys).Skip(skip.Value).Take(take.Value)
-                    : cclient.GetValues(dkeys);
+                var filtered = !keys.NullOrEmpty()
+                    ? allkeys.Intersect(keys.Select(x => UrnId.GetStringId(x)))
+                    : new List<string>();
+                return this.redis.As<DISPLAY_ALARM>().GetByIds(filtered);
             }
-            return dry;
+            else
+            {
+                var filtered = !keys.NullOrEmpty()
+                    ? allkeys.Intersect(keys.Select(x => UrnId.GetStringId(x)))
+                    : new List<string>();
+                return this.redis.As<DISPLAY_ALARM>().GetByIds(filtered);
+            }
         }
 
-        public IEnumerable<DISPLAY_ALARM> Get(int? skip = null)
+        public IEnumerable<DISPLAY_ALARM> Get(int? skip = null, int? take = null)
         {
-            IEnumerable<DISPLAY_ALARM> dry = null;
-            try
+            if (skip == null && take == null) return this.redis.As<DISPLAY_ALARM>().GetAll();
+            else
             {
-                var cclient = this.redis.As<DISPLAY_ALARM>();
-                dry = (skip != null) ?
-                    cclient.GetAll().Skip(skip.Value).Take(take.Value)
-                    : cclient.GetAll();
+                var allkeys = this.redis.As<DISPLAY_ALARM>().GetAllKeys();
+                var selected = !allkeys.NullOrEmpty()
+                    ? allkeys.Skip(skip.Value).Take(take.Value)
+                    : allkeys;
+                return this.redis.As<DISPLAY_ALARM>().GetValues(selected.ToList());
             }
-            catch (Exception) { throw; }
-            return dry;
         }
 
         public bool ContainsKey(string key)
@@ -350,22 +638,42 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public void Save(DISPLAY_ALARM entity)
         {
-            using (var transaction = this.redis.CreateTransaction())
+            this.manager.ExecTrans(transaction =>
             {
                 try
                 {
-                    transaction.QueueCommand(x => x.Store(entity));
-                    transaction.Commit();
+                    var keys = this.redis.As<DISPLAY_ALARM>().GetAllKeys().ToArray();
+                    if (!keys.NullOrEmpty()) this.redis.Watch(keys);
+
+                    transaction.QueueCommand(x => this.redis.As<DISPLAY_ALARM>().Store(entity));
+
                 }
-                catch (Exception)
+                catch (ArgumentNullException) { throw; }
+                catch (RedisResponseException)
                 {
-                    transaction.Rollback();
-                    throw;
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
                 }
-            }
+                catch (RedisException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
+                }
+                catch (InvalidOperationException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
+                }
+            });
         }
 
-        public void Patch(DISPLAY_ALARM source, Expression<Func<DISPLAY_ALARM, object>> fields, Expression<Func<DISPLAY_ALARM, bool>> predicate = null)
+        public void Patch(DISPLAY_ALARM source, Expression<Func<DISPLAY_ALARM, object>> fields, IEnumerable<string> keys = null)
         {
             #region construct anonymous fields using expression lambdas
 
@@ -374,29 +682,24 @@ namespace reexmonkey.xcal.service.repositories.concretes
             Expression<Func<DISPLAY_ALARM, object>> primitives = x => new
             {
                 x.Action,
-                x.Repeat,
-                x.Trigger,
                 x.Duration,
+                x.Trigger,
+                x.Repeat,
                 x.Description
             };
 
-            //5. Get list of selected primitives
-            var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
+            //4. Get list of selected primitives
+            var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase);
 
             #endregion
 
-            using (var transaction = this.redis.CreateTransaction())
+            this.manager.ExecTrans(transaction =>
             {
                 try
                 {
-                    #region save (insert or update) relational attributes
-
-                    var cclient = this.redis.As<DISPLAY_ALARM>();
-                    var keys = (predicate != null)
-                        ? cclient.GetAll().Where(predicate.Compile()).Select(x => x.Id).ToList()
-                        : cclient.GetAllKeys();
-
-                    #endregion
+                    var aclient = this.redis.As<DISPLAY_ALARM>();
+                    var okeys = aclient.GetAllKeys().ToArray();
+                    if (!okeys.NullOrEmpty()) this.redis.Watch(okeys);
 
                     #region update-only non-relational attributes
 
@@ -404,69 +707,107 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     {
                         Expression<Func<DISPLAY_ALARM, object>> actionexpr = x => x.Action;
                         Expression<Func<DISPLAY_ALARM, object>> repeatexpr = x => x.Repeat;
-                        Expression<Func<DISPLAY_ALARM, object>> triggerexpr = x => x.Trigger;
                         Expression<Func<DISPLAY_ALARM, object>> durationexpr = x => x.Duration;
+                        Expression<Func<DISPLAY_ALARM, object>> triggerexpr = x => x.Trigger;
                         Expression<Func<DISPLAY_ALARM, object>> descexpr = x => x.Description;
 
-
-                        var entities = cclient.GetValues(keys);
+                        var entities = aclient.GetByIds(keys).ToList();
                         entities.ForEach(x =>
                         {
                             if (selection.Contains(actionexpr.GetMemberName())) x.Action = source.Action;
                             if (selection.Contains(repeatexpr.GetMemberName())) x.Repeat = source.Repeat;
-                            if (selection.Contains(triggerexpr.GetMemberName())) x.Trigger = source.Trigger;
                             if (selection.Contains(durationexpr.GetMemberName())) x.Duration = source.Duration;
+                            if (selection.Contains(triggerexpr.GetMemberName())) x.Trigger = source.Trigger;
                             if (selection.Contains(descexpr.GetMemberName())) x.Description = source.Description;
                         });
 
-                        transaction.QueueCommand(trans => cclient.StoreAll(entities));
+                        transaction.QueueCommand(x => x.StoreAll(entities));
                     }
 
                     #endregion
 
-                    transaction.Commit();
                 }
-                catch (Exception)
+                catch (ArgumentNullException) { throw; }
+                catch (RedisResponseException)
                 {
-                    transaction.Rollback();
-                    throw;
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
                 }
-            }
+                catch (RedisException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
+                }
+                catch (InvalidOperationException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
+                }
+            }); 
         }
 
         public void Erase(string key)
         {
-            var cclient = this.redis.As<DISPLAY_ALARM>();
-            if (cclient.ContainsKey(key)) cclient.DeleteById(key);
+            var daclient = this.redis.As<DISPLAY_ALARM>();
+            if (daclient.ContainsKey(key)) daclient.DeleteById(key);
         }
 
         public void SaveAll(IEnumerable<DISPLAY_ALARM> entities)
         {
-            using (var transaction = this.redis.CreateTransaction())
+            this.manager.ExecTrans(transaction =>
             {
                 try
                 {
+                    var daclient = this.redis.As<DISPLAY_ALARM>();
+
+                    //watch keys
+                    var okeys = daclient.GetAllKeys().ToArray();
+                    if (!okeys.NullOrEmpty()) this.redis.Watch(okeys);
+
+                    var keys = entities.Select(c => c.Id);
                     transaction.QueueCommand(x => x.StoreAll(entities));
-                    transaction.Commit();
                 }
-                catch (ArgumentNullException)
+                catch (ArgumentNullException) { throw; }
+                catch (RedisResponseException)
                 {
-                    transaction.Rollback();
-                    throw;
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
                 }
-            }
+                catch (RedisException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
+                }
+                catch (InvalidOperationException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
+                }
+            });
         }
 
         public void EraseAll(IEnumerable<string> keys = null)
         {
-            var cclient = this.redis.As<DISPLAY_ALARM>();
-
-            if (keys == null) cclient.DeleteAll();
-            else
+            var daclient = this.redis.As<DISPLAY_ALARM>();
+            var allkeys = daclient.GetAllKeys().Select(x => UrnId.GetStringId(x));
+            if (!allkeys.NullOrEmpty())
             {
-                var dkeys = keys.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-                cclient.DeleteByIds(dkeys);
+                var found = allkeys.Intersect(keys);
+                if (!found.NullOrEmpty())daclient.DeleteByIds(found);
             }
+            else daclient.DeleteAll();
         }
 
     }
@@ -475,25 +816,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
     {
 
         private IRedisClientsManager manager;
-        private int? take = null;
         private IKeyGenerator<string> keygen;
-
         private IRedisClient client = null;
         private IRedisClient redis
         {
             get
             {
                 return (client != null) ? client : this.manager.GetClient();
-            }
-        }
-
-        public int? Take
-        {
-            get { return this.take; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("Take");
-                this.take = value;
             }
         }
 
@@ -538,9 +867,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
             full = cclient.GetValue(dry.Id);
             if (full != null)
             {
-                var rattendees = this.redis.As<RELS_EALARMS_ATTENDEES>().GetAll().Where(x => x.AlarmId == full.Id);
-                var rattachbins = this.redis.As<RELS_EALARMS_ATTACHBINS>().GetAll().Where(x => x.AlarmId == full.Id);
-                var rattachuris = this.redis.As<RELS_EALARMS_ATTACHURIS>().GetAll().Where(x => x.AlarmId == full.Id);
+                var rattendees = this.redis.As<REL_EALARMS_ATTENDEES>().GetAll().Where(x => x.AlarmId == full.Id);
+                var rattachbins = this.redis.As<REL_EALARMS_ATTACHBINS>().GetAll().Where(x => x.AlarmId == full.Id);
+                var rattachuris = this.redis.As<REL_EALARMS_ATTACHURIS>().GetAll().Where(x => x.AlarmId == full.Id);
 
                 if (!rattachbins.NullOrEmpty())
                 {
@@ -628,35 +957,39 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public EMAIL_ALARM Find(string key)
         {
-            return this.redis.As<EMAIL_ALARM>().GetValue(key);
+            return this.redis.As<EMAIL_ALARM>().GetById(key);
         }
 
-        public IEnumerable<EMAIL_ALARM> FindAll(IEnumerable<string> keys, int? skip = null)
+        public IEnumerable<EMAIL_ALARM> FindAll(IEnumerable<string> keys, int? skip = null, int? take = null)
         {
-            IEnumerable<EMAIL_ALARM> dry = null;
-            var cclient = this.redis.As<EMAIL_ALARM>();
-            var dkeys = keys.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-            if (cclient.GetAllKeys().Intersect(dkeys).Count() == dkeys.Count())
+            var allkeys = this.redis.As<EMAIL_ALARM>().GetAllKeys();
+            if (skip == null && take == null)
             {
-                dry = (skip != null) ?
-                    cclient.GetValues(dkeys).Skip(skip.Value).Take(take.Value)
-                    : cclient.GetValues(dkeys);
+                var filtered = !keys.NullOrEmpty()
+                    ? allkeys.Intersect(keys.Select(x => UrnId.GetStringId(x)))
+                    : new List<string>();
+                return this.redis.As<EMAIL_ALARM>().GetByIds(filtered);
             }
-            return dry;
+            else
+            {
+                var filtered = !keys.NullOrEmpty()
+                    ? allkeys.Intersect(keys.Select(x => UrnId.GetStringId(x)))
+                    : new List<string>();
+                return this.redis.As<EMAIL_ALARM>().GetByIds(filtered);
+            }
         }
 
-        public IEnumerable<EMAIL_ALARM> Get(int? skip = null)
+        public IEnumerable<EMAIL_ALARM> Get(int? skip = null, int? take = null)
         {
-            IEnumerable<EMAIL_ALARM> dry = null;
-            try
+            if (skip == null && take == null) return this.redis.As<EMAIL_ALARM>().GetAll();
+            else
             {
-                var cclient = this.redis.As<EMAIL_ALARM>();
-                dry = (skip != null) ?
-                    cclient.GetAll().Skip(skip.Value).Take(take.Value)
-                    : cclient.GetAll();
+                var allkeys = this.redis.As<DISPLAY_ALARM>().GetAllKeys();
+                var selected = !allkeys.NullOrEmpty()
+                    ? allkeys.Skip(skip.Value).Take(take.Value)
+                    : allkeys;
+                return this.redis.As<EMAIL_ALARM>().GetValues(selected.ToList());
             }
-            catch (Exception) { throw; }
-            return dry;
         }
 
         public bool ContainsKey(string key)
@@ -675,7 +1008,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public void Save(EMAIL_ALARM entity)
         {
-            using (var transaction = this.redis.CreateTransaction())
+            this.manager.ExecTrans(transaction =>
             {
                 try
                 {
@@ -690,19 +1023,17 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                     #region save attributes and  relations
 
-                    transaction.QueueCommand(x => x.Store(entity));
-
                     if (!attendees.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(attendees));
-                        var rattendees = attendees.Select(x => new RELS_EALARMS_ATTENDEES
+                        var rattendees = attendees.Select(x => new REL_EALARMS_ATTENDEES
                         {
                             Id = KeyGenerator.GetNextKey(),
                             AlarmId = entity.Id,
                             AttendeeId = x.Id
                         });
 
-                        var rclient = this.redis.As<RELS_EALARMS_ATTENDEES>();
+                        var rclient = this.redis.As<REL_EALARMS_ATTENDEES>();
                         var orattendees = rclient.GetAll().Where(x => x.AlarmId == entity.Id);
                         transaction.QueueCommand(x => x.StoreAll(
                             !orattendees.NullOrEmpty()
@@ -713,14 +1044,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!attachbins.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(attachbins));
-                        var rattachbins = attachbins.Select(x => new RELS_EALARMS_ATTACHBINS
+                        var rattachbins = attachbins.Select(x => new REL_EALARMS_ATTACHBINS
                         {
                             Id = KeyGenerator.GetNextKey(),
                             AlarmId = entity.Id,
                             AttachmentId = x.Id
                         });
 
-                        var rclient = this.redis.As<RELS_EALARMS_ATTACHBINS>();
+                        var rclient = this.redis.As<REL_EALARMS_ATTACHBINS>();
                         var orattachbins = rclient.GetAll().Where(x => x.AlarmId == entity.Id);
                         transaction.QueueCommand(x => x.StoreAll(
                             !orattachbins.NullOrEmpty()
@@ -731,14 +1062,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!attachuris.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(attachuris));
-                        var rattachuris = attachuris.Select(x => new RELS_EALARMS_ATTACHURIS
+                        var rattachuris = attachuris.Select(x => new REL_EALARMS_ATTACHURIS
                         {
                             Id = KeyGenerator.GetNextKey(),
                             AlarmId = entity.Id,
                             AttachmentId = x.Id
                         });
 
-                        var rclient = this.redis.As<RELS_EALARMS_ATTACHURIS>();
+                        var rclient = this.redis.As<REL_EALARMS_ATTACHURIS>();
                         var orattachuris = rclient.GetAll().Where(x => x.AlarmId == entity.Id);
                         transaction.QueueCommand(x => x.StoreAll(
                             !orattachuris.NullOrEmpty()
@@ -748,20 +1079,39 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
                     #endregion
 
-                    transaction.Commit();
+
+                    transaction.QueueCommand(x => x.Store(this.Dehydrate(entity)));
+
                 }
-                catch (Exception)
+                catch (ArgumentNullException) { throw; }
+                catch (RedisResponseException)
                 {
-                    transaction.Rollback();
-                    throw;
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
                 }
-            }
+                catch (RedisException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
+                }
+                catch (InvalidOperationException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (RedisResponseException) { throw; }
+                    catch (RedisException) { throw; }
+                    catch (Exception) { throw; }
+                }
+            });
         }
 
-        public void Patch(EMAIL_ALARM source, Expression<Func<EMAIL_ALARM, object>> fields, Expression<Func<EMAIL_ALARM, bool>> predicate = null)
+        public void Patch(EMAIL_ALARM source, Expression<Func<EMAIL_ALARM, object>> fields, IEnumerable<string> keys = null)
         {
             #region construct anonymous fields using expression lambdas
-            
+
             var selection = fields.GetMemberNames();
 
             Expression<Func<EMAIL_ALARM, object>> primitives = x => new
@@ -789,23 +1139,18 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
             #region save (insert or update) relational attributes
 
+            var eaclient = this.redis.As<EMAIL_ALARM>();
+            var okeys = eaclient.GetAllKeys().ToArray();
+            if (!okeys.NullOrEmpty()) this.redis.Watch(okeys);
+
             if (!srelation.NullOrEmpty())
             {
                 Expression<Func<EMAIL_ALARM, object>> attendsexpr = y => y.Attendees;
                 Expression<Func<EMAIL_ALARM, object>> attachsexpr = y => y.Attachments;
 
-                string[] keys = null;
-                var eclient = this.redis.As<EMAIL_ALARM>();
-                    
-                keys = (predicate != null)
-                        ? eclient.GetAll().Where(predicate.Compile()).Select(x => x.Id).ToArray()
-                        : eclient.GetAllKeys().ToArray();
-
-
-
                 #region save relational aggregate attributes of entities
 
-                using (var transaction = this.redis.CreateTransaction())
+                this.manager.ExecTrans(transaction =>
                 {
 
                     try
@@ -817,14 +1162,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             if (!attendees.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => this.redis.As<ATTENDEE>().StoreAll(attendees));
-                                var rattendees = keys.SelectMany(x => attendees.Select(y => new RELS_EALARMS_ATTENDEES
+                                var rattendees = keys.SelectMany(x => attendees.Select(y => new REL_EALARMS_ATTENDEES
                                 {
                                     Id = KeyGenerator.GetNextKey(),
                                     AlarmId = x,
                                     AttendeeId = y.Id
                                 }));
 
-                                var rclient = this.redis.As<RELS_EALARMS_ATTENDEES>();
+                                var rclient = this.redis.As<REL_EALARMS_ATTENDEES>();
                                 var orattendees = rclient.GetAll().Where(x => x.AlarmId == source.Id);
                                 transaction.QueueCommand(x => rclient.StoreAll(
                                     !orattendees.NullOrEmpty()
@@ -839,14 +1184,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             if (!attachbins.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => this.redis.As<ATTACH_BINARY>().StoreAll(attachbins));
-                                var rattachbins = keys.SelectMany(x => attachbins.Select(y => new RELS_EALARMS_ATTACHBINS
+                                var rattachbins = keys.SelectMany(x => attachbins.Select(y => new REL_EALARMS_ATTACHBINS
                                 {
                                     Id = KeyGenerator.GetNextKey(),
                                     AlarmId = x,
                                     AttachmentId = y.Id
                                 }));
-                                
-                                var rclient = this.redis.As<RELS_EALARMS_ATTACHBINS>();
+
+                                var rclient = this.redis.As<REL_EALARMS_ATTACHBINS>();
                                 var orattachbins = rclient.GetAll().Where(x => keys.Contains(x.AlarmId));
                                 transaction.QueueCommand(x => rclient.StoreAll(!orattachbins.NullOrEmpty()
                                     ? rattachbins.Except(orattachbins)
@@ -857,36 +1202,50 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             if (!attachuris.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => this.redis.As<ATTACH_URI>().StoreAll(attachuris));
-                                var rattachuris = keys.SelectMany(x => attachuris.Select(y => new RELS_EALARMS_ATTACHURIS
+                                var rattachuris = keys.SelectMany(x => attachuris.Select(y => new REL_EALARMS_ATTACHURIS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     AlarmId = x,
                                     AttachmentId = y.Id
                                 }));
-                                var rclient = this.redis.As<RELS_EALARMS_ATTACHURIS>();
+                                var rclient = this.redis.As<REL_EALARMS_ATTACHURIS>();
                                 var orattachuris = rclient.GetAll().Where(x => keys.Contains(x.AlarmId));
                                 transaction.QueueCommand(x => rclient.StoreAll(!orattachuris.NullOrEmpty()
                                     ? rattachuris.Except(orattachuris)
                                     : rattachuris));
                             }
                         }
-
-                        transaction.Commit();
-
                     }
-                    catch (Exception)
+                    catch (ArgumentNullException) { throw; }
+                    catch (RedisResponseException)
                     {
-                        transaction.Rollback();
-                        throw;
+                        try { transaction.Rollback(); }
+                        catch (RedisResponseException) { throw; }
+                        catch (RedisException) { throw; }
+                        catch (Exception) { throw; }
+                    }
+                    catch (RedisException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (RedisResponseException) { throw; }
+                        catch (RedisException) { throw; }
+                        catch (Exception) { throw; }
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (RedisResponseException) { throw; }
+                        catch (RedisException) { throw; }
+                        catch (Exception) { throw; }
                     }
 
-                }
+                });
 
                 #endregion
 
-                
 
-            } 
+
+            }
 
             #endregion
         }
@@ -896,9 +1255,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var eclient = this.redis.As<EMAIL_ALARM>();
             if (eclient.ContainsKey(key))
             {
-                eclient.DeleteRelatedEntities<RELS_EALARMS_ATTACHBINS>(key);
-                eclient.DeleteRelatedEntities<RELS_EALARMS_ATTACHURIS>(key);
-                eclient.DeleteRelatedEntities<RELS_EALARMS_ATTENDEES>(key);
+                eclient.DeleteRelatedEntities<REL_EALARMS_ATTACHBINS>(key);
+                eclient.DeleteRelatedEntities<REL_EALARMS_ATTACHURIS>(key);
+                eclient.DeleteRelatedEntities<REL_EALARMS_ATTENDEES>(key);
                 eclient.DeleteById(key);
             }
         }
@@ -929,14 +1288,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         transaction.QueueCommand(x => x.StoreAll(attendees));
                         var rattendees = entities.Where(x => !x.Attendees.OfType<ATTENDEE>().NullOrEmpty())
                             .SelectMany(e => e.Attendees.OfType<ATTENDEE>()
-                                .Select(x => new RELS_EALARMS_ATTENDEES
+                                .Select(x => new REL_EALARMS_ATTENDEES
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     AlarmId = e.Id,
                                     AttendeeId = x.Id
                                 }));
 
-                        var rclient = this.redis.As<RELS_EALARMS_ATTENDEES>();
+                        var rclient = this.redis.As<REL_EALARMS_ATTENDEES>();
                         var orattendees = rclient.GetAll().Where(x => keys.Contains(x.AlarmId));
                         transaction.QueueCommand(x => x.StoreAll((!orattendees.NullOrEmpty())
                             ? rattendees.Except(orattendees)
@@ -948,13 +1307,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         transaction.QueueCommand(x => x.StoreAll(attachbins));
                         var rattachbins = entities.Where(x => !x.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty())
                             .SelectMany(e => e.Attachments.OfType<ATTACH_BINARY>()
-                                .Select(x => new RELS_EALARMS_ATTACHBINS
+                                .Select(x => new REL_EALARMS_ATTACHBINS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     AlarmId = e.Id,
                                     AttachmentId = x.Id
                                 }));
-                        var rclient = this.redis.As<RELS_EALARMS_ATTACHBINS>();
+                        var rclient = this.redis.As<REL_EALARMS_ATTACHBINS>();
                         var orattachbins = rclient.GetAll().Where(x => keys.Contains(x.AlarmId));
                         transaction.QueueCommand(x => x.StoreAll((!orattachbins.NullOrEmpty())
                             ? rattachbins.Except(orattachbins)
@@ -966,13 +1325,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         transaction.QueueCommand(x => x.StoreAll(attachuris));
                         var rattachuris = entities.Where(x => !x.Attachments.OfType<ATTACH_URI>().NullOrEmpty())
                             .SelectMany(e => e.Attachments.OfType<ATTACH_URI>()
-                                .Select(x => new RELS_EALARMS_ATTACHURIS
+                                .Select(x => new REL_EALARMS_ATTACHURIS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     AlarmId = e.Id,
                                     AttachmentId = x.Id
                                 }));
-                        var rclient = this.redis.As<RELS_EALARMS_ATTACHURIS>();
+                        var rclient = this.redis.As<REL_EALARMS_ATTACHURIS>();
                         var orattachuris = rclient.GetAll().Where(x => keys.Contains(x.AlarmId));
                         transaction.QueueCommand(x => x.StoreAll((!orattachuris.NullOrEmpty())
                             ? rattachuris.Except(orattachuris)
@@ -998,9 +1357,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
             {
                 if (e.ContainsKey(k))
                 {
-                    eclient.DeleteRelatedEntities<RELS_EALARMS_ATTACHURIS>(k);
-                    eclient.DeleteRelatedEntities<RELS_EALARMS_ATTACHBINS>(k);
-                    eclient.DeleteRelatedEntities<RELS_EALARMS_ATTENDEES>(k);
+                    eclient.DeleteRelatedEntities<REL_EALARMS_ATTACHURIS>(k);
+                    eclient.DeleteRelatedEntities<REL_EALARMS_ATTACHBINS>(k);
+                    eclient.DeleteRelatedEntities<REL_EALARMS_ATTENDEES>(k);
 
                 }
             };
@@ -1018,5 +1377,14 @@ namespace reexmonkey.xcal.service.repositories.concretes
             }
         }
 
+        public EMAIL_ALARM Dehydrate(EMAIL_ALARM full)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<EMAIL_ALARM> Dehydrate(IEnumerable<EMAIL_ALARM> full)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
