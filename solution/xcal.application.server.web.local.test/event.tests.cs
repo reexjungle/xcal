@@ -13,9 +13,8 @@ using reexmonkey.xcal.domain.operations;
 namespace reexmonkey.xcal.application.server.web.dev.test
 {
     [TestClass]
-    public class EventServiceTests
+    public class EventServiceUnitTests
     {
-        [TestMethod]
         public void PublishMinimalEvent()
         {
             var sclient = new JsonServiceClient(Properties.Settings.Default.test_server);

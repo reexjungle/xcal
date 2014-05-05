@@ -12,7 +12,7 @@ namespace reexmonkey.xcal.domain.operations
 {
     [DataContract]
     [Route("/calendars/add", "POST")]
-    public class AddCalendar: IReturn<VCALENDAR>
+    public class AddCalendar: IReturnVoid
     {
         [DataMember]
         public VCALENDAR Calendar { get; set; }
@@ -20,7 +20,7 @@ namespace reexmonkey.xcal.domain.operations
 
     [DataContract]
     [Route("/calendars/batch/add", "POST")]
-    public class AddCalendars : IReturn<List<VCALENDAR>>
+    public class AddCalendars : IReturnVoid
     {
         [DataMember]
         public List<VCALENDAR> Calendars { get; set; }
@@ -28,7 +28,7 @@ namespace reexmonkey.xcal.domain.operations
 
     [DataContract]
     [Route("/calendars/update", "PUT")]
-    public class UpdateCalendar: IReturn<VCALENDAR>
+    public class UpdateCalendar : IReturnVoid
     {
         [DataMember]
         public VCALENDAR Calendar { get; set; }
@@ -36,7 +36,7 @@ namespace reexmonkey.xcal.domain.operations
 
     [DataContract]
     [Route("/calendars/update", "PUT")]
-    public class UpdateCalendars : IReturn<List<VCALENDAR>>
+    public class UpdateCalendars : IReturnVoid
     {
         [DataMember]
         public List<VCALENDAR> Calendars { get; set; }
@@ -44,7 +44,7 @@ namespace reexmonkey.xcal.domain.operations
 
     [DataContract]
     [Route("/calendars/{CalendarId}/patch", "PATCH")]
-    public class PatchCalendar: IReturn<VCALENDAR>
+    public class PatchCalendar : IReturnVoid
     {
         [DataMember]
         public string CalendarId { get; set; }
@@ -85,7 +85,7 @@ namespace reexmonkey.xcal.domain.operations
 
     [DataContract]
     [Route("/calendars/batch/patch", "PATCH")]
-    public class PatchCalendars : IReturn<List<VCALENDAR>>
+    public class PatchCalendars : IReturnVoid
     {
         [DataMember]
         public List<string> CalendarIds { get; set; }

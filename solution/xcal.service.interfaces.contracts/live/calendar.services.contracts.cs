@@ -12,17 +12,17 @@ namespace reexmonkey.xcal.service.interfaces.contracts.live
 {
     public interface ICalendarService
     {
-        VCALENDAR Post(AddCalendar request);
+        void Post(AddCalendar request);
 
-        List<VCALENDAR> Post(AddCalendars request);
+        void Post(AddCalendars request);
 
-        VCALENDAR Put(UpdateCalendar request);
+        void Put(UpdateCalendar request);
 
-        List<VCALENDAR> Put(UpdateCalendars request);
+        void Put(UpdateCalendars request);
 
-        VCALENDAR Patch(PatchCalendar request);
+        void Patch(PatchCalendar request);
         
-        List<VCALENDAR> Patch(PatchCalendars request);
+        void Patch(PatchCalendars request);
 
         void Delete(DeleteCalendar request);
 

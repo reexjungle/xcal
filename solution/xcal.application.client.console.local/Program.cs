@@ -33,13 +33,16 @@ namespace xcal.application.client.console.local
             Console.WriteLine("Please press any key to start");
             Console.ReadKey();
 
-            var manager = new EventManager 
+            var manager = new CalendarManager 
             { 
                 FpiKeyGenerator = container.Resolve<IFPIKeyGenerator>(),
                 GuidKeyGenerator = container.Resolve<IGuidKeyGenerator>(),
                 ServiceClient = container.Resolve<ServiceClientBase>()
             };
-            manager.PublishMinimalEvent();
+
+            manager.MaintainMultipleCalendars();
+            
+            //emanager.PublishMinimalEvent();
 
             Console.WriteLine("Please press any key to close");
             Console.ReadKey();

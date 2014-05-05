@@ -144,7 +144,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             try
             {
-                var dry = db.Select<VCALENDAR>(q => Sql.In(q.Id, keys.ToArray()), skip.Value, take.Value);
+                IEnumerable<VCALENDAR> dry = null;
+                if(skip == null && take == null) dry = db.Select<VCALENDAR>(q => Sql.In(q.Id, keys.ToArray()));
+                else dry = db.Select<VCALENDAR>(q => Sql.In(q.Id, keys.ToArray()), skip.Value, take.Value);
                 return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
             }
             catch (InvalidOperationException) { throw; }
@@ -156,7 +158,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             try
             {
-                var dry = db.Select<VCALENDAR>(skip, take);
+                IEnumerable<VCALENDAR> dry = null;
+                if(skip == null && take == null) dry = db.Select<VCALENDAR>();
+                else dry = db.Select<VCALENDAR>(skip, take);
                 return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
             }
             catch (InvalidOperationException) { throw; }
@@ -219,7 +223,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             #region construct anonymous fields using expression lambdas
             
-            var selection = fields.GetMemberNames();
+            var selection = fields.GetMemberNames().ToArray();
 
             Expression<Func<VCALENDAR, object>> primitives = x => new
             {
@@ -282,7 +286,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         #region update-only non-relational attributes
 
                         var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
-                        var patchexpr = patchstr.CompileToExpressionFunc<VCALENDAR, object>(CodeDomLanguage.csharp, Utilities.GetReferencedAssemblyNamesFromEntryAssembly());
+                        var patchexpr = patchstr.CompileToExpressionFunc<VCALENDAR, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(VCALENDAR).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
 
                         if(!keys.NullOrEmpty()) db.UpdateOnly<VCALENDAR, object>(source, patchexpr, q =>Sql.In(q.Id, keys.ToArray()));
                         else db.UpdateOnly<VCALENDAR, object>(source, patchexpr);
@@ -333,12 +337,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public void SaveAll(IEnumerable<VCALENDAR> entities)
         {
-
             var events = entities.Where(x => !x.Events.NullOrEmpty()).SelectMany(x => x.Events);
-            using (var transaction = db.OpenTransaction())
+            using (var transaction = db.BeginTransaction())
             {
                 try
                 {
+                    db.SaveAll(entities, transaction);
                     if (!events.NullOrEmpty())
                     {
                         var keys = entities.Select(x => x.Id).ToArray();

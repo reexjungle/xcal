@@ -170,7 +170,7 @@ namespace reexmonkey.infrastructure.operations.concretes
             catch (ArgumentNullException) { throw; }
             catch (Exception) { throw; }
             return references;
-        }     
+        }
 
         public static FileVersionInfo GetFileVersionInfo(this Assembly assembly)
         {
