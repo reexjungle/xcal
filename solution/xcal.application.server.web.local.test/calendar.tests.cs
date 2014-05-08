@@ -32,7 +32,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
         private void Teardown()
         {
-            client.Delete(new DeleteCalendars());
+            client.Post(new FlushDatabase { Force = false });
         }
 
         [TestMethod]
@@ -72,15 +72,13 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             var deleted = this.client.Get(new FindCalendar { CalendarId = calendar.Id });
             Assert.AreEqual(deleted, null);
 
-            //this.Teardown();
-
         }
 
         [TestMethod]
         public void MaintainMultipleCalendars()
         {
             this.Teardown();
-            var max = 7;
+            var max = 5;
             var calendars = new VCALENDAR[max];
             for (int i = 0; i < max; i++)
             {
@@ -137,7 +135,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             Assert.AreEqual(retrieved.Count(), 2);
 
             retrieved = this.client.Get(new GetCalendars { Page = 1, Size = 10 });
-            Assert.AreEqual(retrieved.Count(), max >= 10? 10: max);
+            Assert.AreEqual(retrieved.Count(), max >= 10 ? 10 : max);
 
             retrieved = this.client.Get(new GetCalendars { Page = 2, Size = 5 });
             Assert.AreEqual(retrieved.Count(), max >= 5 ? max % 5: 0);

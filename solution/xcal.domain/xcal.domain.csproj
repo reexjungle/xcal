@@ -89,6 +89,7 @@
     <Compile Include="models\parameters.cs" />
     <Compile Include="models\properties.cs" />
     <Compile Include="models\todo.cs" />
+    <Compile Include="operations\admin.request.dtos.cs" />
     <Compile Include="operations\calendar.request.dtos.cs" />
     <Compile Include="operations\events.request.dtos.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

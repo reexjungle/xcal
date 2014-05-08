@@ -74,6 +74,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="admin.ormlite.repository.cs" />
+    <Compile Include="admin.redis.repository.cs" />
     <Compile Include="alarm.relations.cs" />
     <Compile Include="alarm.ormlite.repositories.cs" />
     <Compile Include="alarm.redis.repositories.cs" />

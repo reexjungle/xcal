@@ -35,8 +35,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
         private void Teardown()
         {
-            client.Delete(new DeleteEvents());
-            client.Delete(new DeleteCalendars());
+            client.Post(new FlushDatabase { Force = false });
         }
 
         [TestMethod]
@@ -114,9 +113,6 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             this.client.Delete(new DeleteEvent { EventId = minimal.Id });
             var deleted = this.client.Get(new FindEvent { EventId = minimal.Id });
             Assert.AreEqual(deleted, null);
-
-            //this.Teardown();
-
         }
     }
 }

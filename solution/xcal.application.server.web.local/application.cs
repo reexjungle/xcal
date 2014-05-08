@@ -242,6 +242,11 @@ namespace reexmonkey.xcal.application.server.web.local
                     DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
                 });
 
+                container.Register<IAdminRepository>(x => new AdminOrmLiteRepository
+                {
+                    DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
+                });
+
                 #endregion
 
                 #region inject cached providers
@@ -290,6 +295,11 @@ namespace reexmonkey.xcal.application.server.web.local
                 container.Register<IEmailAlarmRepository>(x => new EmailAlarmRedisRepository
                 {
                     KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
+                    RedisClientsManager = container.Resolve<IRedisClientsManager>(),
+                });
+
+                container.Register<IAdminRepository>(x => new AdminRedisRepository
+                {
                     RedisClientsManager = container.Resolve<IRedisClientsManager>(),
                 });
 
