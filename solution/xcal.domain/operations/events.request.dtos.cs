@@ -4,13 +4,14 @@ using System.Runtime.Serialization;
 using ServiceStack.ServiceHost;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
+using reexmonkey.infrastructure.io.contracts;
 
 namespace reexmonkey.xcal.domain.operations
 {
 
     [DataContract]
     [Route("/calendars/{CalendarId}/events/add", "POST")]
-    public class AddEvent : IReturn<VEVENT>
+    public class AddEvent : IReturnVoid
     {
         [DataMember]
         public string CalendarId { get; set; }
@@ -21,7 +22,7 @@ namespace reexmonkey.xcal.domain.operations
 
     [DataContract]
     [Route("/calendars/{CalendarId}/events/batch/add", "POST")]
-    public class AddEvents: IReturn<List<VEVENT>>
+    public class AddEvents : IReturnVoid
     {
         [DataMember]
         public string CalendarId { get; set; }
@@ -31,23 +32,17 @@ namespace reexmonkey.xcal.domain.operations
     }
 
     [DataContract]
-    [Route("/calendars/events/{EventId}/update", "PUT")]
-    public class UpdateEvent : IReturn<VEVENT>
+    [Route("/calendars/events/update", "PUT")]
+    public class UpdateEvent : IReturnVoid
     {
-        [DataMember]
-        public string EventId { get; set; }
-
         [DataMember]
         public VEVENT Event { get; set; }
     }
 
     [DataContract]
-    [Route("/calendars/events/update", "PUT")]
-    public class UpdateEvents : IReturn<List<VEVENT>>
+    [Route("/calendars/events/batch/update", "PUT")]
+    public class UpdateEvents : IReturnVoid
     {
-        [DataMember]
-        public List<string> EventIds { get; set; }
-
         [DataMember]
         public List<VEVENT> Events { get; set; }
     }
@@ -59,7 +54,7 @@ namespace reexmonkey.xcal.domain.operations
     [KnownType(typeof(DISPLAY_ALARM))]
     [KnownType(typeof(EMAIL_ALARM))]
     [Route("/calendars/events/{EventId}/patch", "PATCH")]
-    public class PatchEvent: IReturn<VEVENT>
+    public class PatchEvent : IReturnVoid
     {
         [DataMember]
         public string EventId { get; set; }
@@ -110,9 +105,6 @@ namespace reexmonkey.xcal.domain.operations
         public URI Url { get; set; }
 
         [DataMember]
-        public RECURRENCE_ID RecurrenceId { get; set; }
-
-        [DataMember]
         public RECUR RecurrenceRule { get; set; }
 
         [DataMember]
@@ -155,26 +147,21 @@ namespace reexmonkey.xcal.domain.operations
         public List<IALARM> Alarms { get; set; }
 
         [DataMember]
-        public List<IANA_PROPERTY> IANA { get; set; }
+        public List<IANA_PROPERTY> IANAProperties { get; set; }
 
         [DataMember]
-        public List<X_PROPERTY> NonStandard { get; set; }
+        public List<X_PROPERTY> XProperties { get; set; }
     }
 
     [DataContract]
     [Route("/calendars/events/batch/patch", "PATCH")]
-    public class PatchEvents : IReturn<List<VEVENT>>
+    public class PatchEvents : IReturnVoid
     {
-        [DataMember]
-        public string CalendarId { get; set; }
 
         [DataMember]
         public List<string> EventIds { get; set; }
 
         [DataMember]
-        public string EventId { get; set; }
-
-        [DataMember]
         public DATE_TIME Datestamp { get; set; }
 
         [DataMember]
@@ -265,10 +252,10 @@ namespace reexmonkey.xcal.domain.operations
         public List<IALARM> Alarms { get; set; }
 
         [DataMember]
-        public List<IANA_PROPERTY> IANA { get; set; }
+        public List<IANA_PROPERTY> IANAProperties { get; set; }
 
         [DataMember]
-        public List<X_PROPERTY> NonStandard { get; set; }
+        public List<X_PROPERTY> XProperties { get; set; }
 
     }
 
@@ -289,7 +276,7 @@ namespace reexmonkey.xcal.domain.operations
     }
 
     [DataContract]
-    [Route("/calendars/events/{EventId}/get", "GET")]
+    [Route("/calendars/events/{EventId}/find", "GET")]
     public class FindEvent : IReturn<VEVENT>
     {
         [DataMember]
@@ -297,11 +284,11 @@ namespace reexmonkey.xcal.domain.operations
     }
 
     [DataContract]
-    [Route("/calendars/events/batch/get", "GET")]
-    [Route("/calendars/events/batch/get/{Page}/{Take}", "GET")]
-    [Route("/calendars/events/batch/get/page/{Page}/{Take}", "GET")]
-    [Route("/calendars/events/batch/get/page/{Page}/take/{Take}", "GET")]
-    public class FindEvents : IReturn<List<VEVENT>>
+    [Route("/calendars/events/batch/find", "POST")]
+    [Route("/calendars/events/batch/find/{Page}/{Size}", "POST")]
+    [Route("/calendars/events/batch/find/page/{Page}/{Size}", "POST")]
+    [Route("/calendars/events/batch/find/page/{Page}/size/{Size}", "POST")]
+    public class FindEvents : IReturn<List<VEVENT>>, IPaginated<int>
     {
         [DataMember]
         public List<string> EventIds { get; set; }
@@ -310,8 +297,20 @@ namespace reexmonkey.xcal.domain.operations
         public int? Page { get; set; }
 
         [DataMember]
-        public int? Take { get; set; }
+        public int? Size { get; set; }
 
+    }
+
+    [DataContract]
+    [Route("/calendars/events/{Page}/{Size}", "GET")]
+    [Route("/calendars/events/page/{Page}/size/{Size}", "GET")]
+    public class GetEvents : IReturn<List<VEVENT>>, IPaginated<int>
+    {
+        [DataMember]
+        public int? Page { get; set; }
+
+        [DataMember]
+        public int? Size { get; set; }
     }
 
 

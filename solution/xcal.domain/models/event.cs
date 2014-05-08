@@ -40,7 +40,7 @@ namespace reexmonkey.xcal.domain.models
                 if (string.IsNullOrEmpty(this.id))
                 {
                     return this.RecurrenceId != null
-                        ? string.Format("{0}/{1}", this.Uid, this.RecurrenceId.Id)
+                        ? string.Format("{0}-{1}", this.Uid, this.RecurrenceId.Id)
                         : this.Uid;
                 }
                 else return this.id;
@@ -199,6 +199,18 @@ namespace reexmonkey.xcal.domain.models
             this.Datestamp = new DATE_TIME(DateTime.UtcNow);
             this.Created = this.Datestamp;
             this.LastModified = this.Datestamp;
+            this.Attachments = new List<IATTACH>();
+            this.Attendees = new List<ATTENDEE>();
+            this.Categories = new CATEGORIES();
+            this.Contacts = new List<CONTACT>();
+            this.Comments = new List<COMMENT>();
+            this.ExceptionDates = new List<EXDATE>();
+            this.RequestStatuses = new List<REQUEST_STATUS>();
+            this.RelatedTos = new List<RELATEDTO>();
+            this.RecurrenceDates = new List<RDATE>();
+            this.Alarms = new List<IALARM>();
+            this.IANAProperties = new List<IANA_PROPERTY>();
+            this.XProperties = new List<X_PROPERTY>();
         }
 
         public VEVENT(DATE_TIME dtstamp, string uid, DATE_TIME start, DATE_TIME end,  PRIORITY priority, ORGANIZER organizer = null, LOCATION location = null, 

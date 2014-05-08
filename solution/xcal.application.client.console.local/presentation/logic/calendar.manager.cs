@@ -60,12 +60,18 @@ namespace xcal.application.client.console.local.presentation.logic
 
             var retrieved = this.client.Get(new FindCalendars { CalendarIds = keys });
 
+            calendars[3].Calscale = CALSCALE.ISLAMIC;
+            calendars[4].Version = "2.0";
+            this.client.Put(new UpdateCalendars { Calendars = calendars.ToList() });
+            retrieved = this.client.Get(new FindCalendars { CalendarIds = keys });
+
             this.client.Patch(new PatchCalendars
             {
                 Scale = CALSCALE.JULIAN,
                 CalendarIds = new List<string> { keys[0], keys[1], keys[2] }
             });
-            var patched = this.client.Get(new FindCalendars
+
+            retrieved = this.client.Get(new FindCalendars
             {
                 CalendarIds = new List<string> { keys[0], keys[1], keys[2] }
             });

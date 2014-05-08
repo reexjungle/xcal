@@ -13,17 +13,17 @@ namespace reexmonkey.xcal.service.interfaces.contracts.live
 {
     public interface IEventService
     {
-        VEVENT Post(AddEvent request);
+        void Post(AddEvent request);
 
-        List<VEVENT> Post(AddEvents request);
+        void Post(AddEvents request);
 
-        VEVENT Put(UpdateEvent request);
+        void Put(UpdateEvent request);
 
-        List<VEVENT> Put(UpdateEvents request);
+        void Put(UpdateEvents request);
 
-        VEVENT Patch(PatchEvent request);
+        void Patch(PatchEvent request);
 
-        List<VEVENT> Patch(PatchEvents request);
+        void Patch(PatchEvents request);
 
         void Delete(DeleteEvent request);
 
@@ -31,6 +31,8 @@ namespace reexmonkey.xcal.service.interfaces.contracts.live
 
         VEVENT Get(FindEvent request);
 
-        List<VEVENT> Get(FindEvents request);
+        List<VEVENT> Post(FindEvents request);
+
+        List<VEVENT> Get(GetEvents request);
     }
 }

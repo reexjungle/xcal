@@ -105,7 +105,9 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
             {
                 var keys = request.Calendars.Select(x => x.Id).ToArray();
                 if (this.repository.ContainsKeys(keys, ExpectationMode.pessimistic))
+                {
                     this.repository.SaveAll(request.Calendars);
+                }
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -225,7 +227,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
-        public List<VCALENDAR> Get(FindCalendars request)
+        public List<VCALENDAR> Post(FindCalendars request)
         {
             try
             {

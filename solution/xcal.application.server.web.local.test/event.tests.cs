@@ -15,77 +15,108 @@ namespace reexmonkey.xcal.application.server.web.dev.test
     [TestClass]
     public class EventServiceUnitTests
     {
-        public void PublishMinimalEvent()
+                
+        private JsonServiceClient client;
+        private GuidKeyGenerator guidkeygen;
+        private FPIKeyGenerator<string> fpikeygen;
+
+        public EventServiceUnitTests()
         {
-            var sclient = new JsonServiceClient(Properties.Settings.Default.test_server);
-            var events = new List<VEVENT> 
-                    {
-                        new VEVENT
-                        {
-                            Uid = new GuidKeyGenerator().GetNextKey(),
-                            RecurrenceId = new RECURRENCE_ID
-                            {
-                                Id = new GuidKeyGenerator().GetNextKey(),
-                                Range = RANGE.THISANDFUTURE,
-                                Value = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc))
-                            },
-                            RecurrenceRule = new RECUR
-                            {
-                                Id = new GuidKeyGenerator().GetNextKey(),
-                                FREQ = FREQ.DAILY,
-                                Format = RecurFormat.DateTime,
-                                UNTIL = new DATE_TIME(new DateTime(2014, 6, 25, 18, 03, 08, 0, DateTimeKind.Utc))
-                            },
+            client = new JsonServiceClient(Properties.Settings.Default.test_server);
+            guidkeygen = new GuidKeyGenerator();
+            fpikeygen = new FPIKeyGenerator<string>
+            {
+                Owner = Properties.Settings.Default.fpiOwner,
+                Authority = Properties.Settings.Default.fpiAuthority,
+                Description = Properties.Settings.Default.fpiDescription,
+                LanguageId = Properties.Settings.Default.fpiLanguageId
+            };
+        }
 
-                            Organizer = new ORGANIZER
-                            {
-                                Id = new GuidKeyGenerator().GetNextKey(),
-                                CN = "Emmanuel Ngwane",
-                                Address = new URI("ngwanemk@gmail.com"),
-                                Language = new LANGUAGE("en")
-                            },
-                            Location = new LOCATION
-                            {
-                                Text = "Düsseldorf",
-                                Language = new LANGUAGE("de", "DE")
-                            },
+        private void Teardown()
+        {
+            client.Delete(new DeleteEvents());
+            client.Delete(new DeleteCalendars());
+        }
 
-                            Summary = new SUMMARY("Test Meeting"),
-                            Description = new DESCRIPTION("A test meeting for freaks"),
-                            Start = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc)),
-                            End = new DATE_TIME(new DateTime(2014, 6, 15, 18, 03, 08, 0, DateTimeKind.Utc)),
-                            Status = STATUS.CONFIRMED,
-                            Transparency = TRANSP.TRANSPARENT,
-                            Classification = CLASS.PUBLIC
-                        }
-                    
-                    };
+        [TestMethod]
+        public void MaintainSingleEvent()
+        {
+            this.Teardown();
+            var calendar = new VCALENDAR
+            {
+                Id = this.guidkeygen.GetNextKey(),
+                ProdId = this.fpikeygen.GetNextKey(),
+                Method = METHOD.PUBLISH
+            };
 
-            var eventstring = events[0].ToString();
+            var minimal = new VEVENT 
+            {
+                Uid = new GuidKeyGenerator().GetNextKey(),
+                RecurrenceId = new RECURRENCE_ID
+                {
+                    Id = new GuidKeyGenerator().GetNextKey(),
+                    Range = RANGE.THISANDFUTURE,
+                    Value = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc))
+                },
+                RecurrenceRule = new RECUR
+                {
+                    Id = new GuidKeyGenerator().GetNextKey(),
+                    FREQ = FREQ.DAILY,
+                    Format = RecurFormat.DateTime,
+                    UNTIL = new DATE_TIME(new DateTime(2014, 6, 25, 18, 03, 08, 0, DateTimeKind.Utc))
+                },
 
-            //var published = sclient.Post<VCALENDAR>(new PublishEvent
-            //{
-            //    CalendarId = new GuidKeyGenerator().GetNextKey(),
-            //    ProductId = new FPIKeyGenerator<string>()
-            //    {
-            //        Owner = Properties.Settings.Default.fpiOwner,
-            //        LanguageId = Properties.Settings.Default.fpiLanguageId,
-            //        Description = Properties.Settings.Default.fpiDescription,
-            //        Authority = Properties.Settings.Default.fpiAuthority
-            //    }.GetNextKey(),
+                Organizer = new ORGANIZER
+                {
+                    Id = new GuidKeyGenerator().GetNextKey(),
+                    CN = "Emmanuel Ngwane",
+                    Address = new URI("ngwanemk@gmail.com"),
+                    Language = new LANGUAGE("en")
+                },
+                Location = new LOCATION
+                {
+                    Text = "Düsseldorf",
+                    Language = new LANGUAGE("de", "DE")
+                },
 
-            //    Events = events,
-            //    TimeZones = null
-            //});
+                Summary = new SUMMARY("Test Meeting"),
+                Description = new DESCRIPTION("A test meeting for freaks"),
+                Start = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc)),
+                End = new DATE_TIME(new DateTime(2014, 6, 15, 18, 03, 08, 0, DateTimeKind.Utc)),
+                Status = STATUS.CONFIRMED,
+                Transparency = TRANSP.TRANSPARENT,
+                Classification = CLASS.PUBLIC
+            };
 
-            //Assert.AreNotEqual(published, null);
-            //Assert.AreEqual(published.Method, METHOD.PUBLISH);
+            this.client.Post(new AddCalendar { Calendar = calendar });
+            this.client.Post(new AddEvent { CalendarId = calendar.Id, Event = minimal });
+            var retrieved = this.client.Get(new FindEvent { EventId = minimal.Id});
+            Assert.AreEqual(retrieved.Organizer.CN, "Emmanuel Ngwane");
+            Assert.AreEqual(retrieved.Start, minimal.Start);
+            Assert.AreEqual(retrieved, minimal);
 
-            //var pevent = published.Events[0] as VEVENT;
-            //Assert.AreNotEqual(pevent, null);
-            //Assert.AreEqual(pevent.Start.ToString(), "20140615T160701Z");
-            //Assert.AreEqual(pevent.Duration.ToString(), "PT1H56M7S");
-            
+            minimal.Start = new DATE_TIME(new DateTime(2014, 6, 16, 10, 30, 0, 0, DateTimeKind.Utc));
+            minimal.Duration = new DURATION(1, 5, 2, 30);
+            minimal.RecurrenceRule.FREQ = FREQ.WEEKLY;
+
+            this.client.Put(new UpdateEvent { Event = minimal });
+            retrieved = this.client.Get(new FindEvent { EventId = minimal.Id });
+            Assert.AreEqual(retrieved.End, minimal.End);
+            Assert.AreEqual(retrieved.RecurrenceRule.FREQ, FREQ.WEEKLY);
+            Assert.AreEqual(retrieved.Organizer.CN, "Emmanuel Ngwane");
+            Assert.AreEqual(retrieved, minimal);
+
+            this.client.Patch(new PatchEvent { Transparency = TRANSP.OPAQUE, EventId = minimal.Id});
+            var patched = this.client.Get(new FindEvent { EventId = minimal.Id });
+            Assert.AreEqual(patched.Transparency, TRANSP.OPAQUE);
+
+            this.client.Delete(new DeleteEvent { EventId = minimal.Id });
+            var deleted = this.client.Get(new FindEvent { EventId = minimal.Id });
+            Assert.AreEqual(deleted, null);
+
+            //this.Teardown();
+
         }
     }
 }

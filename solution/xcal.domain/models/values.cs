@@ -966,7 +966,7 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             var sym = (this.sign == SignType.Negative) ? "-" : string.Empty;
             sb.AppendFormat("{0}P", sym);
-            if (this.weeks != 0) sb.AppendFormat("{1}W", this.weeks);
+            if (this.weeks != 0) sb.AppendFormat("{0}W", this.weeks);
             if (this.days != 0) sb.AppendFormat("{0}D", this.days);
             if (this.hours != 0 || this.minutes != 0 && this.seconds != 0) sb.Append("T");
             if (this.hours != 0) sb.AppendFormat("{0}H", this.hours);

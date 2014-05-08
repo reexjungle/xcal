@@ -30,6 +30,6 @@ namespace reexmonkey.xcal.service.interfaces.contracts.live
 
         VCALENDAR Get(FindCalendar request);
 
-        List<VCALENDAR> Get(FindCalendars request);
+        List<VCALENDAR> Post(FindCalendars request);
     }
 }

@@ -35,7 +35,7 @@ namespace reexmonkey.xcal.domain.operations
     }
 
     [DataContract]
-    [Route("/calendars/update", "PUT")]
+    [Route("/calendars/batch/update", "PUT")]
     public class UpdateCalendars : IReturnVoid
     {
         [DataMember]
@@ -150,9 +150,9 @@ namespace reexmonkey.xcal.domain.operations
     }
 
     [DataContract]
-    [Route("/calendars/batch/find", "GET")]
-    [Route("/calendars/batch/find/{Page}/{Size}", "GET")]
-    [Route("/calendars/batch/find/page/{Page}/size/{Size}", "GET")]
+    [Route("/calendars/batch/find", "POST")]
+    [Route("/calendars/batch/find/{Page}/{Size}", "POST")]
+    [Route("/calendars/batch/find/page/{Page}/size/{Size}", "POST")]
     public class FindCalendars : IReturn<List<VCALENDAR>>, IPaginated<int>
     {
         [DataMember]

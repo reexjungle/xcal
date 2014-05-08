@@ -161,7 +161,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
             #region save attributes of event
 
-            using (var transaction = db.OpenTransaction())
+            using (var transaction = db.BeginTransaction())
             {
                 try
                 {
@@ -176,7 +176,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             OrganizerId = org.Id 
                         };
                         var ororgs = db.Select<REL_EVENTS_ORGANIZERS>(q => q.EventId == entity.Id);
-                        if (!ororgs.NullOrEmpty() && !ororgs.Contains(rorg)) db.Save(rorg, transaction);
+                        if (ororgs.NullOrEmpty()) db.Save(rorg, transaction);
+                        else if (!ororgs.Contains(rorg)) db.Save(rorg, transaction);
                     }
                     if (rid != null)
                     {
@@ -188,7 +189,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             RecurrenceId_Id = rid.Id 
                         };
                         var orrids = db.Select<REL_EVENTS_RECURRENCE_IDS>(q => q.EventId == entity.Id);
-                        if (!orrids.NullOrEmpty() && !orrids.Contains(rrid)) db.Save(rrid, transaction);
+                        if (orrids.NullOrEmpty()) db.Save(rrid, transaction);
+                        else if (!orrids.Contains(rrid)) db.Save(rrid, transaction);
                     }
 
                     if (rrule != null)
@@ -201,7 +203,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             RecurrenceRuleId = rrule.Id 
                         };
                         var orrrules = db.Select<REL_EVENTS_RECURS>(q => q.EventId == entity.Id);
-                        if (!orrrules.NullOrEmpty() && !orrrules.Contains(rrrule)) db.Save(rrule, transaction);
+                        if (orrrules.NullOrEmpty()) db.Save(rrrule, transaction);
+                        else if (!orrrules.Contains(rrrule)) db.Save(rrrule, transaction);
                     }
 
                     if (!attendees.NullOrEmpty())
@@ -377,6 +380,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     transaction.Commit();
                 }
                 catch (InvalidOperationException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (InvalidOperationException) { throw; }
+                    catch (Exception) { throw; }
+                }
+                catch (ApplicationException)
                 {
                     try { transaction.Rollback(); }
                     catch (InvalidOperationException) { throw; }
@@ -759,7 +768,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         #region update-only non-relational attributes
 
                         var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
-                        var patchexpr = patchstr.CompileToExpressionFunc<VEVENT, object>(CodeDomLanguage.csharp, Utilities.GetReferencedAssemblyNamesFromEntryAssembly());
+                        var patchexpr = patchstr.CompileToExpressionFunc<VEVENT, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(VEVENT).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
 
                         if (!keys.NullOrEmpty()) db.UpdateOnly<VEVENT, object>(source, patchexpr, q => Sql.In(q.Id, keys.ToArray()));
                         else db.UpdateOnly<VEVENT, object>(source, patchexpr);
@@ -1111,7 +1120,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
 
         public VEVENT Hydrate(VEVENT dry)
         {
-            VEVENT full = dry;
+            var full = dry;
             try
             {
                 var okey = db.SelectParam<VEVENT, string>(q => q.Id, p => p.Id == dry.Id).FirstOrDefault();
@@ -1216,7 +1225,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 }
 
             }
+
             catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }
             catch (Exception) { throw; }
 
             return full?? dry;

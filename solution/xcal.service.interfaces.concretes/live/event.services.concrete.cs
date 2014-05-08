@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using ServiceStack.Logging;
 using ServiceStack.ServiceInterface;
 using reexmonkey.foundation.essentials.concretes;
+using reexmonkey.infrastructure.io.concretes;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.domain.operations;
 using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.xcal.service.interfaces.contracts.live;
+using reexmonkey.foundation.essentials.contracts;
 
 namespace reexmonkey.xcal.service.interfaces.concretes.live
 {
@@ -57,54 +59,275 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
         }
 
 
-        public VEVENT Post(AddEvent request)
+        public void Post(AddEvent request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (this.repository.ContainsKey(request.CalendarId))
+                {
+                    if (!this.repository.EventRepository.ContainsKey(request.Event.Id)) 
+                        this.repository.EventRepository.Save(request.Event);
+                }
+            }
+            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
-        public List<VEVENT> Post(AddEvents request)
+        public void Post(AddEvents request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (this.repository.ContainsKey(request.CalendarId))
+                {
+                    var keys = request.Events.Select(x => x.Id).ToArray();
+                    if (!this.repository.EventRepository.ContainsKeys(keys))
+                        this.repository.EventRepository.SaveAll(request.Events);
+                }
+            }
+            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
-        public VEVENT Put(UpdateEvent request)
+        public void Put(UpdateEvent request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (this.repository.EventRepository.ContainsKey(request.Event.Id))
+                    this.repository.EventRepository.Save(request.Event);
+
+            }
+            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
-        public List<VEVENT> Put(UpdateEvents request)
+        public void Put(UpdateEvents request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var keys = request.Events.Select(x => x.Id).ToArray();
+                if (this.repository.EventRepository.ContainsKeys(keys))
+                {
+                    this.repository.EventRepository.SaveAll(request.Events);   
+                }
+            }
+            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
-        public VEVENT Patch(PatchEvent request)
+        public void Patch(PatchEvent request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var source = new VEVENT
+                {
+                    Start = request.Start,
+                    Classification = request.Classification,
+                    Description = request.Description,
+                    Position = request.Position,
+                    Location = request.Location,
+                    Organizer = request.Organizer,
+                    Priority = request.Priority,
+                    Sequence = request.Sequence,
+                    Status = request.Status,
+                    Summary = request.Summary,
+                    Transparency = request.Transparency,
+                    Url = request.Url,
+                    RecurrenceRule = request.RecurrenceRule,
+                    End = request.End,
+                    Duration = request.Duration,
+                    Attachments = request.Attachments,
+                    Attendees = request.Attendees,
+                    Categories = request.Categories,
+                    Comments = request.Comments,
+                    Contacts= request.Contacts,
+                    ExceptionDates = request.ExceptionDates,
+                    RequestStatuses = request.RequestStatuses,
+                    Resources = request.Resources,
+                    RelatedTos = request.RelatedTos,
+                    Alarms = request.Alarms,
+                    IANAProperties = request.IANAProperties,
+                    XProperties = request.XProperties
+                };
+
+                var fieldlist = new List<string>();
+                if (source.Start != default(DATE_TIME)) fieldlist.Add("Start");
+                if (source.Classification != default(CLASS)) fieldlist.Add("Classification");
+                if (source.Position != null) fieldlist.Add("Position");
+                if (source.Location != null) fieldlist.Add("Location");
+                if (source.Organizer != null) fieldlist.Add("Organizer");
+                if (source.Priority != default(PRIORITY)) fieldlist.Add("Priority");
+                if (source.Sequence != default(int)) fieldlist.Add("Sequence");
+                if (source.Status != default(STATUS)) fieldlist.Add("Status");
+                if (source.Summary != null) fieldlist.Add("Summary");
+                if (source.Transparency != default(TRANSP)) fieldlist.Add("Transparency");
+                if (source.Url != null) fieldlist.Add("Url");
+                if (source.RecurrenceRule != null) fieldlist.Add("RecurrenceRule");
+                if (source.End != default(DATE_TIME)) fieldlist.Add("End");
+                if (source.Duration != default(DURATION)) fieldlist.Add("Duration");
+                if (!source.Attachments.NullOrEmpty()) fieldlist.Add("Attachments");
+                if (!source.Attendees.NullOrEmpty()) fieldlist.Add("Attendees");
+                if (source.Categories != null) fieldlist.Add("Categories");
+                if (!source.Comments.NullOrEmpty()) fieldlist.Add("Comments");
+                if (!source.Contacts.NullOrEmpty()) fieldlist.Add("Contacts");
+                if (!source.ExceptionDates.NullOrEmpty()) fieldlist.Add("ExceptionDates");
+                if (!source.RequestStatuses.NullOrEmpty()) fieldlist.Add("RequestStatuses");
+                if (!source.Resources.NullOrEmpty()) fieldlist.Add("Resources");
+                if (!source.RelatedTos.NullOrEmpty()) fieldlist.Add("RelatedTos");
+                if (!source.Alarms.NullOrEmpty()) fieldlist.Add("Alarms");
+                if (!source.IANAProperties.NullOrEmpty()) fieldlist.Add("IANAProperties");
+                if (!source.XProperties.NullOrEmpty()) fieldlist.Add("XProperties");
+
+                var fieldstr = string.Format("x => new {{ {0} }}", string.Join(", ", fieldlist.Select(x => string.Format("x.{0}", x))));
+                var fieldexpr = fieldstr.CompileToExpressionFunc<VEVENT, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(VEVENT).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
+                this.repository.EventRepository.Patch(source, fieldexpr, request.EventId.ToSingleton());
+            }
+            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
-        public List<VEVENT> Patch(PatchEvents request)
+        public void Patch(PatchEvents request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var source = new VEVENT
+                {
+                    Start = request.Start,
+                    Classification = request.Classification,
+                    Description = request.Description,
+                    Position = request.Position,
+                    Location = request.Location,
+                    Organizer = request.Organizer,
+                    Priority = request.Priority,
+                    Sequence = request.Sequence,
+                    Status = request.Status,
+                    Summary = request.Summary,
+                    Transparency = request.Transparency,
+                    Url = request.Url,
+                    RecurrenceRule = request.RecurrenceRule,
+                    End = request.End,
+                    Duration = request.Duration,
+                    Attachments = request.Attachments,
+                    Attendees = request.Attendees,
+                    Categories = request.Categories,
+                    Comments = request.Comments,
+                    Contacts = request.Contacts,
+                    ExceptionDates = request.ExceptionDates,
+                    RequestStatuses = request.RequestStatuses,
+                    Resources = request.Resources,
+                    RelatedTos = request.RelatedTos,
+                    Alarms = request.Alarms,
+                    IANAProperties = request.IANAProperties,
+                    XProperties = request.XProperties
+                };
+
+                var fieldlist = new List<string>();
+                if (source.Start != default(DATE_TIME)) fieldlist.Add("Start");
+                if (source.Classification != default(CLASS)) fieldlist.Add("Classification");
+                if (source.Position != null) fieldlist.Add("Position");
+                if (source.Location != null) fieldlist.Add("Location");
+                if (source.Organizer != null) fieldlist.Add("Organizer");
+                if (source.Priority != default(PRIORITY)) fieldlist.Add("Priority");
+                if (source.Sequence != default(int)) fieldlist.Add("Sequence");
+                if (source.Status != default(STATUS)) fieldlist.Add("Status");
+                if (source.Summary != null) fieldlist.Add("Summary");
+                if (source.Transparency != default(TRANSP)) fieldlist.Add("Transparency");
+                if (source.Url != null) fieldlist.Add("Url");
+                if (source.RecurrenceRule != null) fieldlist.Add("RecurrenceRule");
+                if (source.End != default(DATE_TIME)) fieldlist.Add("End");
+                if (source.Duration != default(DURATION)) fieldlist.Add("Duration");
+                if (!source.Attachments.NullOrEmpty()) fieldlist.Add("Attachments");
+                if (!source.Attendees.NullOrEmpty()) fieldlist.Add("Attendees");
+                if (source.Categories != null) fieldlist.Add("Categories");
+                if (!source.Comments.NullOrEmpty()) fieldlist.Add("Comments");
+                if (!source.Contacts.NullOrEmpty()) fieldlist.Add("Contacts");
+                if (!source.ExceptionDates.NullOrEmpty()) fieldlist.Add("ExceptionDates");
+                if (!source.RequestStatuses.NullOrEmpty()) fieldlist.Add("RequestStatuses");
+                if (!source.Resources.NullOrEmpty()) fieldlist.Add("Resources");
+                if (!source.RelatedTos.NullOrEmpty()) fieldlist.Add("RelatedTos");
+                if (!source.Alarms.NullOrEmpty()) fieldlist.Add("Alarms");
+                if (!source.IANAProperties.NullOrEmpty()) fieldlist.Add("IANAProperties");
+                if (!source.XProperties.NullOrEmpty()) fieldlist.Add("XProperties");
+
+                var fieldstr = string.Format("x => new {{ {0} }}", string.Join(", ", fieldlist.Select(x => string.Format("x.{0}", x))));
+                var fieldexpr = fieldstr.CompileToExpressionFunc<VEVENT, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(VEVENT).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
+                this.repository.EventRepository.Patch(source, fieldexpr, request.EventIds);
+            }
+            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
         public void Delete(DeleteEvent request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this.repository.EventRepository.Erase(request.EventId);
+            }
+            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
         public void Delete(DeleteEvents request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this.repository.EventRepository.EraseAll(request.EventIds);
+            }
+            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
         public VEVENT Get(FindEvent request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return this.repository.EventRepository.Find(request.EventId);
+            }
+            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
-        public List<VEVENT> Get(FindEvents request)
+        public List<VEVENT> Post(FindEvents request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                IEnumerable<VEVENT> events = null;
+                if (request.Page != null && request.Size != null)
+                {
+                    events = this.repository.EventRepository.FindAll(request.EventIds, (request.Page.Value - 1) * request.Size.Value, request.Size.Value);
+                }
+                else events = this.repository.EventRepository.FindAll(request.EventIds);
+
+                return !events.NullOrEmpty() ? events.ToList() : new List<VEVENT>();
+            }
+            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
+        }
+
+        public List<VEVENT> Get(GetEvents request)
+        {
+            try
+            {
+                IEnumerable<VEVENT> events = null;
+                if (request.Page != null && request.Size != null)
+                    events = this.repository.EventRepository.Get((request.Page.Value - 1) * request.Size.Value, request.Size.Value);
+                else
+                    events = this.repository.EventRepository.Get();
+
+                return !events.NullOrEmpty() ? events.ToList() : new List<VEVENT>();
+            }
+            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
     }
 }
