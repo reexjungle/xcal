@@ -187,9 +187,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             EventId = x.Id
                         });
                         var orevents = db.Select<REL_CALENDARS_EVENTS>(q => q.CalendarId == entity.Id);
-                        db.SaveAll(!orevents.NullOrEmpty()
-                            ? revents.Except(orevents) 
-                            : revents, transaction);
+                        if(!orevents.NullOrEmpty())
+                        {
+                            db.SaveAll(revents.Except(orevents), transaction);
+                            var diffs = orevents.Except(revents);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_CALENDARS_EVENTS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(revents, transaction);
                     }
 
                     transaction.Commit();
@@ -271,7 +275,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                     EventId = y.Id
                                 }));
                                 var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.EventId, keys));
-                                db.SaveAll((!orevents.NullOrEmpty()) ? revents.Except(orevents) : revents, transaction);
+                                if (!orevents.NullOrEmpty())
+                                {
+                                    db.SaveAll(revents.Except(orevents), transaction);
+                                    var diffs = orevents.Except(revents);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_CALENDARS_EVENTS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(revents, transaction);
                             }
 
 
@@ -354,9 +364,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                 EventId = x.Id
                             }));
                         var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.EventId, keys));
-                        db.SaveAll((!orevents.NullOrEmpty()) 
-                            ? revents.Except(orevents) 
-                            : revents, transaction);
+                        if (!orevents.NullOrEmpty())
+                        {
+                            db.SaveAll(revents.Except(orevents), transaction);
+                            var diffs = orevents.Except(revents);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_CALENDARS_EVENTS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(revents, transaction); 
                     }
 
                     transaction.Commit();

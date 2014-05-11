@@ -32,7 +32,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
         private void Teardown()
         {
-            client.Post(new FlushDatabase { Force = false });
+            client.Post(new FlushDatabase { Reset = false });
         }
 
         [TestMethod]
@@ -78,9 +78,8 @@ namespace reexmonkey.xcal.application.server.web.dev.test
         public void MaintainMultipleCalendars()
         {
             this.Teardown();
-            var max = 5;
-            var calendars = new VCALENDAR[max];
-            for (int i = 0; i < max; i++)
+            var calendars = new VCALENDAR[5];
+            for (int i = 0; i < 5; i++)
             {
                 calendars[i] = new VCALENDAR 
                 {
@@ -105,9 +104,9 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             var keys = calendars.Select(x => x.Id).ToList();
 
             var retrieved = this.client.Post(new FindCalendars { CalendarIds = keys});
-            Assert.AreEqual(retrieved.Count, max);
-            Assert.AreEqual(retrieved.Where(x => x.Calscale == CALSCALE.GREGORIAN).Count(), max);
-            Assert.AreEqual(retrieved.Where(x => x.ProdId == calendars[0].ProdId).Count(), max);
+            Assert.AreEqual(retrieved.Count, 5);
+            Assert.AreEqual(retrieved.Where(x => x.Calscale == CALSCALE.GREGORIAN).Count(), 5);
+            Assert.AreEqual(retrieved.Where(x => x.ProdId == calendars[0].ProdId).Count(), 5);
             Assert.AreEqual(retrieved.Where(x => x.Version == "1.0").Count(), 3);
             Assert.AreEqual(retrieved.Where(x => x.Version == "3.0").FirstOrDefault().Method, METHOD.REFRESH);
 
@@ -117,8 +116,8 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             retrieved = this.client.Post(new FindCalendars { CalendarIds = keys });
             Assert.AreEqual(retrieved.Where(x => x.Id == keys[3]).FirstOrDefault().Calscale, CALSCALE.ISLAMIC);
             Assert.AreEqual(retrieved.Where(x => x.Id == keys[4]).FirstOrDefault().Version, "2.0");
-            Assert.AreEqual(retrieved.Where(x => x.Calscale == CALSCALE.GREGORIAN).Count(), max - 1);
-            Assert.AreEqual(retrieved.Where(x => x.Version == "2.0").Count(), max - 3);
+            Assert.AreEqual(retrieved.Where(x => x.Calscale == CALSCALE.GREGORIAN).Count(), 4);
+            Assert.AreEqual(retrieved.Where(x => x.Version == "2.0").Count(), 2);
 
 
             this.client.Patch(new PatchCalendars 
@@ -135,13 +134,99 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             Assert.AreEqual(retrieved.Count(), 2);
 
             retrieved = this.client.Get(new GetCalendars { Page = 1, Size = 10 });
-            Assert.AreEqual(retrieved.Count(), max >= 10 ? 10 : max);
+            Assert.AreEqual(retrieved.Count(), 5);
 
             retrieved = this.client.Get(new GetCalendars { Page = 2, Size = 5 });
-            Assert.AreEqual(retrieved.Count(), max >= 5 ? max % 5: 0);
-
-            retrieved = this.client.Get(new GetCalendars { Page = max + 1, Size = 50 });
             Assert.AreEqual(retrieved.Count(), 0);
+
+            retrieved = this.client.Get(new GetCalendars { Page = 3, Size = 50 });
+            Assert.AreEqual(retrieved.Count(), 0);
+        }
+
+        [TestMethod]
+        public void MaintainSingleCalendarWithEvents()
+        {
+            this.Teardown();
+            var calendar = new VCALENDAR
+            {
+                Id = this.guidkeygen.GetNextKey(),
+                ProdId = this.fpikeygen.GetNextKey(),
+                Method = METHOD.PUBLISH
+            };
+
+            var events = new VEVENT[5];
+            for (int i = 0; i < 5; i++)
+            {
+                events[i] = new VEVENT
+                {
+                    Uid = new GuidKeyGenerator().GetNextKey(),
+                    RecurrenceId = new RECURRENCE_ID
+                    {
+                        Id = new GuidKeyGenerator().GetNextKey(),
+                        Range = RANGE.THISANDFUTURE,
+                        Value = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc))
+                    },
+                    RecurrenceRule = new RECUR
+                    {
+                        Id = new GuidKeyGenerator().GetNextKey(),
+                        FREQ = FREQ.DAILY,
+                        Format = RecurFormat.DateTime,
+                        UNTIL = new DATE_TIME(new DateTime(2014, 6, 25, 18, 03, 08, 0, DateTimeKind.Utc))
+                    },
+
+                    Organizer = new ORGANIZER
+                    {
+                        Id = new GuidKeyGenerator().GetNextKey(),
+                        CN = "Emmanuel Ngwane",
+                        Address = new URI("ngwanemk@gmail.com"),
+                        Language = new LANGUAGE("en")
+                    },
+                    Location = new LOCATION
+                    {
+                        Text = "Düsseldorf",
+                        Language = new LANGUAGE("de", "DE")
+                    },
+
+                    Summary = new SUMMARY("Test Meeting"),
+                    Description = new DESCRIPTION("A test meeting for freaks"),
+                    Start = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc)),
+                    End = new DATE_TIME(new DateTime(2014, 6, 15, 18, 03, 08, 0, DateTimeKind.Utc)),
+                    Status = STATUS.CONFIRMED,
+                    Transparency = TRANSP.TRANSPARENT,
+                    Classification = CLASS.PUBLIC
+                };
+            }
+
+            calendar.Events.AddRange(events);
+            this.client.Post(new AddCalendar { Calendar = calendar });
+
+            var retrieved = this.client.Get(new FindCalendar { CalendarId = calendar.Id });
+            Assert.AreEqual(retrieved.Calscale, CALSCALE.GREGORIAN);
+            Assert.AreEqual(retrieved.ProdId, calendar.ProdId);
+            Assert.AreEqual(retrieved.Events.Count, 5);
+            Assert.AreEqual(retrieved, calendar);
+
+            calendar.Method = METHOD.REQUEST;
+            calendar.Version = "3.0";
+            calendar.Calscale = CALSCALE.HEBREW;
+            calendar.Events.RemoveRange(0, 4);
+
+            this.client.Put(new UpdateCalendar { Calendar = calendar });
+            retrieved = this.client.Get(new FindCalendar { CalendarId = calendar.Id });
+            Assert.AreEqual(retrieved.Calscale, CALSCALE.HEBREW);
+            Assert.AreEqual(retrieved.Version, "3.0");
+            Assert.AreEqual(retrieved.Method, METHOD.REQUEST);
+            Assert.AreEqual(retrieved.Events.Count, 1);
+            Assert.AreEqual(retrieved.Events[0], events[4]);
+            Assert.AreEqual(retrieved, calendar);
+
+            this.client.Patch(new PatchCalendar { Scale = CALSCALE.JULIAN, CalendarId = calendar.Id });
+            var patched = this.client.Get(new FindCalendar { CalendarId = calendar.Id });
+            Assert.AreEqual(patched.Calscale, CALSCALE.JULIAN);
+
+            this.client.Delete(new DeleteCalendar { CalendarId = calendar.Id });
+            var deleted = this.client.Get(new FindCalendar { CalendarId = calendar.Id });
+            Assert.AreEqual(deleted, null);
         }
     }
 }

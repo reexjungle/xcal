@@ -117,13 +117,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 var rattachbins = this.redis.As<REL_EVENTS_ATTACHBINS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!rattachbins.NullOrEmpty())
                 {
-                    full.Attachments.AddRangeComplement(this.redis.As<ATTACH_BINARY>().GetByIds(rattachbins.Select(x => x.AttachmentId).ToList()));
+                    full.AttachmentBinaries.AddRangeComplement(this.redis.As<ATTACH_BINARY>().GetByIds(rattachbins.Select(x => x.AttachmentId).ToList()));
                 }
 
                 var rattachuris = this.redis.As<REL_EVENTS_ATTACHURIS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!rattachuris.NullOrEmpty())
                 {
-                    full.Attachments.AddRangeComplement(this.redis.As<ATTACH_URI>().GetByIds(rattachuris.Select(x => x.AttachmentId).ToList()));
+                    full.AttachmentUris.AddRangeComplement(this.redis.As<ATTACH_URI>().GetByIds(rattachuris.Select(x => x.AttachmentId).ToList()));
                 }
 
                 var rattendees = this.redis.As<REL_EVENTS_ATTENDEES>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
@@ -177,19 +177,19 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 var raalarms = this.redis.As<REL_EVENTS_AUDIO_ALARMS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if(!raalarms.NullOrEmpty())
                 {
-                    full.Alarms.AddRangeComplement(this.AudioAlarmRepository.FindAll(raalarms.Select(x => x.AlarmId).ToList()));
+                    full.AudioAlarms.AddRangeComplement(this.AudioAlarmRepository.FindAll(raalarms.Select(x => x.AlarmId).ToList()));
                 }
 
                 var rdalarms = this.redis.As<REL_EVENTS_DISPLAY_ALARMS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!rdalarms.NullOrEmpty())
                 {
-                    full.Alarms.AddRangeComplement(this.DisplayAlarmRepository.FindAll(rdalarms.Select(x => x.AlarmId).ToList()));
+                    full.DisplayAlarms.AddRangeComplement(this.DisplayAlarmRepository.FindAll(rdalarms.Select(x => x.AlarmId).ToList()));
                 }
 
                 var realarms = this.redis.As<REL_EVENTS_EMAIL_ALARMS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!realarms.NullOrEmpty())
                 {
-                    full.Alarms.AddRangeComplement(this.EmailAlarmRepository
+                    full.EmailAlarms.AddRangeComplement(this.EmailAlarmRepository
                         .HydrateAll(this.EmailAlarmRepository.FindAll(realarms.Select(x => x.AlarmId).ToList()))); 
                 }
 
@@ -312,7 +312,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                           join e in full on r.EventId equals e.Id
                                           where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                           select y;
-                        if (!xattachbins.NullOrEmpty()) x.Attachments.AddRangeComplement(xattachbins);
+                        if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.AddRangeComplement(xattachbins);
 
                     }
 
@@ -323,7 +323,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                           join e in full on r.EventId equals e.Id
                                           where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                           select y;
-                        if (!xattachuris.NullOrEmpty()) x.Attachments.AddRangeComplement(xattachuris);
+                        if (!xattachuris.NullOrEmpty()) x.AttachmentUris.AddRangeComplement(xattachuris);
                     }
 
                     if (!contacts.NullOrEmpty())
@@ -396,7 +396,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                        join e in full on r.EventId equals e.Id
                                        where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                        select y;
-                        if (!xaalarms.NullOrEmpty()) x.Alarms.AddRangeComplement(xaalarms);
+                        if (!xaalarms.NullOrEmpty()) x.AudioAlarms.AddRangeComplement(xaalarms);
                     }
 
                     if (!dalarms.NullOrEmpty())
@@ -406,7 +406,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                        join e in full on r.EventId equals e.Id
                                        where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                        select y;
-                        if (!xdalarms.NullOrEmpty()) x.Alarms.AddRangeComplement(xdalarms);
+                        if (!xdalarms.NullOrEmpty()) x.DisplayAlarms.AddRangeComplement(xdalarms);
 
                     }
 
@@ -417,7 +417,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                        join e in full on r.EventId equals e.Id
                                        where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                        select y;
-                        if (!xealarms.NullOrEmpty()) x.Alarms.AddRangeComplement(xealarms);
+                        if (!xealarms.NullOrEmpty()) x.EmailAlarms.AddRangeComplement(xealarms);
                     }
                 });
 
@@ -464,8 +464,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     var rid = entity.RecurrenceId;
                     var rrule = entity.RecurrenceRule;
                     var attendees = entity.Attendees;
-                    var attachbins = entity.Attachments.OfType<ATTACH_BINARY>();
-                    var attachuris = entity.Attachments.OfType<ATTACH_URI>();
+                    var attachbins = entity.AttachmentBinaries;
+                    var attachuris = entity.AttachmentUris;
                     var contacts = entity.Contacts;
                     var comments = entity.Comments;
                     var rdates = entity.RecurrenceDates;
@@ -473,9 +473,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     var relatedtos = entity.RelatedTos;
                     var resources = entity.Resources;
                     var reqstats = entity.RequestStatuses;
-                    var aalarms = entity.Alarms.OfType<AUDIO_ALARM>();
-                    var dalarms = entity.Alarms.OfType<DISPLAY_ALARM>();
-                    var ealarms = entity.Alarms.OfType<EMAIL_ALARM>();
+                    var aalarms = entity.AudioAlarms;
+                    var dalarms = entity.DisplayAlarms;
+                    var ealarms = entity.EmailAlarms;
                     var ianaprops = entity.IANAProperties;
                     var xprops = entity.XProperties;
 
@@ -902,10 +902,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var rids = entities.Where(x => x.RecurrenceId != null).Select(x => x.RecurrenceId);
             var rrules = entities.Where(x => x.RecurrenceRule != null).Select(x => x.RecurrenceRule);
             var attendees = entities.Where(x => !x.Attendees.NullOrEmpty()).SelectMany(x => x.Attendees);
-            var attachbins = entities.Where(x => !x.Attachments.NullOrEmpty() && !x.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty())
-                .SelectMany(x => x.Attachments.OfType<ATTACH_BINARY>());
-            var attachuris = entities.Where(x => !x.Attachments.NullOrEmpty() && !x.Attachments.OfType<ATTACH_URI>().NullOrEmpty())
-                .SelectMany(x => x.Attachments.OfType<ATTACH_URI>());
+            var attachbins = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty()).SelectMany(x => x.AttachmentBinaries);
+            var attachuris = entities.Where(x => !x.AttachmentUris.NullOrEmpty()).SelectMany(x => x.AttachmentUris);
             var contacts = entities.Where(x => !x.Contacts.NullOrEmpty()).SelectMany(x => x.Contacts);
             var comments = entities.Where(x => !x.Comments.NullOrEmpty()).SelectMany(x => x.Comments);
             var rdates = entities.Where(x => !x.RecurrenceDates.NullOrEmpty()).SelectMany(x => x.RecurrenceDates);
@@ -913,13 +911,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var relatedtos = entities.Where(x => !x.RelatedTos.NullOrEmpty()).SelectMany(x => x.RelatedTos);
             var resources = entities.Where(x => !x.Resources.NullOrEmpty()).SelectMany(x => x.Resources);
             var reqstats = entities.Where(x => !x.Resources.NullOrEmpty()).SelectMany(x => x.RequestStatuses);
-            var aalarms = entities.Where(x => !x.Alarms.NullOrEmpty() && !x.Alarms.OfType<AUDIO_ALARM>().NullOrEmpty())
-                .SelectMany(x => x.Alarms.OfType<AUDIO_ALARM>());
-            var dalarms = entities.Where(x => !x.Alarms.NullOrEmpty() && !x.Alarms.OfType<DISPLAY_ALARM>().NullOrEmpty())
-                .SelectMany(x => x.Alarms.OfType<DISPLAY_ALARM>());
-            var ealarms = entities.Where(x => !x.Alarms.NullOrEmpty() && !x.Alarms.OfType<EMAIL_ALARM>().NullOrEmpty())
-                .SelectMany(x => x.Alarms.OfType<EMAIL_ALARM>());
-
+            var aalarms = entities.Where(x => !x.AudioAlarms.NullOrEmpty()).SelectMany(x => x.AudioAlarms);
+            var dalarms = entities.Where(x => !x.DisplayAlarms.NullOrEmpty()).SelectMany(x => x.DisplayAlarms);
+            var ealarms = entities.Where(x => !x.EmailAlarms.NullOrEmpty()).SelectMany(x => x.EmailAlarms);
             var ianaprops = entities.Where(x => !x.IANAProperties.NullOrEmpty()).SelectMany(x => x.IANAProperties);
             var xprops = entities.Where(x => !x.IANAProperties.NullOrEmpty()).SelectMany(x => x.XProperties);
 
@@ -1012,8 +1006,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!attachbins.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => this.redis.As<ATTACH_BINARY>().StoreAll(attachbins));
-                        var rattachbins = entities.Where(x => !x.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty())
-                            .SelectMany(e => e.Attachments.OfType<ATTACH_BINARY>()
+                        var rattachbins = entities.Where(x => !x.AttachmentBinaries.OfType<ATTACH_BINARY>().NullOrEmpty())
+                            .SelectMany(e => e.AttachmentBinaries.OfType<ATTACH_BINARY>()
                                 .Select(x => new REL_EVENTS_ATTACHBINS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
@@ -1030,8 +1024,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!attachuris.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(attachuris));
-                        var rattachuris = entities.Where(x => !x.Attachments.OfType<ATTACH_URI>().NullOrEmpty())
-                            .SelectMany(e => e.Attachments.OfType<ATTACH_URI>()
+                        var rattachuris = entities.Where(x => !x.AttachmentBinaries.OfType<ATTACH_URI>().NullOrEmpty())
+                            .SelectMany(e => e.AttachmentBinaries.OfType<ATTACH_URI>()
                                 .Select(x => new REL_EVENTS_ATTACHURIS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
@@ -1169,8 +1163,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!aalarms.NullOrEmpty())
                     {
                         this.AudioAlarmRepository.SaveAll(aalarms);
-                        var raalarms = entities.Where(x => !x.Alarms.OfType<AUDIO_ALARM>().NullOrEmpty())
-                            .SelectMany(e => e.RequestStatuses.OfType<AUDIO_ALARM>().Select(x => new REL_EVENTS_AUDIO_ALARMS
+                        var raalarms = entities.Where(x => !x.AudioAlarms.NullOrEmpty())
+                            .SelectMany(e => e.AudioAlarms.Select(x => new REL_EVENTS_AUDIO_ALARMS
                             {
                                 Id = this.KeyGenerator.GetNextKey(),
                                 EventId = e.Id,
@@ -1186,7 +1180,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!dalarms.NullOrEmpty())
                     {
                         this.DisplayAlarmRepository.SaveAll(dalarms);
-                        var rdalarms = entities.Where(x => !x.Alarms.OfType<DISPLAY_ALARM>().NullOrEmpty()).SelectMany(e => e.RequestStatuses.OfType<DISPLAY_ALARM>().Select(x => new REL_EVENTS_DISPLAY_ALARMS
+                        var rdalarms = entities.Where(x => !x.DisplayAlarms.NullOrEmpty()).SelectMany(e => e.DisplayAlarms.Select(x => new REL_EVENTS_DISPLAY_ALARMS
                         {
                             Id = this.KeyGenerator.GetNextKey(),
                             EventId = e.Id,
@@ -1202,8 +1196,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!ealarms.NullOrEmpty())
                     {
                         this.EmailAlarmRepository.SaveAll(ealarms);
-                        var realarms = entities.Where(x => !x.Alarms.OfType<EMAIL_ALARM>().NullOrEmpty())
-                            .SelectMany(e => e.RequestStatuses.OfType<EMAIL_ALARM>().Select(x => new REL_EVENTS_EMAIL_ALARMS
+                        var realarms = entities.Where(x => !x.EmailAlarms.NullOrEmpty())
+                            .SelectMany(e => e.EmailAlarms.Select(x => new REL_EVENTS_EMAIL_ALARMS
                             {
                                 Id = this.KeyGenerator.GetNextKey(),
                                 EventId = e.Id,
@@ -1376,7 +1370,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 x.RecurrenceId,
                 x.RecurrenceRule,
                 x.Attendees,
-                x.Attachments,
+                x.AttachmentBinaries,
+                x.AttachmentUris,
                 x.Contacts,
                 x.Comments,
                 x.RecurrenceDates,
@@ -1384,7 +1379,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 x.RelatedTos,
                 x.Resources,
                 x.RequestStatuses,
-                x.Alarms,
+                x.AudioAlarms,
+                x.DisplayAlarms,
+                x.EmailAlarms,
                 x.IANAProperties,
                 x.XProperties
             };
@@ -1414,7 +1411,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         Expression<Func<VEVENT, object>> ridexpr = y => y.RecurrenceId;
                         Expression<Func<VEVENT, object>> rruleexpr = y => y.RecurrenceRule;
                         Expression<Func<VEVENT, object>> attendsexpr = y => y.Attendees;
-                        Expression<Func<VEVENT, object>> attachsexpr = y => y.Attachments;
+                        Expression<Func<VEVENT, object>> attachbinsexpr = y => y.AttachmentBinaries;
+                        Expression<Func<VEVENT, object>> attachurisexpr = y => y.AttachmentUris;
                         Expression<Func<VEVENT, object>> contactsexpr = y => y.Contacts;
                         Expression<Func<VEVENT, object>> commentsexpr = y => y.Comments;
                         Expression<Func<VEVENT, object>> rdatesexpr = y => y.RecurrenceDates;
@@ -1422,7 +1420,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         Expression<Func<VEVENT, object>> relatedtosexpr = y => y.RelatedTos;
                         Expression<Func<VEVENT, object>> resourcesexpr = y => y.Resources;
                         Expression<Func<VEVENT, object>> reqstatsexpr = y => y.RequestStatuses;
-                        Expression<Func<VEVENT, object>> alarmexpr = y => y.Alarms;
+                        Expression<Func<VEVENT, object>> aalarmexpr = y => y.AudioAlarms;
+                        Expression<Func<VEVENT, object>> dalarmexpr = y => y.DisplayAlarms;
+                        Expression<Func<VEVENT, object>> ealarmexpr = y => y.EmailAlarms;
                         Expression<Func<VEVENT, object>> ianaexpr = y => y.IANAProperties;
                         Expression<Func<VEVENT, object>> xpropsexpr = y => y.XProperties;
 
@@ -1518,9 +1518,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             }
                         }
 
-                        if (selection.Contains(attachsexpr.GetMemberName()))
+                        if (selection.Contains(attachbinsexpr.GetMemberName()))
                         {
-                            var attachbins = source.Attachments.OfType<ATTACH_BINARY>();
+                            var attachbins = source.AttachmentBinaries;
                             if (!attachbins.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => this.redis.As<ATTACH_BINARY>().StoreAll(attachbins));
@@ -1537,8 +1537,10 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                     ? rattachbins.Except(orattachbins)
                                     : rattachbins));
                             }
-
-                            var attachuris = source.Attachments.OfType<ATTACH_URI>();
+                        }
+                        if (selection.Contains(attachurisexpr.GetMemberName()))
+                        {
+                            var attachuris = source.AttachmentUris;
                             if (!attachuris.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(attachuris));
@@ -1693,6 +1695,63 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                 transaction.QueueCommand(x => x.StoreAll(!orreqstats.NullOrEmpty()
                                     ? rreqstats.Except(orreqstats)
                                     : rreqstats));
+                            }
+                        }
+                        if (selection.Contains(aalarmexpr.GetMemberName()))
+                        {
+                            var aalarms = source.AudioAlarms;
+                            if (!aalarms.NullOrEmpty())
+                            {
+                                transaction.QueueCommand(x => x.StoreAll(aalarms));
+                                var raalarms = keys.SelectMany(x => aalarms.Select(y => new REL_EVENTS_AUDIO_ALARMS
+                                {
+                                    Id = this.KeyGenerator.GetNextKey(),
+                                    EventId = x,
+                                    AlarmId = y.Id
+                                }));
+                                var rclient = this.redis.As<REL_EVENTS_AUDIO_ALARMS>();
+                                var oraalarms = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                                transaction.QueueCommand(x => x.StoreAll(!oraalarms.NullOrEmpty()
+                                    ? raalarms.Except(oraalarms)
+                                    : raalarms));
+                            }
+                        }
+                        if (selection.Contains(dalarmexpr.GetMemberName()))
+                        {
+                            var dalarms = source.AudioAlarms;
+                            if (!dalarms.NullOrEmpty())
+                            {
+                                transaction.QueueCommand(x => x.StoreAll(dalarms));
+                                var rdalarms = keys.SelectMany(x => dalarms.Select(y => new REL_EVENTS_DISPLAY_ALARMS
+                                {
+                                    Id = this.KeyGenerator.GetNextKey(),
+                                    EventId = x,
+                                    AlarmId = y.Id
+                                }));
+                                var rclient = this.redis.As<REL_EVENTS_DISPLAY_ALARMS>();
+                                var ordalarms = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                                transaction.QueueCommand(x => x.StoreAll(!ordalarms.NullOrEmpty()
+                                    ? rdalarms.Except(ordalarms)
+                                    : rdalarms));
+                            }
+                        }
+                        if (selection.Contains(ealarmexpr.GetMemberName()))
+                        {
+                            var ealarms = source.EmailAlarms;
+                            if (!ealarms.NullOrEmpty())
+                            {
+                                transaction.QueueCommand(x => x.StoreAll(ealarms));
+                                var realarms = keys.SelectMany(x => ealarms.Select(y => new REL_EVENTS_EMAIL_ALARMS
+                                {
+                                    Id = this.KeyGenerator.GetNextKey(),
+                                    EventId = x,
+                                    AlarmId = y.Id
+                                }));
+                                var rclient = this.redis.As<REL_EVENTS_EMAIL_ALARMS>();
+                                var orealarms = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                                transaction.QueueCommand(x => x.StoreAll(!orealarms.NullOrEmpty()
+                                    ? realarms.Except(orealarms)
+                                    : realarms));
                             }
                         }
 
@@ -1888,27 +1947,26 @@ namespace reexmonkey.xcal.service.repositories.concretes
         {
             try
             {
-                full.Organizer = null;
-                full.RecurrenceId = null;
-                full.RecurrenceRule = null;
-                if (!full.Attendees.NullOrEmpty()) full.Attendees.Clear();
-                if (!full.Attachments.NullOrEmpty()) full.Attachments.Clear();
-                if (!full.Contacts.NullOrEmpty()) full.Contacts.Clear();
-                if (!full.Comments.NullOrEmpty()) full.Comments.Clear();
-                if (!full.RecurrenceDates.NullOrEmpty()) full.RecurrenceDates.Clear();
-                if (!full.ExceptionDates.NullOrEmpty()) full.ExceptionDates.Clear();
-                if (!full.RelatedTos.NullOrEmpty()) full.RelatedTos.Clear();
-                if (!full.RequestStatuses.NullOrEmpty()) full.RequestStatuses.Clear();
-                if (!full.Resources.NullOrEmpty()) full.Resources.Clear();
-                if (!full.Alarms.NullOrEmpty()) full.Alarms.Clear();
-                if (!full.IANAProperties.NullOrEmpty()) full.IANAProperties.Clear();
-                if (!full.XProperties.NullOrEmpty()) full.XProperties.Clear();
+                var dry = full;
+                dry.Organizer = null;
+                dry.RecurrenceId = null;
+                dry.RecurrenceRule = null;
+                if (!dry.Attendees.NullOrEmpty()) dry.Attendees.Clear();
+                if (!dry.AttachmentBinaries.NullOrEmpty()) dry.AttachmentBinaries.Clear();
+                if (!dry.AttachmentUris.NullOrEmpty()) dry.AttachmentUris.Clear();
+                if (!dry.Contacts.NullOrEmpty()) dry.Contacts.Clear();
+                if (!dry.Comments.NullOrEmpty()) dry.Comments.Clear();
+                if (!dry.RecurrenceDates.NullOrEmpty()) dry.RecurrenceDates.Clear();
+                if (!dry.ExceptionDates.NullOrEmpty()) dry.ExceptionDates.Clear();
+                if (!dry.RelatedTos.NullOrEmpty()) dry.RelatedTos.Clear();
+                if (!dry.RequestStatuses.NullOrEmpty()) dry.RequestStatuses.Clear();
+                if (!dry.Resources.NullOrEmpty()) dry.Resources.Clear();
+                if (!dry.AudioAlarms.NullOrEmpty()) dry.AudioAlarms.Clear();
+                if (!dry.DisplayAlarms.NullOrEmpty()) dry.DisplayAlarms.Clear();
+                if (!dry.EmailAlarms.NullOrEmpty()) dry.EmailAlarms.Clear();
+                return dry;
             }
-            catch (ArgumentNullException)
-            {
-                throw;
-            }
-            return full;
+            catch (ArgumentNullException) { throw; }
         }
     }
 }

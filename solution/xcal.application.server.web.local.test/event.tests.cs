@@ -35,7 +35,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
         private void Teardown()
         {
-            client.Post(new FlushDatabase { Force = false });
+            client.Post(new FlushDatabase { Reset = false });
         }
 
         [TestMethod]

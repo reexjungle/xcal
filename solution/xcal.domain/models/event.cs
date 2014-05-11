@@ -16,11 +16,6 @@ namespace reexmonkey.xcal.domain.models
     /// Specifes a contract for the VEVENT component of the iCalendar Core Object
     /// </summary>
     [DataContract]
-    [KnownType(typeof(ATTACH_BINARY))]
-    [KnownType(typeof(ATTACH_URI))]
-    [KnownType(typeof(AUDIO_ALARM))]
-    [KnownType(typeof(DISPLAY_ALARM))]
-    [KnownType(typeof(EMAIL_ALARM))]
     public class VEVENT : IEVENT, IEquatable<VEVENT>, IComparable<VEVENT>, IContainsKey<string>
     {
         private string id;
@@ -144,7 +139,11 @@ namespace reexmonkey.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public List<IATTACH> Attachments { get; set; }
+        public List<ATTACH_BINARY> AttachmentBinaries { get; set; }
+
+        [DataMember]
+        [Ignore]
+        public List<ATTACH_URI> AttachmentUris { get; set; }
 
         [DataMember]
         [Ignore]
@@ -183,7 +182,15 @@ namespace reexmonkey.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public List<IALARM> Alarms { get; set; }
+        public List<AUDIO_ALARM> AudioAlarms { get; set; }
+
+        [DataMember]
+        [Ignore]
+        public List<DISPLAY_ALARM> DisplayAlarms { get; set; }
+
+        [DataMember]
+        [Ignore]
+        public List<EMAIL_ALARM> EmailAlarms { get; set; }
 
         [DataMember]
         [Ignore]
@@ -199,7 +206,8 @@ namespace reexmonkey.xcal.domain.models
             this.Datestamp = new DATE_TIME(DateTime.UtcNow);
             this.Created = this.Datestamp;
             this.LastModified = this.Datestamp;
-            this.Attachments = new List<IATTACH>();
+            this.AttachmentBinaries = new List<ATTACH_BINARY>();
+            this.AttachmentUris = new List<ATTACH_URI>();
             this.Attendees = new List<ATTENDEE>();
             this.Categories = new CATEGORIES();
             this.Contacts = new List<CONTACT>();
@@ -208,7 +216,9 @@ namespace reexmonkey.xcal.domain.models
             this.RequestStatuses = new List<REQUEST_STATUS>();
             this.RelatedTos = new List<RELATEDTO>();
             this.RecurrenceDates = new List<RDATE>();
-            this.Alarms = new List<IALARM>();
+            this.AudioAlarms = new List<AUDIO_ALARM>();
+            this.DisplayAlarms = new List<DISPLAY_ALARM>();
+            this.EmailAlarms = new List<EMAIL_ALARM>();
             this.IANAProperties = new List<IANA_PROPERTY>();
             this.XProperties = new List<X_PROPERTY>();
         }
@@ -277,6 +287,8 @@ namespace reexmonkey.xcal.domain.models
             this.RecurrenceRule = value.RecurrenceRule;
             this.end = value.End;
             this.duration = value.Duration;
+            this.AttachmentBinaries = value.AttachmentBinaries;
+            this.AttachmentUris = value.AttachmentUris;
             this.Comments = value.Comments;
             this.Contacts = value.Contacts;
             this.ExceptionDates = value.ExceptionDates;
@@ -285,7 +297,9 @@ namespace reexmonkey.xcal.domain.models
             this.Attendees = value.Attendees;
             this.Categories = value.Categories;
             this.RelatedTos = value.RelatedTos;
-            this.Alarms = value.Alarms;
+            this.AudioAlarms = value.AudioAlarms;
+            this.DisplayAlarms = value.DisplayAlarms;
+            this.EmailAlarms = value.EmailAlarms;
             this.IANAProperties = value.IANAProperties;
             this.XProperties = value.XProperties;
         }
@@ -389,9 +403,9 @@ namespace reexmonkey.xcal.domain.models
             }
             else if (this.Duration != default(DURATION)) sb.Append(this.Duration).AppendLine();
 
-            if(!this.Attachments.NullOrEmpty())
+            if(!this.AttachmentBinaries.NullOrEmpty())
             {
-                foreach (var attachment in this.Attachments) if(attachment != null) sb.Append(attachment).AppendLine();
+                foreach (var attachment in this.AttachmentBinaries) if(attachment != null) sb.Append(attachment).AppendLine();
             }
 
             if(!this.Attendees.NullOrEmpty())
@@ -424,11 +438,6 @@ namespace reexmonkey.xcal.domain.models
             if (!this.RelatedTos.NullOrEmpty())
             {
                 foreach (var relatedto in this.RelatedTos) if (relatedto != null) sb.Append(relatedto).AppendLine();
-            }
-
-            if (!this.Resources.NullOrEmpty())
-            {
-                foreach (var resource in this.Resources) if (resource != null) sb.Append(resource).AppendLine();
             }
 
             if (!this.Resources.NullOrEmpty())

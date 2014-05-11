@@ -60,7 +60,7 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator !=(VTIMEZONE a, VTIMEZONE b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -68,19 +68,9 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:VTIMEZONE").AppendLine();
-            sb.AppendFormat("TZID={0}", this.TimeZoneId);
-            if (!this.StandardTimes.NullOrEmpty())
-            {
-                sb.Append("BEGIN:STANDARD").AppendLine();
-                this.StandardTimes.ForEach(x => sb.Append(x).AppendLine());
-                sb.Append("END:STANDARD").AppendLine();
-            }
-            else
-            {
-                sb.Append("BEGIN:DAYLIGHT").AppendLine();
-                this.DaylightTimes.ForEach(x => sb.Append(x).AppendLine());
-                sb.Append("END:DAYLIGHT").AppendLine();
-            }
+            sb.AppendFormat("TZID={0}", this.TimeZoneId).AppendLine();
+            if (!this.StandardTimes.NullOrEmpty()) this.StandardTimes.ForEach(x => sb.Append(x).AppendLine());
+            else if (!this.DaylightTimes.NullOrEmpty()) this.DaylightTimes.ForEach(x => sb.Append(x).AppendLine()); 
             sb.Append("END:VTIMEZONE");
             return sb.ToString();
         }
@@ -118,7 +108,12 @@ namespace reexmonkey.xcal.domain.models
         [Ignore]
         public List<TZNAME> TimeZoneNames { get; set; }
 
-        public OBSERVANCE() { }
+        public OBSERVANCE() 
+        {
+            this.Comments = new List<COMMENT>();
+            this.RecurrenceDates = new List<RDATE>();
+            this.TimeZoneNames = new List<TZNAME>();
+        }
 
         public OBSERVANCE(DATE_TIME start, UTC_OFFSET from, UTC_OFFSET to)
         {
@@ -174,13 +169,13 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:STANDARD").AppendLine();
-            sb.Append(this.Start).AppendLine();
+            sb.AppendFormat("DTSTART:{0}", this.Start).AppendLine();
             sb.AppendFormat("TZOFFSETFROM", this.TimeZoneOffsetFrom).AppendLine();
             sb.AppendFormat("TZOFFSETTO", this.TimeZoneOffsetTo).AppendLine();
             if (this.RecurrenceRule != null) sb.Append(this.RecurrenceRule).AppendLine();
-            this.RecurrenceDates.ForEach(x => sb.Append(x).AppendLine());
-            this.Comments.ForEach(x => sb.Append(x).AppendLine());
-            this.TimeZoneNames.ForEach(x => sb.Append(x).AppendLine());
+            if (!this.RecurrenceDates.NullOrEmpty()) this.RecurrenceDates.ForEach(x => sb.Append(x).AppendLine());
+            if (!this.Comments.NullOrEmpty()) this.Comments.ForEach(x => sb.Append(x).AppendLine());
+            if (!this.TimeZoneNames.NullOrEmpty()) this.TimeZoneNames.ForEach(x => sb.Append(x).AppendLine());
             sb.Append("END:STANDARD");
             return sb.ToString();
         }
@@ -197,13 +192,13 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:DAYLIGHT").AppendLine();
-            sb.Append(this.Start).AppendLine();
+            sb.AppendFormat("DTSTART:{0}", this.Start).AppendLine();
             sb.AppendFormat("TZOFFSETFROM", this.TimeZoneOffsetFrom).AppendLine();
             sb.AppendFormat("TZOFFSETTO", this.TimeZoneOffsetTo).AppendLine();
             if (this.RecurrenceRule != null) sb.Append(this.RecurrenceRule).AppendLine();
-            this.RecurrenceDates.ForEach(x => sb.Append(x).AppendLine());
-            this.Comments.ForEach(x => sb.Append(x).AppendLine());
-            this.TimeZoneNames.ForEach(x => sb.Append(x).AppendLine());
+            if(!this.RecurrenceDates.NullOrEmpty()) this.RecurrenceDates.ForEach(x => sb.Append(x).AppendLine());
+            if(!this.Comments.NullOrEmpty())this.Comments.ForEach(x => sb.Append(x).AppendLine());
+            if(!this.TimeZoneNames.NullOrEmpty())this.TimeZoneNames.ForEach(x => sb.Append(x).AppendLine());
             sb.Append("END:DAYLIGHT");
             return sb.ToString();
         }

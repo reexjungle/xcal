@@ -194,6 +194,10 @@
       <Project>{5b708e08-1f69-4fde-9d99-afa3784a49d7}</Project>
       <Name>xcal.domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\xcal.service.formats.concretes\xcal.service.formats.concretes.csproj">
+      <Project>{7496b2c6-bd7e-44a9-9c33-02cd399f0de0}</Project>
+      <Name>xcal.service.formats.concretes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\xcal.service.interfaces.concretes\xcal.service.interfaces.concretes.csproj">
       <Project>{0b922294-6a3f-4232-a150-cac6bfc7bcfd}</Project>
       <Name>xcal.service.interfaces.concretes</Name>

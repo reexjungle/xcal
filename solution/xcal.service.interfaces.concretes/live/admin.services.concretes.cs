@@ -64,7 +64,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
         {
             try
             {
-                if(request.Force != null && request.Force.HasValue) this.AdminRepository.FlushDb(request.Force.Value);
+                if(request.Reset != null && request.Reset.HasValue) this.AdminRepository.FlushDb(request.Reset.Value);
                 else this.AdminRepository.FlushDb();
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }

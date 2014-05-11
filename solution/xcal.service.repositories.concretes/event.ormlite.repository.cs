@@ -144,8 +144,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var rid = entity.RecurrenceId;
             var rrule = entity.RecurrenceRule;
             var attendees = entity.Attendees;
-            var attachbins = entity.Attachments.OfType<ATTACH_BINARY>();
-            var attachuris = entity.Attachments.OfType<ATTACH_URI>();
+            var attachbins = entity.AttachmentBinaries;
+            var attachuris = entity.AttachmentUris;
             var contacts = entity.Contacts;
             var comments = entity.Comments;
             var rdates = entity.RecurrenceDates;
@@ -153,9 +153,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var relateds = entity.RelatedTos;
             var resources = entity.Resources;
             var reqstats = entity.RequestStatuses;
-            var aalarms = entity.Alarms.OfType<AUDIO_ALARM>();
-            var dalarms = entity.Alarms.OfType<DISPLAY_ALARM>();
-            var ealarms = entity.Alarms.OfType<EMAIL_ALARM>(); 
+            var aalarms = entity.AudioAlarms;
+            var dalarms = entity.DisplayAlarms;
+            var ealarms = entity.EmailAlarms; 
 
             #endregion
 
@@ -217,7 +217,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             AttendeeId = x.Id 
                         });
                         var orattends = db.Select<REL_EVENTS_ATTENDEES>(q => q.EventId == entity.Id);
-                        db.SaveAll(!orattends.NullOrEmpty() ? rattends.Except(orattends): rattends, transaction);
+                        if (!orattends.NullOrEmpty())
+                        {
+                            db.SaveAll(rattends.Except(orattends), transaction);
+                            var diffs = orattends.Except(rattends);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_ATTENDEES>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rattends, transaction);
                     }
 
                     if (!attachbins.NullOrEmpty())
@@ -230,7 +236,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             AttachmentId = x.Id 
                         });
                         var orattachbins = db.Select<REL_EVENTS_ATTACHBINS>(q => q.EventId == entity.Id);
-                        db.SaveAll(!orattachbins.NullOrEmpty() ? rattachbins.Except(orattachbins): rattachbins, transaction);
+                        if (!orattachbins.NullOrEmpty())
+                        {
+                            db.SaveAll(rattachbins.Except(orattachbins), transaction);
+                            var diffs = orattachbins.Except(rattachbins);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rattachbins, transaction);
                     }
 
                     if (!attachuris.NullOrEmpty())
@@ -243,7 +255,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             AttachmentId = x.Id 
                         });
                         var orattachuris = db.Select<REL_EVENTS_ATTACHURIS>(q => q.EventId == entity.Id );
-                        db.SaveAll(!orattachuris.NullOrEmpty() ? rattachuris.Except(orattachuris) : rattachuris, transaction);
+                        if (!orattachuris.NullOrEmpty())
+                        {
+                            db.SaveAll(rattachuris.Except(orattachuris), transaction);
+                            var diffs = orattachuris.Except(rattachuris);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_ATTACHURIS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rattachuris, transaction);
                     }
 
                     if (!contacts.NullOrEmpty())
@@ -256,8 +274,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             ContactId = x.Id 
                         });
                         var orcontacts = db.Select<REL_EVENTS_CONTACTS>(q => q.EventId == entity.Id);
-
-                        db.SaveAll((!orcontacts.NullOrEmpty()) ? rcontacts.Except(orcontacts) : rcontacts, transaction);
+                        if (!orcontacts.NullOrEmpty())
+                        {
+                            db.SaveAll(rcontacts.Except(orcontacts), transaction);
+                            var diffs = orcontacts.Except(rcontacts);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_CONTACTS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rcontacts, transaction);
                     }
 
                     if (!comments.NullOrEmpty())
@@ -270,7 +293,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             CommentId = x.Id 
                         });
                         var orcomments = db.Select<REL_EVENTS_COMMENTS>(q => q.EventId == entity.Id);
-                        db.SaveAll((!orcomments.NullOrEmpty()) ? rcomments.Except(orcomments): rcomments, transaction);
+                        if (!orcomments.NullOrEmpty())
+                        {
+                            db.SaveAll(rcomments.Except(orcomments), transaction);
+                            var diffs = orcomments.Except(rcomments);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_COMMENTS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rcomments, transaction);
                     }
 
                     if (!rdates.NullOrEmpty())
@@ -283,7 +312,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             RecurrenceDateId = x.Id 
                         });
                         var orrdates = db.Select<REL_EVENTS_RDATES>(q => q.EventId == entity.Id);
-                        db.SaveAll((!orrdates.NullOrEmpty()) ? rrdates.Except(orrdates): rrdates, transaction);
+                        if (!orrdates.NullOrEmpty())
+                        {
+                            db.SaveAll(rrdates.Except(orrdates), transaction);
+                            var diffs = orrdates.Except(rrdates);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_RDATES>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rrdates, transaction);
                     }
 
                     if (!exdates.NullOrEmpty())
@@ -296,7 +331,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             ExceptionDateId = x.Id 
                         });
                         var orexdates = db.Select<REL_EVENTS_EXDATES>(q => q.EventId == entity.Id);
-                        db.SaveAll((!orexdates.NullOrEmpty()) ? rexdates.Except(orexdates) : rexdates, transaction);
+                        if (!orexdates.NullOrEmpty())
+                        {
+                            db.SaveAll(rexdates.Except(orexdates), transaction);
+                            var diffs = orexdates.Except(rexdates);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_EXDATES>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rexdates, transaction);
                     }
 
                     if (!relateds.NullOrEmpty())
@@ -309,7 +350,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             RelatedToId = x.Id 
                         });
                         var orrelateds = db.Select<REL_EVENTS_RELATEDTOS>(q => q.EventId == entity.Id);
-                        db.SaveAll((!orrelateds.NullOrEmpty()) ? rrelateds.Except(orrelateds) : rrelateds, transaction);
+                        if (!orrelateds.NullOrEmpty())
+                        {
+                            db.SaveAll(rrelateds.Except(orrelateds), transaction);
+                            var diffs = orrelateds.Except(rrelateds);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_RELATEDTOS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rrelateds, transaction);
                     }
 
                     if (!resources.NullOrEmpty())
@@ -322,7 +369,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             ResourcesId = x.Id 
                         });
                         var orresources = db.Select<REL_EVENTS_RESOURCES>(q => q.EventId == entity.Id);
-                        db.SaveAll((!orresources.NullOrEmpty()) ? rresources.Except(orresources): rresources, transaction);
+                        if (!orresources.NullOrEmpty())
+                        {
+                            db.SaveAll(rresources.Except(orresources), transaction);
+                            var diffs = orresources.Except(rresources);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_RESOURCES>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rresources, transaction);
                     }
 
                     if (!reqstats.NullOrEmpty())
@@ -335,7 +388,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             ReqStatsId = x.Id 
                         });
                         var orreqstats = db.Select<REL_EVENTS_REQSTATS>(q => q.EventId == entity.Id);
-                        db.SaveAll((!orreqstats.NullOrEmpty()) ? rreqstats.Except(orreqstats) : rreqstats, transaction);
+                        if (!orreqstats.NullOrEmpty())
+                        {
+                            db.SaveAll(rreqstats.Except(orreqstats), transaction);
+                            var diffs = orreqstats.Except(rreqstats);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_REQSTATS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rreqstats, transaction);
                     }
 
                     if (!aalarms.NullOrEmpty())
@@ -348,7 +407,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             AlarmId = x.Id
                         });
                         var oraalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.EventId == entity.Id);
-                        db.SaveAll((!oraalarms.NullOrEmpty()) ? raalarms.Except(oraalarms) : raalarms, transaction);
+                        if (!oraalarms.NullOrEmpty())
+                        {
+                            db.SaveAll(raalarms.Except(oraalarms), transaction);
+                            var diffs = oraalarms.Except(raalarms);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(raalarms, transaction);
                     }
 
                     if (!dalarms.NullOrEmpty())
@@ -361,7 +426,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             AlarmId = x.Id
                         });
                         var ordalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.EventId == entity.Id);
-                        db.SaveAll((!ordalarms.NullOrEmpty()) ? rdalarms.Except(ordalarms) : rdalarms, transaction);
+                        if (!ordalarms.NullOrEmpty())
+                        {
+                            db.SaveAll(rdalarms.Except(ordalarms), transaction);
+                            var diffs = ordalarms.Except(rdalarms);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rdalarms, transaction);
                     }
 
                     if (!ealarms.NullOrEmpty())
@@ -374,7 +445,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             AlarmId = x.Id
                         });
                         var orealarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.EventId == entity.Id);
-                        db.SaveAll((!orealarms.NullOrEmpty()) ? realarms.Except(orealarms) : realarms, transaction);
+                        if (!orealarms.NullOrEmpty())
+                        {
+                            db.SaveAll(realarms.Except(orealarms), transaction);
+                            var diffs = orealarms.Except(realarms);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(realarms, transaction);
                     }
 
                     transaction.Commit();
@@ -434,7 +511,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 x.RecurrenceId,
                 x.RecurrenceRule,
                 x.Attendees,
-                x.Attachments,
+                x.AttachmentBinaries,
+                x.AttachmentUris,
                 x.Contacts,
                 x.Comments,
                 x.RecurrenceDates,
@@ -442,7 +520,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 x.RelatedTos,
                 x.Resources,
                 x.RequestStatuses,
-                x.Alarms
+                x.AudioAlarms,
+                x.DisplayAlarms,
+                x.EmailAlarms
             };
 
             //4. Get list of selected relationals
@@ -468,7 +548,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         Expression<Func<VEVENT, object>> ridexpr = y => y.RecurrenceId;
                         Expression<Func<VEVENT, object>> rruleexpr = y => y.RecurrenceRule;
                         Expression<Func<VEVENT, object>> attendsexpr = y => y.Attendees;
-                        Expression<Func<VEVENT, object>> attachsexpr = y => y.Attachments;
+                        Expression<Func<VEVENT, object>> attachbinsexpr = y => y.AttachmentBinaries;
+                        Expression<Func<VEVENT, object>> attachurisexpr = y => y.AttachmentUris;
                         Expression<Func<VEVENT, object>> contactsexpr = y => y.Contacts;
                         Expression<Func<VEVENT, object>> commentsexpr = y => y.Comments;
                         Expression<Func<VEVENT, object>> rdatesexpr = y => y.RecurrenceDates;
@@ -476,7 +557,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                         Expression<Func<VEVENT, object>> relatedtosexpr = y => y.RelatedTos;
                         Expression<Func<VEVENT, object>> resourcesexpr = y => y.Resources;
                         Expression<Func<VEVENT, object>> reqstatsexpr = y => y.RequestStatuses;
-                        Expression<Func<VEVENT, object>> alarmexpr = y => y.Alarms;
+                        Expression<Func<VEVENT, object>> aalarmexpr = y => y.AudioAlarms;
+                        Expression<Func<VEVENT, object>> dalarmexpr = y => y.DisplayAlarms;
+                        Expression<Func<VEVENT, object>> ealarmexpr = y => y.EmailAlarms;
 
                         #region save relational attributes of entities
 
@@ -537,9 +620,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             }
                         }
 
-                        if (selection.Contains(attachsexpr.GetMemberName()))
+                        if (selection.Contains(attachbinsexpr.GetMemberName()))
                         {
-                            var attachbins = source.Attachments.OfType<ATTACH_BINARY>();
+                            var attachbins = source.AttachmentBinaries.OfType<ATTACH_BINARY>();
                             if (!attachbins.NullOrEmpty())
                             {
                                 db.SaveAll(attachbins, transaction);
@@ -555,8 +638,10 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                     : rattachbins, transaction);
 
                             }
-
-                            var attachuris = source.Attachments.OfType<ATTACH_BINARY>();
+                        }
+                        if (selection.Contains(attachurisexpr.GetMemberName()))
+                        {
+                            var attachuris = source.AttachmentBinaries.OfType<ATTACH_BINARY>();
                             if (!attachuris.NullOrEmpty())
                             {
                                 db.SaveAll(attachuris, transaction);
@@ -706,12 +791,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                             }
                         }
 
-                        if (selection.Contains(alarmexpr.GetMemberName()))
+                        if (selection.Contains(aalarmexpr.GetMemberName()))
                         {
-                            var aalarms = source.Contacts.OfType<AUDIO_ALARM>();
-                            var dalarms = source.Contacts.OfType<DISPLAY_ALARM>();
-                            var ealarms = source.Contacts.OfType<EMAIL_ALARM>();
-
+                            var aalarms = source.AudioAlarms;
                             if (!aalarms.NullOrEmpty())
                             {
                                 this.AudioAlarmRepository.SaveAll(aalarms);
@@ -727,6 +809,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                     : raalarms, transaction);
                             }
 
+                        }
+
+                        if (selection.Contains(dalarmexpr.GetMemberName()))
+                        {
+                            var dalarms = source.DisplayAlarms;
+
                             if (!dalarms.NullOrEmpty())
                             {
                                 this.DisplayAlarmRepository.SaveAll(dalarms);
@@ -741,6 +829,12 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                     ? rdalarms.Except(ordalarms)
                                     : rdalarms, transaction);
                             }
+
+                        }
+
+                        if (selection.Contains(ealarmexpr.GetMemberName()))
+                        {
+                            var ealarms = source.EmailAlarms;
 
                             if (!ealarms.NullOrEmpty())
                             {
@@ -825,10 +919,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var rids = entities.Where(x => x.RecurrenceId != null).Select(x => x.RecurrenceId);
             var rrules = entities.Where(x => x.RecurrenceRule != null ).Select(x => x.RecurrenceRule);
             var attendees = entities.Where(x => !x.Attendees.NullOrEmpty()).SelectMany(x => x.Attendees);
-            var attachbins = entities.Where(x => !x.Attachments.NullOrEmpty() && !x.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty())
-                .SelectMany(x => x.Attachments.OfType<ATTACH_BINARY>());
-            var attachuris = entities.Where(x => !x.Attachments.NullOrEmpty() && !x.Attachments.OfType<ATTACH_URI>().NullOrEmpty())
-                .SelectMany(x => x.Attachments.OfType<ATTACH_URI>());
+            var attachbins = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty()).SelectMany(x => x.AttachmentBinaries);
+            var attachuris = entities.Where(x => !x.AttachmentUris.NullOrEmpty()).SelectMany(x => x.AttachmentUris);
             var contacts = entities.Where(x => !x.Contacts.NullOrEmpty()).SelectMany(x => x.Contacts);
             var comments = entities.Where(x => !x.Comments.NullOrEmpty()).SelectMany(x => x.Comments);
             var rdates = entities.Where(x => !x.RecurrenceDates.NullOrEmpty()).SelectMany(x => x.RecurrenceDates);
@@ -836,12 +928,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
             var relateds = entities.Where(x => !x.RelatedTos.NullOrEmpty()).SelectMany(x => x.RelatedTos);
             var resources = entities.Where(x => !x.Resources.NullOrEmpty()).SelectMany(x => x.Resources);
             var reqstats = entities.Where(x => !x.Resources.NullOrEmpty()).SelectMany(x => x.RequestStatuses);
-            var aalarms = entities.Where(x => !x.Alarms.NullOrEmpty() && !x.Alarms.OfType<AUDIO_ALARM>().NullOrEmpty())
-                .SelectMany(x => x.Alarms.OfType<AUDIO_ALARM>());
-            var dalarms = entities.Where(x => !x.Alarms.NullOrEmpty() && !x.Alarms.OfType<DISPLAY_ALARM>().NullOrEmpty())
-                .SelectMany(x => x.Alarms.OfType<DISPLAY_ALARM>());
-            var ealarms = entities.Where(x => !x.Alarms.NullOrEmpty() && !x.Alarms.OfType<EMAIL_ALARM>().NullOrEmpty())
-                .SelectMany(x => x.Alarms.OfType<EMAIL_ALARM>());
+            var aalarms = entities.Where(x => !x.AudioAlarms.NullOrEmpty()).SelectMany(x => x.AudioAlarms);
+            var dalarms = entities.Where(x => !x.DisplayAlarms.NullOrEmpty()).SelectMany(x => x.DisplayAlarms);
+            var ealarms = entities.Where(x => !x.EmailAlarms.NullOrEmpty()) .SelectMany(x => x.EmailAlarms);
 
             #endregion
 
@@ -918,8 +1007,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!attachbins.NullOrEmpty())
                     {
                         db.SaveAll(attachbins, transaction);
-                        var rattachbins = entities.Where(x => !x.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty())
-                            .SelectMany(e => e.Attachments.OfType<ATTACH_BINARY>()
+                        var rattachbins = entities.Where(x => !x.AttachmentBinaries.OfType<ATTACH_BINARY>().NullOrEmpty())
+                            .SelectMany(e => e.AttachmentBinaries.OfType<ATTACH_BINARY>()
                                 .Select(x => new REL_EVENTS_ATTACHBINS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
@@ -933,8 +1022,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!attachuris.NullOrEmpty())
                     {
                         db.SaveAll(attachuris, transaction);
-                        var rattachuris = entities.Where(x => !x.Attachments.OfType<ATTACH_URI>().NullOrEmpty())
-                            .SelectMany(e => e.Attachments.OfType<ATTACH_URI>()
+                        var rattachuris = entities.Where(x => !x.AttachmentBinaries.OfType<ATTACH_URI>().NullOrEmpty())
+                            .SelectMany(e => e.AttachmentBinaries.OfType<ATTACH_URI>()
                                 .Select(x => new REL_EVENTS_ATTACHURIS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
@@ -1046,8 +1135,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!aalarms.NullOrEmpty())
                     {
                         this.AudioAlarmRepository.SaveAll(aalarms);
-                        var raalarms = entities.Where(x => !x.Alarms.OfType<AUDIO_ALARM>().NullOrEmpty())
-                            .SelectMany(e => e.RequestStatuses.OfType<AUDIO_ALARM>().Select(x => new REL_EVENTS_AUDIO_ALARMS
+                        var raalarms = entities.Where(x => !x.AudioAlarms.NullOrEmpty())
+                            .SelectMany(e => e.AudioAlarms.Select(x => new REL_EVENTS_AUDIO_ALARMS
                             {
                                 Id = this.KeyGenerator.GetNextKey(),
                                 EventId = e.Id,
@@ -1060,7 +1149,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!dalarms.NullOrEmpty())
                     {
                         this.DisplayAlarmRepository.SaveAll(dalarms);
-                        var rdalarms = entities.Where(x => !x.Alarms.OfType<DISPLAY_ALARM>().NullOrEmpty()).SelectMany(e => e.RequestStatuses.OfType<DISPLAY_ALARM>().Select(x => new REL_EVENTS_DISPLAY_ALARMS
+                        var rdalarms = entities.Where(x => !x.AudioAlarms.NullOrEmpty()).SelectMany(e => e.DisplayAlarms.Select(x => new REL_EVENTS_DISPLAY_ALARMS
                         {
                             Id = this.KeyGenerator.GetNextKey(),
                             EventId = e.Id,
@@ -1073,8 +1162,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     if (!ealarms.NullOrEmpty())
                     {
                         this.EmailAlarmRepository.SaveAll(ealarms);
-                        var realarms = entities.Where(x => !x.Alarms.OfType<EMAIL_ALARM>().NullOrEmpty())
-                            .SelectMany(e => e.RequestStatuses.OfType<EMAIL_ALARM>().Select(x => new REL_EVENTS_EMAIL_ALARMS
+                        var realarms = entities.Where(x => !x.EmailAlarms.NullOrEmpty())
+                            .SelectMany(e => e.EmailAlarms.Select(x => new REL_EVENTS_EMAIL_ALARMS
                             {
                                 Id = this.KeyGenerator.GetNextKey(),
                                 EventId = e.Id,
@@ -1148,13 +1237,13 @@ namespace reexmonkey.xcal.service.repositories.concretes
                        r => r.AttachmentId,
                        r => r.EventId,
                        e => e.Id == okey);
-                    if (!attachbins.NullOrEmpty()) full.Attachments.AddRangeComplement(attachbins);
+                    if (!attachbins.NullOrEmpty()) full.AttachmentBinaries.AddRangeComplement(attachbins);
 
                     var attachuris = db.Select<ATTACH_URI, VEVENT, REL_EVENTS_ATTACHURIS>(
                        r => r.AttachmentId,
                        r => r.EventId,
                        e => e.Id == okey);
-                    if (!attachuris.NullOrEmpty()) full.Attachments.AddRangeComplement(attachuris);
+                    if (!attachuris.NullOrEmpty()) full.AttachmentUris.AddRangeComplement(attachuris);
 
                     var attendees = db.Select<ATTENDEE, VEVENT, REL_EVENTS_ATTENDEES>(
                          r => r.AttendeeId,
@@ -1207,19 +1296,19 @@ namespace reexmonkey.xcal.service.repositories.concretes
                     var raalarms = this.db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.Id == okey);
                     if (!raalarms.NullOrEmpty())
                     {
-                        full.Alarms.AddRangeComplement(this.AudioAlarmRepository.FindAll(raalarms.Select(x => x.AlarmId).ToList()));
+                        full.AudioAlarms.AddRangeComplement(this.AudioAlarmRepository.FindAll(raalarms.Select(x => x.AlarmId).ToList()));
                     }
 
                     var rdalarms = this.db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.Id == okey);
                     if (!rdalarms.NullOrEmpty())
                     {
-                        full.Alarms.AddRangeComplement(this.DisplayAlarmRepository.FindAll(rdalarms.Select(x => x.AlarmId).ToList()));
+                        full.DisplayAlarms.AddRangeComplement(this.DisplayAlarmRepository.FindAll(rdalarms.Select(x => x.AlarmId).ToList()));
                     }
 
                     var realarms = this.db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.Id == okey);
                     if (!realarms.NullOrEmpty())
                     {
-                        full.Alarms.AddRangeComplement(this.EmailAlarmRepository
+                        full.EmailAlarms.AddRangeComplement(this.EmailAlarmRepository
                             .HydrateAll(this.EmailAlarmRepository.FindAll(realarms.Select(x => x.AlarmId).ToList())));
                     }
                 }
@@ -1347,7 +1436,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                               join e in full on r.EventId equals e.Id
                                               where e.Id == x.Id
                                               select y;
-                            if (!xattachbins.NullOrEmpty()) x.Attachments.AddRangeComplement(xattachbins);
+                            if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.AddRangeComplement(xattachbins);
 
                         }
 
@@ -1358,7 +1447,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                               join e in full on r.EventId equals e.Id
                                               where e.Id == x.Id
                                               select y;
-                            if (!xattachuris.NullOrEmpty()) x.Attachments.AddRangeComplement(xattachuris);
+                            if (!xattachuris.NullOrEmpty()) x.AttachmentUris.AddRangeComplement(xattachuris);
                         }
 
                         if (!contacts.NullOrEmpty())
@@ -1430,7 +1519,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                             join e in full on r.EventId equals e.Id
                                             where e.Id == x.Id
                                             select y;
-                            if (!xraalarms.NullOrEmpty()) x.Alarms.AddRangeComplement(xraalarms);
+                            if (!xraalarms.NullOrEmpty()) x.AudioAlarms.AddRangeComplement(xraalarms);
                         }
 
                         if (!dalarms.NullOrEmpty())
@@ -1440,7 +1529,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                             join e in full on r.EventId equals e.Id
                                             where e.Id == x.Id
                                             select y;
-                            if (!xrdalarms.NullOrEmpty()) x.Alarms.AddRangeComplement(xrdalarms);
+                            if (!xrdalarms.NullOrEmpty()) x.DisplayAlarms.AddRangeComplement(xrdalarms);
 
                         }
 
@@ -1451,7 +1540,7 @@ namespace reexmonkey.xcal.service.repositories.concretes
                                             join e in full on r.EventId equals e.Id
                                             where e.Id == x.Id
                                             select y;
-                            if (!xrealarms.NullOrEmpty()) x.Alarms.AddRangeComplement(xrealarms);
+                            if (!xrealarms.NullOrEmpty()) x.EmailAlarms.AddRangeComplement(xrealarms);
                         }
                     });
 
@@ -1526,7 +1615,8 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 dry.RecurrenceId = null;
                 dry.RecurrenceRule = null;
                 if (!dry.Attendees.NullOrEmpty()) dry.Attendees.Clear();
-                if (!dry.Attachments.NullOrEmpty()) dry.Attachments.Clear();
+                if (!dry.AttachmentBinaries.NullOrEmpty()) dry.AttachmentBinaries.Clear();
+                if (!dry.AttachmentUris.NullOrEmpty()) dry.AttachmentUris.Clear();
                 if (!dry.Contacts.NullOrEmpty()) dry.Contacts.Clear();
                 if (!dry.Comments.NullOrEmpty()) dry.Comments.Clear();
                 if (!dry.RecurrenceDates.NullOrEmpty()) dry.RecurrenceDates.Clear();
@@ -1534,7 +1624,9 @@ namespace reexmonkey.xcal.service.repositories.concretes
                 if (!dry.RelatedTos.NullOrEmpty()) dry.RelatedTos.Clear();
                 if (!dry.RequestStatuses.NullOrEmpty()) dry.RequestStatuses.Clear();
                 if (!dry.Resources.NullOrEmpty()) dry.Resources.Clear();
-                if (!dry.Alarms.NullOrEmpty()) dry.Alarms.Clear();
+                if (!dry.AudioAlarms.NullOrEmpty()) dry.AudioAlarms.Clear();
+                if (!dry.DisplayAlarms.NullOrEmpty()) dry.DisplayAlarms.Clear();
+                if (!dry.EmailAlarms.NullOrEmpty()) dry.EmailAlarms.Clear();
                 return dry;
             }
             catch (ArgumentNullException)

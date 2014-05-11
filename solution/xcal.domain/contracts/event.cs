@@ -48,7 +48,9 @@ namespace reexmonkey.xcal.domain.contracts
 
         DURATION Duration {get; set;}
 
-        List<IATTACH> Attachments { get; set; }
+        List<ATTACH_BINARY> AttachmentBinaries { get; set; }
+
+        List<ATTACH_URI> AttachmentUris { get; set; }
 
         List<ATTENDEE> Attendees { get; set; }
 
@@ -68,7 +70,11 @@ namespace reexmonkey.xcal.domain.contracts
 
         List<RDATE> RecurrenceDates { get; set; }
 
-        List<IALARM> Alarms { get; set; }
+        List<AUDIO_ALARM> AudioAlarms { get; set; }
+
+        List<DISPLAY_ALARM> DisplayAlarms { get; set; }
+
+        List<EMAIL_ALARM> EmailAlarms { get; set; }
 
         List<IANA_PROPERTY> IANAProperties { get; set; }
 

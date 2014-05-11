@@ -30,7 +30,7 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             sb.AppendFormat("BEGIN:{0}", this.TokenName).AppendLine();
             foreach (var line in this.ContentLines) sb.Append(line);
-            sb.AppendFormat("END:{0}", this.TokenName).AppendLine();
+            sb.AppendFormat("END:{0}", this.TokenName);
             return sb.ToString();
         }
 
@@ -56,7 +56,7 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             sb.AppendFormat("BEGIN:{0}", this.TokenName).AppendLine();
             foreach (var line in this.ContentLines) sb.Append(line);
-            sb.AppendFormat("END:{0}", this.TokenName).AppendLine();
+            sb.AppendFormat("END:{0}", this.TokenName);
             return sb.ToString();
         }
 

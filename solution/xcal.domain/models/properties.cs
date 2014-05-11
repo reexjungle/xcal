@@ -109,7 +109,7 @@ namespace reexmonkey.xcal.domain.models
                 sb.AppendFormat("ATTACH");
                 if (this.FormatType != null) sb.AppendFormat(";{0};", this.FormatType);
                 sb.AppendFormat("ENCODING={0};", this.Encoding);
-                sb.AppendFormat("VALUE=BINARY:{0}", this.Content).AppendLine();
+                sb.AppendFormat("VALUE=BINARY:{0}", this.Content);
             }
 
             return sb.ToString();
@@ -220,7 +220,7 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             sb.AppendFormat("ATTACH");
             if (!this.FormatType.Equals(string.Empty)) sb.AppendFormat(";{0}", this.FormatType);
-            sb.AppendFormat(":{0}", this.Content).AppendLine();
+            sb.AppendFormat(":{0}", this.Content);
             return sb.ToString();
         }
 
@@ -1111,10 +1111,11 @@ namespace reexmonkey.xcal.domain.models
             get { return this.text; }
             set 
             {
-                if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value must neither be empty nor null!");
                 this.text = value; 
             } 
         }
+
+        public TZNAME() { }
 
         /// <summary>
         /// Constructor, based on the Name of the Time Zone
@@ -1158,25 +1159,25 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator ==(TZNAME a, TZNAME b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return object.Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(TZNAME a, TZNAME b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
 
         public static bool operator <(TZNAME a, TZNAME b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return false;
             return a.CompareTo(b) < 0;
         }
 
         public static bool operator >(TZNAME a, TZNAME b)
         {
-            if (a == null || b == null) return false;
+            if ((object)a == null || (object)b == null) return false;
             return a.CompareTo(b) > 0;
         }
 
@@ -1189,7 +1190,7 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             sb.Append("TZNAME");
             if (this.language != null) sb.AppendFormat(";{0}", this.language);
-            sb.AppendFormat(":{0}", this.text).AppendLine();
+            sb.AppendFormat(":{0}", this.text);
             return sb.ToString();
         }
 
@@ -1352,7 +1353,7 @@ namespace reexmonkey.xcal.domain.models
             if (!string.IsNullOrEmpty(this.CN)) sb.AppendFormat("CN={0}", this.CN);
             if (this.Directory != null) sb.AppendFormat("DIR={0}", this.Directory);            
             if (this.Language != null) sb.AppendFormat("{0}", this.Language);
-            sb.AppendFormat(":mailto:{0}", this.Address).AppendLine();
+            sb.AppendFormat(":mailto:{0}", this.Address);
             return sb.ToString();
         }
 
@@ -1674,10 +1675,11 @@ namespace reexmonkey.xcal.domain.models
         /// <returns>String Representation of the Related_To property in form of "RELATED-TO;Relationship:Text"</returns>
         public override string ToString()
         {
+            if (string.IsNullOrEmpty(this.Reference)) return string.Empty;
             var sb = new StringBuilder();
             sb.Append("RELATED-TO");
             if (this.RelationshipType != RELTYPE.UNKNOWN) sb.AppendFormat(";{0}", this.RelationshipType);
-            sb.AppendFormat(":{0}", this.Reference).AppendLine();
+            sb.AppendFormat(":{0}", this.Reference);
             return sb.ToString();
         }
 
@@ -1782,7 +1784,7 @@ namespace reexmonkey.xcal.domain.models
             foreach (var datetime in this.DateTimes)
             {
                 if (datetime != last) sb.AppendFormat("{0}, ", datetime);
-                else sb.AppendFormat("{0}", datetime).AppendLine();
+                else sb.AppendFormat("{0}", datetime);
             }
             return sb.ToString();
         }
@@ -1934,7 +1936,7 @@ namespace reexmonkey.xcal.domain.models
                 foreach (var datetime in this.datetimes)
                 {
                     if (datetime != last) sb.AppendFormat("{0}, ", datetime);
-                    else sb.AppendFormat("{0}", datetime).AppendLine();
+                    else sb.AppendFormat("{0}", datetime);
                 }            
             }
             else if (!this.periods.NullOrEmpty())
@@ -1943,7 +1945,7 @@ namespace reexmonkey.xcal.domain.models
                 foreach (var period in this.Periods)
                 {
                     if (period != last) sb.AppendFormat("{0}, ", period);
-                    else sb.AppendFormat("{0}", period).AppendLine();
+                    else sb.AppendFormat("{0}", period);
                 }              
             }
             return sb.ToString();

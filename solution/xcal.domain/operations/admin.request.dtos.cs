@@ -15,6 +15,6 @@ namespace reexmonkey.xcal.domain.operations
     public class FlushDatabase: IReturnVoid 
     {
         [DataMember]
-        public bool? Force { get; set; }
+        public bool? Reset { get; set; }
     }
 }

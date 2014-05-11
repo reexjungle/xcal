@@ -156,13 +156,13 @@ namespace reexmonkey.xcal.domain.models
             sb.AppendFormat("PRODID:{0}", this.ProdId).AppendLine();
             if(this.Calscale != CALSCALE.UNKNOWN) sb.AppendFormat("CALSCALE:{0}", this.Calscale).AppendLine();
             if(this.Method != METHOD.UNKNOWN) sb.AppendFormat("METHOD:{0}", this.Method).AppendLine();
-            foreach (var x in Events) if(x != null) sb.Append(x.ToString()).AppendLine();
-            foreach (var x in ToDos) if (x != null) sb.Append(x.ToString()).AppendLine();
-            foreach (var x in FreeBusies) if (x != null) sb.Append(x.ToString()).AppendLine();
-            foreach (var x in Journals) if (x != null) sb.Append(x.ToString()).AppendLine();
-            foreach (var x in TimeZones) if (x != null) sb.Append(x.ToString()).AppendLine();
-            foreach (var x in IanaComponents) if (x != null) sb.Append(x.ToString()).AppendLine();
-            foreach (var x in XComponents) if (x != null) sb.Append(x.ToString()).AppendLine();
+            if (!this.Events.NullOrEmpty()) this.Events.ForEach(x => sb.Append(x.ToString()).AppendLine());
+            if (!this.ToDos.NullOrEmpty()) this.ToDos.ForEach(x => sb.Append(x.ToString()).AppendLine());
+            if (!this.FreeBusies.NullOrEmpty()) this.FreeBusies.ForEach(x => sb.Append(x.ToString()).AppendLine());
+            if (!this.Journals.NullOrEmpty()) this.Journals.ForEach(x => sb.Append(x.ToString()).AppendLine());
+            if (!this.TimeZones.NullOrEmpty()) this.TimeZones.ForEach(x => sb.Append(x.ToString()).AppendLine());
+            if (!this.IanaComponents.NullOrEmpty()) this.IanaComponents.ForEach(x => sb.Append(x.ToString()).AppendLine());
+            if (!this.XComponents.NullOrEmpty()) this.XComponents.ForEach(x => sb.Append(x.ToString()).AppendLine());
             sb.Append("END:VCALENDAR");
             return sb.ToString();
         }

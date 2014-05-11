@@ -48,11 +48,6 @@ namespace reexmonkey.xcal.domain.operations
     }
 
     [DataContract]
-    [KnownType(typeof(ATTACH_BINARY))]
-    [KnownType(typeof(ATTACH_URI))]
-    [KnownType(typeof(AUDIO_ALARM))]
-    [KnownType(typeof(DISPLAY_ALARM))]
-    [KnownType(typeof(EMAIL_ALARM))]
     [Route("/calendars/events/{EventId}/patch", "PATCH")]
     public class PatchEvent : IReturnVoid
     {
@@ -114,7 +109,10 @@ namespace reexmonkey.xcal.domain.operations
         public DURATION Duration { get; set; }
 
         [DataMember]
-        public List<IATTACH> Attachments { get; set; }
+        public List<ATTACH_BINARY> AttachmentBinaries { get; set; }
+
+        [DataMember]
+        public List<ATTACH_URI> AttachmentUris { get; set; }
 
         [DataMember]
         public List<ATTENDEE> Attendees { get; set; }
@@ -144,7 +142,13 @@ namespace reexmonkey.xcal.domain.operations
         public List<RDATE> RecurrenceDates { get; set; }
 
         [DataMember]
-        public List<IALARM> Alarms { get; set; }
+        public List<AUDIO_ALARM> AudioAlarms { get; set; }
+
+        [DataMember]
+        public List<DISPLAY_ALARM> DisplayAlarms { get; set; }
+
+        [DataMember]
+        public List<EMAIL_ALARM> EmailAlarms { get; set; }
 
         [DataMember]
         public List<IANA_PROPERTY> IANAProperties { get; set; }
@@ -207,9 +211,6 @@ namespace reexmonkey.xcal.domain.operations
         public URI Url { get; set; }
 
         [DataMember]
-        public RECURRENCE_ID RecurrenceId { get; set; }
-
-        [DataMember]
         public RECUR RecurrenceRule { get; set; }
 
         [DataMember]
@@ -219,7 +220,10 @@ namespace reexmonkey.xcal.domain.operations
         public DURATION Duration { get; set; }
 
         [DataMember]
-        public List<IATTACH> Attachments { get; set; }
+        public List<ATTACH_BINARY> AttachmentBinaries { get; set; }
+
+        [DataMember]
+        public List<ATTACH_URI> AttachmentUris { get; set; }
 
         [DataMember]
         public List<ATTENDEE> Attendees { get; set; }
@@ -249,7 +253,13 @@ namespace reexmonkey.xcal.domain.operations
         public List<RDATE> RecurrenceDates { get; set; }
 
         [DataMember]
-        public List<IALARM> Alarms { get; set; }
+        public List<AUDIO_ALARM> AudioAlarms { get; set; }
+
+        [DataMember]
+        public List<DISPLAY_ALARM> DisplayAlarms { get; set; }
+
+        [DataMember]
+        public List<EMAIL_ALARM> EmailAlarms { get; set; }
 
         [DataMember]
         public List<IANA_PROPERTY> IANAProperties { get; set; }

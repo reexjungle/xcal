@@ -23,6 +23,7 @@ using reexmonkey.xcal.service.repositories.concretes;
 using reexmonkey.technical.data.concretes.extensions.ormlite.mysql;
 using reexmonkey.infrastructure.operations.concretes;
 using reexmonkey.infrastructure.operations.contracts;
+using reexmonkey.xcal.service.plugins.formats.concretes;
 
 
 namespace reexmonkey.xcal.application.server.web.local
@@ -61,6 +62,7 @@ namespace reexmonkey.xcal.application.server.web.local
 
             Plugins.Add(new ValidationFeature());
             Plugins.Add(new MsgPackFormat());
+            Plugins.Add(new iCalendarFormat());
             Plugins.Add(new CorsFeature());
 
             #endregion

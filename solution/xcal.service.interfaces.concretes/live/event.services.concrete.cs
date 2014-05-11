@@ -139,7 +139,8 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                     RecurrenceRule = request.RecurrenceRule,
                     End = request.End,
                     Duration = request.Duration,
-                    Attachments = request.Attachments,
+                    AttachmentBinaries = request.AttachmentBinaries,
+                    AttachmentUris = request.AttachmentUris,
                     Attendees = request.Attendees,
                     Categories = request.Categories,
                     Comments = request.Comments,
@@ -148,7 +149,9 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                     RequestStatuses = request.RequestStatuses,
                     Resources = request.Resources,
                     RelatedTos = request.RelatedTos,
-                    Alarms = request.Alarms,
+                    AudioAlarms = request.AudioAlarms,
+                    DisplayAlarms = request.DisplayAlarms,
+                    EmailAlarms = request.EmailAlarms,
                     IANAProperties = request.IANAProperties,
                     XProperties = request.XProperties
                 };
@@ -168,7 +171,8 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 if (source.RecurrenceRule != null) fieldlist.Add("RecurrenceRule");
                 if (source.End != default(DATE_TIME)) fieldlist.Add("End");
                 if (source.Duration != default(DURATION)) fieldlist.Add("Duration");
-                if (!source.Attachments.NullOrEmpty()) fieldlist.Add("Attachments");
+                if (!source.AttachmentBinaries.NullOrEmpty()) fieldlist.Add("AttachmentBinaries");
+                if (!source.AttachmentUris.NullOrEmpty()) fieldlist.Add("AttachmentUris");
                 if (!source.Attendees.NullOrEmpty()) fieldlist.Add("Attendees");
                 if (source.Categories != null) fieldlist.Add("Categories");
                 if (!source.Comments.NullOrEmpty()) fieldlist.Add("Comments");
@@ -177,7 +181,9 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 if (!source.RequestStatuses.NullOrEmpty()) fieldlist.Add("RequestStatuses");
                 if (!source.Resources.NullOrEmpty()) fieldlist.Add("Resources");
                 if (!source.RelatedTos.NullOrEmpty()) fieldlist.Add("RelatedTos");
-                if (!source.Alarms.NullOrEmpty()) fieldlist.Add("Alarms");
+                if (!source.AudioAlarms.NullOrEmpty()) fieldlist.Add("AudioAlarms");
+                if (!source.DisplayAlarms.NullOrEmpty()) fieldlist.Add("DisplayAlarms");
+                if (!source.EmailAlarms.NullOrEmpty()) fieldlist.Add("EmailAlarms");
                 if (!source.IANAProperties.NullOrEmpty()) fieldlist.Add("IANAProperties");
                 if (!source.XProperties.NullOrEmpty()) fieldlist.Add("XProperties");
 
@@ -211,7 +217,8 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                     RecurrenceRule = request.RecurrenceRule,
                     End = request.End,
                     Duration = request.Duration,
-                    Attachments = request.Attachments,
+                    AttachmentBinaries = request.AttachmentBinaries,
+                    AttachmentUris = request.AttachmentUris,
                     Attendees = request.Attendees,
                     Categories = request.Categories,
                     Comments = request.Comments,
@@ -220,7 +227,9 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                     RequestStatuses = request.RequestStatuses,
                     Resources = request.Resources,
                     RelatedTos = request.RelatedTos,
-                    Alarms = request.Alarms,
+                    AudioAlarms = request.AudioAlarms,
+                    DisplayAlarms = request.DisplayAlarms,
+                    EmailAlarms = request.EmailAlarms,
                     IANAProperties = request.IANAProperties,
                     XProperties = request.XProperties
                 };
@@ -240,7 +249,8 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 if (source.RecurrenceRule != null) fieldlist.Add("RecurrenceRule");
                 if (source.End != default(DATE_TIME)) fieldlist.Add("End");
                 if (source.Duration != default(DURATION)) fieldlist.Add("Duration");
-                if (!source.Attachments.NullOrEmpty()) fieldlist.Add("Attachments");
+                if (!source.AttachmentBinaries.NullOrEmpty()) fieldlist.Add("AttachmentBinaries");
+                if (!source.AttachmentUris.NullOrEmpty()) fieldlist.Add("AttachmentUris");
                 if (!source.Attendees.NullOrEmpty()) fieldlist.Add("Attendees");
                 if (source.Categories != null) fieldlist.Add("Categories");
                 if (!source.Comments.NullOrEmpty()) fieldlist.Add("Comments");
@@ -249,7 +259,9 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 if (!source.RequestStatuses.NullOrEmpty()) fieldlist.Add("RequestStatuses");
                 if (!source.Resources.NullOrEmpty()) fieldlist.Add("Resources");
                 if (!source.RelatedTos.NullOrEmpty()) fieldlist.Add("RelatedTos");
-                if (!source.Alarms.NullOrEmpty()) fieldlist.Add("Alarms");
+                if (!source.AudioAlarms.NullOrEmpty()) fieldlist.Add("AudioAlarms");
+                if (!source.DisplayAlarms.NullOrEmpty()) fieldlist.Add("DisplayAlarms");
+                if (!source.EmailAlarms.NullOrEmpty()) fieldlist.Add("EmailAlarms");
                 if (!source.IANAProperties.NullOrEmpty()) fieldlist.Add("IANAProperties");
                 if (!source.XProperties.NullOrEmpty()) fieldlist.Add("XProperties");
 
