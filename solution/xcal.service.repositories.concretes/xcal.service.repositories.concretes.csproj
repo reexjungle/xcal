@@ -74,22 +74,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="admin.ormlite.repository.cs" />
-    <Compile Include="admin.redis.repository.cs" />
-    <Compile Include="alarm.relations.cs" />
-    <Compile Include="alarm.ormlite.repositories.cs" />
-    <Compile Include="alarm.redis.repositories.cs" />
-    <Compile Include="calendar.relations.cs" />
-    <Compile Include="calendar.ormlite.repository.cs" />
-    <Compile Include="calendar.redis.repository.cs" />
-    <Compile Include="event.relations.cs" />
-    <Compile Include="event.ormlite.repository.cs" />
-    <Compile Include="event.redis.repository.cs" />
-    <Compile Include="freebusy.relations.cs" />
-    <Compile Include="journal.relations.cs" />
+    <Compile Include="ormlite\admin.ormlite.repository.cs" />
+    <Compile Include="redis\admin.redis.repository.cs" />
+    <Compile Include="relations\alarm.relations.cs" />
+    <Compile Include="ormlite\alarm.ormlite.repositories.cs" />
+    <Compile Include="redis\alarm.redis.repositories.cs" />
+    <Compile Include="relations\calendar.relations.cs" />
+    <Compile Include="ormlite\calendar.ormlite.repository.cs" />
+    <Compile Include="redis\calendar.redis.repository.cs" />
+    <Compile Include="relations\event.relations.cs" />
+    <Compile Include="ormlite\event.ormlite.repository.cs" />
+    <Compile Include="redis\event.redis.repository.cs" />
+    <Compile Include="relations\freebusy.relations.cs" />
+    <Compile Include="relations\journal.relations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="timezone.relations.cs" />
-    <Compile Include="todo.relations.cs" />
+    <Compile Include="relations\timezone.relations.cs" />
+    <Compile Include="relations\todo.relations.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\crosscut.operations.concretes\crosscut.operations.concretes.csproj">

@@ -10,9 +10,10 @@ using reexmonkey.foundation.essentials.contracts;
 using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.infrastructure.operations.contracts;
+using reexmonkey.xcal.service.repositories.concretes.relations;
 
 
-namespace reexmonkey.xcal.service.repositories.concretes
+namespace reexmonkey.xcal.service.repositories.concretes.redis
 {
     public class AudioAlarmRedisRepository: IAudioAlarmRedisRepository
     {

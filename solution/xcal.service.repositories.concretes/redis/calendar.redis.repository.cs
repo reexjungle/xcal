@@ -10,9 +10,10 @@ using reexmonkey.xcal.domain.models;
 using reexmonkey.foundation.essentials.contracts;
 using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.service.repositories.contracts;
+using reexmonkey.xcal.service.repositories.concretes.relations;
 using reexmonkey.infrastructure.operations.contracts;
 
-namespace reexmonkey.xcal.service.repositories.concretes
+namespace reexmonkey.xcal.service.repositories.concretes.redis
 {
     public class CalendarRedisRepository : ICalendarRedisRepository
     {

@@ -14,8 +14,9 @@ using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.infrastructure.operations.concretes;
 using reexmonkey.infrastructure.operations.contracts;
+using reexmonkey.xcal.service.repositories.concretes.relations;
 
-namespace reexmonkey.xcal.service.repositories.concretes
+namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 {
     /// <summary>
     /// Reüpresents a a repository of events connected to an ORMlite source

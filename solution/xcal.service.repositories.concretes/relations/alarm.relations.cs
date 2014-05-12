@@ -5,7 +5,7 @@ using ServiceStack.OrmLite;
 using ServiceStack.DataAnnotations;
 using reexmonkey.xcal.domain.models;
 
-namespace reexmonkey.xcal.service.repositories.concretes
+namespace reexmonkey.xcal.service.repositories.concretes.relations
 {
 
     public class REL_AALARMS_ATTACHBINS : IEquatable<REL_AALARMS_ATTACHBINS>

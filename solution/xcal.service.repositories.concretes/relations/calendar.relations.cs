@@ -3,7 +3,7 @@ using ServiceStack.OrmLite;
 using ServiceStack.DataAnnotations;
 using reexmonkey.xcal.domain.models;
 
-namespace reexmonkey.xcal.service.repositories.concretes
+namespace reexmonkey.xcal.service.repositories.concretes.relations
 {
     public class REL_CALENDARS_EVENTS : IEquatable<REL_CALENDARS_EVENTS>
     {

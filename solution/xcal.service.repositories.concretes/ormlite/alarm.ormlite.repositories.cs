@@ -12,10 +12,11 @@ using reexmonkey.crosscut.operations.concretes;
 using reexmonkey.infrastructure.io.concretes;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.service.repositories.contracts;
+using reexmonkey.xcal.service.repositories.concretes.relations;
 using reexmonkey.infrastructure.operations.concretes;
 using reexmonkey.infrastructure.operations.contracts;
 
-namespace reexmonkey.xcal.service.repositories.concretes
+namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 {
     public class AudioAlarmOrmLiteRepository : IAudioAlarmOrmLiteRepository
     {

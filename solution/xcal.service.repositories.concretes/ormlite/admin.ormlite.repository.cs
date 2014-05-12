@@ -6,10 +6,11 @@ using System.Data;
 using ServiceStack.OrmLite;
 using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.xcal.domain.contracts;
+using reexmonkey.xcal.service.repositories.concretes.relations;
 using reexmonkey.xcal.domain.models;
 
 
-namespace reexmonkey.xcal.service.repositories.concretes
+namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 {
     public class AdminOrmLiteRepository : IAdminOrmLiteRepository
     {

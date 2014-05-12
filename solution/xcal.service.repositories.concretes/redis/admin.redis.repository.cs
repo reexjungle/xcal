@@ -7,7 +7,7 @@ using reexmonkey.xcal.service.repositories.contracts;
 
 
 
-namespace reexmonkey.xcal.service.repositories.concretes
+namespace reexmonkey.xcal.service.repositories.concretes.redis
 {
     public class AdminRedisRepository : IAdminRedisRepository
     {

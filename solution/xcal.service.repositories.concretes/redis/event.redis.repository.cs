@@ -11,8 +11,9 @@ using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.technical.data.concretes.extensions.redis;
 using reexmonkey.infrastructure.operations.contracts;
+using reexmonkey.xcal.service.repositories.concretes.relations;
 
-namespace reexmonkey.xcal.service.repositories.concretes
+namespace reexmonkey.xcal.service.repositories.concretes.redis
 {
     public class EventRedisRepository: IEventRedisRepository
     {

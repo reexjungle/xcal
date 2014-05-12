@@ -6,7 +6,7 @@ using ServiceStack.DataAnnotations;
 using ServiceStack.OrmLite;
 using reexmonkey.xcal.domain.models;
 
-namespace reexmonkey.xcal.service.repositories.concretes
+namespace reexmonkey.xcal.service.repositories.concretes.relations
 {
     public class REL_FREEBUSIES_ORGANIZERS : IEquatable<REL_FREEBUSIES_ORGANIZERS>
     {
