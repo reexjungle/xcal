@@ -481,7 +481,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 
         }
 
-        public void Patch(VEVENT source, Expression<Func<VEVENT, object>> fields, IEnumerable<string> filter = null)
+        public void Patch(VEVENT source, Expression<Func<VEVENT, object>> fields, IEnumerable<string> keys = null)
         {
             #region construct anonymous fields using expression lambdas
             
@@ -539,8 +539,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 try
                 {
 
-                    var keys = (filter != null)
-                        ? db.SelectParam<VEVENT, string>(q => q.Id, p => Sql.In(p.Id, filter.ToArray())).ToArray()
+                    var okeys = (keys != null)
+                        ? db.SelectParam<VEVENT, string>(q => q.Id, p => Sql.In(p.Id, keys.ToArray())).ToArray()
                         : db.SelectParam<VEVENT>(q => q.Id).ToArray();
 
                     if (!srelation.NullOrEmpty())
@@ -571,16 +571,43 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             if (org != null)
                             {
                                 db.Save(org);
-                                var rorgs = keys.Select(x => new REL_EVENTS_ORGANIZERS
+                                var rorgs = okeys.Select(x => new REL_EVENTS_ORGANIZERS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
                                     OrganizerId = org.Id
                                 });
-                                var ororgs = db.Select<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.EventId, keys));
-                                db.SaveAll((!ororgs.NullOrEmpty())
-                               ? rorgs.Except(ororgs)
-                               : rorgs, transaction);
+                                var ororgs = db.Select<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.EventId, okeys));
+                                if (!ororgs.NullOrEmpty())
+                                {
+                                    db.SaveAll(rorgs.Except(ororgs), transaction);
+                                    var diffs = ororgs.Except(rorgs);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(rorgs, transaction);
+                            }
+                        }
+                        if (selection.Contains(ridexpr.GetMemberName()))
+                        {
+                            //get events-organizers relations
+                            var rid = source.RecurrenceId;
+                            if (rid != null)
+                            {
+                                db.Save(rid);
+                                var rrids = okeys.Select(x => new REL_EVENTS_RECURRENCE_IDS
+                                {
+                                    Id = this.KeyGenerator.GetNextKey(),
+                                    EventId = x,
+                                    RecurrenceId_Id = rid.Id
+                                });
+                                var orrids = db.Select<REL_EVENTS_RECURRENCE_IDS>(q => Sql.In(q.EventId, okeys));
+                                if (!orrids.NullOrEmpty())
+                                {
+                                    db.SaveAll(rrids.Except(orrids), transaction);
+                                    var diffs = orrids.Except(rrids);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_RECURRENCE_IDS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(rrids, transaction);
                             }
                         }
                         if (selection.Contains(rruleexpr.GetMemberName()))
@@ -589,16 +616,20 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             if (rrule != null)
                             {
                                 db.Save(rrule);
-                                var rrrules = keys.Select(x => new REL_EVENTS_RECURS
+                                var rrrules = okeys.Select(x => new REL_EVENTS_RECURS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
                                     RecurrenceRuleId = rrule.Id
                                 });
-                                var orrrules = db.Select<REL_EVENTS_RECURS>(q => Sql.In(q.EventId, keys));
-                                db.SaveAll((!orrrules.NullOrEmpty())
-                                ? rrrules.Except(orrrules)
-                                : rrrules, transaction);
+                                var orrrules = db.Select<REL_EVENTS_RECURS>(q => Sql.In(q.EventId, okeys));
+                                if (!orrrules.NullOrEmpty())
+                                {
+                                    db.SaveAll(rrrules.Except(orrrules), transaction);
+                                    var diffs = orrrules.Except(rrrules);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_RECURS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(rrrules, transaction);
                             }
                         }
 
@@ -608,54 +639,66 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             if (!attends.NullOrEmpty())
                             {
                                 db.SaveAll(attends, transaction);
-                                var rattends = keys.SelectMany(x => attends.Select(y => new REL_EVENTS_ATTENDEES
+                                var rattends = okeys.SelectMany(x => attends.Select(y => new REL_EVENTS_ATTENDEES
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
                                     AttendeeId = y.Id
                                 }));
-                                var orattends = db.Select<REL_EVENTS_ATTENDEES>(q => Sql.In(q.EventId, keys));
-                                db.SaveAll((!orattends.NullOrEmpty())
-                                    ? rattends.Except(orattends)
-                                    : rattends, transaction);
+                                var orattends = db.Select<REL_EVENTS_ATTENDEES>(q => Sql.In(q.EventId, okeys));
+                                if (!orattends.NullOrEmpty())
+                                {
+                                    db.SaveAll(rattends.Except(orattends), transaction);
+                                    var diffs = orattends.Except(rattends);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_ATTENDEES>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(rattends, transaction);
                             }
                         }
 
                         if (selection.Contains(attachbinsexpr.GetMemberName()))
                         {
-                            var attachbins = source.AttachmentBinaries.OfType<ATTACH_BINARY>();
+                            var attachbins = source.AttachmentUris;
                             if (!attachbins.NullOrEmpty())
                             {
                                 db.SaveAll(attachbins, transaction);
-                                var rattachbins = keys.SelectMany(x => attachbins.Select(y => new REL_EVENTS_ATTACHBINS
+                                var rattachbins = okeys.SelectMany(x => attachbins.Select(y => new REL_EVENTS_ATTACHBINS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
                                     AttachmentId = y.Id
                                 }));
-                                var orattachbins = db.Select<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.EventId, keys));
-                                db.SaveAll((!orattachbins.NullOrEmpty())
-                                    ? rattachbins.Except(orattachbins)
-                                    : rattachbins, transaction);
+                                var orattachbins = db.Select<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.EventId, okeys));
+                                if (!orattachbins.NullOrEmpty())
+                                {
+                                    db.SaveAll(rattachbins.Except(orattachbins), transaction);
+                                    var diffs = orattachbins.Except(rattachbins);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(rattachbins, transaction);
 
                             }
                         }
                         if (selection.Contains(attachurisexpr.GetMemberName()))
                         {
-                            var attachuris = source.AttachmentBinaries.OfType<ATTACH_BINARY>();
+                            var attachuris = source.AttachmentUris;
                             if (!attachuris.NullOrEmpty())
                             {
                                 db.SaveAll(attachuris, transaction);
-                                var rattachuris = keys.SelectMany(x => attachuris.Select(y => new REL_EVENTS_ATTACHURIS
+                                var rattachuris = okeys.SelectMany(x => attachuris.Select(y => new REL_EVENTS_ATTACHURIS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
                                     AttachmentId = y.Id
                                 }));
-                                var orattachuris = db.Select<REL_EVENTS_ATTACHURIS>(q => Sql.In(q.EventId, keys));
-                                db.SaveAll((!orattachuris.NullOrEmpty())
-                                    ? rattachuris.Except(orattachuris)
-                                    : rattachuris, transaction);
+                                var orattachuris = db.Select<REL_EVENTS_ATTACHURIS>(q => Sql.In(q.EventId, okeys));
+                                if (!orattachuris.NullOrEmpty())
+                                {
+                                    db.SaveAll(rattachuris.Except(orattachuris), transaction);
+                                    var diffs = orattachuris.Except(rattachuris);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_ATTACHURIS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(rattachuris, transaction);
                             }
                         }
 
@@ -665,16 +708,20 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             if (!contacts.NullOrEmpty())
                             {
                                 db.SaveAll(contacts, transaction);
-                                var rcontacts = keys.SelectMany(x => contacts.Select(y => new REL_EVENTS_CONTACTS
+                                var rcontacts = okeys.SelectMany(x => contacts.Select(y => new REL_EVENTS_CONTACTS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
                                     ContactId = y.Id
                                 }));
-                                var orcontacts = db.Select<REL_EVENTS_CONTACTS>(q => Sql.In(q.EventId, keys));
-                                db.SaveAll((!orcontacts.NullOrEmpty())
-                                    ? rcontacts.Except(orcontacts)
-                                    : rcontacts, transaction);
+                                var orcontacts = db.Select<REL_EVENTS_CONTACTS>(q => Sql.In(q.EventId, okeys));
+                                if (!orcontacts.NullOrEmpty())
+                                {
+                                    db.SaveAll(rcontacts.Except(orcontacts), transaction);
+                                    var diffs = orcontacts.Except(rcontacts);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_CONTACTS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(rcontacts, transaction);
                             }
                         }
 
@@ -684,16 +731,20 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             if (!comments.NullOrEmpty())
                             {
                                 db.SaveAll(comments, transaction);
-                                var rcomments = keys.SelectMany(x => comments.Select(y => new REL_EVENTS_COMMENTS
+                                var rcomments = okeys.SelectMany(x => comments.Select(y => new REL_EVENTS_COMMENTS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
                                     CommentId = y.Id
                                 }));
-                                var orcomments = db.Select<REL_EVENTS_COMMENTS>(q => Sql.In(q.EventId, keys));
-                                db.SaveAll((!orcomments.NullOrEmpty())
-                                    ? rcomments.Except(orcomments)
-                                    : rcomments, transaction);
+                                var orcomments = db.Select<REL_EVENTS_COMMENTS>(q => Sql.In(q.EventId, okeys));
+                                if (!orcomments.NullOrEmpty())
+                                {
+                                    db.SaveAll(rcomments.Except(orcomments), transaction);
+                                    var diffs = orcomments.Except(rcomments);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_COMMENTS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(rcomments, transaction);
                             }
                         }
 
@@ -703,16 +754,20 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             if (!rdates.NullOrEmpty())
                             {
                                 db.SaveAll(rdates, transaction);
-                                var rrdates = keys.SelectMany(x => rdates.Select(y => new REL_EVENTS_RDATES
+                                var rrdates = okeys.SelectMany(x => rdates.Select(y => new REL_EVENTS_RDATES
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
                                     RecurrenceDateId = y.Id
                                 }));
-                                var ordates = db.Select<REL_EVENTS_RDATES>(q => Sql.In(q.EventId, keys));
-                                db.SaveAll((!ordates.NullOrEmpty())
-                                    ? rrdates.Except(ordates)
-                                    : rrdates, transaction);
+                                var orrdates = db.Select<REL_EVENTS_RDATES>(q => Sql.In(q.EventId, okeys));
+                                if (!orrdates.NullOrEmpty())
+                                {
+                                    db.SaveAll(rrdates.Except(orrdates), transaction);
+                                    var diffs = orrdates.Except(rrdates);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_EXDATES>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(rrdates, transaction);
                             }
                         }
 
@@ -722,16 +777,20 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             if (!exdates.NullOrEmpty())
                             {
                                 db.SaveAll(exdates, transaction);
-                                var rexdates = keys.SelectMany(x => exdates.Select(y => new REL_EVENTS_EXDATES
+                                var rexdates = okeys.SelectMany(x => exdates.Select(y => new REL_EVENTS_EXDATES
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
                                     ExceptionDateId = y.Id
                                 }));
-                                var orexdates = db.Select<REL_EVENTS_EXDATES>(q => Sql.In(q.EventId, keys));
-                                db.SaveAll((!exdates.NullOrEmpty())
-                                    ? rexdates.Except(orexdates)
-                                    : rexdates, transaction);
+                                var orexdates = db.Select<REL_EVENTS_EXDATES>(q => Sql.In(q.EventId, okeys));
+                                if (!orexdates.NullOrEmpty())
+                                {
+                                    db.SaveAll(rexdates.Except(orexdates), transaction);
+                                    var diffs = orexdates.Except(rexdates);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_EXDATES>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(rexdates, transaction);
                             }
                         }
 
@@ -741,16 +800,20 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             if (!relatedtos.NullOrEmpty())
                             {
                                 db.SaveAll(relatedtos, transaction);
-                                var rrelatedtos = keys.SelectMany(x => relatedtos.Select(y => new REL_EVENTS_RELATEDTOS
+                                var rrelatedtos = okeys.SelectMany(x => relatedtos.Select(y => new REL_EVENTS_RELATEDTOS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
                                     RelatedToId = y.Id
                                 }));
-                                var orrelatedtos = db.Select<REL_EVENTS_RELATEDTOS>(q => Sql.In(q.EventId, keys));
-                                db.SaveAll((!relatedtos.NullOrEmpty())
-                                    ? rrelatedtos.Except(orrelatedtos)
-                                    : rrelatedtos, transaction);
+                                var orrelatedtos = db.Select<REL_EVENTS_RELATEDTOS>(q => Sql.In(q.EventId, okeys));
+                                if (!orrelatedtos.NullOrEmpty())
+                                {
+                                    db.SaveAll(rrelatedtos.Except(orrelatedtos), transaction);
+                                    var diffs = orrelatedtos.Except(rrelatedtos);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_RELATEDTOS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(rrelatedtos, transaction);
                             }
                         }
 
@@ -760,16 +823,20 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             if (!resources.NullOrEmpty())
                             {
                                 db.SaveAll(resources, transaction);
-                                var rresources = keys.SelectMany(x => resources.Select(y => new REL_EVENTS_RESOURCES
+                                var rresources = okeys.SelectMany(x => resources.Select(y => new REL_EVENTS_RESOURCES
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
                                     ResourcesId = y.Id
                                 }));
-                                var orresources = db.Select<REL_EVENTS_RESOURCES>(q => Sql.In(q.EventId, keys));
-                                db.SaveAll((!orresources.NullOrEmpty())
-                                    ? rresources.Except(orresources)
-                                    : rresources, transaction);
+                                var orresources = db.Select<REL_EVENTS_RESOURCES>(q => Sql.In(q.EventId, okeys));
+                                if (!orresources.NullOrEmpty())
+                                {
+                                    db.SaveAll(rresources.Except(orresources), transaction);
+                                    var diffs = orresources.Except(rresources);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_RESOURCES>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(rresources, transaction);
                             }
                         }
 
@@ -779,16 +846,20 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             if (!reqstats.NullOrEmpty())
                             {
                                 db.SaveAll(reqstats, transaction);
-                                var rreqstats = keys.SelectMany(x => reqstats.Select(y => new REL_EVENTS_REQSTATS
+                                var rreqstats = okeys.SelectMany(x => reqstats.Select(y => new REL_EVENTS_REQSTATS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
                                     ReqStatsId = y.Id
                                 }));
-                                var orreqstats = db.Select<REL_EVENTS_REQSTATS>(q => Sql.In(q.EventId, keys));
-                                db.SaveAll((!orreqstats.NullOrEmpty())
-                                    ? rreqstats.Except(orreqstats)
-                                    : rreqstats, transaction);
+                                var orreqstats = db.Select<REL_EVENTS_REQSTATS>(q => Sql.In(q.EventId, okeys));
+                                if (!orreqstats.NullOrEmpty())
+                                {
+                                    db.SaveAll(rreqstats.Except(orreqstats), transaction);
+                                    var diffs = orreqstats.Except(rreqstats);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_REQSTATS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(rreqstats, transaction);
                             }
                         }
 
@@ -798,18 +869,21 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             if (!aalarms.NullOrEmpty())
                             {
                                 this.AudioAlarmRepository.SaveAll(aalarms);
-                                var raalarms = keys.SelectMany(x => aalarms.Select(y => new REL_EVENTS_AUDIO_ALARMS
+                                var raalarms = okeys.SelectMany(x => aalarms.Select(y => new REL_EVENTS_AUDIO_ALARMS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
                                     AlarmId = y.Id
                                 }));
-                                var oraalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.EventId, keys));
-                                db.SaveAll((!oraalarms.NullOrEmpty())
-                                    ? raalarms.Except(oraalarms)
-                                    : raalarms, transaction);
+                                var oraalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.EventId, okeys));
+                                if (!oraalarms.NullOrEmpty())
+                                {
+                                    db.SaveAll(raalarms.Except(oraalarms), transaction);
+                                    var diffs = oraalarms.Except(raalarms);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(raalarms, transaction);
                             }
-
                         }
 
                         if (selection.Contains(dalarmexpr.GetMemberName()))
@@ -819,16 +893,20 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             if (!dalarms.NullOrEmpty())
                             {
                                 this.DisplayAlarmRepository.SaveAll(dalarms);
-                                var rdalarms = keys.SelectMany(x => dalarms.Select(y => new REL_EVENTS_DISPLAY_ALARMS
+                                var rdalarms = okeys.SelectMany(x => dalarms.Select(y => new REL_EVENTS_DISPLAY_ALARMS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
                                     AlarmId = y.Id
                                 }));
-                                var ordalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.EventId, keys));
-                                db.SaveAll((!ordalarms.NullOrEmpty())
-                                    ? rdalarms.Except(ordalarms)
-                                    : rdalarms, transaction);
+                                var ordalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.EventId, okeys));
+                                if (!ordalarms.NullOrEmpty())
+                                {
+                                    db.SaveAll(rdalarms.Except(ordalarms), transaction);
+                                    var diffs = ordalarms.Except(rdalarms);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(rdalarms, transaction);
                             }
 
                         }
@@ -840,20 +918,22 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             if (!ealarms.NullOrEmpty())
                             {
                                 this.EmailAlarmRepository.SaveAll(ealarms);
-                                var realarms = keys.SelectMany(x => ealarms.Select(y => new REL_EVENTS_EMAIL_ALARMS
+                                var realarms = okeys.SelectMany(x => ealarms.Select(y => new REL_EVENTS_EMAIL_ALARMS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
                                     AlarmId = y.Id
                                 }));
-                                var orealarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.EventId, keys));
-                                db.SaveAll((!orealarms.NullOrEmpty() && !realarms.Except(orealarms).NullOrEmpty())
-                                    ? realarms.Except(orealarms)
-                                    : realarms, transaction);
+                                var orealarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.EventId, okeys));
+                                if (!orealarms.NullOrEmpty())
+                                {
+                                    db.SaveAll(realarms.Except(orealarms), transaction);
+                                    var diffs = orealarms.Except(realarms);
+                                    if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                }
+                                else db.SaveAll(realarms, transaction);
                             }
-
                         }
-
 
                         #endregion
                     }
@@ -865,7 +945,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                         var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
                         var patchexpr = patchstr.CompileToExpressionFunc<VEVENT, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(VEVENT).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
 
-                        if (!keys.NullOrEmpty()) db.UpdateOnly<VEVENT, object>(source, patchexpr, q => Sql.In(q.Id, keys.ToArray()));
+                        if (!okeys.NullOrEmpty()) db.UpdateOnly<VEVENT, object>(source, patchexpr, q => Sql.In(q.Id, okeys.ToArray()));
                         else db.UpdateOnly<VEVENT, object>(source, patchexpr);
 
                         #endregion
@@ -956,9 +1036,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                 OrganizerId = e.Organizer.Id
                             }).ToArray();
                         var ororgs = db.Select<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.EventId, keys));
-                        db.SaveAll((!ororgs.NullOrEmpty())
-                            ? rorgs.Except(ororgs)
-                            : rorgs, transaction);
+                        if (!ororgs.NullOrEmpty())
+                        {
+                            db.SaveAll(rorgs.Except(ororgs), transaction);
+                            var diffs = ororgs.Except(rorgs);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rorgs, transaction);
                     }
 
                     if (!rids.NullOrEmpty())
@@ -972,7 +1056,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                 RecurrenceId_Id = e.RecurrenceId.Id
                             });
                         var orrids = db.Select<REL_EVENTS_RECURRENCE_IDS>(q => Sql.In(q.EventId, keys));
-                        db.SaveAll((!orrids.NullOrEmpty()) ? rrids.Except(orrids) : rrids, transaction);
+                        if (!orrids.NullOrEmpty())
+                        {
+                            db.SaveAll(rrids.Except(orrids), transaction);
+                            var diffs = orrids.Except(rrids);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_RECURRENCE_IDS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rrids, transaction);
                     }
 
                     if (!rrules.NullOrEmpty())
@@ -987,7 +1077,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             });
 
                         var orrrules = db.Select<REL_EVENTS_RECURS>(q => Sql.In(q.EventId, keys));
-                        db.SaveAll((!orrrules.NullOrEmpty()) ? rrrules.Except(orrrules) : rrrules, transaction);
+                        if (!orrrules.NullOrEmpty())
+                        {
+                            db.SaveAll(rrrules.Except(orrrules), transaction);
+                            var diffs = orrrules.Except(rrrules);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_RECURS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rrrules, transaction);
                     }
 
                     if (!attendees.NullOrEmpty())
@@ -1002,7 +1098,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                     AttendeeId = x.Id
                                 }));
                         var orattends = db.Select<REL_EVENTS_ATTENDEES>(q => Sql.In(q.EventId, keys));
-                        db.SaveAll((!orattends.NullOrEmpty()) ? rattends.Except(orattends) : rattends, transaction);
+                        if (!orattends.NullOrEmpty())
+                        {
+                            db.SaveAll(rattends.Except(orattends), transaction);
+                            var diffs = orattends.Except(rattends);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_ATTENDEES>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rattends, transaction);
                     }
 
                     if (!attachbins.NullOrEmpty())
@@ -1017,7 +1119,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                     AttachmentId = x.Id
                                 }));
                         var orattachbins = db.Select<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.EventId, keys));
-                        db.SaveAll((!orattachbins.NullOrEmpty()) ? rattachbins.Except(orattachbins) : rattachbins, transaction);
+                        if (!orattachbins.NullOrEmpty())
+                        {
+                            db.SaveAll(rattachbins.Except(orattachbins), transaction);
+                            var diffs = orattachbins.Except(rattachbins);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rattachbins, transaction);
                     }
 
                     if (!attachuris.NullOrEmpty())
@@ -1032,7 +1140,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                     AttachmentId = x.Id
                                 }));
                         var orattachuris = db.Select<REL_EVENTS_ATTACHURIS>(q => Sql.In(q.EventId, keys));
-                        db.SaveAll((!orattachuris.NullOrEmpty()) ? rattachuris.Except(orattachuris) : rattachuris, transaction);
+                        if (!orattachuris.NullOrEmpty())
+                        {
+                            db.SaveAll(rattachuris.Except(orattachuris), transaction);
+                            var diffs = orattachuris.Except(rattachuris);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_ATTACHURIS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rattachuris, transaction);
                     }
 
                     if (!contacts.NullOrEmpty())
@@ -1046,7 +1160,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                 ContactId = x.Id
                             }));
                         var orcontacts = db.Select<REL_EVENTS_CONTACTS>(q => Sql.In(q.EventId, keys));
-                        db.SaveAll((!orcontacts.NullOrEmpty()) ? rcontacts.Except(orcontacts) : rcontacts, transaction);
+                        if (!orcontacts.NullOrEmpty())
+                        {
+                            db.SaveAll(rcontacts.Except(orcontacts), transaction);
+                            var diffs = orcontacts.Except(rcontacts);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_CONTACTS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rcontacts, transaction);
                     }
 
                     if (!comments.NullOrEmpty())
@@ -1060,7 +1180,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                 CommentId = x.Id
                             }));
                         var orcomments = db.Select<REL_EVENTS_COMMENTS>(q => Sql.In(q.EventId, keys));
-                        db.SaveAll((!orcomments.NullOrEmpty()) ? rcomments.Except(orcomments) : rcomments, transaction);
+                        if (!orcomments.NullOrEmpty())
+                        {
+                            db.SaveAll(rcomments.Except(orcomments), transaction);
+                            var diffs = orcomments.Except(rcomments);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_COMMENTS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rcomments, transaction);
                     }
 
                     if (!rdates.NullOrEmpty())
@@ -1074,7 +1200,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                 RecurrenceDateId = x.Id
                             }));
                         var orrdates = db.Select<REL_EVENTS_RDATES>(q => Sql.In(q.EventId, keys));
-                        db.SaveAll((!orrdates.NullOrEmpty()) ? rrdates.Except(orrdates) : rrdates, transaction);
+                        if (!orrdates.NullOrEmpty())
+                        {
+                            db.SaveAll(rrdates.Except(orrdates), transaction);
+                            var diffs = orrdates.Except(rrdates);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_EXDATES>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rrdates, transaction);
                     }
 
                     if (!exdates.NullOrEmpty())
@@ -1088,7 +1220,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                 ExceptionDateId = x.Id
                             }));
                         var orexdates = db.Select<REL_EVENTS_EXDATES>(q => Sql.In(q.EventId, keys));
-                        db.SaveAll((!orexdates.NullOrEmpty()) ? rexdates.Except(orexdates) : rexdates, transaction);
+                        if (!orexdates.NullOrEmpty())
+                        {
+                            db.SaveAll(rexdates.Except(orexdates), transaction);
+                            var diffs = orexdates.Except(rexdates);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_EXDATES>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rexdates, transaction);
                     }
 
                     if (!relateds.NullOrEmpty())
@@ -1102,7 +1240,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                 RelatedToId = x.Id
                             }));
                         var orrelateds = db.Select<REL_EVENTS_RELATEDTOS>(q => Sql.In(q.EventId, keys));
-                        db.SaveAll((!orrelateds.NullOrEmpty()) ? rrelateds.Except(orrelateds) : rrelateds, transaction);
+                        if (!orrelateds.NullOrEmpty())
+                        {
+                            db.SaveAll(rrelateds.Except(orrelateds), transaction);
+                            var diffs = orrelateds.Except(rrelateds);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_RELATEDTOS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rrelateds, transaction);
                     }
 
                     if (!resources.NullOrEmpty())
@@ -1116,7 +1260,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             ResourcesId = x.Id
                         }));
                         var orresources = db.Select<REL_EVENTS_RESOURCES>(q => Sql.In(q.EventId, keys));
-                        db.SaveAll((!orresources.NullOrEmpty()) ? rresources.Except(orresources) : rresources, transaction);
+                        if (!orresources.NullOrEmpty())
+                        {
+                            db.SaveAll(rresources.Except(orresources), transaction);
+                            var diffs = orresources.Except(rresources);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_RESOURCES>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rresources, transaction);
                     }
 
                     if (!reqstats.NullOrEmpty())
@@ -1130,7 +1280,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                 ReqStatsId = x.Id
                             }));
                         var orreqstats = db.Select<REL_EVENTS_REQSTATS>(q => Sql.In(q.EventId, keys));
-                        db.SaveAll((!orreqstats.NullOrEmpty()) ? rreqstats.Except(orreqstats) : rreqstats, transaction);
+                        if (!orreqstats.NullOrEmpty())
+                        {
+                            db.SaveAll(rreqstats.Except(orreqstats), transaction);
+                            var diffs = orreqstats.Except(rreqstats);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_REQSTATS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rreqstats, transaction);
                     }
 
                     if (!aalarms.NullOrEmpty())
@@ -1144,7 +1300,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                 AlarmId = x.Id
                             }));
                         var oraalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)));
-                        db.SaveAll((!oraalarms.NullOrEmpty()) ? raalarms.Except(oraalarms) : raalarms, transaction);
+                        if (!oraalarms.NullOrEmpty())
+                        {
+                            db.SaveAll(raalarms.Except(oraalarms), transaction);
+                            var diffs = oraalarms.Except(raalarms);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(raalarms, transaction);
                     }
 
                     if (!dalarms.NullOrEmpty())
@@ -1157,7 +1319,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             AlarmId = x.Id
                         }));
                         var ordalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)) && Sql.In(q.AlarmId, dalarms.Select(x => x.Id).ToArray()));
-                        db.SaveAll((!ordalarms.NullOrEmpty()) ? rdalarms.Except(ordalarms) : rdalarms, transaction);
+                        if (!ordalarms.NullOrEmpty())
+                        {
+                            db.SaveAll(rdalarms.Except(ordalarms), transaction);
+                            var diffs = ordalarms.Except(rdalarms);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rdalarms, transaction);
                     }
 
                     if (!ealarms.NullOrEmpty())
@@ -1172,7 +1340,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             }));
 
                         var orealarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)));
-                        db.SaveAll((!orealarms.NullOrEmpty()) ? realarms.Except(orealarms) : realarms, transaction);
+                        if (!orealarms.NullOrEmpty())
+                        {
+                            db.SaveAll(realarms.Except(orealarms), transaction);
+                            var diffs = orealarms.Except(realarms);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(realarms, transaction);
                     }
 
                     transaction.Commit();

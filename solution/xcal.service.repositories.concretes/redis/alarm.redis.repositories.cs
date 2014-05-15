@@ -162,9 +162,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                     #region save attributes and  relations
 
-                    if (entity.Attachment != null && entity.Attachment is ATTACH_BINARY)
+                    if (entity.AttachmentBinary != null && entity.AttachmentBinary is ATTACH_BINARY)
                     {
-                        var attachbin = entity.Attachment as ATTACH_BINARY;
+                        var attachbin = entity.AttachmentBinary as ATTACH_BINARY;
                         transaction.QueueCommand(x => x.Store(attachbin));
                         var rattachbin = new REL_AALARMS_ATTACHBINS
                         {
@@ -180,9 +180,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                             : rattachbin.ToSingleton()));
                     }
 
-                    if (entity.Attachment != null && entity.Attachment is ATTACH_URI)
+                    if (entity.AttachmentUri != null)
                     {
-                        var attachuri = entity.Attachment as ATTACH_URI;
+                        var attachuri = entity.AttachmentUri;
                         transaction.QueueCommand(x => x.Store(attachuri));
                         var rattachuri = new REL_AALARMS_ATTACHURIS
                         {
@@ -244,7 +244,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
             Expression<Func<AUDIO_ALARM, object>> relations = x => new
             {
-                x.Attachment
+                Attachment = x.AttachmentBinary
             };
 
             //4. Get list of selected relationals
@@ -267,10 +267,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                     if (!srelation.NullOrEmpty())
                     {
-                        Expression<Func<AUDIO_ALARM, object>> attachsexpr = y => y.Attachment;
+                        Expression<Func<AUDIO_ALARM, object>> attachsexpr = y => y.AttachmentBinary;
                         if (selection.Contains(attachsexpr.GetMemberName()))
                         {
-                            var attachbin = source.Attachment as ATTACH_BINARY;
+                            var attachbin = source.AttachmentBinary as ATTACH_BINARY;
                             if (attachbin != null)
                             {
                                 transaction.QueueCommand(x => x.Store(attachbin));
@@ -288,7 +288,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                     : rattachbins));
                             }
 
-                            var attachuri = source.Attachment as ATTACH_URI;
+                            var attachuri = source.AttachmentUri;
                             if (attachuri != null)
                             {
                                 transaction.QueueCommand(x => x.Store(attachuri));
@@ -401,17 +401,17 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                     transaction.QueueCommand(x => x.StoreAll(entities));
 
                     //save attachments
-                    var attachbins = entities.Where(x => x.Attachment != null && x.Attachment is ATTACH_BINARY)
-                        .Select(x => x.Attachment as ATTACH_BINARY);
+                    var attachbins = entities.Where(x => x.AttachmentBinary != null && x.AttachmentBinary is ATTACH_BINARY)
+                        .Select(x => x.AttachmentBinary as ATTACH_BINARY);
                     if (!attachbins.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(attachbins));
-                        var rattachbins = entities.Where(x => x.Attachment != null && x.Attachment is ATTACH_BINARY)
+                        var rattachbins = entities.Where(x => x.AttachmentBinary != null && x.AttachmentBinary is ATTACH_BINARY)
                             .Select(x => new REL_AALARMS_ATTACHBINS
                             {
                                 Id = this.KeyGenerator.GetNextKey(),
                                 AlarmId = x.Id,
-                                AttachmentId = (x.Attachment as ATTACH_BINARY).Id
+                                AttachmentId = (x.AttachmentBinary as ATTACH_BINARY).Id
                             });
 
                         var orattachbins = this.redis.As<REL_AALARMS_ATTACHBINS>().GetAll()
@@ -421,17 +421,17 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                             : rattachbins));
                     }
 
-                    var attachuris = entities.Where(x => x.Attachment != null && x.Attachment is ATTACH_URI)
-                        .Select(x => x.Attachment as ATTACH_URI);
+                    var attachuris = entities.Where(x => x.AttachmentUri != null)
+                        .Select(x => x.AttachmentUri);
                     if (!attachuris.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(attachbins));
-                        var rattachuris = entities.Where(x => x.Attachment != null && x.Attachment is ATTACH_URI)
+                        var rattachuris = entities.Where(x => x.AttachmentUri != null)
                             .Select(x => new REL_AALARMS_ATTACHURIS
                             {
                                 Id = this.KeyGenerator.GetNextKey(),
                                 AlarmId = x.Id,
-                                AttachmentId = (x.Attachment as ATTACH_URI).Id
+                                AttachmentId = x.AttachmentUri.Id
                             });
 
                         var orattachuris = this.redis.As<REL_AALARMS_ATTACHURIS>().GetAll()
@@ -507,10 +507,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                 if (full != null)
                 {
                     var rattachbins = this.redis.As<REL_AALARMS_ATTACHBINS>().GetAll().Where(x => x.AlarmId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
-                    if (!rattachbins.NullOrEmpty()) full.Attachment = this.redis.As<ATTACH_BINARY>().GetById(rattachbins.FirstOrDefault().AttachmentId);
+                    if (!rattachbins.NullOrEmpty()) full.AttachmentBinary = this.redis.As<ATTACH_BINARY>().GetById(rattachbins.FirstOrDefault().AttachmentId);
 
                     var rattachuris = this.redis.As<REL_AALARMS_ATTACHURIS>().GetAll().Where(x => x.AlarmId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
-                    if (!rattachuris.NullOrEmpty()) full.Attachment = this.redis.As<ATTACH_URI>().GetById(rattachuris.FirstOrDefault().AttachmentId);
+                    if (!rattachuris.NullOrEmpty()) full.AttachmentUri = this.redis.As<ATTACH_URI>().GetById(rattachuris.FirstOrDefault().AttachmentId);
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -551,7 +551,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                       join e in full on r.EventId equals e.Id
                                       where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                       select y;
-                    if (!xattachbins.NullOrEmpty()) x.Attachment = xattachbins.FirstOrDefault();
+                    if (!xattachbins.NullOrEmpty()) x.AttachmentBinary = xattachbins.FirstOrDefault();
 
                 }
 
@@ -562,7 +562,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                       join e in full on r.EventId equals e.Id
                                       where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                       select y;
-                    if (!xattachuris.NullOrEmpty()) x.Attachment = xattachuris.FirstOrDefault();
+                    if (!xattachuris.NullOrEmpty()) x.AttachmentUri = xattachuris.FirstOrDefault();
                 }
 
             });
@@ -576,7 +576,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
         {
             try
             {
-                full.Attachment = null;
+                full.AttachmentBinary = null;
             }
             catch (ArgumentNullException) { throw; }
             return full;        
@@ -981,11 +981,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                     if (!rattachbins.NullOrEmpty())
                     {
-                        full.Attachments.AddRangeComplement(this.redis.As<ATTACH_BINARY>().GetValues(rattachbins.Select(x => x.AttachmentId).ToList()));
+                        full.AttachmentBinaries.AddRangeComplement(this.redis.As<ATTACH_BINARY>().GetValues(rattachbins.Select(x => x.AttachmentId).ToList()));
                     }
                     if (!rattachuris.NullOrEmpty())
                     {
-                        full.Attachments.AddRangeComplement(this.redis.As<ATTACH_URI>().GetValues(rattachuris.Select(x => x.AttachmentId).ToList()));
+                        full.AttachmentUris.AddRangeComplement(this.redis.As<ATTACH_URI>().GetValues(rattachuris.Select(x => x.AttachmentId).ToList()));
                     }
                     if (!rattendees.NullOrEmpty())
                     {
@@ -1049,7 +1049,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                               join e in full on r.EventId equals e.Id
                                               where e.Id == x.Id
                                               select y;
-                            if (!xattachbins.NullOrEmpty()) x.Attachments.AddRangeComplement(xattachbins);
+                            if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.AddRangeComplement(xattachbins);
 
                         }
 
@@ -1060,7 +1060,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                               join e in full on r.EventId equals e.Id
                                               where e.Id == x.Id
                                               select y;
-                            if (!xattachuris.NullOrEmpty()) x.Attachments.AddRangeComplement(xattachuris);
+                            if (!xattachuris.NullOrEmpty()) x.AttachmentUris.AddRangeComplement(xattachuris);
                         }
 
                     });
@@ -1175,9 +1175,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                     #region retrieve attributes of entity
 
-                    var attendees = entity.Attendees.OfType<ATTENDEE>();
-                    var attachbins = entity.Attachments.OfType<ATTACH_BINARY>();
-                    var attachuris = entity.Attachments.OfType<ATTACH_URI>();
+                    var attendees = entity.Attendees;
+                    var attachbins = entity.AttachmentBinaries;
+                    var attachuris = entity.AttachmentUris;
 
                     #endregion
 
@@ -1285,7 +1285,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
             Expression<Func<EMAIL_ALARM, object>> relations = x => new
             {
-                x.Attachments,
+                x.AttachmentBinaries,
+                x.AttachmentUris,
                 x.Attendees
             };
 
@@ -1311,7 +1312,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                     if (!srelation.NullOrEmpty())
                     {
                         Expression<Func<EMAIL_ALARM, object>> attendsexpr = y => y.Attendees;
-                        Expression<Func<EMAIL_ALARM, object>> attachsexpr = y => y.Attachments;
+                        Expression<Func<EMAIL_ALARM, object>> attachbinsexpr = y => y.AttachmentBinaries;
+                        Expression<Func<EMAIL_ALARM, object>> attachurisexpr = y => y.AttachmentUris;
+
 
                         if (selection.Contains(attendsexpr.GetMemberName()))
                         {
@@ -1335,9 +1338,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                             }
                         }
 
-                        if (selection.Contains(attachsexpr.GetMemberName()))
+                        if (selection.Contains(attachbinsexpr.GetMemberName()))
                         {
-                            var attachbins = source.Attachments.OfType<ATTACH_BINARY>();
+                            var attachbins = source.AttachmentBinaries;
                             if (!attachbins.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => this.redis.As<ATTACH_BINARY>().StoreAll(attachbins));
@@ -1355,7 +1358,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                     : rattachbins));
                             }
 
-                            var attachuris = source.Attachments.OfType<ATTACH_URI>();
+                        }
+
+                        if(selection.Contains(attachurisexpr.GetMemberName()))
+                        {
+                            var attachuris = source.AttachmentUris;
                             if (!attachuris.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => this.redis.As<ATTACH_URI>().StoreAll(attachuris));
@@ -1455,12 +1462,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
         {
             #region 1. retrieve attributes of entities
 
-            var attendees = entities.Where(x => !x.Attendees.NullOrEmpty() && !x.Attendees.OfType<ATTENDEE>().NullOrEmpty())
-                .SelectMany(x => x.Attendees.OfType<ATTENDEE>());
-            var attachbins = entities.Where(x => !x.Attachments.NullOrEmpty() && !x.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty())
-                .SelectMany(x => x.Attachments.OfType<ATTACH_BINARY>());
-            var attachuris = entities.Where(x => !x.Attachments.NullOrEmpty() && !x.Attachments.OfType<ATTACH_URI>().NullOrEmpty())
-                .SelectMany(x => x.Attachments.OfType<ATTACH_URI>());
+            var attendees = entities.Where(x => !x.Attendees.NullOrEmpty()).SelectMany(x => x.Attendees);
+            var attachbins = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty()).SelectMany(x => x.AttachmentBinaries);
+            var attachuris = entities.Where(x => !x.AttachmentUris.NullOrEmpty()).SelectMany(x => x.AttachmentUris);
 
             #endregion
 
@@ -1475,9 +1479,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                     if (!attendees.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(attendees));
-                        var rattendees = entities.Where(x => !x.Attendees.OfType<ATTENDEE>().NullOrEmpty())
-                            .SelectMany(e => e.Attendees.OfType<ATTENDEE>()
-                                .Select(x => new REL_EALARMS_ATTENDEES
+                        var rattendees = entities.Where(x => !x.Attendees.NullOrEmpty())
+                            .SelectMany(e => e.Attendees.Select(x => new REL_EALARMS_ATTENDEES
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     AlarmId = e.Id,
@@ -1494,9 +1497,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                     if (!attachbins.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(attachbins));
-                        var rattachbins = entities.Where(x => !x.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty())
-                            .SelectMany(e => e.Attachments.OfType<ATTACH_BINARY>()
-                                .Select(x => new REL_EALARMS_ATTACHBINS
+                        var rattachbins = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty())
+                            .SelectMany(e => e.AttachmentBinaries.Select(x => new REL_EALARMS_ATTACHBINS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     AlarmId = e.Id,
@@ -1512,9 +1514,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                     if (!attachuris.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(attachuris));
-                        var rattachuris = entities.Where(x => !x.Attachments.OfType<ATTACH_URI>().NullOrEmpty())
-                            .SelectMany(e => e.Attachments.OfType<ATTACH_URI>()
-                                .Select(x => new REL_EALARMS_ATTACHURIS
+                        var rattachuris = entities.Where(x => !x.AttachmentUris.NullOrEmpty())
+                            .SelectMany(e => e.AttachmentUris.Select(x => new REL_EALARMS_ATTACHURIS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     AlarmId = e.Id,
@@ -1578,7 +1579,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
             try
             {
                 if (!full.Attendees.NullOrEmpty()) full.Attendees.Clear();
-                if (!full.Attachments.NullOrEmpty()) full.Attachments.Clear();
+                if (!full.AttachmentBinaries.NullOrEmpty()) full.AttachmentBinaries.Clear();
+                if (!full.AttachmentUris.NullOrEmpty()) full.AttachmentUris.Clear();
                 return full;
             }
             catch (ArgumentNullException) { throw; }

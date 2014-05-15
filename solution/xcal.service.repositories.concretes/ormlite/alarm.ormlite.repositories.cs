@@ -157,7 +157,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 x.Action,
                 x.Trigger,
                 x.Duration,
-                x.Attachment
+                Attachment = x.AttachmentBinary
             };
 
             //3. Get list of selected primitives
@@ -218,13 +218,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                         r => r.AttachmentId,
                         r => r.AlarmId,
                         a => a.Id == okey);
-                    if (!attachbins.NullOrEmpty()) full.Attachment = attachbins.FirstOrDefault();
+                    if (!attachbins.NullOrEmpty()) full.AttachmentBinary = attachbins.FirstOrDefault();
 
                     var attachuris = db.Select<ATTACH_URI, AUDIO_ALARM, REL_AALARMS_ATTACHURIS>(
                         r => r.AttachmentId,
                         r => r.AlarmId,
                         a => a.Id == okey);
-                    if (!attachuris.NullOrEmpty()) full.Attachment = attachuris.FirstOrDefault();
+                    if (!attachuris.NullOrEmpty()) full.AttachmentUri = attachuris.FirstOrDefault();
 
                 }
             }
@@ -273,7 +273,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                               join a in full on r.AlarmId equals a.Id
                                               where a.Id == x.Id
                                               select y;
-                            if (!xattachbins.NullOrEmpty()) x.Attachment = xattachbins.FirstOrDefault();
+                            if (!xattachbins.NullOrEmpty()) x.AttachmentBinary = xattachbins.FirstOrDefault();
 
                         }
 
@@ -284,7 +284,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                               join a in full on r.AlarmId equals a.Id
                                               where a.Id == x.Id
                                               select y;
-                            if (!xattachuris.NullOrEmpty()) x.Attachment = xattachuris.FirstOrDefault();
+                            if (!xattachuris.NullOrEmpty()) x.AttachmentUri = xattachuris.FirstOrDefault();
                         }
 
                     });
@@ -305,7 +305,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
         {
             try
             {
-                full.Attachment = null;
+                full.AttachmentBinary = null;
             }
             catch (ArgumentNullException) { throw; }
             return full;        
@@ -573,13 +573,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                         r => r.AttachmentId,
                         r => r.AlarmId,
                         a => a.Id == dry.Id);
-                    if (!attachbins.NullOrEmpty()) full.Attachments.AddRangeComplement(attachbins);
+                    if (!attachbins.NullOrEmpty()) full.AttachmentBinaries.AddRangeComplement(attachbins);
 
-                    var attachuris = db.Select<ATTACH_BINARY, EMAIL_ALARM, REL_EALARMS_ATTACHURIS>(
+                    var attachuris = db.Select<ATTACH_URI, EMAIL_ALARM, REL_EALARMS_ATTACHURIS>(
                         r => r.AttachmentId,
                         r => r.AlarmId,
                         a => a.Id == dry.Id);
-                    if (!attachuris.NullOrEmpty()) full.Attachments.AddRangeComplement(attachuris);
+                    if (!attachuris.NullOrEmpty()) full.AttachmentUris.AddRangeComplement(attachuris);
                     
                 }
             }
@@ -617,14 +617,14 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                           join r in rattachbins on y.Id equals r.AttachmentId 
                                           join a in dry on r.AlarmId equals a.Id 
                                           where a.Id == x.Id select y;
-                        if (!xattachbins.NullOrEmpty()) x.Attachments.AddRangeComplement(xattachbins);
+                        if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.AddRangeComplement(xattachbins);
 
 
                         var xattachuris = from y in attachuris 
                                           join r in rattachuris on y.Id equals r.AttachmentId 
                                           join a in dry on r.AlarmId equals a.Id 
                                           where a.Id == x.Id select y;
-                        if (!xattachuris.NullOrEmpty()) x.Attachments.AddRangeComplement(xattachuris);
+                        if (!xattachuris.NullOrEmpty()) x.AttachmentUris.AddRangeComplement(xattachuris);
 
 
                         var xattendees = from y in attends 
@@ -687,9 +687,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     db.Save(entity, transaction);
 
                     //1. retrieve entity details
-                    var attends = entity.Attendees.OfType<ATTENDEE>();
-                    var attachbins = entity.Attachments.OfType<ATTACH_BINARY>();
-                    var attachuris = entity.Attachments.OfType<ATTACH_URI>();
+                    var attends = entity.Attendees;
+                    var attachbins = entity.AttachmentBinaries;
+                    var attachuris = entity.AttachmentUris;
 
                     //2. save details
                     if (!attends.NullOrEmpty())
@@ -747,8 +747,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 
                     //1. retrieve details of events
                     var attends = entities.Where(x => x.Attendees.OfType<ATTENDEE>().Count() > 0).SelectMany(x => x.Attendees.OfType<ATTENDEE>());
-                    var attachbins = entities.Where(x => x.Attachments.OfType<ATTACH_BINARY>().Count() > 0).SelectMany(x => x.Attachments.OfType<ATTACH_BINARY>());
-                    var attachuris = entities.Where(x => x.Attachments.OfType<ATTACH_URI>().Count() > 0).SelectMany(x => x.Attachments.OfType<ATTACH_URI>());
+                    var attachbins = entities.Where(x => x.AttachmentBinaries.Count() > 0).SelectMany(x => x.AttachmentBinaries);
+                    var attachuris = entities.Where(x => x.AttachmentUris.Count() > 0).SelectMany(x => x.AttachmentUris);
 
                     //2. save details of events
                     if (!attends.NullOrEmpty())
@@ -763,8 +763,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     if (!attachbins.NullOrEmpty())
                     {
                         db.SaveAll(attachbins, transaction);
-                        var rattachbins = entities.Where(x => !x.Attachments.OfType<ATTACH_BINARY>().NullOrEmpty())
-                            .SelectMany(a => a.Attachments.OfType<ATTACH_BINARY>().Select(x => new REL_EALARMS_ATTACHBINS { Id = a.Id, AttachmentId = x.Id }));
+                        var rattachbins = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty())
+                            .SelectMany(a => a.AttachmentBinaries.Select(x => new REL_EALARMS_ATTACHBINS { Id = a.Id, AttachmentId = x.Id }));
                         var orattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
                         db.SaveAll(!orattachbins.NullOrEmpty() ? rattachbins.Except(orattachbins) : rattachbins, transaction);
                     }
@@ -772,8 +772,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     if (!attachuris.NullOrEmpty())
                     {
                         db.SaveAll(attachuris, transaction);
-                        var rattachuris = entities.Where(x => !x.Attachments.OfType<ATTACH_URI>().NullOrEmpty())
-                            .SelectMany(a => a.Attachments.OfType<ATTACH_URI>().Select(x => new REL_EALARMS_ATTACHURIS { Id = a.Id, AttachmentId = x.Id }));
+                        var rattachuris = entities.Where(x => !x.AttachmentUris.NullOrEmpty())
+                            .SelectMany(a => a.AttachmentUris.Select(x => new REL_EALARMS_ATTACHURIS { Id = a.Id, AttachmentId = x.Id }));
                         var orattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id)));
                         db.SaveAll(!orattachuris.NullOrEmpty() ? rattachuris.Except(orattachuris) : rattachuris, transaction);
 
@@ -831,7 +831,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             Expression<Func<EMAIL_ALARM, object>> relations = x => new
             {
                 x.Attendees,
-                x.Attachments
+                x.AttachmentBinaries,
+                x.AttachmentUris
             };
 
             //4. Get list of selected relations
@@ -841,29 +842,29 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             if (!srelation.NullOrEmpty())
             {
                 Expression<Func<EMAIL_ALARM, object>> attendsexpr = y => y.Attendees;
-                Expression<Func<EMAIL_ALARM, object>> attachsexpr = y => y.Attachments;
+                Expression<Func<EMAIL_ALARM, object>> attachbinsexpr = y => y.AttachmentBinaries;
+                Expression<Func<EMAIL_ALARM, object>> attachurisexpr = y => y.AttachmentUris;
 
-                //var eventids = (where != null) 
-                //    ? db.SelectParam<EMAIL_ALARM>(q => q.Id, where).ToArray() 
-                //    : db.SelectParam<EMAIL_ALARM>(q => q.Id).ToArray();
+                var okeys = (keys != null)
+                    ? db.SelectParam<EMAIL_ALARM, string>(q => q.Id, p => Sql.In(p.Id, keys.ToArray())).ToArray()
+                    : db.SelectParam<EMAIL_ALARM>(q => q.Id).ToArray();
 
-                using (var transaction = db.OpenTransaction())
+                using (var transaction = db.BeginTransaction())
                 {
                     try
                     {
-                        //bool skip = eventids.NullOrEmpty();
-                        //if (selection.Contains(attendsexpr.GetMemberName()))
-                        //{
-                        //    var attends = source.Attendees.OfType<ATTENDEE>();
-                        //    if (!attends.NullOrEmpty() && !skip)
-                        //    {
-                        //        db.SaveAll(attends, transaction);
-                        //        var rattends = eventids.SelectMany(x => attends.Select(y => new REL_EALARMS_ATTENDEES { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttendeeId = y.Id }));
-                        //        var orattends = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, eventids) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
-                        //        db.SaveAll(!rattends.NullOrEmpty() ? rattends.Except(orattends) : rattends, transaction);
+                        if (selection.Contains(attendsexpr.GetMemberName()))
+                        {
+                            var attends = source.Attendees.OfType<ATTENDEE>();
+                            if (!attends.NullOrEmpty())
+                            {
+                                db.SaveAll(attends, transaction);
+                                var rattends = okeys.SelectMany(x => attends.Select(y => new REL_EALARMS_ATTENDEES { Id = this.KeyGenerator.GetNextKey(), AlarmId = x, AttendeeId = y.Id }));
+                                var orattends = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, okeys) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
+                                db.SaveAll(!rattends.NullOrEmpty() ? rattends.Except(orattends) : rattends, transaction);
 
-                        //    }
-                        //}
+                            }
+                        }
 
                         //if (selection.Contains(attachsexpr.GetMemberName()))
                         //{

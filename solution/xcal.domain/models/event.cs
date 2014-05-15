@@ -450,6 +450,18 @@ namespace reexmonkey.xcal.domain.models
                 foreach (var rdate in this.RecurrenceDates) if (rdate != null) sb.Append(rdate).AppendLine();
             }
 
+            if (!this.AudioAlarms.NullOrEmpty())
+            {
+                foreach (var alarm in this.AudioAlarms) if (alarm != null) sb.Append(alarm).AppendLine();
+            }
+            if (!this.DisplayAlarms.NullOrEmpty())
+            {
+                foreach (var alarm in this.DisplayAlarms) if (alarm != null) sb.Append(alarm).AppendLine();
+            }
+            if (!this.EmailAlarms.NullOrEmpty())
+            {
+                foreach (var alarm in this.EmailAlarms) if (alarm != null) sb.Append(alarm).AppendLine();
+            }
             if (!this.IANAProperties.NullOrEmpty())
             {
                 foreach (var iana in this.IANAProperties) if (iana != null) sb.Append(iana).AppendLine();

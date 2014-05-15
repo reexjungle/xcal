@@ -55,8 +55,8 @@ namespace reexmonkey.xcal.service.validators.concretes
         public AudioAlarmValidator()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Attachment as ATTACH_BINARY).NotNull().SetValidator(new AttachmentBinaryValidator()).When(x => x.Attachment is ATTACH_BINARY);
-            RuleFor(x => x.Attachment as ATTACH_URI).NotNull().SetValidator(new AttachmentUriValidator()).When(x => x.Attachment is ATTACH_URI);
+            RuleFor(x => x.AttachmentBinary).NotNull().SetValidator(new AttachmentBinaryValidator()).When(x => x.AttachmentBinary != null);
+            RuleFor(x => x.AttachmentUri).NotNull().SetValidator(new AttachmentUriValidator()).When(x => x.AttachmentUri != null);
         }
     }    
 
@@ -77,8 +77,8 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.Description).NotNull().SetValidator(new TextValidator());
             RuleFor(x => x.Summary).NotNull().SetValidator(new TextValidator());
             RuleFor(x => x.Attendees).NotNull().NotEmpty().SetCollectionValidator(new AttendeeValidator());
-            RuleFor(x => x.Attachments.OfType<ATTACH_BINARY>()).SetCollectionValidator(new AttachmentBinaryValidator()).When(x => !x.Attachments.NullOrEmpty());
-            RuleFor(x => x.Attachments.OfType<ATTACH_URI>()).SetCollectionValidator(new AttachmentUriValidator()).When(x => !x.Attachments.NullOrEmpty());
+            RuleFor(x => x.AttachmentBinaries).SetCollectionValidator(new AttachmentBinaryValidator()).When(x => !x.AttachmentBinaries.NullOrEmpty());
+            RuleFor(x => x.AttachmentUris).SetCollectionValidator(new AttachmentUriValidator()).When(x => !x.AttachmentUris.NullOrEmpty());
         }
     }
 

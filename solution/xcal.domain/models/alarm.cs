@@ -11,8 +11,6 @@ namespace reexmonkey.xcal.domain.models
 {
         
     [DataContract]
-    [KnownType(typeof(ATTACH_BINARY))]
-    [KnownType(typeof(ATTACH_URI))]
     public class AUDIO_ALARM : IAUDIO_ALARM, IEquatable<AUDIO_ALARM>, IContainsKey<string>
     {
         [DataMember]
@@ -32,24 +30,30 @@ namespace reexmonkey.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public IATTACH Attachment { get; set; }
+        public ATTACH_BINARY AttachmentBinary { get; set; }
+
+        [DataMember]
+        [Ignore]
+        public ATTACH_URI AttachmentUri { get; set; }
 
         public AUDIO_ALARM(): base() { }
 
-        public AUDIO_ALARM(ACTION action, TRIGGER trigger, IATTACH attachment = null)
+        public AUDIO_ALARM(ACTION action, TRIGGER trigger, ATTACH_BINARY attachbin = null, ATTACH_URI attachuri = null)
         {
             this.Action = action;
             this.Trigger = trigger;
-            this.Attachment = attachment;
+            this.AttachmentBinary = attachbin;
+            this.AttachmentUri = attachuri;
         }
 
-        public AUDIO_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, IATTACH attachment = null)
+        public AUDIO_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, ATTACH_BINARY attachbin = null, ATTACH_URI attachuri = null)
         {
             this.Action = action;
             this.Trigger = trigger;
             this.Duration = duration;
             this.Repeat = repeat;
-            this.Attachment = attachment;
+            this.AttachmentBinary = attachbin;
+            this.AttachmentUri = attachuri;
         }
 
         public bool Equals(AUDIO_ALARM other)
@@ -64,13 +68,14 @@ namespace reexmonkey.xcal.domain.models
             sb.Append("BEGIN:VALARM").AppendLine();
             sb.AppendFormat("ACTION:{0}", this.Action).AppendLine();
             if(this.Trigger != null) sb.Append(this.Trigger).AppendLine();
-            if (this.Duration != null && this.Repeat != -1)
+            if (this.Duration != default(DURATION))
             {
-                sb.AppendFormat("{0}", this.Duration).AppendLine();
+                sb.AppendFormat("DURATION:{0}", this.Duration).AppendLine();
                 sb.AppendFormat("REPEAT:{0}", this.Repeat).AppendLine();
             }
-            if(this.Attachment != null)  sb.Append(this.Attachment).AppendLine();
-            sb.Append("END:VALARM").AppendLine();
+            if(this.AttachmentBinary != null)  sb.Append(this.AttachmentBinary).AppendLine();
+            else if (this.AttachmentUri != null)sb.Append(this.AttachmentUri).AppendLine();
+            sb.Append("END:VALARM");
             return sb.ToString();
         }
 
@@ -86,7 +91,7 @@ namespace reexmonkey.xcal.domain.models
                 ((this.Trigger != null)? this.Trigger.GetHashCode(): 0)^
                 this.Duration.GetHashCode()^
                 this.Repeat.GetHashCode() ^
-                ((this.Attachment != null)? this.Attachment.GetHashCode(): 0);
+                ((this.AttachmentBinary != null)? this.AttachmentBinary.GetHashCode(): 0);
         }
 
         public static bool operator ==(AUDIO_ALARM a, AUDIO_ALARM b)
@@ -97,7 +102,7 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator !=(AUDIO_ALARM a, AUDIO_ALARM b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -154,12 +159,13 @@ namespace reexmonkey.xcal.domain.models
             sb.Append("BEGIN:VALARM").AppendLine();
             sb.AppendFormat("ACTION:{0}", this.Action).AppendLine();
             if (this.Description != null) sb.AppendFormat("{0}", this.Description).AppendLine();
-            if (this.Duration != null && this.Repeat != -1)
+            if (this.Trigger != null) sb.Append(this.Trigger).AppendLine();
+            if (this.Duration != default(DURATION))
             {
-                sb.AppendFormat("{0}", this.Duration).AppendLine();
+                sb.AppendFormat("DURATION:{0}", this.Duration).AppendLine();
                 sb.AppendFormat("REPEAT:{0}", this.Repeat).AppendLine();
             }
-            sb.Append("END:VALARM").AppendLine();
+            sb.Append("END:VALARM");
             return sb.ToString();
         }
 
@@ -192,8 +198,6 @@ namespace reexmonkey.xcal.domain.models
     }
 
     [DataContract]
-    [KnownType(typeof(ATTACH_BINARY))]
-    [KnownType(typeof(ATTACH_URI))]
     public class EMAIL_ALARM : IEMAIL_ALARM, IEquatable<EMAIL_ALARM>, IContainsKey<string>
     {
         [DataMember]
@@ -223,28 +227,36 @@ namespace reexmonkey.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public List<IATTACH> Attachments { get; set; }
+        public List<ATTACH_BINARY> AttachmentBinaries { get; set; }
+
+        [DataMember]
+        [Ignore]
+        public List<ATTACH_URI> AttachmentUris { get; set; }
+
+
 
         public EMAIL_ALARM() : base() 
         {
             this.Attendees = new List<ATTENDEE>();
-            this.Attachments = new List<IATTACH>();
+            this.AttachmentBinaries = new  List<ATTACH_BINARY>();
+            this.AttachmentUris = new List<ATTACH_URI>();
         }
 
         public EMAIL_ALARM(ACTION action, TRIGGER trigger, DESCRIPTION description, SUMMARY summary, 
-            List<ATTENDEE> attendees, List<IATTACH> attachments = null)
+            List<ATTENDEE> attendees, List<ATTACH_BINARY> attachbins = null, List<ATTACH_URI> attachuris = null)
         {
             this.Action = action;
             this.Trigger = trigger;
             this.Description = description;
             this.Summary = summary;
             this.Attendees = attendees;
-            this.Attachments = attachments;
+            this.AttachmentBinaries = attachbins;
+            this.AttachmentUris = attachuris;
 
         }
 
-        public EMAIL_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, DESCRIPTION description, SUMMARY summary, 
-            List<ATTENDEE> attendees, List<IATTACH> attachments = null)
+        public EMAIL_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, DESCRIPTION description, SUMMARY summary,
+            List<ATTENDEE> attendees, List<ATTACH_BINARY> attachbins = null, List<ATTACH_URI> attachuris = null)
         {
             this.Action = action;
             this.Trigger = trigger;
@@ -253,7 +265,8 @@ namespace reexmonkey.xcal.domain.models
             this.Description = description;
             this.Summary = summary;
             this.Attendees = attendees;
-            this.Attachments = attachments;
+            this.AttachmentBinaries = attachbins;
+            this.AttachmentUris = attachuris;
         }
 
         public bool Equals(EMAIL_ALARM other)
@@ -268,14 +281,18 @@ namespace reexmonkey.xcal.domain.models
             sb.Append("BEGIN:VALARM").AppendLine();
             if (this.Description != null) sb.AppendFormat("{0}", this.Description).AppendLine();
             if (this.Summary != null) sb.AppendFormat("{0}", this.Summary).AppendLine();
+            if (this.Trigger != null) sb.Append(this.Trigger).AppendLine();
             if (this.Duration != null && this.Repeat != -1)
             {
-                sb.AppendFormat("{0}", this.Duration).AppendLine();
-                sb.AppendFormat("{0}", this.Repeat).AppendLine();
+                sb.AppendFormat("DURATION:{0}", this.Duration).AppendLine();
+                sb.AppendFormat("REPEAT:{0}", this.Repeat).AppendLine();
             }
             foreach (var attendee in this.Attendees) sb.Append(attendee);
-            foreach (var attachment in this.Attachments) sb.Append(attachment);
-            sb.Append("END:VALARM").AppendLine();
+            if(!this.AttachmentBinaries.NullOrEmpty()) 
+                foreach (var attachment in this.AttachmentBinaries) sb.Append(attachment);
+            else if(!this.AttachmentUris.NullOrEmpty()) 
+                foreach (var attachment in this.AttachmentUris) sb.Append(attachment);
+            sb.Append("END:VALARM");
             return sb.ToString();
         }
 
@@ -294,7 +311,8 @@ namespace reexmonkey.xcal.domain.models
                 ((this.Description != null) ? this.Description.GetHashCode() : 0) ^
                 ((this.Summary != null) ? this.Description.GetHashCode() : 0) ^
                 ((!this.Attendees.NullOrEmpty()) ? this.Attendees.GetHashCode() : 0) ^
-                ((!this.Attachments.NullOrEmpty()) ? this.Attachments.GetHashCode() : 0);
+                ((!this.AttachmentBinaries.NullOrEmpty()) ? this.AttachmentBinaries.GetHashCode() : 0) ^
+                ((!this.AttachmentUris.NullOrEmpty()) ? this.AttachmentUris.GetHashCode() : 0);
         }
 
         public static bool operator ==(EMAIL_ALARM a, EMAIL_ALARM b)

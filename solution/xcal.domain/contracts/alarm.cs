@@ -22,7 +22,8 @@ namespace reexmonkey.xcal.domain.contracts
 
     public interface IAUDIO_ALARM: IALARM
     {
-        IATTACH Attachment { get; set; }
+        ATTACH_BINARY AttachmentBinary { get; set; }
+        ATTACH_URI AttachmentUri { get; set; }   
     }
 
     public interface IDISPLAY_ALARM: IALARM
@@ -35,7 +36,8 @@ namespace reexmonkey.xcal.domain.contracts
         DESCRIPTION Description { get; set; }
         SUMMARY Summary { get; set; }
         List<ATTENDEE> Attendees { get; set; }
-        List<IATTACH> Attachments { get; set; }
+        List<ATTACH_BINARY> AttachmentBinaries { get; set; }
+        List<ATTACH_URI> AttachmentUris { get; set; }
     }
 
 }

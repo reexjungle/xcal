@@ -13,12 +13,12 @@ namespace reexmonkey.xcal.service.plugins.formats.concretes
 {
     public class iCalendarFormat: IPlugin
     {
-        private const string mime = "text/calendar";
+        private const string mime_type = "text/calendar";
         private const string ext = "ics";
 
         public void Register(IAppHost appHost)
         {
-            appHost.ContentTypeFilters.Register(mime, this.SerializeToStream, this.DeserializeFromStream);
+            appHost.ContentTypeFilters.Register(mime_type, this.SerializeToStream, this.DeserializeFromStream);
             appHost.RequestFilters.Add((req, res, dto) =>
                 {
                     //if (req.ResponseContentType.Equals(mime, StringComparison.OrdinalIgnoreCase))
@@ -27,7 +27,7 @@ namespace reexmonkey.xcal.service.plugins.formats.concretes
 
             appHost.ResponseFilters.Add((req, res, dto) =>
                 {
-                    if (req.ResponseContentType.Equals(mime, StringComparison.OrdinalIgnoreCase))
+                    if (req.ResponseContentType.Equals(mime_type, StringComparison.OrdinalIgnoreCase))
                         res.AddHeader(HttpHeaders.ContentDisposition,
                         string.Format("attachment;filename={0}.{1}", req.OperationName, ext));
          

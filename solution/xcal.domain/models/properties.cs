@@ -2096,7 +2096,7 @@ namespace reexmonkey.xcal.domain.models
             else
             {
                 if (this.vformat == ValueFormat.DATE_TIME) sb.AppendFormat(";VALUE={0}", this.vformat);
-                sb.AppendFormat(":{0}", this.datetime).AppendLine();
+                sb.AppendFormat(":{0}", this.datetime);
             }
             return sb.ToString();
         }
