@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
+using System.Security;
 using ServiceStack.OrmLite;
 using reexmonkey.technical.data.contracts;
 using reexmonkey.technical.data.concretes.extensions.ormlite;
@@ -15,6 +16,7 @@ using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.infrastructure.operations.concretes;
 using reexmonkey.infrastructure.operations.contracts;
 using reexmonkey.xcal.service.repositories.concretes.relations;
+
 
 namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 {
@@ -953,29 +955,34 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 
                     transaction.Commit();
                 }
-                catch (NotImplementedException)
+
+                catch (SecurityException)
                 {
                     try { transaction.Rollback(); }
                     catch (InvalidOperationException) { throw; }
                     catch (Exception) { throw; }
-                }
-                catch (System.Security.SecurityException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
+                    throw;
                 }
                 catch (InvalidOperationException)
                 {
                     try { transaction.Rollback(); }
                     catch (InvalidOperationException) { throw; }
                     catch (Exception) { throw; }
+                    throw;
+                }
+                catch (ApplicationException)
+                {
+                    try { transaction.Rollback(); }
+                    catch (InvalidOperationException) { throw; }
+                    catch (Exception) { throw; }
+                    throw;
                 }
                 catch (Exception)
                 {
                     try { transaction.Rollback(); }
                     catch (InvalidOperationException) { throw; }
                     catch (Exception) { throw; }
+                    throw;
                 }
 
             } 
@@ -1771,14 +1778,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
         {
             try
             {
-                var dry = full.Select(x => { return this.Dehydrate(x); });
-                return dry;
+                var pquery = full.AsParallel();
+                pquery.ForAll(x => this.Dehydrate(x));
+                return pquery.AsEnumerable();
             }
-            catch (ArgumentNullException)
-            {
-                
-                throw;
-            }
+            catch (ArgumentNullException) { throw; }
+            catch (OperationCanceledException) { throw; }
+            catch (AggregateException) { throw; }
         }
 
         public VEVENT Dehydrate(VEVENT full)

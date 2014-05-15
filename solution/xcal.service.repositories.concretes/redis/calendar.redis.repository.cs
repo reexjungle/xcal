@@ -498,13 +498,15 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
         public IEnumerable<VCALENDAR> Dehydrate(IEnumerable<VCALENDAR> full)
         {
-            var dry = full;
             try
             {
-                dry = full.Select(x => { return this.Dehydrate(x); });
+                var pquery = full.AsParallel();
+                pquery.ForAll(x => this.Dehydrate(x));
+                return pquery.AsEnumerable();
             }
             catch (ArgumentNullException) { throw; }
-            return dry;
+            catch (OperationCanceledException) { throw; }
+            catch (AggregateException) { throw; }
         }
 
         public IEnumerable<string> GetKeys(int? skip = null, int? take = null)

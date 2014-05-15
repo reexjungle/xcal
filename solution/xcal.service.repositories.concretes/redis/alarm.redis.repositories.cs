@@ -586,10 +586,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
         {
             try
             {
-                return full.Select(x => { return this.Dehydrate(x); });
-
+                var pquery = full.AsParallel();
+                pquery.ForAll(x => this.Dehydrate(x));
+                return pquery.AsEnumerable();
             }
             catch (ArgumentNullException) { throw; }
+            catch (OperationCanceledException) { throw; }
+            catch (AggregateException) { throw; }
         }
     }
 
@@ -1591,10 +1594,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
         {
             try
             {
-                return full.Select(x => { return this.Dehydrate(x); });
-
+                var pquery = full.AsParallel();
+                pquery.ForAll(x => this.Dehydrate(x));
+                return pquery.AsEnumerable();
             }
             catch (ArgumentNullException) { throw; }
+            catch (OperationCanceledException) { throw; }
+            catch (AggregateException) { throw; }
         }
     }
 }

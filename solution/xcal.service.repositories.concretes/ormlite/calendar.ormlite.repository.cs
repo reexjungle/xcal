@@ -432,14 +432,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
         {
             try
             {
-                return full.Select(x => { return this.Dehydrate(x); });
-
+                var pquery = full.AsParallel();
+                pquery.ForAll(x => this.Dehydrate(x));
+                return pquery.AsEnumerable();
             }
-            catch (ArgumentNullException)
-            {
-                
-                throw;
-            }
+            catch (ArgumentNullException) { throw; }
+            catch (OperationCanceledException) { throw; }
+            catch (AggregateException) { throw; }
         }
 
         public VCALENDAR Dehydrate(VCALENDAR full)
@@ -455,11 +454,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 if (!dry.XComponents.NullOrEmpty()) dry.XComponents.Clear();
                 return dry;
             }
-            catch (ArgumentNullException)
-            {
-                
-                throw;
-            }
+            catch (ArgumentNullException)  { throw; }
         }
 
         public IEnumerable<string> GetKeys(int? skip = null, int? take = null)
