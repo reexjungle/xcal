@@ -19,7 +19,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
         public CalendarServiceUnitTests()
         {
-            client = new JsonServiceClient(Properties.Settings.Default.test_server);
+            client = new JsonServiceClient(Properties.Settings.Default.remote_server);
             guidkeygen = new GuidKeyGenerator();
             fpikeygen = new FPIKeyGenerator<string>
             {

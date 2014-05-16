@@ -22,7 +22,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
         public EventServiceUnitTests()
         {
-            client = new JsonServiceClient(Properties.Settings.Default.test_server);
+            client = new JsonServiceClient(Properties.Settings.Default.remote_server);
             guidkeygen = new GuidKeyGenerator();
             fpikeygen = new FPIKeyGenerator<string>
             {
@@ -52,7 +52,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             }
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void MaintainSingleEvent()
         {
             this.Teardown();

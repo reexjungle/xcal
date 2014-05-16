@@ -25,10 +25,10 @@ namespace reexmonkey.xcal.application.server.web.dev.test.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:3105/")]
-        public string test_server {
+        [global::System.Configuration.DefaultSettingValueAttribute("https://reexux.com/xcal")]
+        public string remote_server {
             get {
-                return ((string)(this["test_server"]));
+                return ((string)(this["remote_server"]));
             }
         }
         
@@ -65,6 +65,18 @@ namespace reexmonkey.xcal.application.server.web.dev.test.Properties {
         public global::reexmonkey.infrastructure.operations.contracts.Authority fpiAuthority {
             get {
                 return ((global::reexmonkey.infrastructure.operations.contracts.Authority)(this["fpiAuthority"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:3105")]
+        public string local_server {
+            get {
+                return ((string)(this["local_server"]));
+            }
+            set {
+                this["local_server"] = value;
             }
         }
     }
