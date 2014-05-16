@@ -2209,7 +2209,7 @@ namespace reexmonkey.xcal.domain.models
     {
         public IANA_PROPERTY() : base() { }
 
-        public IANA_PROPERTY(string key, object value, List<IPARAMETER> parameters): base(key, value, parameters) { }
+        public IANA_PROPERTY(string name, object value, List<IPARAMETER> parameters): base(name, value, parameters) { }
     }
 
     [DataContract]

@@ -171,7 +171,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     db.Save(entity, transaction);
                     if (org != null)
                     {
-                        db.Save(org);
+                        db.Save(org, transaction);
                         var rorg = new REL_EVENTS_ORGANIZERS 
                         { 
                             Id = this.KeyGenerator.GetNextKey(), 
@@ -1021,6 +1021,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             var ealarms = entities.Where(x => !x.EmailAlarms.NullOrEmpty()) .SelectMany(x => x.EmailAlarms);
 
             #endregion
+                    
+            var keys = entities.Select(x => x.Id).ToArray();
 
             #region 2. save attributes of entities
 
@@ -1029,7 +1031,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 try
                 {
                     //save core entities
-                    var keys = entities.Select(x => x.Id).ToArray();
+
                     db.SaveAll(entities, transaction);
 
                     if (!orgs.NullOrEmpty())

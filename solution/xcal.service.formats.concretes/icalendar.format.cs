@@ -18,7 +18,7 @@ namespace reexmonkey.xcal.service.plugins.formats.concretes
 
         public void Register(IAppHost appHost)
         {
-            appHost.ContentTypeFilters.Register(mime_type, this.SerializeToStream, this.DeserializeFromStream);
+            appHost.ContentTypeFilters.Register(mime_type, iCalendarFormat.SerializeToStream, iCalendarFormat.DeserializeFromStream);
             appHost.RequestFilters.Add((req, res, dto) =>
                 {
                     //if (req.ResponseContentType.Equals(mime, StringComparison.OrdinalIgnoreCase))
@@ -34,7 +34,7 @@ namespace reexmonkey.xcal.service.plugins.formats.concretes
                 });
         }
 
-        private void SerializeToStream(IRequestContext context, object dto, Stream stream)
+        public static void SerializeToStream(IRequestContext context, object dto, Stream stream)
         {
             using (var sw = new StreamWriter(stream))
             {
@@ -100,11 +100,10 @@ namespace reexmonkey.xcal.service.plugins.formats.concretes
             } 
         }
 
-        private object DeserializeFromStream(Type type, Stream stream)
+        public static object DeserializeFromStream(Type type, Stream stream)
         {
             throw new NotImplementedException();
         }
-
 
     }
 }

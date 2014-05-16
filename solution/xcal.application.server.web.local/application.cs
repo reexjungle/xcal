@@ -167,7 +167,7 @@ namespace reexmonkey.xcal.application.server.web.local
             #region inject core repositories and create primary data sources on first run
 
 
-            if (Properties.Settings.Default.primary_storage == StorageType.rdbms)
+            if (Properties.Settings.Default.primary_storage == StorageType.rdbms.ToString())
             {
 
                 #region  create main database and tables
@@ -237,7 +237,6 @@ namespace reexmonkey.xcal.application.server.web.local
                 {
                     KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
                     DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
-                    Take = Properties.Settings.Default.alarms_take
                 });
 
                 container.Register<IEmailAlarmRepository>(x => new EmailAlarmOrmLiteRepository
@@ -264,7 +263,7 @@ namespace reexmonkey.xcal.application.server.web.local
                 #endregion
 
             }
-            else if (Properties.Settings.Default.primary_storage == StorageType.nosql)
+            else if (Properties.Settings.Default.primary_storage == StorageType.nosql.ToString())
             {
                 #region inject redis repositories
 

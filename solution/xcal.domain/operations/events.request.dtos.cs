@@ -151,10 +151,10 @@ namespace reexmonkey.xcal.domain.operations
         public List<EMAIL_ALARM> EmailAlarms { get; set; }
 
         [DataMember]
-        public List<IANA_PROPERTY> IANAProperties { get; set; }
+        public Dictionary<string, IANA_PROPERTY> IANAProperties { get; set; }
 
         [DataMember]
-        public List<X_PROPERTY> XProperties { get; set; }
+        public Dictionary<string, X_PROPERTY> XProperties { get; set; }
     }
 
     [DataContract]
@@ -262,10 +262,10 @@ namespace reexmonkey.xcal.domain.operations
         public List<EMAIL_ALARM> EmailAlarms { get; set; }
 
         [DataMember]
-        public List<IANA_PROPERTY> IANAProperties { get; set; }
+        public Dictionary<string, IANA_PROPERTY> IANAProperties { get; set; }
 
         [DataMember]
-        public List<X_PROPERTY> XProperties { get; set; }
+        public Dictionary<string, X_PROPERTY> XProperties { get; set; }
 
     }
 

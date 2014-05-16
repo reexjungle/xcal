@@ -35,7 +35,21 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
         private void Teardown()
         {
-            client.Post(new FlushDatabase { Reset = false });
+            try
+            {
+                client.Post(new FlushDatabase { Reset = false });
+
+            }
+            catch (WebServiceException ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Message: {0}", ex.Message);
+                System.Diagnostics.Debug.WriteLine("Stack-Trace {0}", ex.StackTrace);
+            }
+            catch (System.Net.WebException ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Message: {0}", ex.Message);
+                System.Diagnostics.Debug.WriteLine("Stack-Trace {0}", ex.StackTrace);
+            }
         }
 
         [TestMethod]

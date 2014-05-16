@@ -76,9 +76,9 @@ namespace reexmonkey.xcal.domain.contracts
 
         List<EMAIL_ALARM> EmailAlarms { get; set; }
 
-        List<IANA_PROPERTY> IANAProperties { get; set; }
+        Dictionary<string, IANA_PROPERTY> IANAProperties { get; set; }
 
-        List<X_PROPERTY> XProperties { get; set; }
+        Dictionary<string, X_PROPERTY> XProperties { get; set; }
 
     }
 

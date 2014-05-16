@@ -194,11 +194,11 @@ namespace reexmonkey.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public List<IANA_PROPERTY> IANAProperties { get; set; }
+        public Dictionary<string, IANA_PROPERTY> IANAProperties { get; set; }
 
         [DataMember]
         [Ignore]
-        public List<X_PROPERTY> XProperties { get; set; }
+        public Dictionary<string, X_PROPERTY> XProperties { get; set; }
 
         public VEVENT()
         {
@@ -219,8 +219,8 @@ namespace reexmonkey.xcal.domain.models
             this.AudioAlarms = new List<AUDIO_ALARM>();
             this.DisplayAlarms = new List<DISPLAY_ALARM>();
             this.EmailAlarms = new List<EMAIL_ALARM>();
-            this.IANAProperties = new List<IANA_PROPERTY>();
-            this.XProperties = new List<X_PROPERTY>();
+            this.IANAProperties = new Dictionary<string, IANA_PROPERTY>();
+            this.XProperties = new Dictionary<string, X_PROPERTY>();
         }
 
         public VEVENT(DATE_TIME dtstamp, string uid, DATE_TIME start, DATE_TIME end,  PRIORITY priority, ORGANIZER organizer = null, LOCATION location = null, 
@@ -464,12 +464,12 @@ namespace reexmonkey.xcal.domain.models
             }
             if (!this.IANAProperties.NullOrEmpty())
             {
-                foreach (var iana in this.IANAProperties) if (iana != null) sb.Append(iana).AppendLine();
+                foreach (var iana in this.IANAProperties.Values) if (iana != null) sb.Append(iana).AppendLine();
             }
 
             if (!this.XProperties.NullOrEmpty())
             {
-                foreach (var xprop in this.XProperties) if (xprop != null) sb.Append(xprop).AppendLine();
+                foreach (var xprop in this.XProperties.Values) if (xprop != null) sb.Append(xprop).AppendLine();
             }
 
             sb.Append("END:VEVENT");

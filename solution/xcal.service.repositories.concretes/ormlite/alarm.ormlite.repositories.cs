@@ -105,10 +105,39 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
         {
             using (var transaction = db.OpenTransaction())
             {
+                var attachbin = entity.AttachmentBinary;
+                var attachuri = entity.AttachmentUri;
                 try
                 {
-                    //Save dry event entity i.a. without related details
                     db.Save(entity, transaction);
+                    if (attachbin != null)
+                    {
+                        db.Save(attachbin,  transaction);
+                        var rattachbin = new REL_AALARMS_ATTACHBINS
+                        {
+                            Id = this.KeyGenerator.GetNextKey(),
+                            AlarmId = entity.Id,
+                            AttachmentId = attachbin.Id
+                        };
+                        var orattachbins = db.Select<REL_AALARMS_ATTACHBINS>(q => q.AlarmId == entity.Id);
+                        if (orattachbins.NullOrEmpty()) db.Save(rattachbin, transaction);
+                        else if (!orattachbins.Contains(rattachbin)) db.Save(rattachbin, transaction);
+                    }
+
+                    if (attachuri != null)
+                    {
+                        db.Save(attachuri, transaction);
+                        var rattachuri = new REL_AALARMS_ATTACHBINS
+                        {
+                            Id = this.KeyGenerator.GetNextKey(),
+                            AlarmId = entity.Id,
+                            AttachmentId = attachbin.Id
+                        };
+                        var orattachuris = db.Select<REL_AALARMS_ATTACHBINS>(q => q.AlarmId == entity.Id);
+                        if (orattachuris.NullOrEmpty()) db.Save(rattachuri, transaction);
+                        else if (!orattachuris.Contains(rattachuri)) db.Save(rattachuri, transaction);
+                    }
+
                     transaction.Commit();
                 }
                 catch (SecurityException)
@@ -156,9 +185,52 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
         {
             using (var transaction = db.OpenTransaction())
             {
+                var attachbins = entities.Where(x => x.AttachmentBinary != null).Select(x => x.AttachmentBinary);
+                var attachuris = entities.Where(x => x.AttachmentUri != null).Select(x => x.AttachmentUri);
+                var keys = entities.Select(x => x.Id).ToArray();
+
                 try
                 {
+
                     db.SaveAll(entities, transaction);
+                    if (attachbins != null)
+                    {
+                        db.Save(attachbins, transaction);
+                        var rattachbins = entities.Where(x => x.AttachmentBinary != null).Select(x => new REL_AALARMS_ATTACHBINS
+                        {
+                            Id = this.KeyGenerator.GetNextKey(),
+                            AlarmId = x.Id,
+                            AttachmentId = x.AttachmentBinary.Id
+                        });
+                        var orattachbins = db.Select<REL_AALARMS_ATTACHBINS>(q => Sql.In(q.AlarmId, keys));
+                        if (!orattachbins.NullOrEmpty())
+                        {
+                            db.SaveAll(rattachbins.Except(orattachbins), transaction);
+                            var diffs = orattachbins.Except(rattachbins);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_AALARMS_ATTACHBINS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rattachbins, transaction);
+                    }
+
+                    if (attachuris != null)
+                    {
+                        db.Save(attachuris, transaction);
+                        var rattachuris = entities.Where(x => x.AttachmentUri != null).Select(x => new REL_AALARMS_ATTACHURIS
+                        {
+                            Id = this.KeyGenerator.GetNextKey(),
+                            AlarmId = x.Id,
+                            AttachmentId = x.AttachmentUri.Id
+                        });
+                        var orattachuris = db.Select<REL_AALARMS_ATTACHURIS>(q => Sql.In(q.AlarmId, keys));
+                        if (!orattachuris.NullOrEmpty())
+                        {
+                            db.SaveAll(rattachuris.Except(orattachuris), transaction);
+                            var diffs = orattachuris.Except(rattachuris);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_AALARMS_ATTACHURIS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rattachuris, transaction);
+                    }
+
                     transaction.Commit();
                 }
                 catch (SecurityException)
@@ -957,9 +1029,15 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     if (!attends.NullOrEmpty())
                     {
                         db.SaveAll(attends, transaction);
-                        var rattends = attends.Select(x => new REL_EALARMS_ATTENDEES { AlarmId = entity.Id, AttendeeId = x.Id });
-                        var orattends = db.Select<REL_EALARMS_ATTENDEES>(q => q.Id == entity.Id && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
-                        db.SaveAll(!orattends.NullOrEmpty() ? rattends.Except(orattends) : rattends, transaction);
+                        var rattendees = attends.Select(x => new REL_EALARMS_ATTENDEES { AlarmId = entity.Id, AttendeeId = x.Id });
+                        var orattendees = db.Select<REL_EALARMS_ATTENDEES>(q => q.Id == entity.Id && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
+                        if (!orattendees.NullOrEmpty())
+                        {
+                            db.SaveAll(rattendees.Except(orattendees), transaction);
+                            var diffs = orattendees.Except(rattendees);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rattendees, transaction);
                     }
 
                     if (!attachbins.NullOrEmpty())
@@ -967,7 +1045,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                         db.SaveAll(attachbins, transaction);
                         var rattachbins = attachbins.Select(x => new REL_EALARMS_ATTACHBINS { AlarmId = entity.Id, AttachmentId = x.Id });
                         var orattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
-                        db.SaveAll(!orattachbins.NullOrEmpty() ? rattachbins.Except(orattachbins) : rattachbins, transaction);
+                        if (!orattachbins.NullOrEmpty())
+                        {
+                            db.SaveAll(rattachbins.Except(orattachbins), transaction);
+                            var diffs = orattachbins.Except(rattachbins);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rattachbins, transaction);
                     }
 
                     if (!attachuris.NullOrEmpty())
@@ -975,8 +1059,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                         db.SaveAll(attachuris, transaction);
                         var rattachuris = attachuris.Select(x => new REL_EALARMS_ATTACHURIS { AlarmId = entity.Id, AttachmentId = x.Id });
                         var orattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray()));
-                        var rdiffs = rattachuris.Except(orattachuris);
-                        db.SaveAll(!orattachuris.NullOrEmpty() ? rattachuris.Except(orattachuris) : rattachuris, transaction);
+                        if (!orattachuris.NullOrEmpty())
+                        {
+                            db.SaveAll(rattachuris.Except(orattachuris), transaction);
+                            var diffs = orattachuris.Except(rattachuris);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rattachuris, transaction);
                     }
 
                     transaction.Commit();
