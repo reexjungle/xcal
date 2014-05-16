@@ -37,7 +37,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
         {
             try
             {
-                client.Post(new FlushDatabase { Reset = false });
+                client.Post(new FlushDatabase { Reset = true });
 
             }
             catch (WebServiceException ex)
@@ -52,7 +52,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             }
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void MaintainSingleEvent()
         {
             this.Teardown();
