@@ -1120,18 +1120,24 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     db.SaveAll(entities, transaction);
 
                     //1. retrieve details of events
-                    var attends = entities.Where(x => x.Attendees.OfType<ATTENDEE>().Count() > 0).SelectMany(x => x.Attendees.OfType<ATTENDEE>());
+                    var attendees = entities.Where(x => x.Attendees.Count() > 0).SelectMany(x => x.Attendees);
                     var attachbins = entities.Where(x => x.AttachmentBinaries.Count() > 0).SelectMany(x => x.AttachmentBinaries);
                     var attachuris = entities.Where(x => x.AttachmentUris.Count() > 0).SelectMany(x => x.AttachmentUris);
 
                     //2. save details of events
-                    if (!attends.NullOrEmpty())
+                    if (!attendees.NullOrEmpty())
                     {
-                        db.SaveAll(attends, transaction);
-                        var rattends = entities.Where(x => !x.Attendees.OfType<ATTENDEE>().NullOrEmpty())
-                            .SelectMany(a => a.Attendees.OfType<ATTENDEE>().Select(x => new REL_EALARMS_ATTENDEES { Id = a.Id, AttendeeId = x.Id }));
-                        var orattends = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
-                        db.SaveAll(!orattends.NullOrEmpty() ? rattends.Except(orattends) : rattends, transaction);
+                        db.SaveAll(attendees, transaction);
+                        var rattendees = entities.Where(x => !x.Attendees.NullOrEmpty())
+                            .SelectMany(a => a.Attendees.Select(x => new REL_EALARMS_ATTENDEES { Id = a.Id, AttendeeId = x.Id }));
+                        var orattendees = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttendeeId, attendees.Select(x => x.Id).ToArray()));
+                        if (!orattendees.NullOrEmpty())
+                        {
+                            db.SaveAll(rattendees.Except(orattendees), transaction);
+                            var diffs = orattendees.Except(rattendees);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rattendees, transaction);
                     }
 
                     if (!attachbins.NullOrEmpty())
@@ -1140,7 +1146,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                         var rattachbins = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty())
                             .SelectMany(a => a.AttachmentBinaries.Select(x => new REL_EALARMS_ATTACHBINS { Id = a.Id, AttachmentId = x.Id }));
                         var orattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
-                        db.SaveAll(!orattachbins.NullOrEmpty() ? rattachbins.Except(orattachbins) : rattachbins, transaction);
+                        if (!orattachbins.NullOrEmpty())
+                        {
+                            db.SaveAll(rattachbins.Except(orattachbins), transaction);
+                            var diffs = orattachbins.Except(rattachbins);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rattachbins, transaction);
                     }
 
                     if (!attachuris.NullOrEmpty())
@@ -1149,8 +1161,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                         var rattachuris = entities.Where(x => !x.AttachmentUris.NullOrEmpty())
                             .SelectMany(a => a.AttachmentUris.Select(x => new REL_EALARMS_ATTACHURIS { Id = a.Id, AttachmentId = x.Id }));
                         var orattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id)));
-                        db.SaveAll(!orattachuris.NullOrEmpty() ? rattachuris.Except(orattachuris) : rattachuris, transaction);
-
+                        if (!orattachuris.NullOrEmpty())
+                        {
+                            db.SaveAll(rattachuris.Except(orattachuris), transaction);
+                            var diffs = orattachuris.Except(rattachuris);
+                            if (!diffs.NullOrEmpty()) db.Delete<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                        }
+                        else db.SaveAll(rattachuris, transaction);
                     }
 
                     transaction.Commit();

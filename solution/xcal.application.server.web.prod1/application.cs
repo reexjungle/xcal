@@ -45,8 +45,8 @@ namespace reexmonkey.xcal.application.server.web.prod1
                     { "Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, ANY, DELETE, RESET, OPTIONS" },
                     { "Access-Control-Allow-Headers", "Content-Type" },
                 },
-                DebugMode = true, //Show StackTraces in service responses during development
-                ReturnsInnerException = true
+                DebugMode = false, //Show StackTraces in service responses during development
+                ReturnsInnerException = false
             });
 
             #endregion

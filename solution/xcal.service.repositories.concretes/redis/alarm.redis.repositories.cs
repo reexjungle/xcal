@@ -1321,7 +1321,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         if (selection.Contains(attendsexpr.GetMemberName()))
                         {
-                            var attendees = source.Attendees.OfType<ATTENDEE>();
+                            var attendees = source.Attendees;
                             if (!attendees.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => this.redis.As<ATTENDEE>().StoreAll(attendees));

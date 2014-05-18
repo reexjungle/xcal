@@ -1365,24 +1365,14 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType())  return false;
             return this.Equals(obj as ATTENDEE);
+            
         }
 
         public override int GetHashCode()
         {
-            return this.Address.GetHashCode() ^
-                ((this.CN != null) ? this.CN.GetHashCode() : 0) ^
-                this.CalendarUserType.GetHashCode() ^
-                this.Role.GetHashCode() ^
-                this.Rsvp.GetHashCode() ^
-                ((this.Member != null) ? this.Member.GetHashCode() : 0) ^
-                ((this.Delegatee != null) ? this.Delegatee.GetHashCode() : 0) ^ 
-                ((this.Delegator != null) ? this.Delegator.GetHashCode() : 0) ^ 
-                ((this.SentBy != null) ? this.SentBy.GetHashCode() : 0) ^
-                ((this.CN != null) ? this.Member.GetHashCode() : 0) ^               
-                ((this.Directory != null) ? this.Directory.GetHashCode() : 0) ^
-                ((this.Language != null) ? this.Language.GetHashCode() : 0);
+            return this.Id.GetHashCode() ^ ((this.Id != null) ? this.Id.GetHashCode() : 0);
         }
 
         public static bool operator ==(ATTENDEE a, ATTENDEE b)
@@ -1393,7 +1383,7 @@ namespace reexmonkey.xcal.domain.models
 
         public static bool operator !=(ATTENDEE a, ATTENDEE b)
         {
-            if (a == null || b == null) return !object.Equals(a,b);
+            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
        
@@ -1493,7 +1483,8 @@ namespace reexmonkey.xcal.domain.models
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            return this.Equals(obj as ORGANIZER);
+            var other = (ORGANIZER)obj;
+            return this.Equals(other);
         }
 
         public override int GetHashCode()
@@ -1603,7 +1594,8 @@ namespace reexmonkey.xcal.domain.models
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            return this.Equals(obj as RECURRENCE_ID);
+            var other = (RECURRENCE_ID)obj;
+            return this.Equals(other);
         }
 
         public override int GetHashCode()
@@ -1692,7 +1684,8 @@ namespace reexmonkey.xcal.domain.models
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            return this.Equals(obj as RELATEDTO);
+            var other = (RELATEDTO)obj;
+            return this.Equals(other);
         }
 
         public override int GetHashCode()
