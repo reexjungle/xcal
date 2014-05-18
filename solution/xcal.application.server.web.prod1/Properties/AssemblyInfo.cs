@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("xcal.application.server.web.prod")]
+[assembly: AssemblyTitle("xcal.application.server.web.prod1")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Capgemini")]
-[assembly: AssemblyProduct("xcal.application.server.web.prod")]
-[assembly: AssemblyCopyright("Copyright © Capgemini 2014")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("xcal.application.server.web.prod1")]
+[assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("eeaee2dc-7a29-4fe5-8168-f567a12ce552")]
+[assembly: Guid("1751d5b9-c452-4e4f-bf29-6dcfb1ebec0d")]
 
 // Version information for an assembly consists of the following four values:
 //
