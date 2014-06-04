@@ -268,11 +268,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             });
         }
 
-        public void FlushDb(bool force = false)
+        public void Flush(bool hard = false)
         {
             try
             {
-                if (force) this.RecreateTables(this.DbConnectionFactory);
+                if (hard) this.RecreateTables(this.DbConnectionFactory);
                 else this.DeleteAllRowsFromTables(this.DbConnectionFactory);
             }
             catch (ApplicationException) { throw;  }

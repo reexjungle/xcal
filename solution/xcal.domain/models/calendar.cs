@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Linq;
 using System.Collections.Generic;
 using ServiceStack.DataAnnotations;
 using reexmonkey.foundation.essentials.contracts;
@@ -152,10 +151,10 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:VCALENDAR").AppendLine();
-            sb.AppendFormat("VERSION:{0}", this.Version).AppendLine();
-            sb.AppendFormat("PRODID:{0}", this.ProdId).AppendLine();
-            if(this.Calscale != CALSCALE.UNKNOWN) sb.AppendFormat("CALSCALE:{0}", this.Calscale).AppendLine();
-            if(this.Method != METHOD.UNKNOWN) sb.AppendFormat("METHOD:{0}", this.Method).AppendLine();
+            sb.AppendFormat("VERSION:{0}", this.Version.ToString()).AppendLine();
+            sb.AppendFormat("PRODID:{0}", this.ProdId.ToString()).AppendLine();
+            if (this.Calscale != CALSCALE.UNKNOWN) sb.AppendFormat("CALSCALE:{0}", this.Calscale.ToString()).AppendLine();
+            if (this.Method != METHOD.UNKNOWN) sb.AppendFormat("METHOD:{0}", this.Method.ToString()).AppendLine();
             if (!this.Events.NullOrEmpty()) this.Events.ForEach(x => sb.Append(x.ToString()).AppendLine());
             if (!this.ToDos.NullOrEmpty()) this.ToDos.ForEach(x => sb.Append(x.ToString()).AppendLine());
             if (!this.FreeBusies.NullOrEmpty()) this.FreeBusies.ForEach(x => sb.Append(x.ToString()).AppendLine());

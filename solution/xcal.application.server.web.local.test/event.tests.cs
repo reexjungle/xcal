@@ -22,7 +22,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
         public EventServiceUnitTests()
         {
-            client = new JsonServiceClient(Properties.Settings.Default.remote_server);
+            client = new JsonServiceClient(Properties.Settings.Default.local_server);
             guidkeygen = new GuidKeyGenerator();
             fpikeygen = new FPIKeyGenerator<string>
             {
@@ -37,7 +37,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
         {
             try
             {
-                client.Post(new FlushDatabase { Reset = true });
+                client.Post(new FlushDatabase { Hard = false });
 
             }
             catch (WebServiceException ex)

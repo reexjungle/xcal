@@ -191,8 +191,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                         if(!orevents.NullOrEmpty())
                         {
                             db.SaveAll(revents.Except(orevents), transaction);
-                            var diffs = orevents.Except(revents);
-                            if (!diffs.NullOrEmpty()) db.Delete<REL_CALENDARS_EVENTS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                            var toremove = orevents.Except(revents);
+                            if (!toremove.NullOrEmpty()) db.Delete<REL_CALENDARS_EVENTS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
                         }
                         else db.SaveAll(revents, transaction);
                     }
@@ -279,8 +279,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                 if (!orevents.NullOrEmpty())
                                 {
                                     db.SaveAll(revents.Except(orevents), transaction);
-                                    var diffs = orevents.Except(revents);
-                                    if (!diffs.NullOrEmpty()) db.Delete<REL_CALENDARS_EVENTS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                                    var toremove = orevents.Except(revents);
+                                    if (!toremove.NullOrEmpty()) db.Delete<REL_CALENDARS_EVENTS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
                                 }
                                 else db.SaveAll(revents, transaction);
                             }
@@ -368,8 +368,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                         if (!orevents.NullOrEmpty())
                         {
                             db.SaveAll(revents.Except(orevents), transaction);
-                            var diffs = orevents.Except(revents);
-                            if (!diffs.NullOrEmpty()) db.Delete<REL_CALENDARS_EVENTS>(q => Sql.In(q.Id, diffs.Select(x => x.Id).ToArray()));
+                            var toremove = orevents.Except(revents);
+                            if (!toremove.NullOrEmpty()) db.Delete<REL_CALENDARS_EVENTS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
                         }
                         else db.SaveAll(revents, transaction); 
                     }

@@ -67,6 +67,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web.prod1", "xcal.application.server.web.prod1\xcal.application.server.web.prod1.csproj", "{2CA95C26-3EA5-4CEB-B27F-BD538814031D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web.dev2", "xcal.application.server.web.dev2\xcal.application.server.web.dev2.csproj", "{CFA48312-8E02-43E4-8F17-92DC290CEC5B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web.prod2", "xcal.application.server.web.prod2\xcal.application.server.web.prod2.csproj", "{F8C94EA7-B173-4FFA-94B8-2B69AD6BE7CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -161,6 +165,14 @@ Global
 		{2CA95C26-3EA5-4CEB-B27F-BD538814031D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CA95C26-3EA5-4CEB-B27F-BD538814031D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CA95C26-3EA5-4CEB-B27F-BD538814031D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFA48312-8E02-43E4-8F17-92DC290CEC5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFA48312-8E02-43E4-8F17-92DC290CEC5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFA48312-8E02-43E4-8F17-92DC290CEC5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFA48312-8E02-43E4-8F17-92DC290CEC5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8C94EA7-B173-4FFA-94B8-2B69AD6BE7CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8C94EA7-B173-4FFA-94B8-2B69AD6BE7CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8C94EA7-B173-4FFA-94B8-2B69AD6BE7CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8C94EA7-B173-4FFA-94B8-2B69AD6BE7CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -190,5 +202,7 @@ Global
 		{02949545-ACCB-4213-B9FB-17537B2C3AB5} = {1FBDE8AA-3FC4-4A9F-A373-87883894B4DF}
 		{E923F702-C33B-4958-A9C9-C43542CCD6DB} = {77E5F699-2C01-4AD5-9122-1FB24878FBF7}
 		{2CA95C26-3EA5-4CEB-B27F-BD538814031D} = {77E5F699-2C01-4AD5-9122-1FB24878FBF7}
+		{CFA48312-8E02-43E4-8F17-92DC290CEC5B} = {77E5F699-2C01-4AD5-9122-1FB24878FBF7}
+		{F8C94EA7-B173-4FFA-94B8-2B69AD6BE7CD} = {77E5F699-2C01-4AD5-9122-1FB24878FBF7}
 	EndGlobalSection
 EndGlobal

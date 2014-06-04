@@ -32,7 +32,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
         private void Teardown()
         {
-            client.Post(new FlushDatabase { Reset = false });
+            client.Post(new FlushDatabase { Hard = false });
         }
 
         [TestMethod]
@@ -159,16 +159,16 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             {
                 events[i] = new VEVENT
                 {
-                    Uid = new GuidKeyGenerator().GetNextKey(),
+                    Uid = guidkeygen.GetNextKey(),
                     RecurrenceId = new RECURRENCE_ID
                     {
-                        Id = new GuidKeyGenerator().GetNextKey(),
+                        Id = guidkeygen.GetNextKey(),
                         Range = RANGE.THISANDFUTURE,
                         Value = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc))
                     },
                     RecurrenceRule = new RECUR
                     {
-                        Id = new GuidKeyGenerator().GetNextKey(),
+                        Id = guidkeygen.GetNextKey(),
                         FREQ = FREQ.DAILY,
                         Format = RecurFormat.DateTime,
                         UNTIL = new DATE_TIME(new DateTime(2014, 6, 25, 18, 03, 08, 0, DateTimeKind.Utc))
@@ -176,7 +176,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
                     Organizer = new ORGANIZER
                     {
-                        Id = new GuidKeyGenerator().GetNextKey(),
+                        Id = guidkeygen.GetNextKey(),
                         CN = "Emmanuel Ngwane",
                         Address = new URI("ngwanemk@gmail.com"),
                         Language = new LANGUAGE("en")
@@ -201,14 +201,16 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             this.client.Post(new AddCalendar { Calendar = calendar });
 
             var retrieved = this.client.Get(new FindCalendar { CalendarId = calendar.Id });
-            Assert.AreEqual(retrieved.Calscale, CALSCALE.GREGORIAN);
-            Assert.AreEqual(retrieved.ProdId, calendar.ProdId);
-            Assert.AreEqual(retrieved.Events.Count, 5);
-            Assert.AreEqual(retrieved, calendar);
+            //Assert.AreEqual(retrieved.Calscale, CALSCALE.GREGORIAN);
+            //Assert.AreEqual(retrieved.ProdId, calendar.ProdId);
+            //Assert.AreEqual(retrieved.Events.Count, 5);
+            //Assert.AreEqual(retrieved, calendar);
 
             calendar.Method = METHOD.REQUEST;
             calendar.Version = "3.0";
             calendar.Calscale = CALSCALE.HEBREW;
+
+            //remove 4 events and update
             calendar.Events.RemoveRange(0, 4);
 
             this.client.Put(new UpdateCalendar { Calendar = calendar });
@@ -219,6 +221,12 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             Assert.AreEqual(retrieved.Events.Count, 1);
             Assert.AreEqual(retrieved.Events[0], events[4]);
             Assert.AreEqual(retrieved, calendar);
+
+            //reinsert some events and update
+            calendar.Events.AddRange(new VEVENT[]{events[0], events[1]});
+            this.client.Put(new UpdateCalendar { Calendar = calendar });
+            retrieved = this.client.Get(new FindCalendar { CalendarId = calendar.Id });
+            Assert.AreEqual(retrieved.Events.Count, 3);
 
             this.client.Patch(new PatchCalendar { Scale = CALSCALE.JULIAN, CalendarId = calendar.Id });
             var patched = this.client.Get(new FindCalendar { CalendarId = calendar.Id });

@@ -91,8 +91,11 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
         {
             try
             {
-                if (this.repository.ContainsKey(request.Calendar.Id)) 
+                if (this.repository.ContainsKey(request.Calendar.Id))
+                {
                     this.repository.Save(request.Calendar);
+                }
+                   
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }

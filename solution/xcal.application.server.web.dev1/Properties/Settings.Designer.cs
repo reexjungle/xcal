@@ -25,7 +25,7 @@ namespace reexmonkey.xcal.application.server.web.dev1.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("xCal - iCalendar Web Services (DEV)")]
+        [global::System.Configuration.DefaultSettingValueAttribute("xCal - iCalendar Web Services (DEV1)")]
         public string service_name {
             get {
                 return ((string)(this["service_name"]));
@@ -34,7 +34,7 @@ namespace reexmonkey.xcal.application.server.web.dev1.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("xcal_dev_db")]
+        [global::System.Configuration.DefaultSettingValueAttribute("xcal_dev1_db")]
         public string main_db_name {
             get {
                 return ((string)(this["main_db_name"]));
@@ -52,7 +52,7 @@ namespace reexmonkey.xcal.application.server.web.dev1.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("xcal_elmah_dev_db")]
+        [global::System.Configuration.DefaultSettingValueAttribute("xcal_elmah_dev1_db")]
         public string elmah_db_name {
             get {
                 return ((string)(this["elmah_db_name"]));
@@ -70,7 +70,7 @@ namespace reexmonkey.xcal.application.server.web.dev1.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("xcal_nlog_dev_db")]
+        [global::System.Configuration.DefaultSettingValueAttribute("xcal_nlog_dev1_db")]
         public string nlog_db_name {
             get {
                 return ((string)(this["nlog_db_name"]));
@@ -88,18 +88,7 @@ namespace reexmonkey.xcal.application.server.web.dev1.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Server=localhost;Uid =dev;Pwd=dev;Database=xcal_elmah_dev_db;allow user variables" +
-            "=true")]
-        public string elmah_mysql_db {
-            get {
-                return ((string)(this["elmah_mysql_db"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Server=localhost;Uid = dev;Pwd=dev;allow user variables=true")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server=localhost;Uid = dev1;Pwd=dev1;allow user variables=true")]
         public string mysql_server {
             get {
                 return ((string)(this["mysql_server"]));
@@ -108,10 +97,12 @@ namespace reexmonkey.xcal.application.server.web.dev1.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("rdbms")]
-        public string primary_storage {
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server=localhost;Uid =dev1;Pwd=dev1;Database=xcal_elmah_dev1_db;allow user variab" +
+            "les=true")]
+        public string elmah_mysql_db {
             get {
-                return ((string)(this["primary_storage"]));
+                return ((string)(this["elmah_mysql_db"]));
             }
         }
     }

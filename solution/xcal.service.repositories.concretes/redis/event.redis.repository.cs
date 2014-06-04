@@ -438,7 +438,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                 {
                     var allkeys = this.redis.As<VEVENT>().GetAllKeys();
                     var selected = !allkeys.NullOrEmpty()
-                        ? allkeys.Skip(skip.Value).Take(take.Value)
+                        ? allkeys.Skip(skip.Value + 1 ).Take(take.Value)
                         : new List<string>();
                     var dry = this.redis.As<VEVENT>().GetValues(selected.ToList());
                     return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
@@ -497,10 +497,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         };
                         var rclient = this.redis.As<REL_EVENTS_ORGANIZERS>();
                         var ororgs = rclient.GetAll().Where(x => x.EventId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !ororgs.NullOrEmpty()
-                            ? rorg.ToSingleton().Except(ororgs)
-                            : rorg.ToSingleton()));
+                        if (ororgs.NullOrEmpty()) transaction.QueueCommand(x => x.Store(rorg));
+                        else if (!ororgs.Contains(rorg)) transaction.QueueCommand(x => x.Store(rorg));
                     }
 
                     if (rid != null)
@@ -515,10 +513,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var rclient = this.redis.As<REL_EVENTS_RECURRENCE_IDS>();
                         var orrids = rclient.GetAll().Where(x => x.EventId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !orrids.NullOrEmpty()
-                            ? rrid.ToSingleton().Except(orrids)
-                            : rrid.ToSingleton()));
+                        if (orrids.NullOrEmpty()) transaction.QueueCommand(x => x.Store(rrid));
+                        else if (!orrids.Contains(rrid)) transaction.QueueCommand(x => x.Store(rrid));
                     }
 
                     if (rrule != null)
@@ -533,10 +529,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var rclient = this.redis.As<REL_EVENTS_RECURS>();
                         var orrrules = rclient.GetAll().Where(x => x.EventId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !orrrules.NullOrEmpty()
-                            ? rrrule.ToSingleton().Except(orrrules)
-                            : rrrule.ToSingleton()));
+                        if (orrrules.NullOrEmpty()) transaction.QueueCommand(x => x.Store(rrrule));
+                        else if (!orrrules.Contains(rrrule)) transaction.QueueCommand(x => x.Store(rrrule));
                     }
 
                     if (!attendees.NullOrEmpty())
@@ -551,10 +545,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var rclient = this.redis.As<REL_EVENTS_ATTENDEES>();
                         var orattendees = rclient.GetAll().Where(x => x.EventId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !orattendees.NullOrEmpty()
-                            ? rattendees.Except(orattendees)
-                            : rattendees));
+                        if (!orattendees.NullOrEmpty())
+                        {
+                            transaction.QueueCommand(x => x.StoreAll(rattendees.Except(orattendees)));
+                            var toremove = orattendees.Except(rattendees);
+                            if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                        }
+                        else transaction.QueueCommand(x => x.StoreAll(rattendees));
                     }
 
                     if (!attachbins.NullOrEmpty())
@@ -569,10 +566,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var rclient = this.redis.As<REL_EVENTS_ATTACHBINS>();
                         var orattachbins = rclient.GetAll().Where(x => x.EventId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !orattachbins.NullOrEmpty()
-                            ? rattachbins.Except(orattachbins)
-                            : rattachbins));
+                        if (!orattachbins.NullOrEmpty())
+                        {
+                            transaction.QueueCommand(x => x.StoreAll(rattachbins.Except(orattachbins)));
+                            var toremove = orattachbins.Except(rattachbins);
+                            if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                        }
+                        else transaction.QueueCommand(x => x.StoreAll(rattachbins));
                     }
 
                     if (!attachuris.NullOrEmpty())
@@ -587,10 +587,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var rclient = this.redis.As<REL_EVENTS_ATTACHURIS>();
                         var orattachuris = rclient.GetAll().Where(x => x.EventId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !orattachuris.NullOrEmpty()
-                            ? rattachuris.Except(orattachuris)
-                            : rattachuris));
+                        if (!orattachuris.NullOrEmpty())
+                        {
+                            transaction.QueueCommand(x => x.StoreAll(rattachuris.Except(orattachuris)));
+                            var toremove = orattachuris.Except(rattachuris);
+                            if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                        }
+                        else transaction.QueueCommand(x => x.StoreAll(rattachuris));
                     }
 
                     if (!contacts.NullOrEmpty())
@@ -605,16 +608,19 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var rclient = this.redis.As<REL_EVENTS_CONTACTS>();
                         var orcontacts = rclient.GetAll().Where(x => x.EventId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !orcontacts.NullOrEmpty()
-                            ? rcontacts.Except(orcontacts)
-                            : rcontacts));
+                        if (!orcontacts.NullOrEmpty())
+                        {
+                            transaction.QueueCommand(x => x.StoreAll(rcontacts.Except(orcontacts)));
+                            var toremove = orcontacts.Except(rcontacts);
+                            if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                        }
+                        else transaction.QueueCommand(x => x.StoreAll(rcontacts));
                     }
 
                     if (!comments.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => this.redis.As<TEXTUAL>().StoreAll(contacts));
-                        var rcontacts = comments.Select(x => new REL_EVENTS_CONTACTS
+                        var rcomments = comments.Select(x => new REL_EVENTS_CONTACTS
                         {
                             Id = KeyGenerator.GetNextKey(),
                             EventId = entity.Id,
@@ -622,11 +628,14 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         });
 
                         var rclient = this.redis.As<REL_EVENTS_CONTACTS>();
-                        var orcontacts = rclient.GetAll().Where(x => x.EventId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !orcontacts.NullOrEmpty()
-                            ? rcontacts.Except(orcontacts)
-                            : rcontacts));
+                        var orcomments = rclient.GetAll().Where(x => x.EventId == entity.Id);
+                        if (!orcomments.NullOrEmpty())
+                        {
+                            transaction.QueueCommand(x => x.StoreAll(rcomments.Except(orcomments)));
+                            var toremove = orcomments.Except(rcomments);
+                            if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                        }
+                        else transaction.QueueCommand(x => x.StoreAll(rcomments));
                     }
 
                     if (!rdates.NullOrEmpty())
@@ -641,10 +650,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var rclient = this.redis.As<REL_EVENTS_RDATES>();
                         var orrdates = rclient.GetAll().Where(x => x.EventId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !orrdates.NullOrEmpty()
-                            ? rrdates.Except(orrdates)
-                            : rrdates));
+                        if (!orrdates.NullOrEmpty())
+                        {
+                            transaction.QueueCommand(x => x.StoreAll(rrdates.Except(orrdates)));
+                            var toremove = orrdates.Except(rrdates);
+                            if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                        }
+                        else transaction.QueueCommand(x => x.StoreAll(rrdates));
                     }
 
                     if (!exdates.NullOrEmpty())
@@ -659,10 +671,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var rclient = this.redis.As<REL_EVENTS_EXDATES>();
                         var orexdates = rclient.GetAll().Where(x => x.EventId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !orexdates.NullOrEmpty()
-                            ? rexdates.Except(orexdates)
-                            : rexdates));
+                        if (!orexdates.NullOrEmpty())
+                        {
+                            transaction.QueueCommand(x => x.StoreAll(rexdates.Except(orexdates)));
+                            var toremove = orexdates.Except(rexdates);
+                            if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                        }
+                        else transaction.QueueCommand(x => x.StoreAll(rexdates));
                     }
 
                     if (!relatedtos.NullOrEmpty())
@@ -677,10 +692,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var rclient = this.redis.As<REL_EVENTS_RELATEDTOS>();
                         var orrelatedtos = rclient.GetAll().Where(x => x.EventId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !orrelatedtos.NullOrEmpty()
-                            ? rrelatedtos.Except(orrelatedtos)
-                            : rrelatedtos));
+                        if (!orrelatedtos.NullOrEmpty())
+                        {
+                            transaction.QueueCommand(x => x.StoreAll(rrelatedtos.Except(orrelatedtos)));
+                            var toremove = orrelatedtos.Except(rrelatedtos);
+                            if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                        }
+                        else transaction.QueueCommand(x => x.StoreAll(rrelatedtos));
                     }
 
                     if (!resources.NullOrEmpty())
@@ -695,10 +713,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var rclient = this.redis.As<REL_EVENTS_RESOURCES>();
                         var orresources = rclient.GetAll().Where(x => x.EventId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !orresources.NullOrEmpty()
-                            ? rresources.Except(orresources)
-                            : rresources));
+                        if (!orresources.NullOrEmpty())
+                        {
+                            transaction.QueueCommand(x => x.StoreAll(rresources.Except(orresources)));
+                            var toremove = orresources.Except(rresources);
+                            if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                        }
+                        else transaction.QueueCommand(x => x.StoreAll(rresources));
                     }
 
                     if (!reqstats.NullOrEmpty())
@@ -713,16 +734,19 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var rclient = this.redis.As<REL_EVENTS_REQSTATS>();
                         var orreqstats = rclient.GetAll().Where(x => x.EventId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !orreqstats.NullOrEmpty()
-                            ? rreqstats.Except(orreqstats)
-                            : rreqstats));
+                        if (!orreqstats.NullOrEmpty())
+                        {
+                            transaction.QueueCommand(x => x.StoreAll(rreqstats.Except(orreqstats)));
+                            var toremove = orreqstats.Except(rreqstats);
+                            if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                        }
+                        else transaction.QueueCommand(x => x.StoreAll(rreqstats));
                     }
 
                     if (!aalarms.NullOrEmpty())
                     {
                         this.AudioAlarmRepository.SaveAll(aalarms);
-                        var ralarms = resources.Select(x => new REL_EVENTS_AUDIO_ALARMS
+                        var raalarms = resources.Select(x => new REL_EVENTS_AUDIO_ALARMS
                         {
                             Id = KeyGenerator.GetNextKey(),
                             EventId = entity.Id,
@@ -730,17 +754,20 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         });
 
                         var rclient = this.redis.As<REL_EVENTS_AUDIO_ALARMS>();
-                        var oralarms = rclient.GetAll().Where(x => x.EventId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !oralarms.NullOrEmpty()
-                            ? ralarms.Except(oralarms)
-                            : ralarms));
+                        var oraalarms = rclient.GetAll().Where(x => x.EventId == entity.Id);
+                        if (!oraalarms.NullOrEmpty())
+                        {
+                            transaction.QueueCommand(x => x.StoreAll(raalarms.Except(oraalarms)));
+                            var toremove = oraalarms.Except(raalarms);
+                            if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                        }
+                        else transaction.QueueCommand(x => x.StoreAll(raalarms));
                     }
 
                     if (!dalarms.NullOrEmpty())
                     {
                         this.DisplayAlarmRepository.SaveAll(dalarms);
-                        var ralarms = resources.Select(x => new REL_EVENTS_DISPLAY_ALARMS
+                        var rdalarms = resources.Select(x => new REL_EVENTS_DISPLAY_ALARMS
                         {
                             Id = KeyGenerator.GetNextKey(),
                             EventId = entity.Id,
@@ -748,17 +775,20 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         });
 
                         var rclient = this.redis.As<REL_EVENTS_DISPLAY_ALARMS>();
-                        var oralarms = rclient.GetAll().Where(x => x.EventId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !oralarms.NullOrEmpty()
-                            ? ralarms.Except(oralarms)
-                            : ralarms));
+                        var ordalarms = rclient.GetAll().Where(x => x.EventId == entity.Id);
+                        if (!ordalarms.NullOrEmpty())
+                        {
+                            transaction.QueueCommand(x => x.StoreAll(rdalarms.Except(ordalarms)));
+                            var toremove = ordalarms.Except(rdalarms);
+                            if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                        }
+                        else transaction.QueueCommand(x => x.StoreAll(rdalarms));
                     }
 
                     if (!ealarms.NullOrEmpty())
                     {
                         this.EmailAlarmRepository.SaveAll(ealarms);
-                        var ralarms = resources.Select(x => new REL_EVENTS_EMAIL_ALARMS
+                        var realarms = resources.Select(x => new REL_EVENTS_EMAIL_ALARMS
                         {
                             Id = KeyGenerator.GetNextKey(),
                             EventId = entity.Id,
@@ -766,11 +796,14 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         });
 
                         var rclient = this.redis.As<REL_EVENTS_EMAIL_ALARMS>();
-                        var oralarms = rclient.GetAll().Where(x => x.EventId == entity.Id);
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !oralarms.NullOrEmpty()
-                            ? ralarms.Except(oralarms)
-                            : ralarms));
+                        var orealarms = rclient.GetAll().Where(x => x.EventId == entity.Id);
+                        if (!orealarms.NullOrEmpty())
+                        {
+                            transaction.QueueCommand(x => x.StoreAll(realarms.Except(orealarms)));
+                            var toremove = orealarms.Except(realarms);
+                            if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                        }
+                        else transaction.QueueCommand(x => x.StoreAll(realarms));
                     }
 
                     if (!ianaprops.NullOrEmpty())
@@ -817,7 +850,6 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                 var eclient = this.redis.As<VEVENT>();
                 if (eclient.ContainsKey(key))
                 {
-
                     var rattachbins = this.redis.As<REL_EVENTS_ATTACHBINS>().GetAll();
                     if (!rattachbins.NullOrEmpty()) this.redis.As<REL_EVENTS_ATTACHBINS>()
                         .DeleteByIds(rattachbins.Where(x => x.EventId.Equals(key, StringComparison.OrdinalIgnoreCase)));
@@ -922,295 +954,371 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
             #region 2. save aggregate attribbutes of entities
 
-            this.manager.ExecTrans(transaction =>
+            var eclient = this.redis.As<VEVENT>();
+            var keys = entities.Select(x => x.Id).ToArray();
+
+            var rorgs = entities.Where(x => x.Organizer != null)
+                .Select(e => new REL_EVENTS_ORGANIZERS
+                {
+                    Id = this.KeyGenerator.GetNextKey(),
+                    EventId = e.Id,
+                    OrganizerId = e.Organizer.Id
+                });
+            var rclient = this.redis.As<REL_EVENTS_ORGANIZERS>();
+            var ororgs = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+
+
+            using (var transaction = this.redis.CreateTransaction())
             {
                 try
                 {
-                    var eclient = this.redis.As<VEVENT>();
                     //watch keys
-                    var okeys = eclient.GetAllKeys().ToArray();
-                    if (!okeys.NullOrEmpty()) this.redis.Watch(okeys);
+                    //var okeys = this.redis.As<VEVENT>().GetAllKeys().ToArray();
+                    //if (!okeys.NullOrEmpty()) this.redis.Watch(okeys);
 
-                    var keys = entities.Select(x => x.Id).ToArray();
                     if (!orgs.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(orgs));
-                        var rorgs = entities.Where(x => x.Organizer != null)
-                            .Select(e => new REL_EVENTS_ORGANIZERS
-                            {
-                                Id = this.KeyGenerator.GetNextKey(),
-                                EventId = e.Id,
-                                OrganizerId = e.Organizer.Id
-                            });
-
-                        var rclient = this.redis.As<REL_EVENTS_ORGANIZERS>();
-                        var ororgs = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                        transaction.QueueCommand(x => x.StoreAll(!ororgs.NullOrEmpty()
-                            ? rorgs.Except(ororgs)
-                            : rorgs));
-                    }
-
-                    if (!rids.NullOrEmpty())
-                    {
-                        transaction.QueueCommand(x => x.StoreAll(rids));
-                        var rrids = entities.Where(x => x.RecurrenceId != null)
-                            .Select(e => new REL_EVENTS_RECURRENCE_IDS
-                            {
-                                Id = this.KeyGenerator.GetNextKey(),
-                                EventId = e.Id,
-                                RecurrenceId_Id = e.RecurrenceId.Id
-                            });
-                        var rclient = this.redis.As<REL_EVENTS_RECURRENCE_IDS>();
-                        var orrids = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                        transaction.QueueCommand(x => x.StoreAll((!orrids.NullOrEmpty())
-                            ? rrids.Except(orrids)
-                            : rrids));
-                    }
-
-                    if (!rrules.NullOrEmpty())
-                    {
-                        transaction.QueueCommand(x => x.StoreAll(rrules));
-                        var rrrules = entities.Where(x => x.RecurrenceRule != null)
-                            .Select(e => new REL_EVENTS_RECURS
-                            {
-                                Id = this.KeyGenerator.GetNextKey(),
-                                EventId = e.Id,
-                                RecurrenceRuleId = e.RecurrenceRule.Id
-                            });
-
-                        var rclient = this.redis.As<REL_EVENTS_RECURS>();
-                        var orrrules = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                        transaction.QueueCommand(x => x.StoreAll((!orrrules.NullOrEmpty())
-                            ? rrrules.Except(orrrules)
-                            : rrrules));
-                    }
-
-                    if (!attendees.NullOrEmpty())
-                    {
-                        transaction.QueueCommand(x => x.StoreAll(attendees));
-                        var rattendees = entities.Where(x => !x.Attendees.NullOrEmpty())
-                            .SelectMany(e => e.Attendees
-                                .Select(x => new REL_EVENTS_ATTENDEES
-                                {
-                                    Id = this.KeyGenerator.GetNextKey(),
-                                    EventId = e.Id,
-                                    AttendeeId = x.Id
-                                }));
-
-                        var rclient = this.redis.As<REL_EVENTS_ATTENDEES>();
-                        var orattendees = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                        transaction.QueueCommand(x => x.StoreAll((!orattendees.NullOrEmpty())
-                            ? rattendees.Except(orattendees)
-                            : rattendees));
-                    }
-
-                    if (!attachbins.NullOrEmpty())
-                    {
-                        transaction.QueueCommand(x => this.redis.As<ATTACH_BINARY>().StoreAll(attachbins));
-                        var rattachbins = entities.Where(x => !x.AttachmentBinaries.OfType<ATTACH_BINARY>().NullOrEmpty())
-                            .SelectMany(e => e.AttachmentBinaries.OfType<ATTACH_BINARY>()
-                                .Select(x => new REL_EVENTS_ATTACHBINS
-                                {
-                                    Id = this.KeyGenerator.GetNextKey(),
-                                    EventId = e.Id,
-                                    AttachmentId = x.Id
-                                }));
-                        var rclient = this.redis.As<REL_EVENTS_ATTACHBINS>();
-                        var orattachbins = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                        transaction.QueueCommand(x => x.StoreAll((!orattachbins.NullOrEmpty())
-                            ? rattachbins.Except(orattachbins)
-                            : rattachbins));
-                    }
-
-                    if (!attachuris.NullOrEmpty())
-                    {
-                        transaction.QueueCommand(x => x.StoreAll(attachuris));
-                        var rattachuris = entities.Where(x => !x.AttachmentBinaries.OfType<ATTACH_URI>().NullOrEmpty())
-                            .SelectMany(e => e.AttachmentBinaries.OfType<ATTACH_URI>()
-                                .Select(x => new REL_EVENTS_ATTACHURIS
-                                {
-                                    Id = this.KeyGenerator.GetNextKey(),
-                                    EventId = e.Id,
-                                    AttachmentId = x.Id
-                                }));
-                        var rclient = this.redis.As<REL_EVENTS_ATTACHURIS>();
-                        var orattachuris = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                        transaction.QueueCommand(x => x.StoreAll((!orattachuris.NullOrEmpty())
-                            ? rattachuris.Except(orattachuris)
-                            : rattachuris));
-                    }
-
-                    if (!contacts.NullOrEmpty())
-                    {
-                        transaction.QueueCommand(x => x.StoreAll(contacts));
-                        var rcontacts = entities.Where(x => !x.Contacts.NullOrEmpty())
-                            .SelectMany(e => e.Contacts
-                                .Select(x => new REL_EVENTS_CONTACTS
-                                {
-                                    Id = this.KeyGenerator.GetNextKey(),
-                                    EventId = e.Id,
-                                    ContactId = x.Id
-                                }));
-                        var rclient = this.redis.As<REL_EVENTS_CONTACTS>();
-                        var orcontacts = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                        transaction.QueueCommand(x => x.StoreAll((!orcontacts.NullOrEmpty())
-                            ? rcontacts.Except(orcontacts)
-                            : rcontacts));
-                    }
-
-                    if (!comments.NullOrEmpty())
-                    {
-                        transaction.QueueCommand(x => x.StoreAll(comments));
-                        var rcomments = entities.Where(x => !x.Comments.NullOrEmpty())
-                            .SelectMany(e => e.Comments
-                                .Select(x => new REL_EVENTS_COMMENTS
-                                {
-                                    Id = this.KeyGenerator.GetNextKey(),
-                                    EventId = e.Id,
-                                    CommentId = x.Id
-                                }));
-                        var rclient = this.redis.As<REL_EVENTS_COMMENTS>();
-                        var orcomments = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                        transaction.QueueCommand(x => x.StoreAll((!orcomments.NullOrEmpty())
-                            ? rcomments.Except(orcomments)
-                            : rcomments));
-                    }
-
-                    if (!rdates.NullOrEmpty())
-                    {
-                        transaction.QueueCommand(x => x.StoreAll(rdates));
-                        var rrdates = entities.Where(x => !x.RecurrenceDates.NullOrEmpty())
-                            .SelectMany(e => e.RecurrenceDates.Select(x => new REL_EVENTS_RDATES
-                            {
-                                Id = this.KeyGenerator.GetNextKey(),
-                                EventId = e.Id,
-                                RecurrenceDateId = x.Id
-                            }));
-                        var rclient = this.redis.As<REL_EVENTS_RDATES>();
-                        var orrdates = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                        transaction.QueueCommand(x => x.StoreAll((!orrdates.NullOrEmpty())
-                            ? rrdates.Except(orrdates)
-                            : rrdates));
-                    }
-
-                    if (!exdates.NullOrEmpty())
-                    {
-                        transaction.QueueCommand(x => x.StoreAll(exdates));
-                        var rexdates = entities.Where(x => !x.ExceptionDates.NullOrEmpty())
-                            .SelectMany(e => e.ExceptionDates.Select(x => new REL_EVENTS_EXDATES
-                            {
-                                Id = this.KeyGenerator.GetNextKey(),
-                                EventId = e.Id,
-                                ExceptionDateId = x.Id
-                            }));
-                        var rclient = this.redis.As<REL_EVENTS_EXDATES>();
-                        var orexdates = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                        transaction.QueueCommand(x => x.StoreAll((!orexdates.NullOrEmpty())
-                            ? rexdates.Except(orexdates)
-                            : rexdates));
-                    }
-
-                    if (!relatedtos.NullOrEmpty())
-                    {
-                        transaction.QueueCommand(x => x.StoreAll(relatedtos));
-                        var rrelateds = entities.Where(x => !x.RelatedTos.NullOrEmpty())
-                            .SelectMany(e => e.RelatedTos.Select(x => new REL_EVENTS_RELATEDTOS
-                            {
-                                Id = this.KeyGenerator.GetNextKey(),
-                                EventId = e.Id,
-                                RelatedToId = x.Id
-                            }));
-                        var rclient = this.redis.As<REL_EVENTS_RELATEDTOS>();
-                        var orrelatedtos = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                        transaction.QueueCommand(x => x.StoreAll((!orrelatedtos.NullOrEmpty())
-                            ? rrelateds.Except(orrelatedtos)
-                            : rrelateds));
-                    }
-
-                    if (!resources.NullOrEmpty())
-                    {
-                        transaction.QueueCommand(x => x.StoreAll(resources));
-                        var rresources = entities.Where(x => !x.Resources.NullOrEmpty())
-                            .SelectMany(e => e.Resources.Select(x => new REL_EVENTS_RESOURCES
-                            {
-                                Id = this.KeyGenerator.GetNextKey(),
-                                EventId = e.Id,
-                                ResourcesId = x.Id
-                            }));
-                        var rclient = this.redis.As<REL_EVENTS_RESOURCES>();
-                        var orresources = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                        transaction.QueueCommand(x => x.StoreAll((!orresources.NullOrEmpty())
-                            ? rresources.Except(orresources)
-                            : rresources));
-                    }
-
-                    if (!reqstats.NullOrEmpty())
-                    {
-                        transaction.QueueCommand(x => x.StoreAll(reqstats));
-                        var rreqstats = entities.Where(x => !x.RequestStatuses.NullOrEmpty())
-                            .SelectMany(e => e.RequestStatuses.Select(x => new REL_EVENTS_REQSTATS
-                            {
-                                Id = this.KeyGenerator.GetNextKey(),
-                                EventId = e.Id,
-                                ReqStatsId = x.Id
-                            }));
-                        var rclient = this.redis.As<REL_EVENTS_REQSTATS>();
-                        var orreqstats = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                        transaction.QueueCommand(x => x.StoreAll((!orreqstats.NullOrEmpty())
-                            ? rreqstats.Except(orreqstats)
-                            : rreqstats));
-                    }
-
-                    if (!aalarms.NullOrEmpty())
-                    {
-                        this.AudioAlarmRepository.SaveAll(aalarms);
-                        var raalarms = entities.Where(x => !x.AudioAlarms.NullOrEmpty())
-                            .SelectMany(e => e.AudioAlarms.Select(x => new REL_EVENTS_AUDIO_ALARMS
-                            {
-                                Id = this.KeyGenerator.GetNextKey(),
-                                EventId = e.Id,
-                                AlarmId = x.Id
-                            }));
-                        var rclient = this.redis.As<REL_EVENTS_AUDIO_ALARMS>();
-                        var oraalarms = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                        transaction.QueueCommand(x => x.StoreAll((!oraalarms.NullOrEmpty())
-                            ? raalarms.Except(oraalarms)
-                            : raalarms));
-                    }
-
-                    if (!dalarms.NullOrEmpty())
-                    {
-                        this.DisplayAlarmRepository.SaveAll(dalarms);
-                        var rdalarms = entities.Where(x => !x.DisplayAlarms.NullOrEmpty()).SelectMany(e => e.DisplayAlarms.Select(x => new REL_EVENTS_DISPLAY_ALARMS
+                        if (!ororgs.NullOrEmpty())
                         {
-                            Id = this.KeyGenerator.GetNextKey(),
-                            EventId = e.Id,
-                            AlarmId = x.Id
-                        }));
-                        var rclient = this.redis.As<REL_EVENTS_DISPLAY_ALARMS>();
-                        var ordalarms = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                        transaction.QueueCommand(x => x.StoreAll((!ordalarms.NullOrEmpty())
-                            ? rdalarms.Except(ordalarms)
-                            : rdalarms));
+                            transaction.QueueCommand(x => x.StoreAll(rorgs.Except(ororgs)));
+                            var diffs = ororgs.Except(rorgs);
+                            if (!diffs.NullOrEmpty()) 
+                                transaction.QueueCommand(x => x.DeleteByIds<REL_EVENTS_ORGANIZERS>(diffs.Select(s => s.Id).ToArray()));
+                        }
+                        else transaction.QueueCommand(x => x.StoreAll(rorgs));
                     }
 
-                    if (!ealarms.NullOrEmpty())
-                    {
-                        this.EmailAlarmRepository.SaveAll(ealarms);
-                        var realarms = entities.Where(x => !x.EmailAlarms.NullOrEmpty())
-                            .SelectMany(e => e.EmailAlarms.Select(x => new REL_EVENTS_EMAIL_ALARMS
-                            {
-                                Id = this.KeyGenerator.GetNextKey(),
-                                EventId = e.Id,
-                                AlarmId = x.Id
-                            }));
+                    //if (!rids.NullOrEmpty())
+                    //{
+                    //    transaction.QueueCommand(x => x.StoreAll(rids));
+                    //    var rrids = entities.Where(x => x.RecurrenceId != null)
+                    //        .Select(e => new REL_EVENTS_RECURRENCE_IDS
+                    //        {
+                    //            Id = this.KeyGenerator.GetNextKey(),
+                    //            EventId = e.Id,
+                    //            RecurrenceId_Id = e.RecurrenceId.Id
+                    //        });
+                    //    var rclient = this.redis.As<REL_EVENTS_RECURRENCE_IDS>();
+                    //    var orrids = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                    //    if (!orrids.NullOrEmpty())
+                    //    {
+                    //        var incoming = rrids.Except(orrids);
+                    //        transaction.QueueCommand(x => x.StoreAll(incoming));
+                    //        var outgoing = orrids.Except(rrids);
+                    //        if (!outgoing.NullOrEmpty())
+                    //        {
+                    //            var ids = outgoing.Select(x => x.Id).ToArray();
+                    //            rclient.DeleteByIds(outgoing);
+                    //        }
+                    //    }
+                    //    else transaction.QueueCommand(x => x.StoreAll(rrids));
+                    //}
 
-                        var rclient = this.redis.As<REL_EVENTS_EMAIL_ALARMS>();
-                        var orealarms = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                        transaction.QueueCommand(x => x.StoreAll((!orealarms.NullOrEmpty())
-                            ? realarms.Except(orealarms)
-                            : realarms));
-                    }
+                    //if (!rrules.NullOrEmpty())
+                    //{
+                    //    transaction.QueueCommand(x => x.StoreAll(rrules));
+                    //    var rrrules = entities.Where(x => x.RecurrenceRule != null)
+                    //        .Select(e => new REL_EVENTS_RECURS
+                    //        {
+                    //            Id = this.KeyGenerator.GetNextKey(),
+                    //            EventId = e.Id,
+                    //            RecurrenceRuleId = e.RecurrenceRule.Id
+                    //        });
+
+                    //    var rclient = this.redis.As<REL_EVENTS_RECURS>();
+                    //    var orrrules = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                    //    if (!orrrules.NullOrEmpty())
+                    //    {
+                    //        var incoming = rrrules.Except(orrrules);
+                    //        transaction.QueueCommand(x => x.StoreAll(incoming));
+                    //        var outgoing = orrrules.Except(rrrules);
+                    //        if (!outgoing.NullOrEmpty())
+                    //        {
+                    //            var ids = outgoing.Select(x => x.Id).ToArray();
+                    //            rclient.DeleteByIds(ids);
+                    //        }
+                    //    }
+                    //    else transaction.QueueCommand(x => x.StoreAll(rrrules));
+                    //}
+
+                    //if (!attendees.NullOrEmpty())
+                    //{
+                    //    transaction.QueueCommand(x => x.StoreAll(attendees));
+                    //    var rattendees = entities.Where(x => !x.Attendees.NullOrEmpty())
+                    //        .SelectMany(e => e.Attendees
+                    //            .Select(x => new REL_EVENTS_ATTENDEES
+                    //            {
+                    //                Id = this.KeyGenerator.GetNextKey(),
+                    //                EventId = e.Id,
+                    //                AttendeeId = x.Id
+                    //            }));
+
+                    //    var rclient = this.redis.As<REL_EVENTS_ATTENDEES>();
+                    //    var orattendees = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                    //    if (!orattendees.NullOrEmpty())
+                    //    {
+                    //        transaction.QueueCommand(x => x.StoreAll(rattendees.Except(orattendees)));
+                    //        var toremove = orattendees.Except(rattendees);
+                    //        if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                    //    }
+                    //    else transaction.QueueCommand(x => x.StoreAll(rattendees));
+                    //}
+
+                    //if (!attachbins.NullOrEmpty())
+                    //{
+                    //    transaction.QueueCommand(x => x.StoreAll(attachbins));
+                    //    var rattachbins = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty())
+                    //        .SelectMany(e => e.AttachmentBinaries.Select(x => new REL_EVENTS_ATTACHBINS
+                    //            {
+                    //                Id = this.KeyGenerator.GetNextKey(),
+                    //                EventId = e.Id,
+                    //                AttachmentId = x.Id
+                    //            }));
+                    //    var rclient = this.redis.As<REL_EVENTS_ATTACHBINS>();
+                    //    var orattachbins = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                    //    if (!orattachbins.NullOrEmpty())
+                    //    {
+                    //        transaction.QueueCommand(x => x.StoreAll(rattachbins.Except(orattachbins)));
+                    //        var toremove = orattachbins.Except(rattachbins);
+                    //        if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                    //    }
+                    //    else transaction.QueueCommand(x => x.StoreAll(rattachbins));
+                    //}
+
+                    //if (!attachuris.NullOrEmpty())
+                    //{
+                    //    transaction.QueueCommand(x => x.StoreAll(attachuris));
+                    //    var rattachuris = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty())
+                    //        .SelectMany(e => e.AttachmentBinaries.Select(x => new REL_EVENTS_ATTACHURIS
+                    //            {
+                    //                Id = this.KeyGenerator.GetNextKey(),
+                    //                EventId = e.Id,
+                    //                AttachmentId = x.Id
+                    //            }));
+                    //    var rclient = this.redis.As<REL_EVENTS_ATTACHURIS>();
+                    //    var orattachuris = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                    //    if (!orattachuris.NullOrEmpty())
+                    //    {
+                    //        transaction.QueueCommand(x => x.StoreAll(rattachuris.Except(orattachuris)));
+                    //        var toremove = orattachuris.Except(rattachuris);
+                    //        if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                    //    }
+                    //    else transaction.QueueCommand(x => x.StoreAll(rattachuris));
+                    //}
+
+                    //if (!contacts.NullOrEmpty())
+                    //{
+                    //    transaction.QueueCommand(x => x.StoreAll(contacts));
+                    //    var rcontacts = entities.Where(x => !x.Contacts.NullOrEmpty())
+                    //        .SelectMany(e => e.Contacts
+                    //            .Select(x => new REL_EVENTS_CONTACTS
+                    //            {
+                    //                Id = this.KeyGenerator.GetNextKey(),
+                    //                EventId = e.Id,
+                    //                ContactId = x.Id
+                    //            }));
+                    //    var rclient = this.redis.As<REL_EVENTS_CONTACTS>();
+                    //    var orcontacts = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                    //    if (!orcontacts.NullOrEmpty())
+                    //    {
+                    //        transaction.QueueCommand(x => x.StoreAll(rcontacts.Except(orcontacts)));
+                    //        var toremove = orcontacts.Except(rcontacts);
+                    //        if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                    //    }
+                    //    else transaction.QueueCommand(x => x.StoreAll(rcontacts));
+                    //}
+
+                    //if (!comments.NullOrEmpty())
+                    //{
+                    //    transaction.QueueCommand(x => x.StoreAll(comments));
+                    //    var rcomments = entities.Where(x => !x.Comments.NullOrEmpty())
+                    //        .SelectMany(e => e.Comments
+                    //            .Select(x => new REL_EVENTS_COMMENTS
+                    //            {
+                    //                Id = this.KeyGenerator.GetNextKey(),
+                    //                EventId = e.Id,
+                    //                CommentId = x.Id
+                    //            }));
+                    //    var rclient = this.redis.As<REL_EVENTS_COMMENTS>();
+                    //    var orcomments = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                    //    if (!orcomments.NullOrEmpty())
+                    //    {
+                    //        transaction.QueueCommand(x => x.StoreAll(rcomments.Except(orcomments)));
+                    //        var toremove = orcomments.Except(rcomments);
+                    //        if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                    //    }
+                    //    else transaction.QueueCommand(x => x.StoreAll(rcomments));
+                    //}
+
+                    //if (!rdates.NullOrEmpty())
+                    //{
+                    //    transaction.QueueCommand(x => x.StoreAll(rdates));
+                    //    var rrdates = entities.Where(x => !x.RecurrenceDates.NullOrEmpty())
+                    //        .SelectMany(e => e.RecurrenceDates.Select(x => new REL_EVENTS_RDATES
+                    //        {
+                    //            Id = this.KeyGenerator.GetNextKey(),
+                    //            EventId = e.Id,
+                    //            RecurrenceDateId = x.Id
+                    //        }));
+                    //    var rclient = this.redis.As<REL_EVENTS_RDATES>();
+                    //    var orrdates = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                    //    if (!orrdates.NullOrEmpty())
+                    //    {
+                    //        transaction.QueueCommand(x => x.StoreAll(rrdates.Except(orrdates)));
+                    //        var toremove = orrdates.Except(rrdates);
+                    //        if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                    //    }
+                    //    else transaction.QueueCommand(x => x.StoreAll(rrdates));
+                    //}
+
+                    //if (!exdates.NullOrEmpty())
+                    //{
+                    //    transaction.QueueCommand(x => x.StoreAll(exdates));
+                    //    var rexdates = entities.Where(x => !x.ExceptionDates.NullOrEmpty())
+                    //        .SelectMany(e => e.ExceptionDates.Select(x => new REL_EVENTS_EXDATES
+                    //        {
+                    //            Id = this.KeyGenerator.GetNextKey(),
+                    //            EventId = e.Id,
+                    //            ExceptionDateId = x.Id
+                    //        }));
+                    //    var rclient = this.redis.As<REL_EVENTS_EXDATES>();
+                    //    var orexdates = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                    //    if (!orexdates.NullOrEmpty())
+                    //    {
+                    //        transaction.QueueCommand(x => x.StoreAll(rexdates.Except(orexdates)));
+                    //        var toremove = orexdates.Except(rexdates);
+                    //        if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                    //    }
+                    //    else transaction.QueueCommand(x => x.StoreAll(rexdates));
+                    //}
+
+                    //if (!relatedtos.NullOrEmpty())
+                    //{
+                    //    transaction.QueueCommand(x => x.StoreAll(relatedtos));
+                    //    var rrelatedtos = entities.Where(x => !x.RelatedTos.NullOrEmpty())
+                    //        .SelectMany(e => e.RelatedTos.Select(x => new REL_EVENTS_RELATEDTOS
+                    //        {
+                    //            Id = this.KeyGenerator.GetNextKey(),
+                    //            EventId = e.Id,
+                    //            RelatedToId = x.Id
+                    //        }));
+                    //    var rclient = this.redis.As<REL_EVENTS_RELATEDTOS>();
+                    //    var orrelatedtos = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                    //    if (!orrelatedtos.NullOrEmpty())
+                    //    {
+                    //        transaction.QueueCommand(x => x.StoreAll(rrelatedtos.Except(orrelatedtos)));
+                    //        var toremove = orrelatedtos.Except(rrelatedtos);
+                    //        if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                    //    }
+                    //    else transaction.QueueCommand(x => x.StoreAll(rrelatedtos));
+                    //}
+
+                    //if (!resources.NullOrEmpty())
+                    //{
+                    //    transaction.QueueCommand(x => x.StoreAll(resources));
+                    //    var rresources = entities.Where(x => !x.Resources.NullOrEmpty())
+                    //        .SelectMany(e => e.Resources.Select(x => new REL_EVENTS_RESOURCES
+                    //        {
+                    //            Id = this.KeyGenerator.GetNextKey(),
+                    //            EventId = e.Id,
+                    //            ResourcesId = x.Id
+                    //        }));
+                    //    var rclient = this.redis.As<REL_EVENTS_RESOURCES>();
+                    //    var orresources = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                    //    if (!orresources.NullOrEmpty())
+                    //    {
+                    //        transaction.QueueCommand(x => x.StoreAll(rresources.Except(orresources)));
+                    //        var toremove = orresources.Except(rresources);
+                    //        if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                    //    }
+                    //    else transaction.QueueCommand(x => x.StoreAll(rresources));
+                    //}
+
+                    //if (!reqstats.NullOrEmpty())
+                    //{
+                    //    transaction.QueueCommand(x => x.StoreAll(reqstats));
+                    //    var rreqstats = entities.Where(x => !x.RequestStatuses.NullOrEmpty())
+                    //        .SelectMany(e => e.RequestStatuses.Select(x => new REL_EVENTS_REQSTATS
+                    //        {
+                    //            Id = this.KeyGenerator.GetNextKey(),
+                    //            EventId = e.Id,
+                    //            ReqStatsId = x.Id
+                    //        }));
+                    //    var rclient = this.redis.As<REL_EVENTS_REQSTATS>();
+                    //    var orreqstats = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                    //    if (!orreqstats.NullOrEmpty())
+                    //    {
+                    //        transaction.QueueCommand(x => x.StoreAll(rreqstats.Except(orreqstats)));
+                    //        var toremove = orreqstats.Except(rreqstats);
+                    //        if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                    //    }
+                    //    else transaction.QueueCommand(x => x.StoreAll(rreqstats));
+                    //}
+
+                    //if (!aalarms.NullOrEmpty())
+                    //{
+                    //    this.AudioAlarmRepository.SaveAll(aalarms);
+                    //    var raalarms = entities.Where(x => !x.AudioAlarms.NullOrEmpty())
+                    //        .SelectMany(e => e.AudioAlarms.Select(x => new REL_EVENTS_AUDIO_ALARMS
+                    //        {
+                    //            Id = this.KeyGenerator.GetNextKey(),
+                    //            EventId = e.Id,
+                    //            AlarmId = x.Id
+                    //        }));
+                    //    var rclient = this.redis.As<REL_EVENTS_AUDIO_ALARMS>();
+                    //    var oraalarms = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                    //    if (!oraalarms.NullOrEmpty())
+                    //    {
+                    //        transaction.QueueCommand(x => x.StoreAll(raalarms.Except(oraalarms)));
+                    //        var toremove = oraalarms.Except(raalarms);
+                    //        if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                    //    }
+                    //    else transaction.QueueCommand(x => x.StoreAll(raalarms));
+                    //}
+
+                    //if (!dalarms.NullOrEmpty())
+                    //{
+                    //    this.DisplayAlarmRepository.SaveAll(dalarms);
+                    //    var rdalarms = entities.Where(x => !x.DisplayAlarms.NullOrEmpty())
+                    //        .SelectMany(e => e.DisplayAlarms.Select(x => new REL_EVENTS_DISPLAY_ALARMS
+                    //    {
+                    //        Id = this.KeyGenerator.GetNextKey(),
+                    //        EventId = e.Id,
+                    //        AlarmId = x.Id
+                    //    }));
+                    //    var rclient = this.redis.As<REL_EVENTS_DISPLAY_ALARMS>();
+                    //    var ordalarms = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                    //    if (!ordalarms.NullOrEmpty())
+                    //    {
+                    //        transaction.QueueCommand(x => x.StoreAll(rdalarms.Except(ordalarms)));
+                    //        var toremove = ordalarms.Except(rdalarms);
+                    //        if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                    //    }
+                    //    else transaction.QueueCommand(x => x.StoreAll(rdalarms));
+                    //}
+
+                    //if (!ealarms.NullOrEmpty())
+                    //{
+                    //    this.EmailAlarmRepository.SaveAll(ealarms);
+                    //    var realarms = entities.Where(x => !x.EmailAlarms.NullOrEmpty())
+                    //        .SelectMany(e => e.EmailAlarms.Select(x => new REL_EVENTS_EMAIL_ALARMS
+                    //        {
+                    //            Id = this.KeyGenerator.GetNextKey(),
+                    //            EventId = e.Id,
+                    //            AlarmId = x.Id
+                    //        }));
+
+                    //    var rclient = this.redis.As<REL_EVENTS_EMAIL_ALARMS>();
+                    //    var orealarms = rclient.GetAll().Where(x => keys.Contains(x.EventId));
+                    //    if (!orealarms.NullOrEmpty())
+                    //    {
+                    //        transaction.QueueCommand(x => x.StoreAll(realarms.Except(orealarms)));
+                    //        var toremove = orealarms.Except(realarms);
+                    //        if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                    //    }
+                    //    else transaction.QueueCommand(x => x.StoreAll(realarms));
+                    //}
 
                     if(!ianaprops.NullOrEmpty())
                     {
@@ -1222,33 +1330,35 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         //TODO: Save all x-properties of events
                     }
 
-                    transaction.QueueCommand(x => x.StoreAll(this.Dehydrate(entities)));
-
+                    transaction.QueueCommand(x => x.StoreAll(this.DehydrateAll(entities)));
+                    transaction.Commit();
                 }
                 catch (ArgumentNullException) { throw; }
                 catch (RedisResponseException)
                 {
                     try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
+                    catch (RedisResponseException) { }
+                    catch (RedisException) { }
+                    catch (InvalidOperationException) { }
+                    throw;
                 }
                 catch (RedisException)
                 {
                     try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
+                    catch (RedisResponseException) { }
+                    catch (RedisException) { }
+                    catch (InvalidOperationException) { }
+                    throw;
                 }
                 catch (InvalidOperationException)
                 {
                     try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
+                    catch (RedisResponseException) { }
+                    catch (RedisException) { }
+                    catch (Exception) { }
+                    throw;
                 }
-            });
-
+            }
             #endregion
             
         }
@@ -1445,9 +1555,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                 });
                                 var rclient = this.redis.As<REL_EVENTS_ORGANIZERS>();
                                 var ororgs = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                                transaction.QueueCommand(x => rclient.StoreAll(!ororgs.NullOrEmpty()
-                                    ? rorgs.Except(ororgs)
-                                    : rorgs));
+                                if (!ororgs.NullOrEmpty())
+                                {
+                                    transaction.QueueCommand(x => x.StoreAll(rorgs.Except(ororgs)));
+                                    var toremove = ororgs.Except(rorgs);
+                                    if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                                }
+                                else transaction.QueueCommand(x => x.StoreAll(rorgs));
                             }
 
                         }
@@ -1467,10 +1581,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                                 var rclient = this.redis.As<REL_EVENTS_RECURRENCE_IDS>();
                                 var orrids = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                                transaction.QueueCommand(x => x.StoreAll(
-                                    !orrids.NullOrEmpty()
-                                    ? rrids.Except(orrids)
-                                    : rrids));
+                                if (!orrids.NullOrEmpty())
+                                {
+                                    transaction.QueueCommand(x => x.StoreAll(rrids.Except(orrids)));
+                                    var toremove = orrids.Except(rrids);
+                                    if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                                }
+                                else transaction.QueueCommand(x => x.StoreAll(rrids));
                             }
                         }
 
@@ -1490,10 +1607,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                                 var rclient = this.redis.As<REL_EVENTS_RECURS>();
                                 var orrrules = rclient.GetAll().Where(x => x.EventId == source.Id);
-                                transaction.QueueCommand(x => x.StoreAll(
-                                    !orrrules.NullOrEmpty()
-                                    ? rrrules.Except(orrrules)
-                                    : rrrules));
+                                if (!orrrules.NullOrEmpty())
+                                {
+                                    transaction.QueueCommand(x => x.StoreAll(rrrules.Except(orrrules)));
+                                    var toremove = orrrules.Except(rrrules);
+                                    if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                                }
+                                else transaction.QueueCommand(x => x.StoreAll(rrrules));
                             }
                         }
 
@@ -1512,10 +1632,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                                 var rclient = this.redis.As<REL_EVENTS_ATTENDEES>();
                                 var orattendees = rclient.GetAll().Where(x => x.EventId == source.Id);
-                                transaction.QueueCommand(x => x.StoreAll(
-                                    !orattendees.NullOrEmpty()
-                                    ? rattendees.Except(orattendees)
-                                    : rattendees));
+                                if (!orattendees.NullOrEmpty())
+                                {
+                                    transaction.QueueCommand(x => x.StoreAll(rattendees.Except(orattendees)));
+                                    var toremove = orattendees.Except(rattendees);
+                                    if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                                }
+                                else transaction.QueueCommand(x => x.StoreAll(rattendees));
                             }
                         }
 
@@ -1534,9 +1657,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                                 var rclient = this.redis.As<REL_EVENTS_ATTACHBINS>();
                                 var orattachbins = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                                transaction.QueueCommand(x => x.StoreAll(!orattachbins.NullOrEmpty()
-                                    ? rattachbins.Except(orattachbins)
-                                    : rattachbins));
+                                if (!orattachbins.NullOrEmpty())
+                                {
+                                    transaction.QueueCommand(x => x.StoreAll(rattachbins.Except(orattachbins)));
+                                    var toremove = orattachbins.Except(rattachbins);
+                                    if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                                }
+                                else transaction.QueueCommand(x => x.StoreAll(rattachbins));
                             }
                         }
                         if (selection.Contains(attachurisexpr.GetMemberName()))
@@ -1553,9 +1680,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                 }));
                                 var rclient = this.redis.As<REL_EVENTS_ATTACHURIS>();
                                 var orattachuris = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                                transaction.QueueCommand(x => x.StoreAll(!orattachuris.NullOrEmpty()
-                                    ? rattachuris.Except(orattachuris)
-                                    : rattachuris));
+                                if (!orattachuris.NullOrEmpty())
+                                {
+                                    transaction.QueueCommand(x => x.StoreAll(rattachuris.Except(orattachuris)));
+                                    var toremove = orattachuris.Except(rattachuris);
+                                    if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                                }
+                                else transaction.QueueCommand(x => x.StoreAll(rattachuris));
                             }
                         }
 
@@ -1573,9 +1704,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                 }));
                                 var rclient = this.redis.As<REL_EVENTS_CONTACTS>();
                                 var orcontacts = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                                transaction.QueueCommand(x => x.StoreAll(!orcontacts.NullOrEmpty()
-                                    ? rcontacts.Except(orcontacts)
-                                    : rcontacts));
+                                if (!orcontacts.NullOrEmpty())
+                                {
+                                    transaction.QueueCommand(x => x.StoreAll(rcontacts.Except(orcontacts)));
+                                    var toremove = orcontacts.Except(rcontacts);
+                                    if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                                }
+                                else transaction.QueueCommand(x => x.StoreAll(rcontacts));
                             }
                         }
 
@@ -1593,9 +1728,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                 }));
                                 var rclient = this.redis.As<REL_EVENTS_COMMENTS>();
                                 var orcomments = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                                transaction.QueueCommand(x => x.StoreAll(!orcomments.NullOrEmpty()
-                                    ? rcomments.Except(orcomments)
-                                    : rcomments));
+                                if (!orcomments.NullOrEmpty())
+                                {
+                                    transaction.QueueCommand(x => x.StoreAll(rcomments.Except(orcomments)));
+                                    var toremove = orcomments.Except(rcomments);
+                                    if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                                }
+                                else transaction.QueueCommand(x => x.StoreAll(rcomments));
                             }
                         }
 
@@ -1613,9 +1752,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                 }));
                                 var rclient = this.redis.As<REL_EVENTS_RDATES>();
                                 var orrdates = rclient.GetAll().Where(x => keys.Contains(x.EventId));
-                                transaction.QueueCommand(x => x.StoreAll(!orrdates.NullOrEmpty()
-                                    ? rrdates.Except(orrdates)
-                                    : rrdates));
+                                if (!orrdates.NullOrEmpty())
+                                {
+                                    transaction.QueueCommand(x => x.StoreAll(rrdates.Except(orrdates)));
+                                    var toremove = orrdates.Except(rrdates);
+                                    if (!toremove.NullOrEmpty()) rclient.DeleteByIds(toremove.Select(x => x.Id).ToArray());
+                                }
+                                else transaction.QueueCommand(x => x.StoreAll(rrdates));
                             }
                         }
 
@@ -1812,7 +1955,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                             if (selection.Contains(catexpr.GetMemberName())) x.Categories = source.Categories;
                         });
 
-                        transaction.QueueCommand(x => x.StoreAll(this.Dehydrate(entities)));
+                        transaction.QueueCommand(x => x.StoreAll(this.DehydrateAll(entities)));
 
                     }
 
@@ -1860,81 +2003,46 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
         public IEnumerable<VEVENT> FindAll(IEnumerable<string> keys, int? skip = null, int? take = null)
         {
-            try
+            if (skip == null && take == null)
             {
-                var allkeys = this.redis.As<VEVENT>().GetAllKeys();
-                if (skip == null && take == null)
-                {
-                    var filtered = !keys.NullOrEmpty()
-                        ? allkeys.Intersect(keys.Select(x => UrnId.GetStringId(x)))
-                        : new List<string>();
-                    var dry = this.redis.As<VEVENT>().GetByIds(filtered);
-                    return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
-                }
-                else
-                {
-                    var filtered = !keys.NullOrEmpty()
-                        ? allkeys.Intersect(keys.Select(x => UrnId.GetStringId(x)))
-                        : new List<string>();
-                    var dry = this.redis.As<VEVENT>().GetByIds(filtered);
-                    return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
-                }
+                var dry = this.redis.As<VEVENT>().GetByIds(keys);
+                return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
             }
-            catch (ArgumentNullException) { throw; }
-            catch (RedisResponseException) { throw; }
-            catch (RedisException) { throw; }
-            catch (InvalidOperationException) { throw; }
+            else
+            {
+                var dry = this.redis.As<VEVENT>().GetByIds(keys).Skip(skip.Value + 1).Take(take.Value);
+                return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
+            }
         }
 
         public bool ContainsKey(string key)
         {
-            try
-            {
-                return this.redis.As<VEVENT>().ContainsKey(key);
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (RedisResponseException) { throw; }
-            catch (RedisException) { throw; }
-            catch (InvalidOperationException) { throw; }
+            return this.redis.As<VEVENT>().ContainsKey(key);
         }
 
         public bool ContainsKeys(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
         {
-            try
-            {
-                var matches = this.redis.As<VEVENT>().GetAllKeys().Intersect(keys);
-                if (matches.NullOrEmpty()) return false;
-                return mode == ExpectationMode.pessimistic
-                    ? matches.Count() == keys.Count()
-                    : !matches.NullOrEmpty();
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (RedisResponseException) { throw; }
-            catch (RedisException) { throw; }
-            catch (InvalidOperationException) { throw; }
+            var matches = this.redis.As<VEVENT>().GetAllKeys().Intersect(keys);
+            if (matches.NullOrEmpty()) return false;
+            return mode == ExpectationMode.pessimistic
+                ? matches.Count() == keys.Count()
+                : !matches.NullOrEmpty();
         }
 
         public IEnumerable<string> GetKeys(int? skip = null, int? take = null)
         {
-            try
-            {
-                var keys = this.redis.As<VEVENT>().GetAllKeys();
-                if (skip == null && take == null)
-                    return !keys.NullOrEmpty()
-                        ? keys.Select(x => UrnId.GetStringId(x))
-                        : new List<string>();
-                else
-                    return (!keys.NullOrEmpty())
-                        ? keys.Select(x => UrnId.GetStringId(x)).Skip(skip.Value).Take(take.Value)
-                        : new List<string>();
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (RedisResponseException) { throw; }
-            catch (RedisException) { throw; }
-            catch (InvalidOperationException) { throw; }
+            var keys = this.redis.As<VEVENT>().GetAllKeys();
+            if (skip == null && take == null)
+                return !keys.NullOrEmpty()
+                    ? keys.Select(x => UrnId.GetStringId(x))
+                    : new List<string>();
+            else
+                return (!keys.NullOrEmpty())
+                    ? keys.Select(x => UrnId.GetStringId(x)).Skip(skip.Value + 1).Take(take.Value)
+                    : new List<string>();
         }
 
-        public IEnumerable<VEVENT> Dehydrate(IEnumerable<VEVENT> full)
+        public IEnumerable<VEVENT> DehydrateAll(IEnumerable<VEVENT> full)
         {
             try
             {
@@ -1949,28 +2057,24 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
         public VEVENT Dehydrate(VEVENT full)
         {
-            try
-            {
-                var dry = full;
-                dry.Organizer = null;
-                dry.RecurrenceId = null;
-                dry.RecurrenceRule = null;
-                if (!dry.Attendees.NullOrEmpty()) dry.Attendees.Clear();
-                if (!dry.AttachmentBinaries.NullOrEmpty()) dry.AttachmentBinaries.Clear();
-                if (!dry.AttachmentUris.NullOrEmpty()) dry.AttachmentUris.Clear();
-                if (!dry.Contacts.NullOrEmpty()) dry.Contacts.Clear();
-                if (!dry.Comments.NullOrEmpty()) dry.Comments.Clear();
-                if (!dry.RecurrenceDates.NullOrEmpty()) dry.RecurrenceDates.Clear();
-                if (!dry.ExceptionDates.NullOrEmpty()) dry.ExceptionDates.Clear();
-                if (!dry.RelatedTos.NullOrEmpty()) dry.RelatedTos.Clear();
-                if (!dry.RequestStatuses.NullOrEmpty()) dry.RequestStatuses.Clear();
-                if (!dry.Resources.NullOrEmpty()) dry.Resources.Clear();
-                if (!dry.AudioAlarms.NullOrEmpty()) dry.AudioAlarms.Clear();
-                if (!dry.DisplayAlarms.NullOrEmpty()) dry.DisplayAlarms.Clear();
-                if (!dry.EmailAlarms.NullOrEmpty()) dry.EmailAlarms.Clear();
-                return dry;
-            }
-            catch (ArgumentNullException) { throw; }
+            var dry = full;
+            dry.Organizer = null;
+            dry.RecurrenceId = null;
+            dry.RecurrenceRule = null;
+            if (!dry.Attendees.NullOrEmpty()) dry.Attendees.Clear();
+            if (!dry.AttachmentBinaries.NullOrEmpty()) dry.AttachmentBinaries.Clear();
+            if (!dry.AttachmentUris.NullOrEmpty()) dry.AttachmentUris.Clear();
+            if (!dry.Contacts.NullOrEmpty()) dry.Contacts.Clear();
+            if (!dry.Comments.NullOrEmpty()) dry.Comments.Clear();
+            if (!dry.RecurrenceDates.NullOrEmpty()) dry.RecurrenceDates.Clear();
+            if (!dry.ExceptionDates.NullOrEmpty()) dry.ExceptionDates.Clear();
+            if (!dry.RelatedTos.NullOrEmpty()) dry.RelatedTos.Clear();
+            if (!dry.RequestStatuses.NullOrEmpty()) dry.RequestStatuses.Clear();
+            if (!dry.Resources.NullOrEmpty()) dry.Resources.Clear();
+            if (!dry.AudioAlarms.NullOrEmpty()) dry.AudioAlarms.Clear();
+            if (!dry.DisplayAlarms.NullOrEmpty()) dry.DisplayAlarms.Clear();
+            if (!dry.EmailAlarms.NullOrEmpty()) dry.EmailAlarms.Clear();
+            return dry;
         }
     }
 }

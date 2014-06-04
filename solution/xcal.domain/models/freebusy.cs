@@ -100,43 +100,43 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:VFREEBUSY").AppendLine();
-            sb.AppendFormat("DTSTAMP:{0}", this.Datestamp).AppendLine();
-            sb.AppendFormat("UID:{0}", this.Uid).AppendLine();
+            sb.AppendFormat("DTSTAMP:{0}", this.Datestamp.ToString()).AppendLine();
+            sb.AppendFormat("UID:{0}", this.Uid.ToString()).AppendLine();
             if (this.Start.TimeZoneId != null)
-                sb.AppendFormat("DTSTART;{0}:{1}", this.Start.TimeZoneId, this.Start).AppendLine();
+                sb.AppendFormat("DTSTART;{0}:{1}", this.Start.TimeZoneId.ToString(), this.Start.ToString()).AppendLine();
             else
-                sb.AppendFormat("DTSTART:{0}", this.Start).AppendLine();
-            if (this.Organizer != null) sb.Append(this.Organizer).AppendLine();
-            if (this.Url != null) sb.AppendFormat("URL:{0}", this.Url).AppendLine();
+                sb.AppendFormat("DTSTART:{0}", this.Start.ToString()).AppendLine();
+            if (this.Organizer != null) sb.Append(this.Organizer.ToString()).AppendLine();
+            if (this.Url != null) sb.AppendFormat("URL:{0}", this.Url.ToString()).AppendLine();
 
             if (this.End.TimeZoneId != null)
-                sb.AppendFormat("DTEND;{0}:{1}", this.End.TimeZoneId, this.End).AppendLine();
+                sb.AppendFormat("DTEND;{0}:{1}", this.End.TimeZoneId.ToString(), this.End.ToString()).AppendLine();
             else
-                sb.AppendFormat("DTEND:{0}", this.End).AppendLine();
+                sb.AppendFormat("DTEND:{0}", this.End.ToString()).AppendLine();
            
             if (!this.Attachments.NullOrEmpty())
             {
-                foreach (var attachment in this.Attachments) if (attachment != null) sb.Append(attachment).AppendLine();
+                foreach (var attachment in this.Attachments) if (attachment != null) sb.Append(attachment.ToString()).AppendLine();
             }
 
             if (!this.Attendees.NullOrEmpty())
             {
-                foreach (var attendee in this.Attendees) if (attendee != null) sb.Append(attendee).AppendLine();
+                foreach (var attendee in this.Attendees) if (attendee != null) sb.Append(attendee.ToString()).AppendLine();
             }
 
             if (!this.RequestStatuses.NullOrEmpty())
             {
-                foreach (var reqstat in this.RequestStatuses) if (reqstat != null) sb.Append(reqstat).AppendLine();
+                foreach (var reqstat in this.RequestStatuses) if (reqstat != null) sb.Append(reqstat.ToString()).AppendLine();
             }
 
             if (!this.IANA.NullOrEmpty())
             {
-                foreach (var iana in this.IANA) if (iana != null) sb.Append(iana).AppendLine();
+                foreach (var iana in this.IANA) if (iana != null) sb.Append(iana.ToString()).AppendLine();
             }
 
             if (!this.NonStandard.NullOrEmpty())
             {
-                foreach (var xprop in this.NonStandard) if (xprop != null) sb.Append(xprop).AppendLine();
+                foreach (var xprop in this.NonStandard) if (xprop != null) sb.Append(xprop.ToString()).AppendLine();
             }
 
             sb.Append("END:VFREEBUSY");

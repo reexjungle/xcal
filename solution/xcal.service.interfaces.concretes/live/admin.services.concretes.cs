@@ -64,10 +64,10 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
         {
             try
             {
-                if(request.Reset != null && request.Reset.HasValue) 
-                    this.AdminRepository.FlushDb(request.Reset.Value);
+                if(request.Hard != null && request.Hard.HasValue) 
+                    this.AdminRepository.Flush(request.Hard.Value);
                 else 
-                    this.AdminRepository.FlushDb();
+                    this.AdminRepository.Flush();
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }

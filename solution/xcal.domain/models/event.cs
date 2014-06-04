@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Text.RegularExpressions;
 using ServiceStack.DataAnnotations;
 using reexmonkey.foundation.essentials.contracts;
 using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
-using reexmonkey.xcal.domain.extensions;
 
 namespace reexmonkey.xcal.domain.models
 {
@@ -373,103 +371,103 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:VEVENT").AppendLine();
-            sb.AppendFormat("DTSTAMP:{0}", this.Datestamp).AppendLine();
-            sb.AppendFormat("UID:{0}", this.Uid).AppendLine();
-            if (this.Start.TimeZoneId != null)  
-                sb.AppendFormat("DTSTART;{0}:{1}", this.Start.TimeZoneId, this.Start).AppendLine();
-            else 
-                sb.AppendFormat("DTSTART:{0}", this.Start).AppendLine();
-            if (this.Classification != CLASS.UNKNOWN) sb.AppendFormat("CLASS:{0}", this.Classification).AppendLine();
-            sb.AppendFormat("CREATED:{0}", this.Created).AppendLine();
-            if (this.Description != null) sb.Append(this.Description).AppendLine();
-            if (this.Position != default(GEO)) sb.Append(this.Position).AppendLine();
-            sb.AppendFormat("LAST-MODIFIED:{0}", this.LastModified).AppendLine();
-            if (this.Location != null) sb.Append(this.Location).AppendLine();
-            if (this.Organizer != null) sb.Append(this.Organizer).AppendLine();
-            if (this.Priority != null) sb.Append(this.Priority).AppendLine();
-            sb.AppendFormat("SEQUENCE:{0}", this.Sequence).AppendLine();
-            if (this.Status != STATUS.UNKNOWN) sb.AppendFormat("STATUS:{0}",this.Status).AppendLine();
-            if (this.Summary != null) sb.Append(this.Summary).AppendLine();
-            if (this.Transparency != TRANSP.UNKNOWN) sb.AppendFormat("TRANSP:{0}", this.Transparency).AppendLine();
-            if (this.Url != null) sb.AppendFormat("URL:{0}", this.Url).AppendLine();
-            if (this.RecurrenceId != null) sb.Append(this.RecurrenceId).AppendLine();
-            if (this.RecurrenceRule != null) sb.AppendFormat("RRULE:{0}", this.RecurrenceRule).AppendLine();
+            sb.AppendFormat("DTSTAMP:{0}", this.Datestamp.ToString()).AppendLine();
+            sb.AppendFormat("UID:{0}", this.Uid.ToString()).AppendLine();
+            if (this.Start.TimeZoneId != null)
+                sb.AppendFormat("DTSTART;{0}:{1}", this.Start.TimeZoneId.ToString(), this.Start.ToString()).AppendLine();
+            else
+                sb.AppendFormat("DTSTART:{0}", this.Start.ToString()).AppendLine();
+            if (this.Classification != CLASS.UNKNOWN) sb.AppendFormat("CLASS:{0}", this.Classification.ToString()).AppendLine();
+            sb.AppendFormat("CREATED:{0}", this.Created.ToString()).AppendLine();
+            if (this.Description != null) sb.Append(this.Description.ToString()).AppendLine();
+            if (this.Position != default(GEO)) sb.Append(this.Position.ToString()).AppendLine();
+            sb.AppendFormat("LAST-MODIFIED:{0}", this.LastModified.ToString()).AppendLine();
+            if (this.Location != null) sb.Append(this.Location.ToString()).AppendLine();
+            if (this.Organizer != null) sb.Append(this.Organizer.ToString()).AppendLine();
+            if (this.Priority != null) sb.Append(this.Priority.ToString()).AppendLine();
+            sb.AppendFormat("SEQUENCE:{0}", this.Sequence.ToString()).AppendLine();
+            if (this.Status != STATUS.UNKNOWN) sb.AppendFormat("STATUS:{0}", this.Status.ToString()).AppendLine();
+            if (this.Summary != null) sb.Append(this.Summary.ToString()).AppendLine();
+            if (this.Transparency != TRANSP.UNKNOWN) sb.AppendFormat("TRANSP:{0}", this.Transparency.ToString()).AppendLine();
+            if (this.Url != null) sb.AppendFormat("URL:{0}", this.Url.ToString()).AppendLine();
+            if (this.RecurrenceId != null) sb.Append(this.RecurrenceId.ToString()).AppendLine();
+            if (this.RecurrenceRule != null) sb.AppendFormat("RRULE:{0}", this.RecurrenceRule.ToString()).AppendLine();
             if (this.End != default(DATE_TIME))
             {
-                if (this.End.TimeZoneId != null) 
-                    sb.AppendFormat("DTEND;{0}:{1}", this.End.TimeZoneId, this.End).AppendLine();
-                else 
-                    sb.AppendFormat("DTEND:{0}", this.End).AppendLine();
+                if (this.End.TimeZoneId != null)
+                    sb.AppendFormat("DTEND;{0}:{1}", this.End.TimeZoneId.ToString(), this.End.ToString()).AppendLine();
+                else
+                    sb.AppendFormat("DTEND:{0}", this.End.ToString()).AppendLine();
             }
-            else if (this.Duration != default(DURATION)) sb.Append(this.Duration).AppendLine();
+            else if (this.Duration != default(DURATION)) sb.Append(this.Duration.ToString()).AppendLine();
 
             if(!this.AttachmentBinaries.NullOrEmpty())
             {
-                foreach (var attachment in this.AttachmentBinaries) if(attachment != null) sb.Append(attachment).AppendLine();
+                foreach (var attachment in this.AttachmentBinaries) if (attachment != null) sb.Append(attachment.ToString()).AppendLine();
             }
 
             if(!this.Attendees.NullOrEmpty())
             {
-                foreach (var attendee in this.Attendees) if(attendee != null) sb.Append(attendee).AppendLine();
+                foreach (var attendee in this.Attendees) if (attendee != null) sb.Append(attendee.ToString()).AppendLine();
             }
 
-            if (this.Categories != null && !this.Categories.Values.NullOrEmpty()) sb.Append(this.Categories).AppendLine();
+            if (this.Categories != null && !this.Categories.Values.NullOrEmpty()) sb.Append(this.Categories.ToString()).AppendLine();
 
             if (!this.Comments.NullOrEmpty())
             {
-                foreach (var comment in Comments) if (comment != null) sb.Append(comment).AppendLine();
+                foreach (var comment in Comments) if (comment != null) sb.Append(comment.ToString()).AppendLine();
             }
 
             if (!this.Contacts.NullOrEmpty())
             {
-                foreach (var contact in this.Contacts) if (contact != null) sb.Append(contact).AppendLine();
+                foreach (var contact in this.Contacts) if (contact != null) sb.Append(contact.ToString()).AppendLine();
             }
 
             if (!this.ExceptionDates.NullOrEmpty())
             {
-                foreach (var exdate in this.ExceptionDates) if (exdate != null) sb.Append(exdate).AppendLine();
+                foreach (var exdate in this.ExceptionDates) if (exdate != null) sb.Append(exdate.ToString()).AppendLine();
             }
 
             if (!this.RequestStatuses.NullOrEmpty())
             {
-                foreach (var reqstat in this.RequestStatuses) if (reqstat != null) sb.Append(reqstat).AppendLine();
+                foreach (var reqstat in this.RequestStatuses) if (reqstat != null) sb.Append(reqstat.ToString()).AppendLine();
             }
 
             if (!this.RelatedTos.NullOrEmpty())
             {
-                foreach (var relatedto in this.RelatedTos) if (relatedto != null) sb.Append(relatedto).AppendLine();
+                foreach (var relatedto in this.RelatedTos) if (relatedto != null) sb.Append(relatedto.ToString()).AppendLine();
             }
 
             if (!this.Resources.NullOrEmpty())
             {
-                foreach (var resource in this.Resources) if (resource != null) sb.Append(resource).AppendLine();
+                foreach (var resource in this.Resources) if (resource != null) sb.Append(resource.ToString()).AppendLine();
             }
 
             if (!this.RecurrenceDates.NullOrEmpty())
             {
-                foreach (var rdate in this.RecurrenceDates) if (rdate != null) sb.Append(rdate).AppendLine();
+                foreach (var rdate in this.RecurrenceDates) if (rdate != null) sb.Append(rdate.ToString()).AppendLine();
             }
 
             if (!this.AudioAlarms.NullOrEmpty())
             {
-                foreach (var alarm in this.AudioAlarms) if (alarm != null) sb.Append(alarm).AppendLine();
+                foreach (var alarm in this.AudioAlarms) if (alarm != null) sb.Append(alarm.ToString()).AppendLine();
             }
             if (!this.DisplayAlarms.NullOrEmpty())
             {
-                foreach (var alarm in this.DisplayAlarms) if (alarm != null) sb.Append(alarm).AppendLine();
+                foreach (var alarm in this.DisplayAlarms) if (alarm != null) sb.Append(alarm.ToString()).AppendLine();
             }
             if (!this.EmailAlarms.NullOrEmpty())
             {
-                foreach (var alarm in this.EmailAlarms) if (alarm != null) sb.Append(alarm).AppendLine();
+                foreach (var alarm in this.EmailAlarms) if (alarm != null) sb.Append(alarm.ToString()).AppendLine();
             }
             if (!this.IANAProperties.NullOrEmpty())
             {
-                foreach (var iana in this.IANAProperties.Values) if (iana != null) sb.Append(iana).AppendLine();
+                foreach (var iana in this.IANAProperties.Values) if (iana != null) sb.Append(iana.ToString()).AppendLine();
             }
 
             if (!this.XProperties.NullOrEmpty())
             {
-                foreach (var xprop in this.XProperties.Values) if (xprop != null) sb.Append(xprop).AppendLine();
+                foreach (var xprop in this.XProperties.Values) if (xprop != null) sb.Append(xprop.ToString()).AppendLine();
             }
 
             sb.Append("END:VEVENT");

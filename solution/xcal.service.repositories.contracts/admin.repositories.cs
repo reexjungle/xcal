@@ -9,7 +9,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
 {
     public interface IAdminRepository: IRepository
     {
-        void FlushDb(bool force=false);
+        void Flush(bool force=false);
     }
 
     public interface IAdminOrmLiteRepository : IAdminRepository

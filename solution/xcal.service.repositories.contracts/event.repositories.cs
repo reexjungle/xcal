@@ -57,7 +57,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// </summary>
         /// <param name="full">The events to depopulate</param>
         /// <returns>Depopulated events</returns>
-        IEnumerable<VEVENT> Dehydrate(IEnumerable<VEVENT> full);
+        IEnumerable<VEVENT> DehydrateAll(IEnumerable<VEVENT> full);
     } 
 
     /// <summary>

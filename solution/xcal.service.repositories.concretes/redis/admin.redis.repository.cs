@@ -45,9 +45,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
             this.client = client;
         }
 
-        public void FlushDb(bool force = false)
+        public void Flush(bool hard = false)
         {
-            this.client.FlushDb();
+            if (!hard) this.client.FlushDb();
+            else this.client.FlushAll();
         }
     }
 }
