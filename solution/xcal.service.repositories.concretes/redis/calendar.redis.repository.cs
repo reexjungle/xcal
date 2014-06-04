@@ -214,7 +214,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                     catch (Exception) { }
                     throw;
                 }
-            };
+            });
         }
 
         public void Patch(VCALENDAR source, Expression<Func<VCALENDAR, object>> fields, IEnumerable<string> keys = null)
