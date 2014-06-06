@@ -154,67 +154,61 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
         public void Save(VCALENDAR entity)
         {
-
-                    
-
             var events = entity.Events;
-            if (!events.NullOrEmpty()) this.EventRepository.SaveAll(events); 
-            var revents = events.Select(x => new REL_CALENDARS_EVENTS
-                        {
-                            Id = this.KeyGenerator.GetNextKey(),
-                            CalendarId = entity.Id,
-                            EventId = x.Id
-                        });
-            var rclient = this.redis.As<REL_CALENDARS_EVENTS>();
-            var orevents = rclient.GetAll().Where(x => x.CalendarId == entity.Id);
+            IEnumerable<REL_CALENDARS_EVENTS> revents = null;
 
-            this.manager.ExecTrans (transaction =>
+            try
             {
-                try
+                var keys = this.redis.As<VCALENDAR>().GetAllKeys();
+                if (!keys.NullOrEmpty()) this.redis.Watch(keys.ToArray());
+                
+                //save events of calendar
+                if (!events.NullOrEmpty())
                 {
-                    //var keys = this.redis.As<VCALENDAR>().GetAllKeys();
-                    //if (!keys.NullOrEmpty()) this.redis.Watch(keys.ToArray());
-
-                    if (!events.NullOrEmpty())
+                    this.EventRepository.SaveAll(events);
+                    revents = events.Select(x => new REL_CALENDARS_EVENTS
                     {
-                                               
+                        Id = this.KeyGenerator.GetNextKey(),
+                        CalendarId = entity.Id,
+                        EventId = x.Id
+                    });
+                }
+
+                //obtain existing event relations from data store
+                var orevents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => x.CalendarId == entity.Id);
+                this.manager.ExecTrans(transaction =>
+                {
+                    //save calendar-events relations
+                    if (!revents.NullOrEmpty())
+                    {
                         if (!orevents.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(revents.Except(orevents)));
                             var diffs = orevents.Except(revents).ToArray();
-                            if (!diffs.NullOrEmpty()) 
-                                transaction.QueueCommand( x => x.As<REL_CALENDARS_EVENTS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            if (!diffs.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_CALENDARS_EVENTS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(revents));
                     }
+                    
                     transaction.QueueCommand(x => x.Store(this.Dehydrate(entity)));
-                }
-                catch (ArgumentNullException) { throw; }
-                catch (RedisResponseException) 
-                {
-                    try {  transaction.Rollback(); }
-                    catch (RedisResponseException) { } 
-                    catch (RedisException) { }
-                    catch (Exception) {}
-                    throw;
-                }
-                catch (RedisException) 
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { }
-                    catch (RedisException) { }
-                    catch (Exception) { }
-                    throw;
-                }
-                catch (InvalidOperationException) 
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { }
-                    catch (RedisException) { }
-                    catch (Exception) { }
-                    throw;
-                }
-            });
+
+                });
+            }
+            catch (ArgumentNullException) { throw; }
+
+            catch (RedisResponseException)
+            {
+                throw;
+            }
+            catch (RedisException)
+            {
+                throw;
+            }
+            catch (InvalidOperationException)
+            {
+                throw;
+            }
         }
 
         public void Patch(VCALENDAR source, Expression<Func<VCALENDAR, object>> fields, IEnumerable<string> keys = null)

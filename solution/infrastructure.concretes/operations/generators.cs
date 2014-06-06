@@ -8,25 +8,36 @@ namespace reexmonkey.infrastructure.operations.concretes
     public class GuidKeyGenerator: IGuidKeyGenerator
     {
         private string seed = null;
+        private bool compact = false;
 
-        public GuidKeyGenerator()
+        public GuidKeyGenerator(bool compact = true)
         {
+            this.compact = compact;
             this.seed = string.Empty;
         }
 
-        public GuidKeyGenerator(string seed)
+        public GuidKeyGenerator(string seed, bool compact = true)
         {
             var pattern = @"^(\(|\{)?(?<block1>0?[x]?[0-9a-f]{8})[\-]{1}?(?<block2>0?[x]?[0-9a-f]{4})[\-]{1}?(?<block3>0?[x]?[0-9a-f]{4})[\-]{1}?(?<block4>0?[x]?[0-9a-f]{4})[\-]{1}?(?<block5>0?[x]?[0-9a-f]{12})(\)|\})?$";
             if (Regex.IsMatch(seed, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)) this.seed = seed;
             else throw new FormatException("seed does not match GUID format");
+            this.compact = compact;
         }
 
         public string GetNextKey()
         {
+            var key = string.Empty;
             try
             {
-                if (string.IsNullOrEmpty(this.seed)) return (Guid.NewGuid() == Guid.Empty) ? GetNextKey() : Guid.NewGuid().ToString();
-                return new Guid(this.seed).ToString();
+                if (string.IsNullOrEmpty(this.seed)) 
+                    key = (Guid.NewGuid() == Guid.Empty) 
+                        ? GetNextKey() 
+                        : Guid.NewGuid().ToString();
+                else key = new Guid(this.seed).ToString();
+               
+                return compact
+                   ?key.Replace("-", string.Empty)
+                   :key;
             }
             catch (ArgumentNullException) { throw; }
             catch (FormatException) { throw; }
