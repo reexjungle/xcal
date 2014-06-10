@@ -475,7 +475,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                 var aalarms = entity.AudioAlarms;
                 var dalarms = entity.DisplayAlarms;
                 var ealarms = entity.EmailAlarms;
-                var ianaprops = entity.IANAProperties;
+                var ianas = entity.IANAProperties;
                 var xprops = entity.XProperties;
 
                 #endregion
@@ -489,34 +489,314 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                 IEnumerable<REL_EVENTS_ATTACHBINS> rattachbins = null;
                 IEnumerable<REL_EVENTS_ATTACHURIS> rattachuris = null;
                 IEnumerable<REL_EVENTS_CONTACTS> rcontacts = null;
-                //IEnumerable<REL_EVENTS_CONTACTS 
-                
+                IEnumerable<REL_EVENTS_COMMENTS> rcomments = null;
+                IEnumerable<REL_EVENTS_RDATES> rrdates = null;
+                IEnumerable<REL_EVENTS_EXDATES> rexdates = null; 
+                IEnumerable<REL_EVENTS_RELATEDTOS> rrelatedtos = null; 
+                IEnumerable<REL_EVENTS_RESOURCES> rresources = null;   
+                IEnumerable<REL_EVENTS_REQSTATS> rreqstats = null;
+                IEnumerable<REL_EVENTS_AUDIO_ALARMS> raalarms = null;  
+                IEnumerable<REL_EVENTS_DISPLAY_ALARMS> rdalarms = null; 
+                IEnumerable<REL_EVENTS_EMAIL_ALARMS> realarms = null;
+                IEnumerable<REL_EVENTS_IANA_PROPERTIES> rianas = null;
+                IEnumerable<REL_EVENTS_X_PROPERTIES> rxprops = null;
+
+                if(org != null)
+                {
+                    rorg = new REL_EVENTS_ORGANIZERS
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        OrganizerId = org.Id,
+                    };
+                }
+
+                if (rid != null)
+                {
+                    rrid = new REL_EVENTS_RECURRENCE_IDS
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        RecurrenceId_Id = org.Id,
+                    };
+                }
+
+                if (rrule != null)
+                {
+                    rrrule = new REL_EVENTS_RECURS
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        RecurrenceRuleId = org.Id,
+                    };
+                }
+
+                if (!attendees.NullOrEmpty())
+                {
+                    rattendees = attendees.Select( x =>  new REL_EVENTS_ATTENDEES
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        AttendeeId = x.Id,
+                    });
+                }
+
+                if (!attachbins.NullOrEmpty())
+                {
+                    rattachbins = attachbins.Select(x => new REL_EVENTS_ATTACHBINS
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        AttachmentId = x.Id,
+                    });
+                }
+
+                if (!attachuris.NullOrEmpty())
+                {
+                    rattachuris = attachuris.Select(x => new REL_EVENTS_ATTACHURIS
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        AttachmentId = x.Id,
+                    });
+                }
+
+                if (!contacts.NullOrEmpty())
+                {
+                    rcontacts = contacts.Select(x => new REL_EVENTS_CONTACTS
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        ContactId = x.Id,
+                    });
+                }
+
+                if (!comments.NullOrEmpty())
+                {
+                    rcomments = comments.Select(x => new REL_EVENTS_COMMENTS
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        CommentId = x.Id,
+                    });
+                }
+
+                if (!rdates.NullOrEmpty())
+                {
+                    rrdates = rdates.Select(x => new REL_EVENTS_RDATES
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        RecurrenceDateId = x.Id,
+                    });
+                }
+
+                if (!exdates.NullOrEmpty())
+                {
+                    rexdates = exdates.Select(x => new REL_EVENTS_EXDATES
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        ExceptionDateId = x.Id,
+                    });
+                }
+
+                if (!relatedtos.NullOrEmpty())
+                {
+                    rrelatedtos = relatedtos.Select(x => new REL_EVENTS_RELATEDTOS
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        RelatedToId = x.Id,
+                    });
+                }
+
+                if (!resources.NullOrEmpty())
+                {
+                    rresources = resources.Select(x => new REL_EVENTS_RESOURCES
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        ResourcesId = x.Id,
+                    });
+                }
+
+                if (!reqstats.NullOrEmpty())
+                {
+                    rreqstats = reqstats.Select(x => new REL_EVENTS_REQSTATS
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        ReqStatsId = x.Id,
+                    });
+                }
+
+                if (!aalarms.NullOrEmpty())
+                {
+                    this.AudioAlarmRepository.SaveAll(aalarms);
+                    raalarms = aalarms.Select(x => new REL_EVENTS_AUDIO_ALARMS
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        AlarmId = x.Id
+                    });
+                }
+
+
+                if (!dalarms.NullOrEmpty())
+                {
+                    this.DisplayAlarmRepository.SaveAll(dalarms);
+                    rdalarms = dalarms.Select(x => new REL_EVENTS_DISPLAY_ALARMS
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        AlarmId = x.Id
+                    });
+                }
+
+                if (!dalarms.NullOrEmpty())
+                {
+                    this.DisplayAlarmRepository.SaveAll(dalarms);
+                    rdalarms = dalarms.Select(x => new REL_EVENTS_DISPLAY_ALARMS
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        AlarmId = x.Id
+                    });
+                }
+
+                if (!ealarms.NullOrEmpty())
+                {
+                    this.EmailAlarmRepository.SaveAll(ealarms);
+                    realarms = ealarms.Select(x => new REL_EVENTS_EMAIL_ALARMS
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        AlarmId = x.Id
+                    });
+                }
+
+                if (!ianas.NullOrEmpty())
+                {
+                    rianas = ianas.Select(x => new REL_EVENTS_IANA_PROPERTIES
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        IanaPropertyId = x.Key
+                    });
+                }
+
+                if (!xprops.NullOrEmpty())
+                {
+                    rxprops = xprops.Select(x => new REL_EVENTS_X_PROPERTIES
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        XPropertyId = x.Key
+                    });
+                }
+
+                var ororgs = this.redis.As<REL_EVENTS_ORGANIZERS>().GetAll().Where(x => x.EventId == entity.Id);
+                var orrids = this.redis.As<REL_EVENTS_RECURRENCE_IDS>().GetAll().Where(x => x.EventId == entity.Id);
+                var orrrules = this.redis.As<REL_EVENTS_RECURS>().GetAll().Where(x => x.EventId == entity.Id);
+                var orattendees = this.redis.As<REL_EVENTS_ATTENDEES>().GetAll().Where(x => x.EventId == entity.Id);
+                var orattachbins = this.redis.As<REL_EVENTS_ATTACHBINS>().GetAll().Where(x => x.EventId == entity.Id);
+                var orattachuris = this.redis.As<REL_EVENTS_ATTACHURIS>().GetAll().Where(x => x.EventId == entity.Id);
+                var orcontacts = this.redis.As<REL_EVENTS_CONTACTS>().GetAll().Where(x => x.EventId == entity.Id);
+                var orcomments = this.redis.As<REL_EVENTS_COMMENTS>().GetAll().Where(x => x.EventId == entity.Id);
+                var orrdates = this.redis.As<REL_EVENTS_RDATES>().GetAll().Where(x => x.EventId == entity.Id);
+                var orexdates = this.redis.As<REL_EVENTS_EXDATES>().GetAll().Where(x => x.EventId == entity.Id);
+                var orelatedtos = this.redis.As<REL_EVENTS_RELATEDTOS>().GetAll().Where(x => x.EventId == entity.Id);
+                var oresources = this.redis.As<REL_EVENTS_RESOURCES>().GetAll().Where(x => x.EventId == entity.Id);
+                var oreqstats = this.redis.As<REL_EVENTS_REQSTATS>().GetAll().Where(x => x.EventId == entity.Id);
+                var oraalarms = this.redis.As<REL_EVENTS_AUDIO_ALARMS>().GetAll().Where(x => x.EventId == entity.Id);
+                var ordalarms = this.redis.As<REL_EVENTS_DISPLAY_ALARMS>().GetAll().Where(x => x.EventId == entity.Id);
+                var orealarms = this.redis.As<REL_EVENTS_EMAIL_ALARMS>().GetAll().Where(x => x.EventId == entity.Id);
+                var oriana = this.redis.As<REL_EVENTS_IANA_PROPERTIES>().GetAll().Where(x => x.EventId == entity.Id);
+                var orxprops = this.redis.As<REL_EVENTS_X_PROPERTIES>().GetAll().Where(x => x.EventId == entity.Id);
+
+
                 #endregion
 
                 #region save attributes and  relations
 
+                this.manager.ExecTrans(transaction =>
+                {
+                    if (org != null)
+                    {
+                        transaction.QueueCommand(x => x.Store(org));
+                        if (!ororgs.NullOrEmpty())
+                        {
+                            if (!ororgs.Contains(rorg)) transaction.QueueCommand(x => x.Store(rorg));
+                            var diffs = ororgs.Except(rorg.ToSingleton()).ToArray();
+                            if (!diffs.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_ORGANIZERS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                        }
+                        else transaction.QueueCommand(x => x.Store(rorg));
+                    }
 
+                    if (rid != null)
+                    {
+                        transaction.QueueCommand(x => x.Store(rid));
+                        if (!orrids.NullOrEmpty())
+                        {
+                            if (!orrids.Contains(rrid)) transaction.QueueCommand(x => x.Store(rrid));
+                            var diffs = ororgs.Except(rorg.ToSingleton()).ToArray();
+                            if (!diffs.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_RECURRENCE_IDS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                        }
+                        else transaction.QueueCommand(x => x.Store(rrid));
+                    }
+
+                    if (rrule != null)
+                    {
+                        transaction.QueueCommand(x => x.Store(rrule));
+                        if (!orrrules.NullOrEmpty())
+                        {
+                            if (!orrrules.Contains(rrrule)) transaction.QueueCommand(x => x.Store(rrrule));
+                            var diffs = orrrules.Except(rrrule.ToSingleton()).ToArray();
+                            if (!diffs.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_RECURS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                        }
+                        else transaction.QueueCommand(x => x.Store(rrrule));
+                    }
+
+
+                    if (!rattendees.NullOrEmpty())
+                    {
+                        transaction.QueueCommand(x => x.StoreAll(attendees));
+                        if (!orattendees.NullOrEmpty())
+                        {
+                            transaction.QueueCommand(x => x.StoreAll(rattendees.Except(orattendees)));
+                            var diffs = orattendees.Except(rattendees).ToArray();
+                            if (!diffs.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_ATTENDEES>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                        }
+                        else transaction.QueueCommand(x => x.StoreAll(rattendees));
+                    }
+
+                    if (!rattachbins.NullOrEmpty())
+                    {
+                        transaction.QueueCommand(x => x.StoreAll(attachbins));
+                        if (!orattachbins.NullOrEmpty())
+                        {
+                            transaction.QueueCommand(x => x.StoreAll(rattachbins.Except(orattachbins)));
+                            var diffs = orattachbins.Except(rattachbins).ToArray();
+                            if (!diffs.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_ATTACHBINS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                        }
+                        else transaction.QueueCommand(x => x.StoreAll(rattendees));
+                    }
+
+                });
 
                 #endregion
 
-                this.manager.ExecTrans(transaction =>
-                {
-
-                });
             }
             catch (ArgumentNullException) { throw; }
-            catch (RedisResponseException)
-            {
-                throw;
-            }
-            catch (RedisException)
-            {
-                throw;
-            }
-            catch (InvalidOperationException)
-            {
-                throw;
-            }
+            catch (RedisResponseException) { throw; }
+            catch (RedisException) {  throw; }
+            catch (InvalidOperationException) { throw; }
 
         }
 

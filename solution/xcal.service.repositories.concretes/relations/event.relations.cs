@@ -858,4 +858,110 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
+    public class REL_EVENTS_IANA_PROPERTIES: IEquatable<REL_EVENTS_IANA_PROPERTIES>
+    {
+        /// <summary>
+        /// Gets or sets the unique identifier of the event-iana property relation
+        /// </summary>
+        [Index(true)]
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the related event entity
+        /// </summary>
+        [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string EventId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the related alarm entity
+        /// </summary>
+        [ForeignKey(typeof(IANA_PROPERTY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string IanaPropertyId { get; set; }
+
+        public bool Equals(REL_EVENTS_IANA_PROPERTIES other)
+        {
+            if (other == null) return false;
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
+                this.IanaPropertyId.Equals(other.IanaPropertyId, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            var rel = obj as REL_EVENTS_IANA_PROPERTIES;
+            if (rel == null) return false;
+            return this.Equals(rel);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.EventId.GetHashCode() ^ this.IanaPropertyId.GetHashCode();
+        }
+
+        public static bool operator ==(REL_EVENTS_IANA_PROPERTIES x, REL_EVENTS_IANA_PROPERTIES y)
+        {
+            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            return x.Equals(y);
+        }
+
+        public static bool operator !=(REL_EVENTS_IANA_PROPERTIES x, REL_EVENTS_IANA_PROPERTIES y)
+        {
+            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            return !x.Equals(y);
+        }
+    }
+
+    public class REL_EVENTS_X_PROPERTIES: IEquatable<REL_EVENTS_X_PROPERTIES>
+    {
+        /// <summary>
+        /// Gets or sets the unique identifier of the event-x property relation
+        /// </summary>
+        [Index(true)]
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the related event entity
+        /// </summary>
+        [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string EventId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the related alarm entity
+        /// </summary>
+        [ForeignKey(typeof(X_PROPERTY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string XPropertyId { get; set; }
+
+        public bool Equals(REL_EVENTS_X_PROPERTIES other)
+        {
+            if (other == null) return false;
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
+                this.XPropertyId.Equals(other.XPropertyId, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            var rel = obj as REL_EVENTS_IANA_PROPERTIES;
+            if (rel == null) return false;
+            return this.Equals(rel);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.EventId.GetHashCode() ^ this.XPropertyId.GetHashCode();
+        }
+
+        public static bool operator ==(REL_EVENTS_X_PROPERTIES x, REL_EVENTS_X_PROPERTIES y)
+        {
+            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            return x.Equals(y);
+        }
+
+        public static bool operator !=(REL_EVENTS_X_PROPERTIES x, REL_EVENTS_X_PROPERTIES y)
+        {
+            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            return !x.Equals(y);
+        }
+    }
+
 }
