@@ -38,7 +38,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// <returns>A depopulated calendar</returns>
         VCALENDAR Dehydrate(VCALENDAR full);
 
-        IEnumerable<VCALENDAR> Dehydrate(IEnumerable<VCALENDAR> full);
+        IEnumerable<VCALENDAR> DehydrateAll(IEnumerable<VCALENDAR> full);
     }
 
     /// <summary>

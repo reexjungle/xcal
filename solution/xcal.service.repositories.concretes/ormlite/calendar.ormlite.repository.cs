@@ -428,7 +428,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (Exception) { throw; }
         }
 
-        public IEnumerable<VCALENDAR> Dehydrate(IEnumerable<VCALENDAR> full)
+        public IEnumerable<VCALENDAR> DehydrateAll(IEnumerable<VCALENDAR> full)
         {
             try
             {
