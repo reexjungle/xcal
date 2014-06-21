@@ -75,7 +75,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                     .Where(x => x.CalendarId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!revents.NullOrEmpty())
                 {
-                    var events = this.EventRepository.FindAll(revents.Select(x => x.EventId).ToList());
+                    var keys = revents.Select(x => x.EventId).ToList();
+                    var events = this.EventRepository.FindAll(keys);
                     full.Events.AddRangeComplement(events);
                 }
             }
@@ -154,11 +155,12 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
         public void Save(VCALENDAR entity)
         {
-            var events = entity.Events;
-            IEnumerable<REL_CALENDARS_EVENTS> revents = null;
-
             try
             {
+           
+                var events = entity.Events;
+                IEnumerable<REL_CALENDARS_EVENTS> revents = null;
+
                 var keys = this.redis.As<VCALENDAR>().GetAllKeys();
                 if (!keys.NullOrEmpty()) this.redis.Watch(keys.ToArray());
                 
@@ -183,10 +185,12 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                     {
                         if (!orevents.NullOrEmpty())
                         {
-                            transaction.QueueCommand(x => x.StoreAll(revents.Except(orevents)));
-                            var diffs = orevents.Except(revents).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_CALENDARS_EVENTS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = revents.Except(orevents).ToArray();
+                            if(!res.NullOrEmpty()) transaction.QueueCommand(x => x.StoreAll(res));
+                            res = orevents.Except(revents).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_CALENDARS_EVENTS>()
+                                    .DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(revents));
                     }
@@ -338,7 +342,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!revents.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_EVENTS>()
                             .DeleteByIds(revents.Where(x => x.CalendarId.Equals(key, StringComparison.OrdinalIgnoreCase))));
 
-                        if (!revents.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_TODOS>()
+                        if (!rtodos.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_TODOS>()
                             .DeleteByIds(rtodos.Where(x => x.CalendarId.Equals(key, StringComparison.OrdinalIgnoreCase))));
 
                         if (!rfreebusies.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_FREEBUSIES>()
@@ -386,7 +390,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                     {
                         Id = this.KeyGenerator.GetNextKey(),
                         CalendarId = x.Id,
-                        EventId = x.Id
+                        EventId = y.Id
                     }));
                 }
 

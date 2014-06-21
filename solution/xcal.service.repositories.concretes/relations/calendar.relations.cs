@@ -53,7 +53,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_CALENDARS_EVENTS x, REL_CALENDARS_EVENTS y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }

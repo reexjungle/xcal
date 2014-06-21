@@ -121,7 +121,7 @@ namespace xcal.application.client.console.local.presentation.logic
             //this.client.Put(new UpdateCalendars { Calendars = calendars.ToList() });
             
             retrieved = this.client.Post(new FindCalendars { CalendarIds = keys });
-
+            this.client.Delete(new DeleteCalendar { CalendarId = found.Id });
             //this.client.Patch(new PatchCalendars
             //{
             //    Scale = CALSCALE.JULIAN,

@@ -728,9 +728,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!ororgs.NullOrEmpty())
                         {
                             if (!ororgs.Contains(rorg)) transaction.QueueCommand(x => x.Store(rorg));
-                            var diffs = ororgs.Except(rorg.ToSingleton()).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_ORGANIZERS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = ororgs.Except(rorg.ToSingleton()).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_ORGANIZERS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.Store(rorg));
                     }
@@ -741,9 +741,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orrids.NullOrEmpty())
                         {
                             if (!orrids.Contains(rrid)) transaction.QueueCommand(x => x.Store(rrid));
-                            var diffs = ororgs.Except(rorg.ToSingleton()).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_RECURRENCE_IDS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = ororgs.Except(rorg.ToSingleton()).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_RECURRENCE_IDS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.Store(rrid));
                     }
@@ -754,9 +754,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orrrules.NullOrEmpty())
                         {
                             if (!orrrules.Contains(rrrule)) transaction.QueueCommand(x => x.Store(rrrule));
-                            var diffs = orrrules.Except(rrrule.ToSingleton()).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_RECURS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orrrules.Except(rrrule.ToSingleton()).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_RECURS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.Store(rrrule));
                     }
@@ -768,9 +768,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orattendees.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rattendees.Except(orattendees)));
-                            var diffs = orattendees.Except(rattendees).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_ATTENDEES>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orattendees.Except(rattendees).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_ATTENDEES>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rattendees));
                     }
@@ -781,9 +781,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orattachbins.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rattachbins.Except(orattachbins)));
-                            var diffs = orattachbins.Except(rattachbins).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_ATTACHBINS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orattachbins.Except(rattachbins).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_ATTACHBINS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rattendees));
                     }
@@ -793,9 +793,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orattachuris.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rattachuris.Except(orattachuris)));
-                            var diffs = orattachuris.Except(rattachuris).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_ATTACHURIS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orattachuris.Except(rattachuris).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_ATTACHURIS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rattachuris));
                     }
@@ -805,9 +805,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orcontacts.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rcontacts.Except(orcontacts)));
-                            var diffs = orcontacts.Except(rcontacts).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_CONTACTS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orcontacts.Except(rcontacts).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_CONTACTS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rcontacts));
                     }
@@ -817,9 +817,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orcomments.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rcomments.Except(orcomments)));
-                            var diffs = orcomments.Except(rcomments).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_COMMENTS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orcomments.Except(rcomments).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_COMMENTS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rcomments));
                     }
@@ -830,9 +830,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orrdates.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rrdates.Except(orrdates)));
-                            var diffs = orrdates.Except(rrdates).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_RDATES>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orrdates.Except(rrdates).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_RDATES>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rrdates));
                     }
@@ -843,9 +843,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orexdates.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rrdates.Except(orrdates)));
-                            var diffs = orrdates.Except(rrdates).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_EXDATES>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orrdates.Except(rrdates).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_EXDATES>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rrdates));
                     }
@@ -856,9 +856,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orrelatedtos.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rrelatedtos.Except(orrelatedtos)));
-                            var diffs = orrelatedtos.Except(rrelatedtos).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_RELATEDTOS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orrelatedtos.Except(rrelatedtos).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_RELATEDTOS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rrelatedtos));
                     }
@@ -869,9 +869,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orresources.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rresources.Except(orresources)));
-                            var diffs = orresources.Except(rresources).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_RESOURCES>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orresources.Except(rresources).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_RESOURCES>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rresources));
                     }
@@ -882,9 +882,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orreqstats.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rreqstats.Except(orreqstats)));
-                            var diffs = orreqstats.Except(rreqstats).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_REQSTATS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orreqstats.Except(rreqstats).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_REQSTATS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rreqstats));
                     }
@@ -894,9 +894,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!oraalarms.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(raalarms.Except(oraalarms)));
-                            var diffs = oraalarms.Except(raalarms).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_AUDIO_ALARMS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = oraalarms.Except(raalarms).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_AUDIO_ALARMS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(raalarms));
                     }
@@ -906,9 +906,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!ordalarms.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rdalarms.Except(ordalarms)));
-                            var diffs = ordalarms.Except(rdalarms).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_DISPLAY_ALARMS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = ordalarms.Except(rdalarms).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_DISPLAY_ALARMS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rdalarms));
                     }
@@ -918,9 +918,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!ordalarms.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(realarms.Except(orealarms)));
-                            var diffs = orealarms.Except(realarms).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_EMAIL_ALARMS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orealarms.Except(realarms).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_EMAIL_ALARMS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(realarms));
                     }
@@ -930,9 +930,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orianas.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rianas.Except(orianas)));
-                            var diffs = orianas.Except(rianas).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_IANA_PROPERTIES>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orianas.Except(rianas).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_IANA_PROPERTIES>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rianas));
                     }
@@ -942,9 +942,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orxprops.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rxprops.Except(orxprops)));
-                            var diffs = orxprops.Except(rxprops).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_X_PROPERTIES>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orxprops.Except(rxprops).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_X_PROPERTIES>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rxprops));
                     }
@@ -1334,10 +1334,12 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         transaction.QueueCommand(x => x.StoreAll(orgs));
                         if (!ororgs.NullOrEmpty())
                         {
-                            transaction.QueueCommand(x => x.StoreAll(rorgs.Except(rorgs)));
-                            var diffs = ororgs.Except(rorgs).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_ORGANIZERS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = rorgs.Except(ororgs).ToArray();
+                            if (!res.NullOrEmpty()) transaction.QueueCommand(x => x.StoreAll(rorgs.Except(rorgs)));
+                            res = ororgs.Except(rorgs).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_ORGANIZERS>()
+                                    .DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rorgs));
                     }
@@ -1348,9 +1350,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orrids.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rrids.Except(orrids)));
-                            var diffs = orrids.Except(rrids).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_RECURRENCE_IDS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orrids.Except(rrids).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_RECURRENCE_IDS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rrids));
                     }
@@ -1361,9 +1363,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orrrules.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rrrules.Except(orrrules)));
-                            var diffs = orrrules.Except(rrrules).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_RECURS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orrrules.Except(rrrules).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_RECURS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rrrules));
                     }
@@ -1375,9 +1377,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orattendees.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rattendees.Except(orattendees)));
-                            var diffs = orattendees.Except(rattendees).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_ATTENDEES>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orattendees.Except(rattendees).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_ATTENDEES>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rattendees));
                     }
@@ -1388,9 +1390,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orattachbins.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rattachbins.Except(orattachbins)));
-                            var diffs = orattachbins.Except(rattachbins).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_ATTACHBINS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orattachbins.Except(rattachbins).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_ATTACHBINS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rattendees));
                     }
@@ -1400,9 +1402,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orattachuris.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rattachuris.Except(orattachuris)));
-                            var diffs = orattachuris.Except(rattachuris).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_ATTACHURIS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orattachuris.Except(rattachuris).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_ATTACHURIS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rattachuris));
                     }
@@ -1412,9 +1414,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orcontacts.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rcontacts.Except(orcontacts)));
-                            var diffs = orcontacts.Except(rcontacts).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_CONTACTS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orcontacts.Except(rcontacts).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_CONTACTS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rcontacts));
                     }
@@ -1424,9 +1426,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orcomments.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rcomments.Except(orcomments)));
-                            var diffs = orcomments.Except(rcomments).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_COMMENTS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orcomments.Except(rcomments).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_COMMENTS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rcomments));
                     }
@@ -1437,9 +1439,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orrdates.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rrdates.Except(orrdates)));
-                            var diffs = orrdates.Except(rrdates).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_RDATES>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orrdates.Except(rrdates).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_RDATES>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rrdates));
                     }
@@ -1450,9 +1452,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orexdates.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rrdates.Except(orrdates)));
-                            var diffs = orrdates.Except(rrdates).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_EXDATES>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orrdates.Except(rrdates).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_EXDATES>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rrdates));
                     }
@@ -1463,9 +1465,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orrelatedtos.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rrelatedtos.Except(orrelatedtos)));
-                            var diffs = orrelatedtos.Except(rrelatedtos).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_RELATEDTOS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orrelatedtos.Except(rrelatedtos).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_RELATEDTOS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rrelatedtos));
                     }
@@ -1476,9 +1478,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orresources.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rresources.Except(orresources)));
-                            var diffs = orresources.Except(rresources).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_RESOURCES>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orresources.Except(rresources).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_RESOURCES>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rresources));
                     }
@@ -1489,9 +1491,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orreqstats.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rreqstats.Except(orreqstats)));
-                            var diffs = orreqstats.Except(rreqstats).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_REQSTATS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orreqstats.Except(rreqstats).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_REQSTATS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rreqstats));
                     }
@@ -1501,9 +1503,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!oraalarms.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(raalarms.Except(oraalarms)));
-                            var diffs = oraalarms.Except(raalarms).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_AUDIO_ALARMS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = oraalarms.Except(raalarms).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_AUDIO_ALARMS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(raalarms));
                     }
@@ -1513,9 +1515,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!ordalarms.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rdalarms.Except(ordalarms)));
-                            var diffs = ordalarms.Except(rdalarms).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_DISPLAY_ALARMS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = ordalarms.Except(rdalarms).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_DISPLAY_ALARMS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rdalarms));
                     }
@@ -1525,9 +1527,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!ordalarms.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(realarms.Except(orealarms)));
-                            var diffs = orealarms.Except(realarms).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_EMAIL_ALARMS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orealarms.Except(realarms).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_EMAIL_ALARMS>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(realarms));
                     }
@@ -1537,9 +1539,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orianas.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rianas.Except(orianas)));
-                            var diffs = orianas.Except(rianas).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_IANA_PROPERTIES>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orianas.Except(rianas).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_IANA_PROPERTIES>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rianas));
                     }
@@ -1549,12 +1551,15 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         if (!orxprops.NullOrEmpty())
                         {
                             transaction.QueueCommand(x => x.StoreAll(rxprops.Except(orxprops)));
-                            var diffs = orxprops.Except(rxprops).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_EVENTS_X_PROPERTIES>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
+                            var res = orxprops.Except(rxprops).ToArray();
+                            if (!res.NullOrEmpty())
+                                transaction.QueueCommand(x => x.As<REL_EVENTS_X_PROPERTIES>().DeleteByIds(res.Select(y => y.Id).ToArray()));
                         }
                         else transaction.QueueCommand(x => x.StoreAll(rxprops));
                     }
+
+
+                    transaction.QueueCommand(x => x.StoreAll(this.DehydrateAll(entities)));
 
                 });
 
