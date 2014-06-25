@@ -13,6 +13,7 @@ using reexmonkey.infrastructure.io.concretes;
 using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.xcal.service.repositories.concretes.relations;
 using reexmonkey.infrastructure.operations.contracts;
+using reexmonkey.technical.data.concretes.extensions.redis;
 
 namespace reexmonkey.xcal.service.repositories.concretes.redis
 {
@@ -157,46 +158,26 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
         {
             try
             {
-           
-                var events = entity.Events;
-                IEnumerable<REL_CALENDARS_EVENTS> revents = null;
-
                 var keys = this.redis.As<VCALENDAR>().GetAllKeys();
                 if (!keys.NullOrEmpty()) this.redis.Watch(keys.ToArray());
-                
-                //save events of calendar
-                if (!events.NullOrEmpty())
-                {
-                    this.EventRepository.SaveAll(events);
-                    revents = events.Select(x => new REL_CALENDARS_EVENTS
-                    {
-                        Id = this.KeyGenerator.GetNextKey(),
-                        CalendarId = entity.Id,
-                        EventId = x.Id
-                    });
-                }
-
-                //obtain existing event relations from data store
-                var orevents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => x.CalendarId == entity.Id);
                 this.manager.ExecTrans(transaction =>
                 {
-                    //save calendar-events relations
-                    if (!revents.NullOrEmpty())
-                    {
-                        if (!orevents.NullOrEmpty())
-                        {
-                            var res = revents.Except(orevents).ToArray();
-                            if(!res.NullOrEmpty()) transaction.QueueCommand(x => x.StoreAll(res));
-                            res = orevents.Except(revents).ToArray();
-                            if (!res.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_CALENDARS_EVENTS>()
-                                    .DeleteByIds(res.Select(y => y.Id).ToArray()));
-                        }
-                        else transaction.QueueCommand(x => x.StoreAll(revents));
-                    }
-                    
-                    transaction.QueueCommand(x => x.Store(this.Dehydrate(entity)));
 
+                    if (!entity.Events.NullOrEmpty())
+                    {
+                        var events = entity.Events;
+                        this.EventRepository.SaveAll(events);
+                        var revents = events.Select(x => new REL_CALENDARS_EVENTS
+                        {
+                            Id = this.KeyGenerator.GetNextKey(),
+                            CalendarId = entity.Id,
+                            EventId = x.Id
+                        });
+
+                        var orevents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => x.CalendarId == entity.Id);
+                        this.redis.SynchronizeAll<REL_CALENDARS_EVENTS>(revents, orevents, transaction);
+                    }
+                    transaction.QueueCommand(x => x.Store(this.Dehydrate(entity)));
                 });
             }
             catch (ArgumentNullException) { throw; }
@@ -252,35 +233,21 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                     Expression<Func<VCALENDAR, object>> eventsexr = y => y.Events;
                     if (selection.Contains(eventsexr.GetMemberName()))
                     {
-                        IEnumerable<REL_CALENDARS_EVENTS> revents = null;
                         var events = source.Events;
-                        //save events of calendar
-                        if (!events.NullOrEmpty())
-                        {
-                            this.EventRepository.SaveAll(events);
-                            revents = keys.SelectMany(x => events.Select(y => new REL_CALENDARS_EVENTS
-                            {
-                                Id = this.KeyGenerator.GetNextKey(),
-                                CalendarId = x,
-                                EventId = y.Id
-                            }));
-                        }
-
-                        //obtain existing event relations from data store
-                        var orevents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => keys.Contains(x.CalendarId));
                         this.manager.ExecTrans(transaction =>
                         {
-                            //save calendar-events relations
-                            if (!revents.NullOrEmpty())
+                            if (!events.NullOrEmpty())
                             {
-                                if (!orevents.NullOrEmpty())
+                                this.EventRepository.SaveAll(events);
+                                var revents = keys.SelectMany(x => events.Select(y => new REL_CALENDARS_EVENTS
                                 {
-                                    transaction.QueueCommand(x => x.StoreAll(revents.Except(orevents)));
-                                    var diffs = orevents.Except(revents).ToArray();
-                                    if (!diffs.NullOrEmpty())
-                                        transaction.QueueCommand(x => x.As<REL_CALENDARS_EVENTS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
-                                }
-                                else transaction.QueueCommand(x => x.StoreAll(revents));
+                                    Id = this.KeyGenerator.GetNextKey(),
+                                    CalendarId = x,
+                                    EventId = y.Id
+                                }));
+
+                                var orevents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => keys.Contains(x.CalendarId));
+                                this.redis.SynchronizeAll<REL_CALENDARS_EVENTS>(revents, orevents, transaction);
                             }
                         });
                     }
@@ -374,42 +341,28 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
         public void SaveAll(IEnumerable<VCALENDAR> entities)
         {
-            var events = entities.SelectMany(x => x.Events);
-            IEnumerable<REL_CALENDARS_EVENTS> revents = null;
-
             try
             {
                 var keys = this.redis.As<VCALENDAR>().GetAllKeys();
                 if (!keys.NullOrEmpty()) this.redis.Watch(keys.ToArray());
 
                 //save events of calendar
-                if (!events.NullOrEmpty())
-                {
-                    this.EventRepository.SaveAll(events);
-                    revents = entities.SelectMany(x => x.Events.Select(y => new REL_CALENDARS_EVENTS
-                    {
-                        Id = this.KeyGenerator.GetNextKey(),
-                        CalendarId = x.Id,
-                        EventId = y.Id
-                    }));
-                }
-
-                //obtain existing event relations from data store
-                var okeys = entities.Select(x => x.Id);
-                var orevents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => okeys.Contains(x.CalendarId));
+                var events = entities.SelectMany(x => x.Events);
                 this.manager.ExecTrans(transaction =>
                 {
-                    //save calendar-events relations
-                    if (!revents.NullOrEmpty())
+                    if (!events.NullOrEmpty())
                     {
-                        if (!orevents.NullOrEmpty())
+                        this.EventRepository.SaveAll(events);
+                        var revents = entities.SelectMany(x => x.Events.Select(y => new REL_CALENDARS_EVENTS
                         {
-                            transaction.QueueCommand(x => x.StoreAll(revents.Except(orevents)));
-                            var diffs = orevents.Except(revents).ToArray();
-                            if (!diffs.NullOrEmpty())
-                                transaction.QueueCommand(x => x.As<REL_CALENDARS_EVENTS>().DeleteByIds(diffs.Select(y => y.Id).ToArray()));
-                        }
-                        else transaction.QueueCommand(x => x.StoreAll(revents));
+                            Id = this.KeyGenerator.GetNextKey(),
+                            CalendarId = x.Id,
+                            EventId = y.Id
+                        }));
+
+                        var okeys = entities.Select(x => x.Id);
+                        var orevents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => okeys.Contains(x.CalendarId));
+                        this.redis.SynchronizeAll<REL_CALENDARS_EVENTS>(revents, orevents, transaction);
                     }
 
                     transaction.QueueCommand(x => x.StoreAll(this.DehydrateAll(entities)));

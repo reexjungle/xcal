@@ -201,10 +201,10 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             this.client.Post(new AddCalendar { Calendar = calendar });
 
             var retrieved = this.client.Get(new FindCalendar { CalendarId = calendar.Id });
-            //Assert.AreEqual(retrieved.Calscale, CALSCALE.GREGORIAN);
-            //Assert.AreEqual(retrieved.ProdId, calendar.ProdId);
-            //Assert.AreEqual(retrieved.Events.Count, 5);
-            //Assert.AreEqual(retrieved, calendar);
+            Assert.AreEqual(retrieved.Calscale, CALSCALE.GREGORIAN);
+            Assert.AreEqual(retrieved.ProdId, calendar.ProdId);
+            Assert.AreEqual(retrieved.Events.Count, 5);
+            Assert.AreEqual(retrieved, calendar);
 
             calendar.Method = METHOD.REQUEST;
             calendar.Version = "3.0";

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ServiceStack.Redis;
+using reexmonkey.foundation.essentials.contracts;
+using reexmonkey.foundation.essentials.concretes;
 
 namespace reexmonkey.technical.data.concretes.extensions.redis
 {
@@ -11,5 +14,27 @@ namespace reexmonkey.technical.data.concretes.extensions.redis
         {
             return string.Format("urn:{0}:{1}", typeof(T).Name.ToLowerInvariant(), key);
         }
+
+        public static void SynchronizeAll<T, Tkey>(this IRedisClient redis, IEnumerable<T> entities, IEnumerable<T> oentities, IRedisTransaction transaction)
+            where Tkey: IEquatable<Tkey>, IComparable<Tkey>
+            where T: class, IContainsKey<Tkey>, new()
+        {
+            if (!oentities.NullOrEmpty())
+            {
+                var incoming = entities.Except(oentities).ToArray();
+                if (!incoming.NullOrEmpty()) transaction.QueueCommand(x => x.StoreAll(incoming));
+                var outgoing = oentities.Except(entities).ToArray();
+                if (!outgoing.NullOrEmpty())
+                    transaction.QueueCommand(x => x.As<T>().DeleteByIds(outgoing.Select(y => y.Id).ToArray()));
+            }
+            else transaction.QueueCommand(x => x.StoreAll(entities));
+        }
+
+        public static void SynchronizeAll<T>(this IRedisClient redis, IEnumerable<T> entities, IEnumerable<T> oentities, IRedisTransaction transaction)
+    where T : class, IContainsKey<string>, new()
+        {
+            redis.SynchronizeAll<T, string>(entities, oentities, transaction);
+        }
+
     }
 }

@@ -4,10 +4,11 @@ using System.Runtime.Serialization;
 using ServiceStack.OrmLite;
 using ServiceStack.DataAnnotations;
 using reexmonkey.xcal.domain.models;
+using reexmonkey.foundation.essentials.contracts;
 
 namespace reexmonkey.xcal.service.repositories.concretes.relations
 {
-    public class REL_EVENTS_ORGANIZERS :IEquatable<REL_EVENTS_ORGANIZERS>
+    public class REL_EVENTS_ORGANIZERS :IEquatable<REL_EVENTS_ORGANIZERS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-organizer relation
@@ -60,7 +61,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_RECURRENCE_IDS: IEquatable<REL_EVENTS_RECURRENCE_IDS>
+    public class REL_EVENTS_RECURRENCE_IDS : IEquatable<REL_EVENTS_RECURRENCE_IDS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-recurrence ID relation
@@ -113,7 +114,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_RECURS: IEquatable<REL_EVENTS_RECURS>
+    public class REL_EVENTS_RECURS : IEquatable<REL_EVENTS_RECURS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-recurrence relation
@@ -166,7 +167,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_ATTACHBINS: IEquatable<REL_EVENTS_ATTACHBINS>
+    public class REL_EVENTS_ATTACHBINS : IEquatable<REL_EVENTS_ATTACHBINS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
@@ -219,7 +220,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_ATTACHURIS : IEquatable<REL_EVENTS_ATTACHURIS>
+    public class REL_EVENTS_ATTACHURIS : IEquatable<REL_EVENTS_ATTACHURIS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
@@ -272,7 +273,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_ATTENDEES: IEquatable<REL_EVENTS_ATTENDEES>
+    public class REL_EVENTS_ATTENDEES : IEquatable<REL_EVENTS_ATTENDEES>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
@@ -325,7 +326,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_COMMENTS: IEquatable<REL_EVENTS_COMMENTS>
+    public class REL_EVENTS_COMMENTS : IEquatable<REL_EVENTS_COMMENTS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-comment relation
@@ -378,7 +379,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_CONTACTS: IEquatable<REL_EVENTS_CONTACTS>
+    public class REL_EVENTS_CONTACTS : IEquatable<REL_EVENTS_CONTACTS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-contact relation
@@ -431,7 +432,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_RDATES: IEquatable<REL_EVENTS_RDATES>
+    public class REL_EVENTS_RDATES : IEquatable<REL_EVENTS_RDATES>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-recurrence date relation
@@ -484,7 +485,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_EXDATES: IEquatable<REL_EVENTS_EXDATES>
+    public class REL_EVENTS_EXDATES : IEquatable<REL_EVENTS_EXDATES>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-exception date relation
@@ -537,7 +538,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_RELATEDTOS: IEquatable<REL_EVENTS_RELATEDTOS>
+    public class REL_EVENTS_RELATEDTOS : IEquatable<REL_EVENTS_RELATEDTOS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-related to relation
@@ -590,7 +591,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_REQSTATS: IEquatable<REL_EVENTS_REQSTATS>
+    public class REL_EVENTS_REQSTATS : IEquatable<REL_EVENTS_REQSTATS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-request status relation
@@ -643,7 +644,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_RESOURCES: IEquatable<REL_EVENTS_RESOURCES>
+    public class REL_EVENTS_RESOURCES : IEquatable<REL_EVENTS_RESOURCES>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-resources relation
@@ -699,7 +700,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_AUDIO_ALARMS: IEquatable<REL_EVENTS_AUDIO_ALARMS>
+    public class REL_EVENTS_AUDIO_ALARMS : IEquatable<REL_EVENTS_AUDIO_ALARMS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-alarm relation
@@ -752,7 +753,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_DISPLAY_ALARMS : IEquatable<REL_EVENTS_DISPLAY_ALARMS>
+    public class REL_EVENTS_DISPLAY_ALARMS : IEquatable<REL_EVENTS_DISPLAY_ALARMS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-alarm relation
@@ -805,7 +806,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_EMAIL_ALARMS : IEquatable<REL_EVENTS_EMAIL_ALARMS>
+    public class REL_EVENTS_EMAIL_ALARMS : IEquatable<REL_EVENTS_EMAIL_ALARMS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-alarm relation
@@ -858,7 +859,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_IANA_PROPERTIES: IEquatable<REL_EVENTS_IANA_PROPERTIES>
+    public class REL_EVENTS_IANA_PROPERTIES : IEquatable<REL_EVENTS_IANA_PROPERTIES>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-iana property relation
@@ -911,7 +912,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EVENTS_X_PROPERTIES: IEquatable<REL_EVENTS_X_PROPERTIES>
+    public class REL_EVENTS_X_PROPERTIES : IEquatable<REL_EVENTS_X_PROPERTIES>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-x property relation

@@ -2,10 +2,11 @@
 using ServiceStack.OrmLite;
 using ServiceStack.DataAnnotations;
 using reexmonkey.xcal.domain.models;
+using reexmonkey.foundation.essentials.contracts;
 
 namespace reexmonkey.xcal.service.repositories.concretes.relations
 {
-    public class REL_CALENDARS_EVENTS : IEquatable<REL_CALENDARS_EVENTS>
+    public class REL_CALENDARS_EVENTS : IEquatable<REL_CALENDARS_EVENTS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the calendar-event relation
@@ -58,7 +59,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_CALENDARS_TODOS: IEquatable<REL_CALENDARS_TODOS>
+    public class REL_CALENDARS_TODOS: IEquatable<REL_CALENDARS_TODOS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the calendar-todo relation
@@ -111,7 +112,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_CALENDARS_FREEBUSIES : IEquatable<REL_CALENDARS_FREEBUSIES>
+    public class REL_CALENDARS_FREEBUSIES : IEquatable<REL_CALENDARS_FREEBUSIES>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the calendar-free-busy relation
@@ -164,7 +165,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_CALENDARS_JOURNALS : IEquatable<REL_CALENDARS_JOURNALS>
+    public class REL_CALENDARS_JOURNALS : IEquatable<REL_CALENDARS_JOURNALS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the calendar-journal relation
@@ -217,7 +218,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_CALENDARS_TIMEZONES : IEquatable<REL_CALENDARS_TIMEZONES>
+    public class REL_CALENDARS_TIMEZONES : IEquatable<REL_CALENDARS_TIMEZONES>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the calendar-time zone relation
@@ -270,7 +271,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_CALENDARS_IANAC : IEquatable<REL_CALENDARS_IANAC>
+    public class REL_CALENDARS_IANAC : IEquatable<REL_CALENDARS_IANAC>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the calendar-time zone relation
@@ -323,7 +324,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_CALENDARS_XC : IEquatable<REL_CALENDARS_XC>
+    public class REL_CALENDARS_XC : IEquatable<REL_CALENDARS_XC>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the calendar-x-component relation

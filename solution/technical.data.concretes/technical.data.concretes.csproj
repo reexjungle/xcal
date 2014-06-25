@@ -86,6 +86,10 @@
       <Project>{eedf1367-a0fc-400a-a649-716261252b9e}</Project>
       <Name>foundation.essentials.concretes</Name>
     </ProjectReference>
+    <ProjectReference Include="..\foundation.essentials.contracts\foundation.essentials.contracts.csproj">
+      <Project>{0188be5c-bafa-4fac-b068-11dcf7cd918e}</Project>
+      <Name>foundation.essentials.contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\technical.data.contracts\technical.data.contracts.csproj">
       <Project>{3346db20-5077-4fc8-93ee-e4a590bcc1d0}</Project>
       <Name>technical.data.contracts</Name>
