@@ -145,9 +145,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
             if (skip == null && take == null) return this.redis.As<VCALENDAR>().GetAll();
             else
             {
-                var keys = this.redis.As<VCALENDAR>().GetAllKeys();
+                var keys = this.redis.As<VCALENDAR>().GetAllKeys().Where(k => !k.StartsWith("ids"));
                 var selected = !keys.NullOrEmpty()
-                    ? keys.Skip(skip.Value + 1).Take(take.Value)
+                    ? keys.Skip(skip.Value).Take(take.Value)
                     : keys;
                 var calendars = this.redis.As<VCALENDAR>().GetValues(selected.ToList());
                 return (!calendars.NullOrEmpty()) ? this.HydrateAll(calendars) : new List<VCALENDAR>();

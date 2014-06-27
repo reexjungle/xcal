@@ -109,7 +109,7 @@ namespace xcal.application.client.console.local.presentation.logic
             calendars[0].Calscale = CALSCALE.HEBREW;
 
             //remove 4 events and update
-            calendars[0].Events.RemoveRange(0, 4);
+            //calendars[0].Events.RemoveRange(0, 4);
 
 
 
@@ -122,6 +122,10 @@ namespace xcal.application.client.console.local.presentation.logic
             
             retrieved = this.client.Post(new FindCalendars { CalendarIds = keys });
             this.client.Delete(new DeleteCalendar { CalendarId = found.Id });
+
+            retrieved = this.client.Get(new GetCalendars { Page = 1, Size = 2 });
+            
+
             //this.client.Patch(new PatchCalendars
             //{
             //    Scale = CALSCALE.JULIAN,
