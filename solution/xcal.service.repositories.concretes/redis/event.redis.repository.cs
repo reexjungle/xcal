@@ -741,7 +741,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
         {
             try
             {
-                if (this.redis.As<VEVENT>().ContainsKey(key))
+                if (this.redis.As<VEVENT>().ContainsKey(UrnId.Create<VEVENT>(key).ToLower()))
                 {
                     var rattachbins = this.redis.As<REL_EVENTS_ATTACHBINS>().GetAll();
                     var rattachuris = this.redis.As<REL_EVENTS_ATTACHURIS>().GetAll();
@@ -1737,7 +1737,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
         public bool ContainsKey(string key)
         {
-            return this.redis.As<VEVENT>().ContainsKey(key);
+            return this.redis.As<VEVENT>().ContainsKey(UrnId.Create<VEVENT>(key).ToLower());
         }
 
         public bool ContainsKeys(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
