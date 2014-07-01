@@ -43,8 +43,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             this.conn = connection;
         }
 
-        //cleanup
-        public virtual void Dispose()
+        public void Dispose()
         {
             if (this.conn != null) this.conn.Dispose();
         }

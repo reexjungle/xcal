@@ -441,7 +441,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
         }
     }
 
-    public class DisplayAlarmOrmLiteRepository : IDisplayAlarmOrmLiteRepository
+    public class DisplayAlarmOrmLiteRepository : IDisplayAlarmOrmLiteRepository, IDisposable
     {
 
         private IDbConnectionFactory factory = null;
@@ -620,9 +620,14 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
         }
+
+        public void Dispose()
+        {
+            if (this.conn != null) this.conn.Dispose();
+        }
     }
 
-    public class EmailAlarmOrmLiteRepository: IEmailAlarmOrmLiteRepository
+    public class EmailAlarmOrmLiteRepository: IEmailAlarmOrmLiteRepository, IDisposable
     {
 
         private IDbConnection conn = null;
@@ -1064,6 +1069,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ArgumentNullException) { throw; }
             catch (OperationCanceledException) { throw; }
             catch (AggregateException) { throw; }
+        }
+
+        public void Dispose()
+        {
+            if (this.conn != null) this.conn.Dispose();
         }
     }
 
