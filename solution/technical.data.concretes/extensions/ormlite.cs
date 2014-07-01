@@ -1940,13 +1940,35 @@ namespace reexmonkey.technical.data.concretes.extensions.ormlite
                 if (!outgoing.NullOrEmpty()) db.DeleteByIds<T>(outgoing.Select(y => y.Id).ToArray());
 
             }
-            else db.SaveAll(entities);
+            else db.SaveAll(entities, transaction);
         }
 
         public static void SynchronizeAll<T>(this IDbConnection redis, IEnumerable<T> entities, IEnumerable<T> oentities, IDbTransaction transaction)
     where T : class, IContainsKey<string>, new()
         {
             redis.SynchronizeAll<T, string>(entities, oentities, transaction);
+        }
+
+
+        public static void SynchronizeAll<T, Tkey>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities)
+            where Tkey : IEquatable<Tkey>, IComparable<Tkey>
+            where T : class, IContainsKey<Tkey>, new()
+        {
+            if (!oentities.NullOrEmpty())
+            {
+                var incoming = entities.Except(oentities).ToArray();
+                if (!incoming.NullOrEmpty()) db.SaveAll(incoming);
+                var outgoing = oentities.Except(entities).ToArray();
+                if (!outgoing.NullOrEmpty()) db.DeleteByIds<T>(outgoing.Select(y => y.Id).ToArray());
+
+            }
+            else db.SaveAll(entities);
+        }
+
+        public static void SynchronizeAll<T>(this IDbConnection redis, IEnumerable<T> entities, IEnumerable<T> oentities)
+    where T : class, IContainsKey<string>, new()
+        {
+            redis.SynchronizeAll<T, string>(entities, oentities);
         }
 
     }

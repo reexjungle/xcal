@@ -18,7 +18,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
         private IDbConnectionFactory factory = null;
         private IDbConnection db
         {
-            get { return (this.conn) ?? factory.OpenDbConnection(); }
+            get { return (this.conn) ?? (conn = factory.OpenDbConnection()); }
         }
 
         public IDbConnectionFactory DbConnectionFactory
@@ -32,6 +32,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
         }
 
         public AdminOrmLiteRepository() { }
+
         public AdminOrmLiteRepository(IDbConnectionFactory factory)
         {
             this.DbConnectionFactory = factory;
@@ -52,7 +53,6 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
         {
             factory.Run(x =>
             {
-
                 using (var transaction = x.BeginTransaction())
                 {
                     try
@@ -67,38 +67,17 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     }
                     catch (ApplicationException) 
                     {
-                        try
-                        {
-                            transaction.Rollback();
-                        }
-                        catch (ApplicationException) { throw; }
-                        catch (InvalidOperationException) { throw; }
-                        catch (Exception) { throw; }
+                        try {   transaction.Rollback(); }
+                        catch (Exception) { }
                         throw; 
                     }
                     catch (InvalidOperationException) 
                     {
-                        try
-                        {
-                            transaction.Rollback();
-                        }
-                        catch (ApplicationException) { throw; }
-                        catch (InvalidOperationException) { throw; }
-                        catch (Exception) { throw; }                    
-                    }
-                    catch (Exception) 
-                    {
-                        try
-                        {
-                            transaction.Rollback();
-                        }
-                        catch (ApplicationException) { throw; }
-                        catch (InvalidOperationException) { throw; }
-                        catch (Exception) { throw; }
+                        try { transaction.Rollback(); }
+                        catch (Exception) { }
+                        throw;                   
                     }
                 }
-
-                x.Close();
             });
         }
 
@@ -146,40 +125,18 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     }
                     catch (ApplicationException)
                     {
-                        try
-                        {
-                            transaction.Rollback();
-                        }
-                        catch (ApplicationException) { throw; }
-                        catch (InvalidOperationException) { throw; }
-                        catch (Exception) { throw; }
+                        try { transaction.Rollback(); }
+                        catch (Exception) { }
                         throw;
                     }
                     catch (InvalidOperationException)
                     {
-                        try
-                        {
-                            transaction.Rollback();
-                        }
-                        catch (ApplicationException) { throw; }
-                        catch (InvalidOperationException) { throw; }
-                        catch (Exception) { throw; }
+                        try { transaction.Rollback(); }
+                        catch (Exception) { }
                         throw;
                     }
-                    catch (Exception)
-                    {
-                        try
-                        {
-                            transaction.Rollback();
-                        }
-                        catch (ApplicationException) { throw; }
-                        catch (InvalidOperationException) { throw; }
-                        catch (Exception) { throw; }
-                        throw;
-                    } 
                 }
 
-                x.Close();
             });
         }
 

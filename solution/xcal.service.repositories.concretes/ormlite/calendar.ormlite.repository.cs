@@ -18,7 +18,7 @@ using reexmonkey.xcal.service.repositories.concretes.relations;
 
 namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 {
-    public class CalendarOrmLiteRepository: ICalendarOrmLiteRepository
+    public class CalendarOrmLiteRepository: ICalendarOrmLiteRepository, IDisposable
     {
         private IDbConnection conn = null;
         private IDbConnectionFactory factory = null;
@@ -27,8 +27,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 
         private IDbConnection db
         {
-            get { return (this.conn) ?? factory.OpenDbConnection(); }
+            get { return (this.conn) ?? (this.conn = factory.OpenDbConnection()); }
         }
+        
         public IDbConnectionFactory DbConnectionFactory
         {
             get { return this.factory; }
@@ -38,6 +39,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 this.factory = value;
             }
         }
+        
         public IKeyGenerator<string> KeyGenerator
         {
             get { return this.keygen; }
@@ -91,7 +93,6 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
 
             return full ?? dry;
         }
@@ -126,7 +127,6 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
             return full ?? dry;
         }
 
@@ -164,63 +164,32 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 else dry = db.Select<VCALENDAR>(skip, take);
                 return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
             }
+            catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public void Save(VCALENDAR entity)
         {
-
-            using (var transaction = db.BeginTransaction())
+            try
             {
-                try
+                db.Save<VCALENDAR>(entity);
+                if (!entity.Events.NullOrEmpty())
                 {
-                    db.Save<VCALENDAR>(entity, transaction);
-                    var events = entity.Events;
-                    if (!events.NullOrEmpty())
+                    this.EventRepository.SaveAll(entity.Events);
+                    var revents = entity.Events.Select(x => new REL_CALENDARS_EVENTS
                     {
-                        this.EventRepository.SaveAll(events);
-                        var revents = events.Select(x => new REL_CALENDARS_EVENTS
-                        {
-                            Id = this.KeyGenerator.GetNextKey(),
-                            CalendarId = entity.Id,
-                            EventId = x.Id
-                        });
-                        var orevents = db.Select<REL_CALENDARS_EVENTS>(q => q.CalendarId == entity.Id);
-                        if(!orevents.NullOrEmpty())
-                        {
-                            db.SaveAll(revents.Except(orevents), transaction);
-                            var toremove = orevents.Except(revents);
-                            if (!toremove.NullOrEmpty()) db.Delete<REL_CALENDARS_EVENTS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
-                        }
-                        else db.SaveAll(revents, transaction);
-                    }
-
-                    transaction.Commit();
+                        Id = this.KeyGenerator.GetNextKey(),
+                        CalendarId = entity.Id,
+                        EventId = x.Id
+                    });
+                    var orevents = db.Select<REL_CALENDARS_EVENTS>(q => q.CalendarId == entity.Id);
+                    db.SynchronizeAll(revents, orevents);
                 }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (ApplicationException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (ApplicationException) 
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (ApplicationException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (Exception)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (ApplicationException) { throw; }
-                    catch (Exception) { throw; }
-                }
-            } 
+            }
+            catch (ArgumentNullException) { throw; }
+            catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }
 
         }
 
@@ -247,92 +216,44 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 
             #endregion
 
-            using (var transaction = db.BeginTransaction())
+            try
             {
-                try
+                var keys = (filter != null)
+                    ? db.SelectParam<VCALENDAR, string>(q => q.Id, p => Sql.In(p.Id, filter.ToArray())).ToArray()
+                    : db.SelectParam<VCALENDAR>(q => q.Id).ToArray();
+
+                if (!srelation.NullOrEmpty())
                 {
-                    var keys = (filter != null)
-                        ? db.SelectParam<VCALENDAR, string>(q=> q.Id, p => Sql.In(p.Id, filter.ToArray())).ToArray()
-                        : db.SelectParam<VCALENDAR>(q => q.Id).ToArray();
-
-                    if (!srelation.NullOrEmpty())
+                    Expression<Func<VCALENDAR, object>> componentsexpr = y => y.Events;
+                    if (selection.Contains(componentsexpr.GetMemberName()))
                     {
-                        Expression<Func<VCALENDAR, object>> componentsexpr = y => y.Events;
-
-                        #region save relational aggregate attributes of entities
-
-                        if (selection.Contains(componentsexpr.GetMemberName()))
+                        this.EventRepository.SaveAll(source.Events);
+                        if (!source.Events.NullOrEmpty())
                         {
-                            var events = source.Events;
-                            if (!events.NullOrEmpty()) this.EventRepository.SaveAll(events);
-
-
-                            if (!events.NullOrEmpty())
+                            var revents = keys.SelectMany(x => source.Events.Select(y => new REL_CALENDARS_EVENTS
                             {
-                                var revents = keys.SelectMany(x => events.Select(y => new REL_CALENDARS_EVENTS
-                                {
-                                    Id = this.KeyGenerator.GetNextKey(),
-                                    CalendarId = x,
-                                    EventId = y.Id
-                                }));
-                                var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.EventId, keys));
-                                if (!orevents.NullOrEmpty())
-                                {
-                                    db.SaveAll(revents.Except(orevents), transaction);
-                                    var toremove = orevents.Except(revents);
-                                    if (!toremove.NullOrEmpty()) db.Delete<REL_CALENDARS_EVENTS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
-                                }
-                                else db.SaveAll(revents, transaction);
-                            }
-
-
+                                Id = this.KeyGenerator.GetNextKey(),
+                                CalendarId = x,
+                                EventId = y.Id
+                            }));
+                            var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.EventId, keys));
+                            db.SynchronizeAll(revents, orevents);
                         }
-
-                        #endregion
-
-                    }
-
-                    if (!sprimitives.NullOrEmpty())
-                    {
-                        #region update-only non-relational attributes
-
-                        var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
-                        var patchexpr = patchstr.CompileToExpressionFunc<VCALENDAR, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(VCALENDAR).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
-
-                        if(!keys.NullOrEmpty()) db.UpdateOnly<VCALENDAR, object>(source, patchexpr, q =>Sql.In(q.Id, keys.ToArray()));
-                        else db.UpdateOnly<VCALENDAR, object>(source, patchexpr);
-
-                        #endregion
-
                     }
                 }
-                catch (NotImplementedException) 
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (System.Security.SecurityException) 
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (Exception)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                }
 
+                if (!sprimitives.NullOrEmpty())
+                {
+                    var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
+                    var patchexpr = patchstr.CompileToExpressionFunc<VCALENDAR, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(VCALENDAR).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
+
+                    if (!keys.NullOrEmpty()) db.UpdateOnly<VCALENDAR, object>(source, patchexpr, q => Sql.In(q.Id, keys.ToArray()));
+                    else db.UpdateOnly<VCALENDAR, object>(source, patchexpr);
+                }
             }
-
+            catch (ArgumentNullException) { throw; }
+            catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }
 
         }
 
@@ -342,53 +263,37 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             {
                 db.Delete<VCALENDAR>(q => q.Id == key);
             }
+            catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
+            catch (ApplicationException) { throw; }
         }
 
         public void SaveAll(IEnumerable<VCALENDAR> entities)
         {
-            var events = entities.Where(x => !x.Events.NullOrEmpty()).SelectMany(x => x.Events);
-            using (var transaction = db.BeginTransaction())
+            try
             {
-                try
-                {
-                    db.SaveAll(entities, transaction);
-                    if (!events.NullOrEmpty())
-                    {
-                        var keys = entities.Select(x => x.Id).ToArray();
-                        this.EventRepository.SaveAll(events);
-                        var revents = entities.Where(x => !x.Events.NullOrEmpty()).SelectMany(c => c.Events.Select(x => new REL_CALENDARS_EVENTS
-                            {
-                                Id = this.KeyGenerator.GetNextKey(),
-                                CalendarId = c.Id,
-                                EventId = x.Id
-                            }));
-                        var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.EventId, keys));
-                        if (!orevents.NullOrEmpty())
-                        {
-                            db.SaveAll(revents.Except(orevents), transaction);
-                            var toremove = orevents.Except(revents);
-                            if (!toremove.NullOrEmpty()) db.Delete<REL_CALENDARS_EVENTS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
-                        }
-                        else db.SaveAll(revents, transaction); 
-                    }
+                var keys = entities.Select(x => x.Id).ToArray();
+                var events = entities.Where(x => !x.Events.NullOrEmpty()).SelectMany(x => x.Events);
 
-                    transaction.Commit();
-                }
-                catch (InvalidOperationException)
+                db.SaveAll(entities);
+
+                if (!events.NullOrEmpty())
                 {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
+                    this.EventRepository.SaveAll(events);
+                    var revents = entities.Where(x => !x.Events.NullOrEmpty()).SelectMany(c => c.Events.Select(x => new REL_CALENDARS_EVENTS
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        CalendarId = c.Id,
+                        EventId = x.Id
+                    }));
+                    var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.EventId, keys));
+                    db.SynchronizeAll(revents, orevents);
                 }
-                catch (Exception)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                }
-            }       
+
+            }
+            catch (ArgumentNullException) { throw; }
+            catch (InvalidOperationException) { throw; }
+            catch (ApplicationException) { throw; }  
         }
 
         public void EraseAll(IEnumerable<string> keys = null)
@@ -398,9 +303,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 if (!keys.NullOrEmpty()) db.Delete<VCALENDAR>(q => Sql.In(q.Id, keys.ToArray()));
                 else db.DeleteAll<VCALENDAR>();
             }
+            catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public bool ContainsKey(string key)
@@ -409,9 +314,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             {
                 return db.Count<VCALENDAR>(q => q.Id == key) != 0;
             }
+            catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public bool ContainsKeys(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
@@ -423,9 +328,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     return db.Count<VCALENDAR>(q => Sql.In(q.Id, dkeys)) == dkeys.Count();
                 else return db.Count<VCALENDAR>(q => Sql.In(q.Id, dkeys)) != 0;
             }
+            catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public IEnumerable<VCALENDAR> DehydrateAll(IEnumerable<VCALENDAR> full)
@@ -454,7 +359,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 if (!dry.XComponents.NullOrEmpty()) dry.XComponents.Clear();
                 return dry;
             }
-            catch (ArgumentNullException)  { throw; }
+            catch (ArgumentNullException) { throw; }
         }
 
         public IEnumerable<string> GetKeys(int? skip = null, int? take = null)
@@ -466,7 +371,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
+        }
+
+        public void Dispose()
+        {
+            if (this.conn != null) this.conn.Dispose();
         }
     }
 }
