@@ -142,7 +142,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// </summary>
         /// <param name="full">The audio alarm entities to depopulate</param>
         /// <returns>Depopulated events</returns>
-        IEnumerable<EMAIL_ALARM> Dehydrate(IEnumerable<EMAIL_ALARM> full);
+        IEnumerable<EMAIL_ALARM> DehydrateAll(IEnumerable<EMAIL_ALARM> full);
 
     }
 

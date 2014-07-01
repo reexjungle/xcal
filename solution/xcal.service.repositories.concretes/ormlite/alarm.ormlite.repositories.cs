@@ -22,14 +22,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
     public class AudioAlarmOrmLiteRepository : IAudioAlarmOrmLiteRepository
     {
 
-        private IDbConnection conn;
         private IDbConnectionFactory factory = null;
         private IKeyGenerator<string> keygen;
-        private IDbConnection db
-        {
-            get { return (this.conn) ?? factory.OpenDbConnection(); }
-        }
-
         public IDbConnectionFactory DbConnectionFactory
         {
             get { return this.factory; }
@@ -53,214 +47,208 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
         {
             this.DbConnectionFactory = factory;
         }
-        public AudioAlarmOrmLiteRepository(IDbConnection connection)
-        {
-            if (connection == null) throw new ArgumentNullException("connection");
-            this.conn = connection;
-        }
 
-        //cleanup
-        public virtual void Dispose()
-        {
-            if (this.conn != null) this.conn.Dispose();
-        }
 
         public AUDIO_ALARM Find(string key)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                var dry = db.Select<AUDIO_ALARM>(q => q.Id == key).FirstOrDefault();
-                return dry != null? this.Hydrate(dry): dry;
+                try
+                {
+                    var dry = db.Select<AUDIO_ALARM>(q => q.Id == key).FirstOrDefault();
+                    return dry != null ? this.Hydrate(dry) : dry;
+                }
+                catch (ArgumentNullException) { throw; }
+                catch (InvalidOperationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public IEnumerable<AUDIO_ALARM> FindAll(IEnumerable<string> keys,  int? skip = null, int? take = null)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                var dry = db.Select<AUDIO_ALARM>(q => Sql.In(q.Id, keys.ToArray()), skip, take);
-                return !dry.NullOrEmpty() ? this.Hydrate(dry) : dry;
+                try
+                {
+                    var dry = db.Select<AUDIO_ALARM>(q => Sql.In(q.Id, keys.ToArray()), skip, take);
+                    return !dry.NullOrEmpty() ? this.Hydrate(dry) : dry;
 
+                }
+                catch (ArgumentNullException) { throw; }
+                catch (InvalidOperationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public IEnumerable<AUDIO_ALARM> Get(int? skip = null, int? take = null)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                var dry = db.Select<AUDIO_ALARM>(skip, take);
-                return !dry.NullOrEmpty() ? this.Hydrate(dry) : dry;
+                try
+                {
+                    var dry = db.Select<AUDIO_ALARM>(skip, take);
+                    return !dry.NullOrEmpty() ? this.Hydrate(dry) : dry;
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public void Save(AUDIO_ALARM entity)
         {
-            using (var transaction = db.OpenTransaction())
+            using (var db = this.factory.OpenDbConnection())
             {
-                var attachbin = entity.AttachmentBinary;
-                var attachuri = entity.AttachmentUri;
-                try
+                using (var transaction = db.OpenTransaction())
                 {
-                    db.Save(entity, transaction);
-                    if (attachbin != null)
+                    var attachbin = entity.AttachmentBinary;
+                    var attachuri = entity.AttachmentUri;
+                    try
                     {
-                        db.Save(attachbin,  transaction);
-                        var rattachbin = new REL_AALARMS_ATTACHBINS
+                        db.Save(entity, transaction);
+                        if (attachbin != null)
                         {
-                            Id = this.KeyGenerator.GetNextKey(),
-                            AlarmId = entity.Id,
-                            AttachmentId = attachbin.Id
-                        };
-                        var orattachbins = db.Select<REL_AALARMS_ATTACHBINS>(q => q.AlarmId == entity.Id);
-                        if (orattachbins.NullOrEmpty()) db.Save(rattachbin, transaction);
-                        else if (!orattachbins.Contains(rattachbin)) db.Save(rattachbin, transaction);
-                    }
+                            db.Save(attachbin, transaction);
+                            var rattachbin = new REL_AALARMS_ATTACHBINS
+                            {
+                                Id = this.KeyGenerator.GetNextKey(),
+                                AlarmId = entity.Id,
+                                AttachmentId = attachbin.Id
+                            };
+                            var orattachbins = db.Select<REL_AALARMS_ATTACHBINS>(q => q.AlarmId == entity.Id);
+                            db.SynchronizeAll(rattachbin.ToSingleton(), orattachbins, transaction);
+                        }
 
-                    if (attachuri != null)
+                        if (attachuri != null)
+                        {
+                            db.Save(attachuri, transaction);
+                            var rattachuri = new REL_AALARMS_ATTACHBINS
+                            {
+                                Id = this.KeyGenerator.GetNextKey(),
+                                AlarmId = entity.Id,
+                                AttachmentId = attachbin.Id
+                            };
+                            var orattachuris = db.Select<REL_AALARMS_ATTACHBINS>(q => q.AlarmId == entity.Id);
+                            db.SynchronizeAll(rattachuri.ToSingleton(), orattachuris, transaction);
+                        }
+
+                        transaction.Commit();
+                    }
+                    catch (SecurityException)
                     {
-                        db.Save(attachuri, transaction);
-                        var rattachuri = new REL_AALARMS_ATTACHBINS
-                        {
-                            Id = this.KeyGenerator.GetNextKey(),
-                            AlarmId = entity.Id,
-                            AttachmentId = attachbin.Id
-                        };
-                        var orattachuris = db.Select<REL_AALARMS_ATTACHBINS>(q => q.AlarmId == entity.Id);
-                        if (orattachuris.NullOrEmpty()) db.Save(rattachuri, transaction);
-                        else if (!orattachuris.Contains(rattachuri)) db.Save(rattachuri, transaction);
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
                     }
-
-                    transaction.Commit();
-                }
-                catch (SecurityException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (ApplicationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (Exception)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
+                    catch (InvalidOperationException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (ApplicationException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (Exception)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                } 
             }
         }
 
         public void Erase(string key)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                db.Delete<AUDIO_ALARM>(q => q.Id == key);
+                try
+                {
+                    db.Delete<AUDIO_ALARM>(q => q.Id == key);
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public void SaveAll(IEnumerable<AUDIO_ALARM> entities)
         {
-            using (var transaction = db.OpenTransaction())
+            using (var db = this.factory.OpenDbConnection())
             {
-                var attachbins = entities.Where(x => x.AttachmentBinary != null).Select(x => x.AttachmentBinary);
-                var attachuris = entities.Where(x => x.AttachmentUri != null).Select(x => x.AttachmentUri);
-                var keys = entities.Select(x => x.Id).ToArray();
-
-                try
+                using (var transaction = db.OpenTransaction())
                 {
+                    var attachbins = entities.Where(x => x.AttachmentBinary != null).Select(x => x.AttachmentBinary);
+                    var attachuris = entities.Where(x => x.AttachmentUri != null).Select(x => x.AttachmentUri);
+                    var keys = entities.Select(x => x.Id).ToArray();
 
-                    db.SaveAll(entities, transaction);
-                    if (attachbins != null)
+                    try
                     {
-                        db.Save(attachbins, transaction);
-                        var rattachbins = entities.Where(x => x.AttachmentBinary != null).Select(x => new REL_AALARMS_ATTACHBINS
-                        {
-                            Id = this.KeyGenerator.GetNextKey(),
-                            AlarmId = x.Id,
-                            AttachmentId = x.AttachmentBinary.Id
-                        });
-                        var orattachbins = db.Select<REL_AALARMS_ATTACHBINS>(q => Sql.In(q.AlarmId, keys));
-                        if (!orattachbins.NullOrEmpty())
-                        {
-                            db.SaveAll(rattachbins.Except(orattachbins), transaction);
-                            var toremove = orattachbins.Except(rattachbins);
-                            if (!toremove.NullOrEmpty()) db.Delete<REL_AALARMS_ATTACHBINS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
-                        }
-                        else db.SaveAll(rattachbins, transaction);
-                    }
 
-                    if (attachuris != null)
+                        db.SaveAll(entities, transaction);
+                        if (attachbins != null)
+                        {
+                            db.Save(attachbins, transaction);
+                            var rattachbins = entities.Where(x => x.AttachmentBinary != null).Select(x => new REL_AALARMS_ATTACHBINS
+                            {
+                                Id = this.KeyGenerator.GetNextKey(),
+                                AlarmId = x.Id,
+                                AttachmentId = x.AttachmentBinary.Id
+                            });
+                            var orattachbins = db.Select<REL_AALARMS_ATTACHBINS>(q => Sql.In(q.AlarmId, keys));
+                            db.SynchronizeAll(rattachbins, orattachbins, transaction);
+                        }
+
+                        if (attachuris != null)
+                        {
+                            db.Save(attachuris, transaction);
+                            var rattachuris = entities.Where(x => x.AttachmentUri != null).Select(x => new REL_AALARMS_ATTACHURIS
+                            {
+                                Id = this.KeyGenerator.GetNextKey(),
+                                AlarmId = x.Id,
+                                AttachmentId = x.AttachmentUri.Id
+                            });
+                            var orattachuris = db.Select<REL_AALARMS_ATTACHURIS>(q => Sql.In(q.AlarmId, keys));
+                            db.SynchronizeAll(rattachuris, orattachuris, transaction);
+                        }
+
+                        transaction.Commit();
+                    }
+                    catch (SecurityException)
                     {
-                        db.Save(attachuris, transaction);
-                        var rattachuris = entities.Where(x => x.AttachmentUri != null).Select(x => new REL_AALARMS_ATTACHURIS
-                        {
-                            Id = this.KeyGenerator.GetNextKey(),
-                            AlarmId = x.Id,
-                            AttachmentId = x.AttachmentUri.Id
-                        });
-                        var orattachuris = db.Select<REL_AALARMS_ATTACHURIS>(q => Sql.In(q.AlarmId, keys));
-                        if (!orattachuris.NullOrEmpty())
-                        {
-                            db.SaveAll(rattachuris.Except(orattachuris), transaction);
-                            var toremove = orattachuris.Except(rattachuris);
-                            if (!toremove.NullOrEmpty()) db.Delete<REL_AALARMS_ATTACHURIS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
-                        }
-                        else db.SaveAll(rattachuris, transaction);
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
                     }
-
-                    transaction.Commit();
-                }
-                catch (SecurityException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (ApplicationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (Exception)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
+                    catch (InvalidOperationException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (ApplicationException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (Exception)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                } 
             }
         }
 
@@ -291,177 +279,180 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             //3. Get list of selected primitives
             var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
 
-            using(var transaction = db.BeginTransaction())
+            using (var db = this.factory.OpenDbConnection())
             {
-                try
+                using (var transaction = db.BeginTransaction())
                 {
-                    var okeys = (keys != null)
-                        ? db.SelectParam<AUDIO_ALARM, string>(q => q.Id, p => Sql.In(p.Id, keys.ToArray())).ToArray()
-                        : db.SelectParam<AUDIO_ALARM>(q => q.Id).ToArray();
-
-                    if(!srelations.NullOrEmpty())
+                    try
                     {
-                        Expression<Func<AUDIO_ALARM, object>> attachbinexpr = y => y.AttachmentBinary;
-                        Expression<Func<AUDIO_ALARM, object>> attachuriexpr = y => y.AttachmentUri;
+                        var okeys = (keys != null)
+                            ? db.SelectParam<AUDIO_ALARM, string>(q => q.Id, p => Sql.In(p.Id, keys.ToArray())).ToArray()
+                            : db.SelectParam<AUDIO_ALARM>(q => q.Id).ToArray();
 
-
-                        if (selection.Contains(attachbinexpr.GetMemberName()))
+                        if (!srelations.NullOrEmpty())
                         {
-                            //get events-organizers relations
-                            var attachbin = source.AttachmentBinary;
-                            if (attachbin != null)
+                            Expression<Func<AUDIO_ALARM, object>> attachbinexpr = y => y.AttachmentBinary;
+                            Expression<Func<AUDIO_ALARM, object>> attachuriexpr = y => y.AttachmentUri;
+
+
+                            if (selection.Contains(attachbinexpr.GetMemberName()))
                             {
-                                db.Save(attachbin, transaction);
-                                var rattachbins = okeys.Select(x => new REL_AALARMS_ATTACHBINS
+                                //get events-organizers relations
+                                var attachbin = source.AttachmentBinary;
+                                if (attachbin != null)
                                 {
-                                    Id = this.KeyGenerator.GetNextKey(),
-                                    AlarmId = x,
-                                    AttachmentId = attachbin.Id
-                                });
-                                var orattachbins = db.Select<REL_AALARMS_ATTACHBINS>(q => Sql.In(q.AlarmId, okeys));
-                                if (!orattachbins.NullOrEmpty())
-                                {
-                                    db.SaveAll(rattachbins.Except(orattachbins), transaction);
-                                    var toremove = orattachbins.Except(rattachbins);
-                                    if (!toremove.NullOrEmpty()) db.Delete<REL_AALARMS_ATTACHBINS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
+                                    db.Save(attachbin, transaction);
+                                    var rattachbins = okeys.Select(x => new REL_AALARMS_ATTACHBINS
+                                    {
+                                        Id = this.KeyGenerator.GetNextKey(),
+                                        AlarmId = x,
+                                        AttachmentId = attachbin.Id
+                                    });
+                                    var orattachbins = db.Select<REL_AALARMS_ATTACHBINS>(q => Sql.In(q.AlarmId, okeys));
+                                    db.SynchronizeAll(rattachbins, orattachbins, transaction);
                                 }
-                                else db.SaveAll(rattachbins, transaction);
                             }
+
+                            if (selection.Contains(attachuriexpr.GetMemberName()))
+                            {
+                                //get events-organizers relations
+                                var attachuri = source.AttachmentBinary;
+                                if (attachuri != null)
+                                {
+                                    db.Save(attachuri, transaction);
+                                    var rattachuris = okeys.Select(x => new REL_AALARMS_ATTACHURIS
+                                    {
+                                        Id = this.KeyGenerator.GetNextKey(),
+                                        AlarmId = x,
+                                        AttachmentId = attachuri.Id
+                                    });
+                                    var orattachuris = db.Select<REL_AALARMS_ATTACHURIS>(q => Sql.In(q.AlarmId, okeys));
+                                    db.SynchronizeAll(rattachuris, orattachuris, transaction);
+                                }
+                            }
+
                         }
 
-                        if (selection.Contains(attachuriexpr.GetMemberName()))
+
+                        //4. Update matching event primitives
+                        if (!sprimitives.NullOrEmpty())
                         {
-                            //get events-organizers relations
-                            var attachuri = source.AttachmentBinary;
-                            if (attachuri != null)
-                            {
-                                db.Save(attachuri, transaction);
-                                var rattachuris = okeys.Select(x => new REL_AALARMS_ATTACHURIS
-                                {
-                                    Id = this.KeyGenerator.GetNextKey(),
-                                    AlarmId = x,
-                                    AttachmentId = attachuri.Id
-                                });
-                                var orattachuris = db.Select<REL_AALARMS_ATTACHURIS>(q => Sql.In(q.AlarmId, okeys));
-                                if (!orattachuris.NullOrEmpty())
-                                {
-                                    db.SaveAll(rattachuris.Except(orattachuris), transaction);
-                                    var toremove = orattachuris.Except(rattachuris);
-                                    if (!toremove.NullOrEmpty()) db.Delete<REL_AALARMS_ATTACHURIS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
-                                }
-                                else db.SaveAll(rattachuris, transaction);
-                            }
+                            var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
+                            var patchexpr = patchstr.CompileToExpressionFunc<AUDIO_ALARM, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(AUDIO_ALARM).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
+
+                            if (!okeys.NullOrEmpty()) db.UpdateOnly<AUDIO_ALARM, object>(source, patchexpr, q => Sql.In(q.Id, okeys.ToArray()));
+                            else db.UpdateOnly<AUDIO_ALARM, object>(source, patchexpr);
                         }
 
+                        transaction.Commit();
                     }
-
-
-                    //4. Update matching event primitives
-                    if (!sprimitives.NullOrEmpty())
+                    catch (SecurityException)
                     {
-                        var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
-                        var patchexpr = patchstr.CompileToExpressionFunc<AUDIO_ALARM, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(AUDIO_ALARM).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
-
-                        if (!okeys.NullOrEmpty()) db.UpdateOnly<AUDIO_ALARM, object>(source, patchexpr, q => Sql.In(q.Id, okeys.ToArray()));
-                        else db.UpdateOnly<AUDIO_ALARM, object>(source, patchexpr);
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
                     }
-
-                    transaction.Commit();
-                }
-                catch (SecurityException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (ApplicationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (Exception)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
+                    catch (InvalidOperationException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (ApplicationException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (Exception)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                } 
             }
 
         }
 
         public void EraseAll(IEnumerable<string> keys = null)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                if (!keys.NullOrEmpty()) db.Delete<AUDIO_ALARM>(q => Sql.In(q.Id, keys.ToArray()));
-                else db.DeleteAll<AUDIO_ALARM>();
+                try
+                {
+                    if (!keys.NullOrEmpty()) db.Delete<AUDIO_ALARM>(q => Sql.In(q.Id, keys.ToArray()));
+                    else db.DeleteAll<AUDIO_ALARM>();
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public bool ContainsKey(string key)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                return db.Count<AUDIO_ALARM>(q => q.Id == key) != 0;
+                try
+                {
+                    return db.Count<AUDIO_ALARM>(q => q.Id == key) != 0;
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public bool ContainsKeys(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                var dkeys = keys.Distinct().ToArray();
-                if (mode == ExpectationMode.pessimistic || mode == ExpectationMode.unknown)
-                    return db.Count<AUDIO_ALARM>(q => Sql.In(q.Id, dkeys)) == dkeys.Count();
-                else return db.Count<AUDIO_ALARM>(q => Sql.In(q.Id, dkeys)) != 0;
+                try
+                {
+                    var dkeys = keys.Distinct().ToArray();
+                    if (mode == ExpectationMode.pessimistic || mode == ExpectationMode.unknown)
+                        return db.Count<AUDIO_ALARM>(q => Sql.In(q.Id, dkeys)) == dkeys.Count();
+                    else return db.Count<AUDIO_ALARM>(q => Sql.In(q.Id, dkeys)) != 0;
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public AUDIO_ALARM Hydrate(AUDIO_ALARM dry)
         {
             var full = dry;
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                var okey = db.SelectParam<AUDIO_ALARM, string>(q => q.Id, p => p.Id == dry.Id).FirstOrDefault();
-                if (!string.IsNullOrEmpty(okey))
+                try
                 {
-                    var attachbins = db.Select<ATTACH_BINARY, AUDIO_ALARM, REL_AALARMS_ATTACHBINS>(
-                        r => r.AttachmentId,
-                        r => r.AlarmId,
-                        a => a.Id == okey);
-                    if (!attachbins.NullOrEmpty()) full.AttachmentBinary = attachbins.FirstOrDefault();
+                    var okey = db.SelectParam<AUDIO_ALARM, string>(q => q.Id, p => p.Id == dry.Id).FirstOrDefault();
+                    if (!string.IsNullOrEmpty(okey))
+                    {
+                        var attachbins = db.Select<ATTACH_BINARY, AUDIO_ALARM, REL_AALARMS_ATTACHBINS>(
+                            r => r.AttachmentId,
+                            r => r.AlarmId,
+                            a => a.Id == okey);
+                        if (!attachbins.NullOrEmpty()) full.AttachmentBinary = attachbins.FirstOrDefault();
 
-                    var attachuris = db.Select<ATTACH_URI, AUDIO_ALARM, REL_AALARMS_ATTACHURIS>(
-                        r => r.AttachmentId,
-                        r => r.AlarmId,
-                        a => a.Id == okey);
-                    if (!attachuris.NullOrEmpty()) full.AttachmentUri = attachuris.FirstOrDefault();
+                        var attachuris = db.Select<ATTACH_URI, AUDIO_ALARM, REL_AALARMS_ATTACHURIS>(
+                            r => r.AttachmentId,
+                            r => r.AlarmId,
+                            a => a.Id == okey);
+                        if (!attachuris.NullOrEmpty()) full.AttachmentUri = attachuris.FirstOrDefault();
 
+                    }
                 }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
 
             return full ?? dry;
         }
@@ -470,109 +461,112 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
         {
             List<AUDIO_ALARM> full = null;
 
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                full = dry.ToList();
-                var keys = full.Select(q => q.Id).ToArray();
-                var okeys = db.SelectParam<AUDIO_ALARM, string>(q => q.Id, p => Sql.In(p.Id, keys));
-
-                if (!okeys.NullOrEmpty())
+                try
                 {
-                    #region 1. retrieve relationships
+                    full = dry.ToList();
+                    var keys = full.Select(q => q.Id).ToArray();
+                    var okeys = db.SelectParam<AUDIO_ALARM, string>(q => q.Id, p => Sql.In(p.Id, keys));
 
-                    var rattachbins = this.db.Select<REL_AALARMS_ATTACHBINS>(q => Sql.In(q.AlarmId, okeys));
-                    var rattachuris = this.db.Select<REL_AALARMS_ATTACHURIS>(q => Sql.In(q.AlarmId, okeys));
-
-                    #endregion
-
-                    #region 2. retrieve secondary entities
-
-                    var attachbins = (!rattachbins.Empty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToList())) : null;
-                    var attachuris = (!rattachuris.Empty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachuris.Select(r => r.AttachmentId).ToList())) : null;
-
-                    #endregion
-
-                    #region 3. Use Linq to stitch secondary entities to primary entities
-
-                    full.ForEach(x =>
+                    if (!okeys.NullOrEmpty())
                     {
+                        #region 1. retrieve relationships
 
-                        if (!attachbins.NullOrEmpty())
+                        var rattachbins = db.Select<REL_AALARMS_ATTACHBINS>(q => Sql.In(q.AlarmId, okeys));
+                        var rattachuris = db.Select<REL_AALARMS_ATTACHURIS>(q => Sql.In(q.AlarmId, okeys));
+
+                        #endregion
+
+                        #region 2. retrieve secondary entities
+
+                        var attachbins = (!rattachbins.Empty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToList())) : null;
+                        var attachuris = (!rattachuris.Empty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachuris.Select(r => r.AttachmentId).ToList())) : null;
+
+                        #endregion
+
+                        #region 3. Use Linq to stitch secondary entities to primary entities
+
+                        full.ForEach(x =>
                         {
-                            var xattachbins = from y in attachbins
-                                              join r in rattachbins on y.Id equals r.AttachmentId
-                                              join a in full on r.AlarmId equals a.Id
-                                              where a.Id == x.Id
-                                              select y;
-                            if (!xattachbins.NullOrEmpty()) x.AttachmentBinary = xattachbins.FirstOrDefault();
 
-                        }
+                            if (!attachbins.NullOrEmpty())
+                            {
+                                var xattachbins = from y in attachbins
+                                                  join r in rattachbins on y.Id equals r.AttachmentId
+                                                  join a in full on r.AlarmId equals a.Id
+                                                  where a.Id == x.Id
+                                                  select y;
+                                if (!xattachbins.NullOrEmpty()) x.AttachmentBinary = xattachbins.FirstOrDefault();
 
-                        if (!attachuris.NullOrEmpty())
-                        {
-                            var xattachuris = from y in attachuris
-                                              join r in rattachuris on y.Id equals r.AttachmentId
-                                              join a in full on r.AlarmId equals a.Id
-                                              where a.Id == x.Id
-                                              select y;
-                            if (!xattachuris.NullOrEmpty()) x.AttachmentUri = xattachuris.FirstOrDefault();
-                        }
+                            }
 
-                    });
+                            if (!attachuris.NullOrEmpty())
+                            {
+                                var xattachuris = from y in attachuris
+                                                  join r in rattachuris on y.Id equals r.AttachmentId
+                                                  join a in full on r.AlarmId equals a.Id
+                                                  where a.Id == x.Id
+                                                  select y;
+                                if (!xattachuris.NullOrEmpty()) x.AttachmentUri = xattachuris.FirstOrDefault();
+                            }
 
-                    #endregion
+                        });
+
+                        #endregion
+                    }
+
                 }
-
+                catch (ArgumentNullException) { throw; }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
 
             return full ?? dry;
         }
 
         public AUDIO_ALARM Dehydrate(AUDIO_ALARM full)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                full.AttachmentBinary = null;
-                full.AttachmentUri = null;
-                return full; 
+                try
+                {
+                    full.AttachmentBinary = null;
+                    full.AttachmentUri = null;
+                    return full;
+                }
+                catch (ArgumentNullException) { throw; }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
                    
         }
 
         public IEnumerable<AUDIO_ALARM> Dehydrate(IEnumerable<AUDIO_ALARM> full)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                var pquery = full.AsParallel();
-                pquery.ForAll(x => this.Dehydrate(x));
-                return pquery.AsEnumerable();
+                try
+                {
+                    var pquery = full.AsParallel();
+                    pquery.ForAll(x => this.Dehydrate(x));
+                    return pquery.AsEnumerable();
+                }
+                catch (ArgumentNullException) { throw; }
+                catch (OperationCanceledException) { throw; }
+                catch (AggregateException) { throw; } 
             }
-            catch (ArgumentNullException) { throw; }
-            catch (OperationCanceledException) { throw; }
-            catch (AggregateException) { throw; }
         }
     }
 
     public class DisplayAlarmOrmLiteRepository : IDisplayAlarmOrmLiteRepository
     {
 
-        private IDbConnection conn;
         private IDbConnectionFactory factory = null;
         private int? take = null;
         public IKeyGenerator<string> KeyGenerator { get; set; }
-
-        private IDbConnection db
-        {
-            get { return (this.conn) ?? factory.OpenDbConnection(); }
-        }
         public IDbConnectionFactory DbConnectionFactory
         {
             get { return this.factory; }
@@ -597,133 +591,135 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
         {
             this.DbConnectionFactory = factory;
             this.Take = take;
-            this.conn = this.factory.OpenDbConnection();
-        }
-        public DisplayAlarmOrmLiteRepository(IDbConnection connection, int? take)
-        {
-            if (connection == null) throw new ArgumentNullException("connection");
-            this.conn = connection;
-            this.Take = take;
-        }
-
-        //cleanup
-        public virtual void Dispose()
-        {
-            if (this.conn != null) this.conn.Dispose();
         }
 
         public DISPLAY_ALARM Find(string key)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                return db.Select<DISPLAY_ALARM>(q => q.Id == key).FirstOrDefault();
+                try
+                {
+                    return db.Select<DISPLAY_ALARM>(q => q.Id == key).FirstOrDefault();
+                }
+                catch (ArgumentNullException) { throw; }
+                catch (InvalidOperationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public IEnumerable<DISPLAY_ALARM> FindAll(IEnumerable<string> keys, int? skip = null, int? take = null)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                return db.Select<DISPLAY_ALARM>(q => Sql.In(q.Id, keys.ToArray()), skip, Take);
+                try
+                {
+                    return db.Select<DISPLAY_ALARM>(q => Sql.In(q.Id, keys.ToArray()), skip, Take);
+                }
+                catch (ArgumentNullException) { throw; }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public IEnumerable<DISPLAY_ALARM> Get(int? skip = null, int? take = null)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                return db.Select<DISPLAY_ALARM>(skip, take);
+                try
+                {
+                    return db.Select<DISPLAY_ALARM>(skip, take);
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public void Save(DISPLAY_ALARM entity)
         {
-            using (var transaction = db.OpenTransaction())
+            using (var db = this.factory.OpenDbConnection())
             {
-                try
+                using (var transaction = db.OpenTransaction())
                 {
-                    //Save dry event entity i.a. without related details
-                    db.Save(entity, transaction);
-                    transaction.Commit();
-                }
-                catch (SecurityException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (ApplicationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (Exception)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
+                    try
+                    {
+                        //Save dry event entity i.a. without related details
+                        db.Save(entity, transaction);
+                        transaction.Commit();
+                    }
+                    catch (SecurityException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (ApplicationException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (Exception)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                } 
             }
         }
 
         public void SaveAll(IEnumerable<DISPLAY_ALARM> entities)
         {
-            using (var transaction = db.OpenTransaction())
+            using (var db = this.factory.OpenDbConnection())
             {
-                try
+                using (var transaction = db.OpenTransaction())
                 {
-                    db.SaveAll(entities, transaction);
-                    transaction.Commit();
-                }
-                catch (SecurityException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (ApplicationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (Exception)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
+                    try
+                    {
+                        db.SaveAll(entities, transaction);
+                        transaction.Commit();
+                    }
+                    catch (SecurityException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (ApplicationException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (Exception)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                } 
             }
         }
 
@@ -745,116 +741,125 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             //3. Get list of selected primitives
             var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
 
-            using (var transaction = db.BeginTransaction())
+            using (var db = this.factory.OpenDbConnection())
             {
-                try
+                using (var transaction = db.BeginTransaction())
                 {
-                    var okeys = (keys != null)
-                        ? db.SelectParam<DISPLAY_ALARM, string>(q => q.Id, p => Sql.In(p.Id, keys.ToArray())).ToArray()
-                        : db.SelectParam<DISPLAY_ALARM>(q => q.Id).ToArray();
-
-                    if (!sprimitives.NullOrEmpty())
+                    try
                     {
-                        //4. Update matching event primitives
-                        var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
-                        var patchexpr = patchstr.CompileToExpressionFunc<DISPLAY_ALARM, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(DISPLAY_ALARM).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
-                        if (!okeys.NullOrEmpty()) db.UpdateOnly<DISPLAY_ALARM, object>(source, patchexpr, q => Sql.In(q.Id, okeys.ToArray()));
-                        else db.UpdateOnly<DISPLAY_ALARM, object>(source, patchexpr);
+                        var okeys = (keys != null)
+                            ? db.SelectParam<DISPLAY_ALARM, string>(q => q.Id, p => Sql.In(p.Id, keys.ToArray())).ToArray()
+                            : db.SelectParam<DISPLAY_ALARM>(q => q.Id).ToArray();
+
+                        if (!sprimitives.NullOrEmpty())
+                        {
+                            //4. Update matching event primitives
+                            var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
+                            var patchexpr = patchstr.CompileToExpressionFunc<DISPLAY_ALARM, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(DISPLAY_ALARM).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
+                            if (!okeys.NullOrEmpty()) db.UpdateOnly<DISPLAY_ALARM, object>(source, patchexpr, q => Sql.In(q.Id, okeys.ToArray()));
+                            else db.UpdateOnly<DISPLAY_ALARM, object>(source, patchexpr);
+                        }
+                        transaction.Commit();
                     }
-                    transaction.Commit();
-                }
-                catch (SecurityException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (ApplicationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (Exception)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
+                    catch (SecurityException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (ApplicationException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (Exception)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
                 } 
             }
         }
 
         public void Erase(string key)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                db.Delete<DISPLAY_ALARM>(q => q.Id == key);
+                try
+                {
+                    db.Delete<DISPLAY_ALARM>(q => q.Id == key);
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public void EraseAll(IEnumerable<string> keys = null)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                if (!keys.NullOrEmpty()) db.Delete<DISPLAY_ALARM>(q => Sql.In(q.Id, keys.ToArray()));
-                else db.DeleteAll<DISPLAY_ALARM>();
+                try
+                {
+                    if (!keys.NullOrEmpty()) db.Delete<DISPLAY_ALARM>(q => Sql.In(q.Id, keys.ToArray()));
+                    else db.DeleteAll<DISPLAY_ALARM>();
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public bool ContainsKey(string key)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                return db.Count<DISPLAY_ALARM>(q => q.Id == key) != 0;
+                try
+                {
+                    return db.Count<DISPLAY_ALARM>(q => q.Id == key) != 0;
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public bool ContainsKeys(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                var dkeys = keys.Distinct().ToArray();
-                if (mode == ExpectationMode.pessimistic || mode == ExpectationMode.unknown)
-                    return db.Count<DISPLAY_ALARM>(q => Sql.In(q.Id, dkeys)) == dkeys.Count();
-                else return db.Count<DISPLAY_ALARM>(q => Sql.In(q.Id, dkeys)) != 0;
+                try
+                {
+                    var dkeys = keys.Distinct().ToArray();
+                    if (mode == ExpectationMode.pessimistic || mode == ExpectationMode.unknown)
+                        return db.Count<DISPLAY_ALARM>(q => Sql.In(q.Id, dkeys)) == dkeys.Count();
+                    else return db.Count<DISPLAY_ALARM>(q => Sql.In(q.Id, dkeys)) != 0;
 
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
 
         }
-
     }
 
     public class EmailAlarmOrmLiteRepository: IEmailAlarmOrmLiteRepository
     {
                
-        private IDbConnection conn;
         private IDbConnectionFactory factory = null;
-        private IDbConnection db
-        {
-            get { return (this.conn) ?? factory.OpenDbConnection(); }
-        }
         public IDbConnectionFactory DbConnectionFactory
         {
             get { return this.factory; }
@@ -869,361 +874,346 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
         public EmailAlarmOrmLiteRepository(IDbConnectionFactory factory)
         {
             this.DbConnectionFactory = factory;
-            this.conn = this.factory.OpenDbConnection();
-        }
-        public EmailAlarmOrmLiteRepository(IDbConnection connection)
-        {
-            if (connection == null) throw new ArgumentNullException("connection");
-            this.conn = connection; 
-        }
-
-        //cleanup
-        public virtual void Dispose()
-        {
-            if (this.conn != null) this.conn.Dispose();
         }
 
         public EMAIL_ALARM Hydrate(EMAIL_ALARM dry)
         {
             EMAIL_ALARM full = null;
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                full = db.Select<EMAIL_ALARM>(q => q.Id == dry.Id).FirstOrDefault();
-                if (full != null)
+                try
                 {
-                    var attendees = db.Select<ATTENDEE, EMAIL_ALARM, REL_EALARMS_ATTENDEES>(
-                        r => r.AttendeeId,
-                        r => r.AlarmId,
-                        a => a.Id == dry.Id);
-                    if (!attendees.NullOrEmpty()) full.Attendees.AddRangeComplement(attendees);
+                    full = db.Select<EMAIL_ALARM>(q => q.Id == dry.Id).FirstOrDefault();
+                    if (full != null)
+                    {
+                        var attendees = db.Select<ATTENDEE, EMAIL_ALARM, REL_EALARMS_ATTENDEES>(
+                            r => r.AttendeeId,
+                            r => r.AlarmId,
+                            a => a.Id == dry.Id);
+                        if (!attendees.NullOrEmpty()) full.Attendees.AddRangeComplement(attendees);
 
-                    var attachbins = db.Select<ATTACH_BINARY, EMAIL_ALARM, REL_EALARMS_ATTACHBINS>(
-                        r => r.AttachmentId,
-                        r => r.AlarmId,
-                        a => a.Id == dry.Id);
-                    if (!attachbins.NullOrEmpty()) full.AttachmentBinaries.AddRangeComplement(attachbins);
+                        var attachbins = db.Select<ATTACH_BINARY, EMAIL_ALARM, REL_EALARMS_ATTACHBINS>(
+                            r => r.AttachmentId,
+                            r => r.AlarmId,
+                            a => a.Id == dry.Id);
+                        if (!attachbins.NullOrEmpty()) full.AttachmentBinaries.AddRangeComplement(attachbins);
 
-                    var attachuris = db.Select<ATTACH_URI, EMAIL_ALARM, REL_EALARMS_ATTACHURIS>(
-                        r => r.AttachmentId,
-                        r => r.AlarmId,
-                        a => a.Id == dry.Id);
-                    if (!attachuris.NullOrEmpty()) full.AttachmentUris.AddRangeComplement(attachuris);
-                    
+                        var attachuris = db.Select<ATTACH_URI, EMAIL_ALARM, REL_EALARMS_ATTACHURIS>(
+                            r => r.AttachmentId,
+                            r => r.AlarmId,
+                            a => a.Id == dry.Id);
+                        if (!attachuris.NullOrEmpty()) full.AttachmentUris.AddRangeComplement(attachuris);
+
+                    }
                 }
+                catch (ArgumentNullException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (InvalidOperationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (ArgumentNullException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
 
             return full?? dry;
         }
 
         public IEnumerable<EMAIL_ALARM> HydrateAll(IEnumerable<EMAIL_ALARM> dry)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                var keys = dry.Select(q => q.Id).ToArray();
-                var full = db.Select<EMAIL_ALARM>(q => Sql.In(q.Id, keys));
-
-                //1. retrieve relationships
-                if (!full.NullOrEmpty())
+                try
                 {
-                    var rattends = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, keys));
-                    var rattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, keys));
-                    var rattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, keys));
+                    var keys = dry.Select(q => q.Id).ToArray();
+                    var full = db.Select<EMAIL_ALARM>(q => Sql.In(q.Id, keys));
 
-                    //2. retrieve secondary entities
-                    var attends = (!rattends.Empty()) ? db.Select<ATTENDEE>(q => Sql.In(q.Id, rattends.Select(r => r.AttendeeId).ToArray())) : null;
-                    var attachbins = (!rattachbins.Empty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToArray())):null;
-                    var attachuris = (!rattachuris.Empty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachuris.Select(r => r.AttachmentId).ToArray())):null;
-
-                    //3. Use Linq to stitch secondary entities to primary entities
-                    full.ForEach(x =>
+                    //1. retrieve relationships
+                    if (!full.NullOrEmpty())
                     {
-                        var xattachbins = from y in attachbins 
-                                          join r in rattachbins on y.Id equals r.AttachmentId 
-                                          join a in dry on r.AlarmId equals a.Id 
-                                          where a.Id == x.Id select y;
-                        if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.AddRangeComplement(xattachbins);
+                        var rattends = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, keys));
+                        var rattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, keys));
+                        var rattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, keys));
+
+                        //2. retrieve secondary entities
+                        var attends = (!rattends.Empty()) ? db.Select<ATTENDEE>(q => Sql.In(q.Id, rattends.Select(r => r.AttendeeId).ToArray())) : null;
+                        var attachbins = (!rattachbins.Empty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToArray())) : null;
+                        var attachuris = (!rattachuris.Empty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachuris.Select(r => r.AttachmentId).ToArray())) : null;
+
+                        //3. Use Linq to stitch secondary entities to primary entities
+                        full.ForEach(x =>
+                        {
+                            var xattachbins = from y in attachbins
+                                              join r in rattachbins on y.Id equals r.AttachmentId
+                                              join a in dry on r.AlarmId equals a.Id
+                                              where a.Id == x.Id
+                                              select y;
+                            if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.AddRangeComplement(xattachbins);
 
 
-                        var xattachuris = from y in attachuris 
-                                          join r in rattachuris on y.Id equals r.AttachmentId 
-                                          join a in dry on r.AlarmId equals a.Id 
-                                          where a.Id == x.Id select y;
-                        if (!xattachuris.NullOrEmpty()) x.AttachmentUris.AddRangeComplement(xattachuris);
+                            var xattachuris = from y in attachuris
+                                              join r in rattachuris on y.Id equals r.AttachmentId
+                                              join a in dry on r.AlarmId equals a.Id
+                                              where a.Id == x.Id
+                                              select y;
+                            if (!xattachuris.NullOrEmpty()) x.AttachmentUris.AddRangeComplement(xattachuris);
 
 
-                        var xattendees = from y in attends 
-                                       join r in rattends on y.Id equals r.AlarmId 
-                                       join a in dry on r.Id equals a.Id 
-                                       where a.Id == x.Id select y;
-                        if (!xattendees.NullOrEmpty()) x.Attendees.AddRangeComplement(xattendees);
+                            var xattendees = from y in attends
+                                             join r in rattends on y.Id equals r.AlarmId
+                                             join a in dry on r.Id equals a.Id
+                                             where a.Id == x.Id
+                                             select y;
+                            if (!xattendees.NullOrEmpty()) x.Attendees.AddRangeComplement(xattendees);
 
-                    }); 
+                        });
+                    }
+
+                    return full ?? dry;
+
                 }
-            
-                return full ?? dry;
-
+                catch (ArgumentNullException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (InvalidOperationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (ArgumentNullException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
 
         }
 
         public EMAIL_ALARM Find(string key )
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                var dry = db.Select<EMAIL_ALARM>(q => q.Id == key).FirstOrDefault();
-                return dry != null ? this.Hydrate(dry) : dry;
+                try
+                {
+                    var dry = db.Select<EMAIL_ALARM>(q => q.Id == key).FirstOrDefault();
+                    return dry != null ? this.Hydrate(dry) : dry;
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public IEnumerable<EMAIL_ALARM> FindAll(IEnumerable<string> keys, int? skip = null, int? take = null)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                var dry = db.Select<EMAIL_ALARM>(q => Sql.In(q.Id, keys.ToArray()), skip, take);
-                return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
+                try
+                {
+                    var dry = db.Select<EMAIL_ALARM>(q => Sql.In(q.Id, keys.ToArray()), skip, take);
+                    return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
+                }
+                catch (ArgumentNullException) { throw; }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public IEnumerable<EMAIL_ALARM> Get(int? skip = null, int? take = null)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                var dry = db.Select<EMAIL_ALARM>(skip, take);
-                return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
+                try
+                {
+                    var dry = db.Select<EMAIL_ALARM>(skip, take);
+                    return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public void Save(EMAIL_ALARM entity)
         {
-            using (var transaction = db.OpenTransaction())
+            using (var db = this.factory.OpenDbConnection())
             {
-                try
+                using (var transaction = db.OpenTransaction())
                 {
-                    //Save dry event entity i.a. without related details
-                    db.Save(entity, transaction);
-
-                    //1. retrieve entity details
-                    var attends = entity.Attendees;
-                    var attachbins = entity.AttachmentBinaries;
-                    var attachuris = entity.AttachmentUris;
-
-                    //2. save details
-                    if (!attends.NullOrEmpty())
+                    try
                     {
-                        db.SaveAll(attends, transaction);
-                        var rattendees = attends.Select(x => new REL_EALARMS_ATTENDEES { AlarmId = entity.Id, AttendeeId = x.Id });
-                        var orattendees = db.Select<REL_EALARMS_ATTENDEES>(q => q.Id == entity.Id && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
-                        if (!orattendees.NullOrEmpty())
-                        {
-                            db.SaveAll(rattendees.Except(orattendees), transaction);
-                            var toremove = orattendees.Except(rattendees);
-                            if (!toremove.NullOrEmpty()) db.Delete<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
-                        }
-                        else db.SaveAll(rattendees, transaction);
-                    }
+                        //Save dry event entity i.a. without related details
+                        db.Save(entity, transaction);
 
-                    if (!attachbins.NullOrEmpty())
+                        //1. retrieve entity details
+                        var attends = entity.Attendees;
+                        var attachbins = entity.AttachmentBinaries;
+                        var attachuris = entity.AttachmentUris;
+
+                        //2. save details
+                        if (!attends.NullOrEmpty())
+                        {
+                            db.SaveAll(attends, transaction);
+                            var rattendees = attends.Select(x => new REL_EALARMS_ATTENDEES { AlarmId = entity.Id, AttendeeId = x.Id });
+                            var orattendees = db.Select<REL_EALARMS_ATTENDEES>(q => q.Id == entity.Id && Sql.In(q.AttendeeId, attends.Select(x => x.Id).ToArray()));
+                            db.SynchronizeAll(rattendees, orattendees, transaction);
+                        }
+
+                        if (!attachbins.NullOrEmpty())
+                        {
+                            db.SaveAll(attachbins, transaction);
+                            var rattachbins = attachbins.Select(x => new REL_EALARMS_ATTACHBINS { AlarmId = entity.Id, AttachmentId = x.Id });
+                            var orattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
+                            db.SynchronizeAll(rattachbins, orattachbins, transaction);
+                        }
+
+                        if (!attachuris.NullOrEmpty())
+                        {
+                            db.SaveAll(attachuris, transaction);
+                            var rattachuris = attachuris.Select(x => new REL_EALARMS_ATTACHURIS { AlarmId = entity.Id, AttachmentId = x.Id });
+                            var orattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray()));
+                            db.SynchronizeAll(rattachuris, orattachuris, transaction);
+                        }
+
+                        transaction.Commit();
+                    }
+                    catch (SecurityException)
                     {
-                        db.SaveAll(attachbins, transaction);
-                        var rattachbins = attachbins.Select(x => new REL_EALARMS_ATTACHBINS { AlarmId = entity.Id, AttachmentId = x.Id });
-                        var orattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
-                        if (!orattachbins.NullOrEmpty())
-                        {
-                            db.SaveAll(rattachbins.Except(orattachbins), transaction);
-                            var toremove = orattachbins.Except(rattachbins);
-                            if (!toremove.NullOrEmpty()) db.Delete<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
-                        }
-                        else db.SaveAll(rattachbins, transaction);
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
                     }
-
-                    if (!attachuris.NullOrEmpty())
+                    catch (InvalidOperationException)
                     {
-                        db.SaveAll(attachuris, transaction);
-                        var rattachuris = attachuris.Select(x => new REL_EALARMS_ATTACHURIS { AlarmId = entity.Id, AttachmentId = x.Id });
-                        var orattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray()));
-                        if (!orattachuris.NullOrEmpty())
-                        {
-                            db.SaveAll(rattachuris.Except(orattachuris), transaction);
-                            var toremove = orattachuris.Except(rattachuris);
-                            if (!toremove.NullOrEmpty()) db.Delete<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
-                        }
-                        else db.SaveAll(rattachuris, transaction);
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
                     }
-
-                    transaction.Commit();
-                }
-                catch (SecurityException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (ApplicationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (Exception)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
+                    catch (ApplicationException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (Exception)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                } 
             }
         }
 
         public void Erase(string key)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                db.Delete<EMAIL_ALARM>(q => q.Id.ToUpper() == key.ToUpper());
+                try
+                {
+                    db.Delete<EMAIL_ALARM>(q => q.Id.ToUpper() == key.ToUpper());
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public void SaveAll(IEnumerable<EMAIL_ALARM> entities)
         {
-            using (var transaction = db.OpenTransaction())
+            using (var db = this.factory.OpenDbConnection())
             {
-                try
+                using (var transaction = db.OpenTransaction())
                 {
-                    db.SaveAll(entities, transaction);
-
-                    //1. retrieve details of events
-                    var attendees = entities.Where(x => x.Attendees.Count() > 0).SelectMany(x => x.Attendees);
-                    var attachbins = entities.Where(x => x.AttachmentBinaries.Count() > 0).SelectMany(x => x.AttachmentBinaries);
-                    var attachuris = entities.Where(x => x.AttachmentUris.Count() > 0).SelectMany(x => x.AttachmentUris);
-
-                    //2. save details of events
-                    if (!attendees.NullOrEmpty())
+                    try
                     {
-                        db.SaveAll(attendees, transaction);
-                        var rattendees = entities.Where(x => !x.Attendees.NullOrEmpty())
-                            .SelectMany(a => a.Attendees.Select(x => new REL_EALARMS_ATTENDEES { Id = a.Id, AttendeeId = x.Id }));
-                        var orattendees = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttendeeId, attendees.Select(x => x.Id).ToArray()));
-                        if (!orattendees.NullOrEmpty())
-                        {
-                            db.SaveAll(rattendees.Except(orattendees), transaction);
-                            var toremove = orattendees.Except(rattendees);
-                            if (!toremove.NullOrEmpty()) db.Delete<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
-                        }
-                        else db.SaveAll(rattendees, transaction);
-                    }
+                        db.SaveAll(entities, transaction);
 
-                    if (!attachbins.NullOrEmpty())
+                        //1. retrieve details of events
+                        var attendees = entities.Where(x => x.Attendees.Count() > 0).SelectMany(x => x.Attendees);
+                        var attachbins = entities.Where(x => x.AttachmentBinaries.Count() > 0).SelectMany(x => x.AttachmentBinaries);
+                        var attachuris = entities.Where(x => x.AttachmentUris.Count() > 0).SelectMany(x => x.AttachmentUris);
+
+                        //2. save details of events
+                        if (!attendees.NullOrEmpty())
+                        {
+                            db.SaveAll(attendees, transaction);
+                            var rattendees = entities.Where(x => !x.Attendees.NullOrEmpty())
+                                .SelectMany(a => a.Attendees.Select(x => new REL_EALARMS_ATTENDEES { Id = a.Id, AttendeeId = x.Id }));
+                            var orattendees = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttendeeId, attendees.Select(x => x.Id).ToArray()));
+                            db.SynchronizeAll(rattendees, orattendees, transaction);
+                        }
+
+                        if (!attachbins.NullOrEmpty())
+                        {
+                            db.SaveAll(attachbins, transaction);
+                            var rattachbins = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty())
+                                .SelectMany(a => a.AttachmentBinaries.Select(x => new REL_EALARMS_ATTACHBINS { Id = a.Id, AttachmentId = x.Id }));
+                            var orattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
+                            db.SynchronizeAll(rattachbins, orattachbins, transaction);
+                        }
+
+                        if (!attachuris.NullOrEmpty())
+                        {
+                            db.SaveAll(attachuris, transaction);
+                            var rattachuris = entities.Where(x => !x.AttachmentUris.NullOrEmpty())
+                                .SelectMany(a => a.AttachmentUris.Select(x => new REL_EALARMS_ATTACHURIS { Id = a.Id, AttachmentId = x.Id }));
+                            var orattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id)));
+                            db.SynchronizeAll(rattachuris, orattachuris, transaction);
+                        }
+
+                        transaction.Commit();
+                    }
+                    catch (SecurityException)
                     {
-                        db.SaveAll(attachbins, transaction);
-                        var rattachbins = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty())
-                            .SelectMany(a => a.AttachmentBinaries.Select(x => new REL_EALARMS_ATTACHBINS { Id = a.Id, AttachmentId = x.Id }));
-                        var orattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
-                        if (!orattachbins.NullOrEmpty())
-                        {
-                            db.SaveAll(rattachbins.Except(orattachbins), transaction);
-                            var toremove = orattachbins.Except(rattachbins);
-                            if (!toremove.NullOrEmpty()) db.Delete<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
-                        }
-                        else db.SaveAll(rattachbins, transaction);
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
                     }
-
-                    if (!attachuris.NullOrEmpty())
+                    catch (InvalidOperationException)
                     {
-                        db.SaveAll(attachuris, transaction);
-                        var rattachuris = entities.Where(x => !x.AttachmentUris.NullOrEmpty())
-                            .SelectMany(a => a.AttachmentUris.Select(x => new REL_EALARMS_ATTACHURIS { Id = a.Id, AttachmentId = x.Id }));
-                        var orattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id)));
-                        if (!orattachuris.NullOrEmpty())
-                        {
-                            db.SaveAll(rattachuris.Except(orattachuris), transaction);
-                            var toremove = orattachuris.Except(rattachuris);
-                            if (!toremove.NullOrEmpty()) db.Delete<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
-                        }
-                        else db.SaveAll(rattachuris, transaction);
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
                     }
-
-                    transaction.Commit();
-                }
-                catch (SecurityException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (ApplicationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
-                catch (Exception)
-                {
-                    try { transaction.Rollback(); }
-                    catch (InvalidOperationException) { throw; }
-                    catch (Exception) { throw; }
-                    throw;
-                }
+                    catch (ApplicationException)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                    catch (Exception)
+                    {
+                        try { transaction.Rollback(); }
+                        catch (InvalidOperationException) { throw; }
+                        catch (Exception) { throw; }
+                        throw;
+                    }
+                } 
             }
 
         }
 
         public void EraseAll(IEnumerable<string> keys)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                db.Delete<EMAIL_ALARM>(q => Sql.In(q.Id, keys.ToArray()));
+                try
+                {
+                    db.Delete<EMAIL_ALARM>(q => Sql.In(q.Id, keys.ToArray()));
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public void EraseAll()
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                db.DeleteAll<EMAIL_ALARM>();
+                try
+                {
+                    db.DeleteAll<EMAIL_ALARM>();
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public void Patch(EMAIL_ALARM source, Expression<Func<EMAIL_ALARM, object>> fields, IEnumerable<string> keys = null)
@@ -1261,125 +1251,111 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 Expression<Func<EMAIL_ALARM, object>> attachbinsexpr = y => y.AttachmentBinaries;
                 Expression<Func<EMAIL_ALARM, object>> attachurisexpr = y => y.AttachmentUris;
 
-                var okeys = (keys != null)
-                    ? db.SelectParam<EMAIL_ALARM, string>(q => q.Id, p => Sql.In(p.Id, keys.ToArray())).ToArray()
-                    : db.SelectParam<EMAIL_ALARM>(q => q.Id).ToArray();
-
-                using (var transaction = db.BeginTransaction())
+                using (var db = this.factory.OpenDbConnection())
                 {
-                    try
+                    var okeys = (keys != null)
+                ? db.SelectParam<EMAIL_ALARM, string>(q => q.Id, p => Sql.In(p.Id, keys.ToArray())).ToArray()
+                : db.SelectParam<EMAIL_ALARM>(q => q.Id).ToArray();
+
+                    using (var transaction = db.BeginTransaction())
                     {
-                        if (selection.Contains(attendsexpr.GetMemberName()))
+                        try
                         {
-                            var attendees = source.Attendees;
-                            if (!attendees.NullOrEmpty())
+                            if (selection.Contains(attendsexpr.GetMemberName()))
                             {
-                                db.SaveAll(attendees, transaction);
-                                var rattendees = okeys.SelectMany(x => attendees.Select(y => new REL_EALARMS_ATTENDEES 
-                                { 
-                                    Id = this.KeyGenerator.GetNextKey(), 
-                                    AlarmId = x, 
-                                    AttendeeId = y.Id 
-                                }));
-                                var orattendees = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.AlarmId, okeys));
-                                if (!orattendees.NullOrEmpty())
+                                var attendees = source.Attendees;
+                                if (!attendees.NullOrEmpty())
                                 {
-                                    db.SaveAll(rattendees.Except(orattendees), transaction);
-                                    var toremove = orattendees.Except(rattendees);
-                                    if (!toremove.NullOrEmpty()) db.Delete<REL_AALARMS_ATTACHBINS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
+                                    db.SaveAll(attendees, transaction);
+                                    var rattendees = okeys.SelectMany(x => attendees.Select(y => new REL_EALARMS_ATTENDEES
+                                    {
+                                        Id = this.KeyGenerator.GetNextKey(),
+                                        AlarmId = x,
+                                        AttendeeId = y.Id
+                                    }));
+                                    var orattendees = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.AlarmId, okeys));
+                                    db.SynchronizeAll(rattendees, orattendees, transaction);
                                 }
-                                else db.SaveAll(rattendees, transaction);
+                            }
+
+                            if (selection.Contains(attachbinsexpr.GetMemberName()))
+                            {
+                                var attachbins = source.AttachmentBinaries;
+                                if (!attachbins.NullOrEmpty())
+                                {
+                                    db.SaveAll(attachbins, transaction);
+                                    var rattachbins = okeys.SelectMany(x => attachbins.Select(y => new REL_EALARMS_ATTACHBINS
+                                    {
+                                        Id = this.KeyGenerator.GetNextKey(),
+                                        AlarmId = x,
+                                        AttachmentId = y.Id
+                                    }));
+                                    var orattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.AlarmId, okeys));
+                                    db.SynchronizeAll(rattachbins, orattachbins, transaction);
+                                }
+                            }
+
+                            if (selection.Contains(attachurisexpr.GetMemberName()))
+                            {
+                                var attachuris = source.AttachmentBinaries;
+                                if (!attachuris.NullOrEmpty())
+                                {
+                                    db.SaveAll(attachuris, transaction);
+                                    var rattachuris = okeys.SelectMany(x => attachuris.Select(y => new REL_EALARMS_ATTACHURIS
+                                    {
+                                        Id = this.KeyGenerator.GetNextKey(),
+                                        AlarmId = x,
+                                        AttachmentId = y.Id
+                                    }));
+                                    var orattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.AlarmId, okeys));
+                                    db.SynchronizeAll(rattachuris, orattachuris, transaction);
+                                }
+                            }
+
+                            //6. Get list of selected primitives
+                            var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
+
+                            //7. Update matching event primitives
+                            if (!sprimitives.NullOrEmpty())
+                            {
+                                var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
+                                var patchexpr = patchstr.CompileToExpressionFunc<EMAIL_ALARM, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(EMAIL_ALARM).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
+
+                                if (!okeys.NullOrEmpty()) db.UpdateOnly<EMAIL_ALARM, object>(source, patchexpr, q => Sql.In(q.Id, okeys.ToArray()));
+                                else db.UpdateOnly<EMAIL_ALARM, object>(source, patchexpr);
                             }
                         }
-
-                        if (selection.Contains(attachbinsexpr.GetMemberName()))
+                        catch (SecurityException)
                         {
-                            var attachbins = source.AttachmentBinaries;
-                            if (!attachbins.NullOrEmpty())
-                            {
-                                db.SaveAll(attachbins, transaction);
-                                var rattachbins = okeys.SelectMany(x => attachbins.Select(y => new REL_EALARMS_ATTACHBINS
-                                {
-                                    Id = this.KeyGenerator.GetNextKey(),
-                                    AlarmId = x,
-                                    AttachmentId = y.Id
-                                }));
-                                var orattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.AlarmId, okeys));
-                                if (!orattachbins.NullOrEmpty())
-                                {
-                                    db.SaveAll(rattachbins.Except(orattachbins), transaction);
-                                    var toremove = orattachbins.Except(rattachbins);
-                                    if (!toremove.NullOrEmpty()) db.Delete<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
-                                }
-                                else db.SaveAll(rattachbins, transaction);
-                            }
+                            try { transaction.Rollback(); }
+                            catch (InvalidOperationException) { throw; }
+                            catch (Exception) { throw; }
+                            throw;
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            try { transaction.Rollback(); }
+                            catch (InvalidOperationException) { throw; }
+                            catch (Exception) { throw; }
+                            throw;
+                        }
+                        catch (ApplicationException)
+                        {
+                            try { transaction.Rollback(); }
+                            catch (InvalidOperationException) { throw; }
+                            catch (Exception) { throw; }
+                            throw;
+                        }
+                        catch (Exception)
+                        {
+                            try { transaction.Rollback(); }
+                            catch (InvalidOperationException) { throw; }
+                            catch (Exception) { throw; }
+                            throw;
                         }
 
-                        if (selection.Contains(attachurisexpr.GetMemberName()))
-                        {
-                            var attachuris = source.AttachmentBinaries;
-                            if (!attachuris.NullOrEmpty())
-                            {
-                                db.SaveAll(attachuris, transaction);
-                                var rattachuris = okeys.SelectMany(x => attachuris.Select(y => new REL_EALARMS_ATTACHURIS
-                                {
-                                    Id = this.KeyGenerator.GetNextKey(),
-                                    AlarmId = x,
-                                    AttachmentId = y.Id
-                                }));
-                                var orattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.AlarmId, okeys));
-                                if (!orattachuris.NullOrEmpty())
-                                {
-                                    db.SaveAll(rattachuris.Except(orattachuris), transaction);
-                                    var toremove = orattachuris.Except(rattachuris);
-                                    if (!toremove.NullOrEmpty()) db.Delete<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, toremove.Select(x => x.Id).ToArray()));
-                                }
-                                else db.SaveAll(rattachuris, transaction);
-                            }
-                        }
-
-                        //6. Get list of selected primitives
-                        var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
-
-                        //7. Update matching event primitives
-                        if (!sprimitives.NullOrEmpty())
-                        {
-                            var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
-                            var patchexpr = patchstr.CompileToExpressionFunc<EMAIL_ALARM, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(EMAIL_ALARM).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
-
-                            if (!okeys.NullOrEmpty()) db.UpdateOnly<EMAIL_ALARM, object>(source, patchexpr, q => Sql.In(q.Id, okeys.ToArray()));
-                            else db.UpdateOnly<EMAIL_ALARM, object>(source, patchexpr);
-                        }
                     }
-                    catch (SecurityException)
-                    {
-                        try { transaction.Rollback(); }
-                        catch (InvalidOperationException) { throw; }
-                        catch (Exception) { throw; }
-                        throw;
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        try { transaction.Rollback(); }
-                        catch (InvalidOperationException) { throw; }
-                        catch (Exception) { throw; }
-                        throw;
-                    }
-                    catch (ApplicationException)
-                    {
-                        try { transaction.Rollback(); }
-                        catch (InvalidOperationException) { throw; }
-                        catch (Exception) { throw; }
-                        throw;
-                    }
-                    catch (Exception)
-                    {
-                        try { transaction.Rollback(); }
-                        catch (InvalidOperationException) { throw; }
-                        catch (Exception) { throw; }
-                        throw;
-                    }
- 
+                    
                 }
             }
 
@@ -1387,27 +1363,33 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 
         public bool ContainsKey(string key)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                return db.Count<EMAIL_ALARM>(q => q.Id == key) != 0;
+                try
+                {
+                    return db.Count<EMAIL_ALARM>(q => q.Id == key) != 0;
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public bool ContainsKeys(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
         {
-            try
+            using (var db = this.factory.OpenDbConnection())
             {
-                var dkeys = keys.Distinct().ToArray();
-                if (mode == ExpectationMode.pessimistic || mode == ExpectationMode.unknown)
-                    return db.Count<EMAIL_ALARM>(q => Sql.In(q.Id, dkeys)) == dkeys.Count();
-                else return db.Count<EMAIL_ALARM>(q => Sql.In(q.Id, dkeys)) != 0;
+                try
+                {
+                    var dkeys = keys.Distinct().ToArray();
+                    if (mode == ExpectationMode.pessimistic || mode == ExpectationMode.unknown)
+                        return db.Count<EMAIL_ALARM>(q => Sql.In(q.Id, dkeys)) == dkeys.Count();
+                    else return db.Count<EMAIL_ALARM>(q => Sql.In(q.Id, dkeys)) != 0;
+                }
+                catch (InvalidOperationException) { throw; }
+                catch (ApplicationException) { throw; }
+                catch (Exception) { throw; } 
             }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
-            catch (Exception) { throw; }
 
         }
 
@@ -1424,7 +1406,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ArgumentNullException) { throw; }
         }
 
-        public IEnumerable<EMAIL_ALARM> Dehydrate(IEnumerable<EMAIL_ALARM> full)
+        public IEnumerable<EMAIL_ALARM> DehydrateAll(IEnumerable<EMAIL_ALARM> full)
         {
             try
             {

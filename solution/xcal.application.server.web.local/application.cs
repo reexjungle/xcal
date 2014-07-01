@@ -95,6 +95,7 @@ namespace reexmonkey.xcal.application.server.web.local
                 Properties.Settings.Default.mysql_server,
                 container.Resolve<IOrmLiteDialectProvider>()));
 
+
             #endregion
 
             #region Create databases and corresponding tables

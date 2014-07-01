@@ -4,11 +4,12 @@ using System.Runtime.Serialization;
 using ServiceStack.OrmLite;
 using ServiceStack.DataAnnotations;
 using reexmonkey.xcal.domain.models;
+using reexmonkey.foundation.essentials.contracts;
 
 namespace reexmonkey.xcal.service.repositories.concretes.relations
 {
 
-    public class REL_AALARMS_ATTACHBINS : IEquatable<REL_AALARMS_ATTACHBINS>
+    public class REL_AALARMS_ATTACHBINS : IEquatable<REL_AALARMS_ATTACHBINS>, IContainsKey<string>
     {
 
         [Index(true)]
@@ -56,7 +57,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_AALARMS_ATTACHURIS : IEquatable<REL_AALARMS_ATTACHURIS>
+    public class REL_AALARMS_ATTACHURIS : IEquatable<REL_AALARMS_ATTACHURIS>, IContainsKey<string>
     {
 
         [Index(true)]
@@ -102,7 +103,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EALARMS_ATTENDEES: IEquatable<REL_EALARMS_ATTENDEES>
+    public class REL_EALARMS_ATTENDEES: IEquatable<REL_EALARMS_ATTENDEES>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-organizer relation
@@ -155,7 +156,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EALARMS_ATTACHBINS : IEquatable<REL_EALARMS_ATTACHBINS>
+    public class REL_EALARMS_ATTACHBINS : IEquatable<REL_EALARMS_ATTACHBINS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-organizer relation
@@ -208,7 +209,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_EALARMS_ATTACHURIS : IEquatable<REL_EALARMS_ATTACHURIS>
+    public class REL_EALARMS_ATTACHURIS : IEquatable<REL_EALARMS_ATTACHURIS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-organizer relation

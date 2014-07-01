@@ -1408,7 +1408,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                             if (selection.Contains(descexpr.GetMemberName())) x.Summary = source.Summary;
                         });
 
-                        transaction.QueueCommand(x => x.StoreAll(this.Dehydrate(entities)));
+                        transaction.QueueCommand(x => x.StoreAll(this.DehydrateAll(entities)));
                     }
 
                     #endregion
@@ -1590,7 +1590,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
         }
 
-        public IEnumerable<EMAIL_ALARM> Dehydrate(IEnumerable<EMAIL_ALARM> full)
+        public IEnumerable<EMAIL_ALARM> DehydrateAll(IEnumerable<EMAIL_ALARM> full)
         {
             try
             {

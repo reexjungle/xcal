@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using ServiceStack.OrmLite;
 using ServiceStack.Common.Utils;
+using reexmonkey.foundation.essentials.contracts;
 using reexmonkey.foundation.essentials.concretes;
 
 namespace reexmonkey.technical.data.concretes.extensions.ormlite
@@ -1925,6 +1926,28 @@ namespace reexmonkey.technical.data.concretes.extensions.ormlite
         }
 
         #endregion
+
+
+        public static void SynchronizeAll<T, Tkey>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities, IDbTransaction transaction)
+            where Tkey : IEquatable<Tkey>, IComparable<Tkey>
+            where T : class, IContainsKey<Tkey>, new()
+        {
+            if (!oentities.NullOrEmpty())
+            {
+                var incoming = entities.Except(oentities).ToArray();
+                if (!incoming.NullOrEmpty()) db.SaveAll(incoming, transaction);
+                var outgoing = oentities.Except(entities).ToArray();
+                if (!outgoing.NullOrEmpty()) db.DeleteByIds<T>(outgoing.Select(y => y.Id).ToArray());
+
+            }
+            else db.SaveAll(entities);
+        }
+
+        public static void SynchronizeAll<T>(this IDbConnection redis, IEnumerable<T> entities, IEnumerable<T> oentities, IDbTransaction transaction)
+    where T : class, IContainsKey<string>, new()
+        {
+            redis.SynchronizeAll<T, string>(entities, oentities, transaction);
+        }
 
     }
 }
