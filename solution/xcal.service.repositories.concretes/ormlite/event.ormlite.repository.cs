@@ -793,13 +793,12 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             var ealarms = entities.Where(x => !x.EmailAlarms.NullOrEmpty()) .SelectMany(x => x.EmailAlarms);
 
             #endregion
-                    
-            var keys = entities.Select(x => x.Id).ToArray();
-
+                   
             #region 2. save attributes of entities
 
             try
             {
+                var keys = entities.Select(x => x.Id).ToArray();
                 db.SaveAll(entities);
 
                 if (!orgs.NullOrEmpty())

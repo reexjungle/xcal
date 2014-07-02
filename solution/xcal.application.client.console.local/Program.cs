@@ -40,7 +40,7 @@ namespace xcal.application.client.console.local
                 ServiceClient = container.Resolve<ServiceClientBase>()
             };
 
-            manager.MaintainMultipleCalendars();
+            manager.MaintainMultipleCalendarsWithEvents();
             
             //emanager.PublishMinimalEvent();
 

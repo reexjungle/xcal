@@ -99,10 +99,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 
         public IEnumerable<VCALENDAR> HydrateAll(IEnumerable<VCALENDAR> dry)
         {
-            IEnumerable<VCALENDAR> full = dry;
+            var full = dry.ToList();
             try
             {
-                full = dry.ToList();
                 var keys = full.Select(q => q.Id).ToArray();
                 var okeys = db.SelectParam<VCALENDAR, string>(q => q.Id, p => Sql.In(p.Id, keys));
                 if (!okeys.NullOrEmpty())
@@ -110,8 +109,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     var revents = this.db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, okeys));
                     if (!revents.NullOrEmpty())
                     {
-                        var events = this.EventRepository.HydrateAll(this.EventRepository.FindAll(revents.Select(x => x.EventId))).ToList();
-                        full.Select(x =>
+                        var events = this.EventRepository.FindAll(revents.Select(x => x.EventId)).ToList();
+                        full.ForEach(x =>
                         {
                             var xevents = from y in events
                                           join r in revents on y.Id equals r.EventId
@@ -119,7 +118,6 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                           where c.Id == x.Id
                                           select y;
                             if (!xevents.NullOrEmpty()) x.Events.AddRangeComplement(xevents);
-                            return x;
                         });
                     }
                 }
@@ -273,20 +271,19 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             try
             {
                 var keys = entities.Select(x => x.Id).ToArray();
+                db.SaveAll(entities.Distinct());
+
                 var events = entities.Where(x => !x.Events.NullOrEmpty()).SelectMany(x => x.Events);
-
-                db.SaveAll(entities);
-
                 if (!events.NullOrEmpty())
                 {
-                    this.EventRepository.SaveAll(events);
+                    this.EventRepository.SaveAll(events.Distinct());
                     var revents = entities.Where(x => !x.Events.NullOrEmpty()).SelectMany(c => c.Events.Select(x => new REL_CALENDARS_EVENTS
                     {
                         Id = this.KeyGenerator.GetNextKey(),
                         CalendarId = c.Id,
                         EventId = x.Id
                     }));
-                    var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.EventId, keys));
+                    var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, keys));
                     db.SynchronizeAll(revents, orevents);
                 }
 

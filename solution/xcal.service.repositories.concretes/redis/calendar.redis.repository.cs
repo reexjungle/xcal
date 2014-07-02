@@ -86,7 +86,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
         public IEnumerable<VCALENDAR> HydrateAll(IEnumerable<VCALENDAR> dry)
         {
-            var full = dry;
+            var full = dry.ToList();
             if (!full.NullOrEmpty())
             {
                 var keys = dry.Select(x => x.Id).ToArray();
@@ -94,7 +94,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                 if(!revents.NullOrEmpty())
                 {
                    var events = this.EventRepository.FindAll(revents.Select(x => x.EventId));
-                   full.Select(x =>
+                   full.ForEach(x =>
                    {
                        var xevents = from y in events
                                      join r in revents on y.Id equals r.EventId
@@ -102,7 +102,6 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                      where c.Id == x.Id
                                      select y;
                        if (!xevents.NullOrEmpty()) x.Events.AddRangeComplement(xevents);
-                       return x;
                    });
                 }
             }

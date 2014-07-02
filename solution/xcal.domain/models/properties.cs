@@ -1489,12 +1489,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override int GetHashCode()
         {
-            return this.Address.GetHashCode() ^
-                ((this.CN != null) ? this.CN.GetHashCode() : 0) ^
-                ((this.SentBy != null) ? this.SentBy.GetHashCode(): 0) ^
-                ((this.Directory != null) ? this.Directory.GetHashCode(): 0) ^
-                ((this.Language != null) ? this.Language.GetHashCode() : 0);
-            ;
+            return this.Id.GetHashCode();
         }
 
         public static bool operator ==(ORGANIZER a, ORGANIZER b)
@@ -1600,10 +1595,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override int GetHashCode()
         {
-            return  this.Value.GetHashCode() ^
-                    ((this.TimeZoneId != null) ? this.TimeZoneId.GetHashCode() : 0) ^
-                    this.Range.GetHashCode();
-
+            return this.Id.GetHashCode();
         }
 
         public static bool operator ==(RECURRENCE_ID a, RECURRENCE_ID b)

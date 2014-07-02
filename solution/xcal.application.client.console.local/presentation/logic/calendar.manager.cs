@@ -139,5 +139,90 @@ namespace xcal.application.client.console.local.presentation.logic
 
         }
 
+        public void MaintainMultipleCalendarsWithEvents()
+        {
+            client.Post(new FlushDatabase { Hard = false });
+
+            //multiple calendars
+            var calendars = new VCALENDAR[5];
+            for (int i = 0; i < 5; i++)
+            {
+                calendars[i] = new VCALENDAR
+                {
+                    Id = this.GuidKeyGenerator.GetNextKey(),
+                    ProdId = this.fpikeygen.GetNextKey()
+                };
+            }
+
+            //customize calendars
+            calendars[0].Method = METHOD.PUBLISH;
+            calendars[0].Version = "1.0";
+            calendars[1].Method = METHOD.REQUEST;
+            calendars[1].Version = "2.0";
+            calendars[2].Method = METHOD.REFRESH;
+            calendars[2].Version = "3.0";
+            calendars[3].Method = METHOD.ADD;
+            calendars[2].Version = "4.0";
+            calendars[4].Method = METHOD.CANCEL;
+            calendars[4].Version = "5.0";
+
+            //multiple events
+            var events = new VEVENT[5];
+            for (int i = 0; i < 5; i++)
+            {
+                events[i] = new VEVENT
+                {
+                    Uid = GuidKeyGenerator.GetNextKey(),
+                    RecurrenceId = new RECURRENCE_ID
+                    {
+                        Id = GuidKeyGenerator.GetNextKey(),
+                        Range = RANGE.THISANDFUTURE,
+                        Value = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc))
+                    },
+                    RecurrenceRule = new RECUR
+                    {
+                        Id = GuidKeyGenerator.GetNextKey(),
+                        FREQ = FREQ.DAILY,
+                        Format = RecurFormat.DateTime,
+                        UNTIL = new DATE_TIME(new DateTime(2014, 6, 25, 18, 03, 08, 0, DateTimeKind.Utc))
+                    },
+
+                    Organizer = new ORGANIZER
+                    {
+                        Id = GuidKeyGenerator.GetNextKey(),
+                        CN = "Emmanuel Ngwane",
+                        Address = new URI("ngwanemk@gmail.com"),
+                        Language = new LANGUAGE("en")
+                    },
+                    Location = new LOCATION
+                    {
+                        Text = "Düsseldorf",
+                        Language = new LANGUAGE("de", "DE")
+                    },
+
+                    Summary = new SUMMARY("Test Meeting"),
+                    Description = new DESCRIPTION("A test meeting for freaks"),
+                    Start = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc)),
+                    End = new DATE_TIME(new DateTime(2014, 6, 15, 18, 03, 08, 0, DateTimeKind.Utc)),
+                    Status = STATUS.CONFIRMED,
+                    Transparency = TRANSP.TRANSPARENT,
+                    Classification = CLASS.PUBLIC
+                };
+            }
+
+            calendars[0].Events.AddRange(new VEVENT[] { events[0], events[1], events[2] }); //1,2,3
+            calendars[1].Events.AddRange(new VEVENT[] { events[2] }); //1
+            calendars[2].Events.AddRange(new VEVENT[] { events[0], events[1], events[2], events[3] }); //1, 2, 3, 4
+            calendars[3].Events.AddRange(new VEVENT[] { events[2], events[4] }); //3, 5
+            calendars[4].Events.AddRange(events); //all
+
+            this.client.Post(new AddCalendars { Calendars = calendars.ToList() });
+            var keys = calendars.Select(x => x.Id).ToList();
+
+            var retrieved = this.client.Post(new FindCalendars { CalendarIds = keys });
+            var count = retrieved.Count();
+
+        }
+
     }
 }

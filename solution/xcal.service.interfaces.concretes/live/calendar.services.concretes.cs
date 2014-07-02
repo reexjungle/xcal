@@ -240,12 +240,11 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                     calendars = this.repository.FindAll(request.CalendarIds, (request.Page.Value - 1) * request.Size.Value, request.Size.Value);
                 }
                 else calendars = this.repository.FindAll(request.CalendarIds);
-
                 return !calendars.NullOrEmpty() ? calendars.ToList() : new List<VCALENDAR>();
             }
+            catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
         public List<VCALENDAR> Get (GetCalendars request)

@@ -236,5 +236,132 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             var deleted = this.client.Get(new FindCalendar { CalendarId = calendar.Id });
             Assert.AreEqual(deleted, null);
         }
+
+        [TestMethod]
+        public void MaintainMultipleCalendarsWithEvents()
+        {
+            this.Teardown();
+
+            //multiple calendars
+            var calendars = new VCALENDAR[5];
+            for (int i = 0; i < 5; i++)
+            {
+                calendars[i] = new VCALENDAR
+                {
+                    Id = this.guidkeygen.GetNextKey(),
+                    ProdId = this.fpikeygen.GetNextKey()
+                };
+            }
+
+            //customize calendars
+            calendars[0].Method = METHOD.PUBLISH;
+            calendars[0].Version = "1.0";
+            calendars[1].Method = METHOD.REQUEST;
+            calendars[1].Version = "2.0";
+            calendars[2].Method = METHOD.REFRESH;
+            calendars[2].Version = "3.0";
+            calendars[3].Method = METHOD.ADD;
+            calendars[3].Version = "4.0";
+            calendars[4].Method = METHOD.CANCEL;
+            calendars[4].Version = "5.0";
+
+            //multiple events
+            var events = new VEVENT[5];
+            for (int i = 0; i < 5; i++)
+            {
+                events[i] = new VEVENT
+                {
+                    Uid = guidkeygen.GetNextKey(),
+                    RecurrenceId = new RECURRENCE_ID
+                    {
+                        Id = guidkeygen.GetNextKey(),
+                        Range = RANGE.THISANDFUTURE,
+                        Value = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc))
+                    },
+                    RecurrenceRule = new RECUR
+                    {
+                        Id = guidkeygen.GetNextKey(),
+                        FREQ = FREQ.DAILY,
+                        Format = RecurFormat.DateTime,
+                        UNTIL = new DATE_TIME(new DateTime(2014, 6, 25, 18, 03, 08, 0, DateTimeKind.Utc))
+                    },
+
+                    Organizer = new ORGANIZER
+                    {
+                        Id = guidkeygen.GetNextKey(),
+                        CN = "Emmanuel Ngwane",
+                        Address = new URI("ngwanemk@gmail.com"),
+                        Language = new LANGUAGE("en")
+                    },
+                    Location = new LOCATION
+                    {
+                        Text = "Düsseldorf",
+                        Language = new LANGUAGE("de", "DE")
+                    },
+
+                    Summary = new SUMMARY("Test Meeting"),
+                    Description = new DESCRIPTION("A test meeting for freaks"),
+                    Start = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc)),
+                    End = new DATE_TIME(new DateTime(2014, 6, 15, 18, 03, 08, 0, DateTimeKind.Utc)),
+                    Status = STATUS.CONFIRMED,
+                    Transparency = TRANSP.TRANSPARENT,
+                    Classification = CLASS.PUBLIC
+                };
+            }
+
+            calendars[0].Events.AddRange(new VEVENT[]{events[0], events[1], events[2]}); 
+            calendars[1].Events.AddRange(new VEVENT[]{events[2]}); 
+            calendars[2].Events.AddRange(new VEVENT[]{events[0], events[1], events[2], events[3]});
+            calendars[3].Events.AddRange(new VEVENT[]{events[2], events[4]}); 
+            calendars[4].Events.AddRange(events);
+
+            this.client.Post(new AddCalendars { Calendars = calendars.ToList() });
+            var keys = calendars.Select(x => x.Id).ToList();
+
+            var retrieved = this.client.Post(new FindCalendars { CalendarIds = keys });
+            Assert.AreEqual(retrieved.Count, 5);
+            Assert.AreEqual(retrieved.Where(x => x.Version.StartsWith("1")).First().Events.Count, 3);
+            Assert.AreEqual(retrieved.Where(x => x.Version.StartsWith("2")).First().Events.Count, 1);
+            Assert.AreEqual(retrieved.Where(x => x.Version.StartsWith("3")).First().Events.Count, 4);
+            Assert.AreEqual(retrieved.Where(x => x.Version.StartsWith("4")).First().Events.Count, 2);
+            Assert.AreEqual(retrieved.Where(x => x.Version.StartsWith("5")).First().Events.Count, 5);
+
+            //remove 1 event from each and update
+            foreach(var cal in calendars) cal.Events.RemoveRange(0, 1);
+
+            this.client.Put(new UpdateCalendars {  Calendars = calendars.ToList() });
+            retrieved = this.client.Post(new FindCalendars { CalendarIds = keys });
+            Assert.AreEqual(retrieved.Where(x => x.Version.StartsWith("1")).First().Events.Count, 2);
+            Assert.AreEqual(retrieved.Where(x => x.Version.StartsWith("2")).First().Events.Count, 0);
+            Assert.AreEqual(retrieved.Where(x => x.Version.StartsWith("3")).First().Events.Count, 3);
+            Assert.AreEqual(retrieved.Where(x => x.Version.StartsWith("4")).First().Events.Count, 1);
+            Assert.AreEqual(retrieved.Where(x => x.Version.StartsWith("5")).First().Events.Count, 4);
+
+
+            //add some more events and update
+            calendars[0].Events.AddRange(new VEVENT[] { events[0], events[1], events[2], events[3] });
+            calendars[1].Events.AddRange(new VEVENT[] { events[1], events[4] });
+            calendars[2].Events.AddRange(new VEVENT[] { events[1], events[4] });
+            calendars[3].Events.AddRange(new VEVENT[] {events[3], events[2], events[4] });
+            calendars[4].Events.Add(events[3]);
+            this.client.Put(new UpdateCalendars { Calendars = calendars.ToList() });
+
+            retrieved = this.client.Post(new FindCalendars { CalendarIds = keys });
+            Assert.AreEqual(retrieved.Where(x => x.Version.StartsWith("1")).First().Events.Distinct().Count(), 4);
+            Assert.AreEqual(retrieved.Where(x => x.Version.StartsWith("2")).First().Events.Distinct().Count(), 2);
+            Assert.AreEqual(retrieved.Where(x => x.Version.StartsWith("3")).First().Events.Distinct().Count(), 4);
+            Assert.AreEqual(retrieved.Where(x => x.Version.StartsWith("4")).First().Events.Distinct().Count(), 3);
+            Assert.AreEqual(retrieved.Where(x => x.Version.StartsWith("5")).First().Events.Distinct().Count(), 4);
+
+
+            this.client.Patch(new PatchCalendars { Scale = CALSCALE.INDIAN });
+            var patched = this.client.Post(new FindCalendars { CalendarIds = keys });
+            foreach(var cal in patched) Assert.AreEqual(cal.Calscale, CALSCALE.INDIAN);
+
+
+            this.client.Delete(new DeleteCalendars { CalendarIds = keys });
+            var deleted = this.client.Post(new FindCalendars { CalendarIds = keys });
+            Assert.AreEqual(deleted.Count, 0);
+        }
     }
 }
