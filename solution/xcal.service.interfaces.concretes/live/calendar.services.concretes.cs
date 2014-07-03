@@ -177,7 +177,7 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 };
 
                 var fieldlist = new List<string>();
-                if (!string.IsNullOrEmpty(source.ProdId) || !string.IsNullOrEmpty(source.ProdId)) fieldlist.Add("ProdId");
+                if (!string.IsNullOrEmpty(source.ProdId) || !string.IsNullOrWhiteSpace(source.ProdId)) fieldlist.Add("ProdId");
                 if (source.Calscale != default(CALSCALE)) fieldlist.Add("Calscale");
                 if (source.Method != default(METHOD)) fieldlist.Add("Method");
                 if (!source.Events.NullOrEmpty()) fieldlist.Add("Events");

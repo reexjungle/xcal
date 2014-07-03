@@ -163,6 +163,7 @@ namespace reexmonkey.xcal.domain.operations
 
         [DataMember]
         public int? Size { get; set; }
+
     }
 
 
