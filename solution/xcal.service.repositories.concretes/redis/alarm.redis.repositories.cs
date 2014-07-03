@@ -85,7 +85,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         ? allkeys.Intersect(keys.Select(x => UrnId.GetStringId(x)))
                         : new List<string>();
                     var dry = this.redis.As<AUDIO_ALARM>().GetByIds(filtered);
-                    return !dry.NullOrEmpty() ? this.Hydrate(dry) : dry;
+                    return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
                 }
                 else
                 {
@@ -93,7 +93,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         ? allkeys.Intersect(keys.Select(x => UrnId.GetStringId(x)))
                         : new List<string>();
                     var dry = this.redis.As<AUDIO_ALARM>().GetByIds(filtered);
-                    return !dry.NullOrEmpty() ? this.Hydrate(dry) : dry;
+                    return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -114,7 +114,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         ? allkeys.Skip(skip.Value).Take(take.Value)
                         : allkeys;
                     var dry = this.redis.As<AUDIO_ALARM>().GetValues(selected.ToList());
-                    return !dry.NullOrEmpty() ? this.Hydrate(dry) : dry;
+                    return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -520,7 +520,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
             return full ?? dry;
         }
 
-        public IEnumerable<AUDIO_ALARM> Hydrate(IEnumerable<AUDIO_ALARM> dry)
+        public IEnumerable<AUDIO_ALARM> HydrateAll(IEnumerable<AUDIO_ALARM> dry)
         {
             var full = dry.ToList();
             var keys = full.Select(x => x.Id).Distinct().ToList();

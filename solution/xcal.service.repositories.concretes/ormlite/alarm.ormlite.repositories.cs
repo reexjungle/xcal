@@ -77,7 +77,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             try
             {
                 var dry = db.Select<AUDIO_ALARM>(q => Sql.In(q.Id, keys.ToArray()), skip, take);
-                return !dry.NullOrEmpty() ? this.Hydrate(dry) : dry;
+                return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
@@ -89,7 +89,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             try
             {
                 var dry = db.Select<AUDIO_ALARM>(skip, take);
-                return !dry.NullOrEmpty() ? this.Hydrate(dry) : dry;
+                return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
             }
             catch (InvalidOperationException) { throw; }
             catch (Exception) { throw; } 
@@ -345,7 +345,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             return full ?? dry;
         }
 
-        public IEnumerable<AUDIO_ALARM> Hydrate(IEnumerable<AUDIO_ALARM> dry)
+        public IEnumerable<AUDIO_ALARM> HydrateAll(IEnumerable<AUDIO_ALARM> dry)
         {
             List<AUDIO_ALARM> full = null;
             try

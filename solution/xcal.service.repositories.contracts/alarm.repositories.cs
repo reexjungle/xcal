@@ -29,7 +29,7 @@ namespace reexmonkey.xcal.service.repositories.contracts
         /// </summary>
         /// <param name="dry">The sparse audio alarm entities to be populated</param>
         /// <returns>Populated audio alarm entities</returns>
-        IEnumerable<AUDIO_ALARM> Hydrate(IEnumerable<AUDIO_ALARM> dry);
+        IEnumerable<AUDIO_ALARM> HydrateAll(IEnumerable<AUDIO_ALARM> dry);
 
         /// <summary>
         /// Depopulates aggregate entities from event
