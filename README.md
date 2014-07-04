@@ -1,8 +1,7 @@
-xcal
+xCal
 ====
 
-Web Service implementation of the iCalendar protocol as specified by RFC 5545
-
+Web Service implementation of iCalendar as specified by the internet protocol RFC 5545
 
 
 
@@ -21,7 +20,7 @@ Contact
 
 License
 =======
-*xCal is built and released under the [FreeBSD](http://opensource.org/licenses/BSD-2-Clause) License as explicitly stated below:*
+*xCal source code is written and released under the [FreeBSD](http://opensource.org/licenses/BSD-2-Clause) License as explicitly stated below:*
 
 
 
