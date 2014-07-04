@@ -1,7 +1,7 @@
 xCal
 ====
 
-xCal is an implementation of the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format as specified by the internet protocol [RFC 5545](http://tools.ietf.org/html/rfc5546) and deployed from web servers as a service. In other words, xCal is xCalendar as a Service (**XaaS**).
+xCal is an implementation of the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format as specified by the internet protocol [RFC 5545](http://tools.ietf.org/html/rfc5546) and deployed from web servers as a service. In other words, xCal is iCalendar as a Service (**iCaaS**).
 
 
 
