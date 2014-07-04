@@ -1,9 +1,8 @@
 xCal
 ====
 
-xCal is an implementation of the iCalendar format as specified by the internet protocol [RFC 5545](http://tools.ietf.org/html/rfc5546)
+xCal is an implementation of the iCalendar format as specified by the internet protocol [RFC 5545](http://tools.ietf.org/html/rfc5546).
 
-*...however this should not be confused with the xml representation of the iCalendar format (see [RFC 6321](http://tools.ietf.org/html/rfc6321))* 
 
 
 Why xCal?
@@ -11,6 +10,9 @@ Why xCal?
 
 
 
+xCal Format?
+============
+[RFC 6321](http://tools.ietf.org/html/rfc6321) specifies an xml representation of the iCalendar format
 
 
 
