@@ -7,7 +7,14 @@ xCal is an implementation of the [iCalendar](http://en.wikipedia.org/wiki/ICalen
 
 Why xCal?
 =========
-For home users who desire to organize calendar-based events and tasks, existing tools such as Outlook or [Google Calendar](https://www.google.com/calendar/render?pli=1) are already available to satisfy their needs. Most of these tools operate on data hosted on the provider's remote servers, such that users only need to use frontend interfaces (browsers, thin clients, mobile devices, etc.) to access calendar information at any time and place. However, remote access is also plagued by privacy and trust issues as users do not have 100% control over their data. 
+At first glance, xCal appears to be redudant - a "not another iCalendar application" you may be tempted to say. Why "re-invent" the wheel when popular applications used in home and business environments such as Outlook [Google Calendar](https://www.google.com/calendar/render?pli=1) are already satisfying the need for calendar-based systems. Moreover, with the advent of cloud computing, place and time are  no longer huge constraints for users who can simply use their mobile devices to gain access to their data anywhere at all times stored somewhere on "cloud system". Sharing of events, meeting setups and assignment of tasks 
+
+
+
+
+
+
+For home users who desire to organize calendar-based events and tasks, existing tools and services such as Outlook and [Google Calendar](https://www.google.com/calendar/render?pli=1) are already available to satisfy their needs. Most of these tools operate on data hosted on the provider's remote servers, such that users only need to use frontend interfaces (browsers, thin clients, mobile devices, etc.) to access calendar information at any time and place. However, remote access is also plagued by privacy and trust issues as users do not have 100% control over their data. 
 
 Software developers (*who by the way are often home users*) depending on calendar-based systems are usually faced with the hard option of either creating custom systems (*ever heard of the "re-inventing the wheel" syndrome?*) or buying (*mind the cost*) an existing system to use.   
 
