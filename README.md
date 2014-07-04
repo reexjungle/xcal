@@ -7,7 +7,7 @@ xCal is an implementation of the [iCalendar](http://en.wikipedia.org/wiki/ICalen
 
 Why xCal?
 =========
-
+Really why xCal is needed, when there exists a wide variety of iCalendar tools and implementations. For consumers, who use calendaring tools (e.g. Outlook, Google Calendar), xCal would not ch
 
 
 xCal as a  Format
