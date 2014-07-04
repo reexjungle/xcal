@@ -1,12 +1,13 @@
 xCal
 ====
 
-Web Service implementation of the iCalendar format as specified by the internet protocol [RFC 5545](http://tools.ietf.org/html/rfc5546)
+xCal is an implementation of the iCalendar format as specified by the internet protocol [RFC 5545](http://tools.ietf.org/html/rfc5546)
 
-*...however this should not be confused with the xml representation of the iCalendar format (specified by [RFC 6321](http://tools.ietf.org/html/rfc6321))* 
+*...however this should not be confused with the xml representation of the iCalendar format (see [RFC 6321](http://tools.ietf.org/html/rfc6321))* 
 
 
-### Why xCal
+Why xCal?
+=========
 
 
 
@@ -15,7 +16,7 @@ Web Service implementation of the iCalendar format as specified by the internet 
 
 
 Contact
--------
+========
 * [@Github](https://github.com/reexmonkey/)
 * [@twitter](https://twitter.com/ngwanemk)
 * [@gmail](ngwanemk@gmail.com)
