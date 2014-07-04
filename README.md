@@ -1,13 +1,15 @@
 xCal
 ====
 
-xCal is an implementation of the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format as specified by the internet protocol [RFC 5545](http://tools.ietf.org/html/rfc5546) and deployed from web servers as a service. In other words, xCal is iCalendar as a Service (**iCaaS**).
+xCal is an implementation of the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format as specified by the internet protocol [RFC 5545](http://tools.ietf.org/html/rfc5546) and deployed from a web server as a service. In other words, xCal is "iCalendar as a Service (**iCaaS**)" that can be hosted on a private, public or hybrid cloud.
 
 
 
 Why xCal?
 =========
-Really why xCal is needed, when there exists a wide variety of iCalendar tools and implementations. For consumers, who use calendaring tools (e.g. Outlook, Google Calendar), xCal would not ch
+As a home consumer who need to organize calendar-based events and tasks, it suffices for them to rely on tools such as Outlook, Yahoo Mail, [Google Calendar](https://www.google.com/calendar/render?pli=1), etc.
+However, for developers who intend to build or integrate booking systems, it becomes crucial to use a sta
+
 
 
 xCal as a  Format
