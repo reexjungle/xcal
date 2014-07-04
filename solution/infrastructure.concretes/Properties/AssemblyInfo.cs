@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("infrastructure.concretes")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

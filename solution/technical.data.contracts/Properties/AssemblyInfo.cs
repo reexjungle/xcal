@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("infrastructure.ormlite.extensions")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Capgemini")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("reexmonkey.infrastructure.ormlite.extensions")]
-[assembly: AssemblyCopyright("Copyright © ReexMonkey 2014")]
+[assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

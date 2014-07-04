@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("xcal.service.interfaces.contracts")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Capgemini")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("xcal.service.interfaces.contracts")]
-[assembly: AssemblyCopyright("Copyright © Capgemini 2014")]
+[assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

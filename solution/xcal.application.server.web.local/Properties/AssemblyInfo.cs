@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("reexMonkey")]
 [assembly: AssemblyProduct("xcal.application.server.web.local")]
-[assembly: AssemblyCopyright("Copyright © reexMonkey 2014")]
+[assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

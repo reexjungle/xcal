@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("infrastructure.redis.extensions")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ReexMonkey")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("infrastructure.redis.extensions")]
-[assembly: AssemblyCopyright("Copyright © ReexMonkey 2014")]
+[assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

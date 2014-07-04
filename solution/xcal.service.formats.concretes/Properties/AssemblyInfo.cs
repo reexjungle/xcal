@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("xcal.service.plugins.formats")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("reexMonkey")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("xcal.service.plugins.formats")]
-[assembly: AssemblyCopyright("Copyright © reexMonkey 2014")]
+[assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
