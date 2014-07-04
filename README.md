@@ -7,9 +7,9 @@ xCal is an implementation of the [iCalendar](http://en.wikipedia.org/wiki/ICalen
 
 Why xCal?
 =========
-For home users who desire to organize calendar-based events and tasks, existing tools such as Outlook or [Google Calendar](https://www.google.com/calendar/render?pli=1) are already available to satisfy their needs. Most of these tools operate on data hosted on the provider's remote servers, such that users only need to use frontend interfaces (browsers, thin clients, mobile devices, etc.) to access calendar information at any time and place (*using internet connection of course! ;)*). However, remote access also plagued by privacy and trust issues since users do not have 100% control over their hosted data. 
+For home users who desire to organize calendar-based events and tasks, existing tools such as Outlook or [Google Calendar](https://www.google.com/calendar/render?pli=1) are already available to satisfy their needs. Most of these tools operate on data hosted on the provider's remote servers, such that users only need to use frontend interfaces (browsers, thin clients, mobile devices, etc.) to access calendar information at any time and place. However, remote access is also plagued by privacy and trust issues as users do not have 100% control over their data. 
 
-Software developers (*who by the way are often home users*) depending on calendar-based systems are usually faced with the hard option of either creating custom systems (*ever heard of the "re-inventing the wheel" syndrome?*) or buying (*Mind the cost!*) an existing system to use.   
+Software developers (*who by the way are often home users*) depending on calendar-based systems are usually faced with the hard option of either creating custom systems (*ever heard of the "re-inventing the wheel" syndrome?*) or buying (*mind the cost*) an existing system to use.   
 
 
 
