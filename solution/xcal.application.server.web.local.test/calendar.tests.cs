@@ -354,13 +354,14 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             Assert.AreEqual(retrieved.Where(x => x.Version.StartsWith("5")).First().Events.Distinct().Count(), 4);
 
 
-            this.client.Patch(new PatchCalendars { Scale = CALSCALE.INDIAN, Events = new List<VEVENT> { events[3] } });
+            this.client.Patch(new PatchCalendars {CalendarIds = keys, Method = METHOD.REQUEST, Scale = CALSCALE.INDIAN, Events = new List<VEVENT> { events[3] } });
             var patched = this.client.Post(new FindCalendars { CalendarIds = keys  });
-            foreach (var cal in patched)
+            foreach (var result in patched)
             {
-                Assert.AreEqual(cal.Calscale, CALSCALE.INDIAN);
-                //Assert.AreEqual(cal.Events.Count, 1);
-                //Assert.AreEqual(cal.Events.First().Id, events[3].Id);
+                Assert.AreEqual(result.Calscale, CALSCALE.INDIAN);
+                Assert.AreEqual(result.Method, METHOD.REQUEST);
+                Assert.AreEqual(result.Events.Count, 1);
+                Assert.AreEqual(result.Events.First().Id, events[3].Id);
             }
 
             this.client.Delete(new DeleteCalendars { CalendarIds = keys });

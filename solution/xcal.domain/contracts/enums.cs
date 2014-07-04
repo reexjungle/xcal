@@ -9,9 +9,9 @@ namespace reexmonkey.xcal.domain.contracts
     /// <summary>
     /// Represents the icalendar scale type e.g. GREGORIAN 
     /// </summary>
-    public enum CALSCALE { GREGORIAN, HEBREW, ISLAMIC, INDIAN, CHINESE, JULIAN, UNKNOWN }
+    public enum CALSCALE {UNKNOWN, GREGORIAN, HEBREW, ISLAMIC, INDIAN, CHINESE, JULIAN }
 
-    public enum METHOD { REQUEST, REPLY, REFRESH, PUBLISH, CANCEL, ADD, COUNTER, DECLINECOUNTER, UNKNOWN }
+    public enum METHOD { UNKNOWN, REQUEST, REPLY, REFRESH, PUBLISH, CANCEL, ADD, COUNTER, DECLINECOUNTER }
 
     /// <summary>
     /// Represents the type of iCalendar encodings
@@ -29,9 +29,9 @@ namespace reexmonkey.xcal.domain.contracts
     /// <summary>
     /// Represents an enumration of calendar user types
     /// </summary>
-    public enum CUTYPE { INDIVIDUAL, GROUP, RESOURCE, ROOM, UNKNOWN}
+    public enum CUTYPE {UNKNOWN, INDIVIDUAL, GROUP, RESOURCE, ROOM }
 
-    public enum BOOLEAN { TRUE, FALSE, UNKNOWN}
+    public enum BOOLEAN {UNKNOWN, TRUE, FALSE }
 
     /// <summary>
     /// Represents the icalendar role types
@@ -90,7 +90,7 @@ namespace reexmonkey.xcal.domain.contracts
     /// <summary>
     /// Represents the type of sign
     /// </summary>
-    public enum SignType { Negative, Neutral, Positive }
+    public enum SignType {Neutral, Negative,  Positive }
 
     /// <summary>
     /// To explicitly specify the value type format for a property value

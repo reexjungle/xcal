@@ -190,8 +190,9 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
 
                 var fieldstr = string.Format("x => new {{ {0} }}", string.Join(", ", fieldlist.Select(x => string.Format("x.{0}", x))));
                 var fieldexpr = fieldstr.CompileToExpressionFunc<VCALENDAR, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(VCALENDAR).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
-                this.repository.Patch(source, fieldexpr, request.CalendarIds);
+                this.repository.Patch(source, fieldexpr, request.CalendarIds.Distinct());
             }
+            catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }

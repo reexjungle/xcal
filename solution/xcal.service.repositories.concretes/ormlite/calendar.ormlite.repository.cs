@@ -204,26 +204,35 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 x.Calscale
             };
 
-            Expression<Func<VCALENDAR, object>> relations = x => new {  Components = x.Events };
+            Expression<Func<VCALENDAR, object>> relations = x => new 
+            { 
+                Events = x.Events, 
+                Todos = x.ToDos, 
+                FreeBusies = x.FreeBusies, 
+                Journals = x.Journals, 
+                TimeZones = x.TimeZones, 
+                IanaComponents = x.IanaComponents, 
+                XComponents = x.XComponents 
+            };
 
             //4. Get list of selected relationals
-            var srelation = relations.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
+            var srelation = relations.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase);
 
             //5. Get list of selected primitives
-            var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
+            var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase);
 
             #endregion
 
             try
             {
-                var okeys = (!keys.NullOrEmpty())
-                    ? db.SelectParam<VCALENDAR, string>(q => q.Id, p => Sql.In(p.Id, keys.ToArray()))
-                    : db.SelectParam<VCALENDAR>(q => q.Id);
-
+                //var okeys = (!keys.NullOrEmpty())
+                //    ? db.SelectParam<VCALENDAR, string>(q => q.Id, p => Sql.In(p.Id, keys.ToArray()))
+                //    : db.SelectParam<VCALENDAR>(q => q.Id);
+                var okeys = keys.ToArray();
                 if (!srelation.NullOrEmpty())
                 {
-                    Expression<Func<VCALENDAR, object>> componentsexpr = y => y.Events;
-                    if (selection.Contains(componentsexpr.GetMemberName()))
+                    Expression<Func<VCALENDAR, object>> eventsexpr = y => y.Events;
+                    if (selection.Contains(eventsexpr.GetMemberName()))
                     {
                         this.EventRepository.SaveAll(source.Events.Distinct());
                         if (!source.Events.NullOrEmpty())
@@ -234,7 +243,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                 CalendarId = x,
                                 EventId = y.Id
                             }));
-                            var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, okeys.ToArray()));
+                            var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, okeys));
                             db.SynchronizeAll(revents, orevents);
                         }
                     }
@@ -243,9 +252,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 if (!sprimitives.NullOrEmpty())
                 {
                     var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
+
                     var patchexpr = patchstr.CompileToExpressionFunc<VCALENDAR, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(VCALENDAR).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
 
-                    if (!okeys.NullOrEmpty()) db.UpdateOnly<VCALENDAR, object>(source, patchexpr, q => Sql.In(q.Id, okeys.ToArray()));
+                    if (!okeys.NullOrEmpty()) db.UpdateOnly<VCALENDAR, object>(source, patchexpr, q => Sql.In(q.Id, okeys));
                     else db.UpdateOnly<VCALENDAR, object>(source, patchexpr);
                 }
             }
