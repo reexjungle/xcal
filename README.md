@@ -21,7 +21,7 @@ Contact
 
 License
 =======
-*xCal is built and released under the [FreeBSD](http://opensource.org/licenses/BSD-2-Clause) License as explicitly stated in Legalese ;) below*
+*xCal is built and released under the [FreeBSD](http://opensource.org/licenses/BSD-2-Clause) License as explicitly stated below:*
 
 
 
