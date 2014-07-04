@@ -1,7 +1,7 @@
 xCal
 ====
 
-xCal is an implementation of the iCalendar format as specified by the internet protocol [RFC 5545](http://tools.ietf.org/html/rfc5546).
+xCal is an implementation of the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format as specified by the internet protocol [RFC 5545](http://tools.ietf.org/html/rfc5546).
 
 
 
