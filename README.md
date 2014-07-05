@@ -13,7 +13,7 @@ Table of Contents
 4. Documentation
 5. Versioning
 6. [Contact]()
-7. [License]()
+7. [License](https://github.com/reexmonkey/xcal/blob/master/README.md#license)
 
 
 
