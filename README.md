@@ -7,11 +7,11 @@ xCal is an implementation of the [iCalendar](http://en.wikipedia.org/wiki/ICalen
 
 Table of Contents
 =================
-1. [Getting Started](https://github.com/reexmonkey/xcal/blob/master/README.md#getting)
-2. Contributing
-3. Community
-4. Documentation
-5. Versioning
+1. [Getting Started](https://github.com/reexmonkey/xcal/blob/master/README.md#getting-started)
+2. [Contributing](https://github.com/reexmonkey/xcal/blob/master/README.md#contributing)
+3. [Community](https://github.com/reexmonkey/xcal/blob/master/README.md#community)
+4. [Documentation](https://github.com/reexmonkey/xcal/blob/master/README.md#documentation)
+5. [Versioning](https://github.com/reexmonkey/xcal/blob/master/README.md#versioning)
 6. [Contact](https://github.com/reexmonkey/xcal/blob/master/README.md#contact)
 7. [License](https://github.com/reexmonkey/xcal/blob/master/README.md#license)
 
@@ -20,6 +20,20 @@ Table of Contents
 Getting Started
 ===============
 
+
+
+Contributing
+============
+
+
+Community
+==========
+
+Documentation
+=============
+
+Versioning
+==========
 
 
 Contact
