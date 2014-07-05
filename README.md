@@ -9,7 +9,7 @@ Why xCal?
 =========
 At first glance, xCal appears to be redudant - a "not another iCalendar application" you may be tempted to say. Why "re-invent" the wheel when popular applications used in home and business environments such as [Outlook Client](http://office.microsoft.com/en-001/outlook/), [Google Calendar](https://www.google.com/calendar/render?pli=1) are already satisfying the need for calendar-based systems? 
 
-However unlike current calendar-based targeting home and business users, xCal is primarily a tool for software developers interested in creating time-based planning systems. For example, take the hypothetical case of Alice and Bob engaged to build a hotel reservation system for a prominent client. Both developers are smart and immediately set out to design a basic booking system from scractch. Weeks later after deployment, the client insists on compatibility of the custom booking system with the Outlook client. 
+However unlike current calendar-based standalone packages targeting home and business users, xCal is primarily a tool for software developers interested in creating time-based planning systems. For example, take the hypothetical case of Alice and Bob engaged to build a hotel reservation system for a prominent client. Both developers are smart and immediately set out to design a basic booking system from scractch. Weeks later after deployment, the client insists on compatibility of the custom booking system with the Outlook client. 
 
 
 
