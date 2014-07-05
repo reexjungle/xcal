@@ -12,8 +12,8 @@ Table of Contents
 3. Community
 4. Documentation
 5. Versioning
-6. Contact
-7. [License](License)
+6. [Contact]()
+7. [License]()
 
 
 
