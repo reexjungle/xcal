@@ -5,7 +5,15 @@ xCal is an implementation of the [iCalendar](http://en.wikipedia.org/wiki/ICalen
 
  
 
-
+Table of Contents
+=================
+1. Getting Started
+2. Contributing
+3. Community
+4. Documentation
+5. Versioning
+6. Contact
+7. License
 
 
 
@@ -23,4 +31,4 @@ License
 =======
 Copyright (c) 2014, Emmanuel Ngwane
 All rights reserved.
-xCal code released under the [BSD](https://github.com/reexmonkey/xcal/blob/master/LICENSE) License.
+xCal code is released under the [BSD](https://github.com/reexmonkey/xcal/blob/master/LICENSE) License.
