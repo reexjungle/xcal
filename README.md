@@ -15,9 +15,8 @@ xCal is an implementation of the [iCalendar](http://en.wikipedia.org/wiki/ICalen
 
 Contact
 ========
-* [@Github](https://github.com/reexmonkey/)
-* [@twitter](https://twitter.com/ngwanemk)
-* [@gmail](ngwanemk@gmail.com)
+* https://github.com/reexmonkey/
+* https://twitter.com/ngwanemk
 
 
 License
