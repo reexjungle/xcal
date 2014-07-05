@@ -7,7 +7,9 @@ xCal is an implementation of the [iCalendar](http://en.wikipedia.org/wiki/ICalen
 
 Why xCal?
 =========
-At first glance, xCal appears to be redudant - a "not another iCalendar application" you may be tempted to say. Why "re-invent" the wheel when popular applications used in home and business environments such as Outlook [Google Calendar](https://www.google.com/calendar/render?pli=1) are already satisfying the need for calendar-based systems. Moreover, with the advent of cloud computing, place and time are  no longer huge constraints for users who can simply use their mobile devices to gain access to their data anywhere at all times stored somewhere on "cloud system". 
+At first glance, xCal appears to be redudant - a "not another iCalendar application" you may be tempted to say. Why "re-invent" the wheel when popular applications used in home and business environments such as [Outlook Client](http://office.microsoft.com/en-001/outlook/), [Google Calendar](https://www.google.com/calendar/render?pli=1) are already satisfying the need for calendar-based systems. 
+
+It is true these tools are very good but one fundamental aspect they lack is full control is not given to the user. This beceomes more pertinent if the calendar data is hosted on a provider's remote servers, whereby privacy of the user data cannot be absolutely guaranteed by the service provider. 
 
 
 
