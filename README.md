@@ -13,7 +13,7 @@ Table of Contents
 4. [Documentation](https://github.com/reexmonkey/xcal/#documentation)
 5. [Versioning](https://github.com/reexmonkey/xcal/#versioning)
 6. [Contact](https://github.com/reexmonkey/xcal/#contact)
-7. [License](https://github.com/reexmonkey/xcal/license)
+7. [License](https://github.com/reexmonkey/xcal/#license)
 
 
 
