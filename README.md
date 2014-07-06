@@ -7,6 +7,7 @@ xCal is a system that implements the [iCalendar](http://en.wikipedia.org/wiki/IC
 
 Table of Contents
 =================
+1. [A Brief History](https://github.com/reexmonkey/xcal/#a-brief-history) 
 1. [Getting Started](https://github.com/reexmonkey/xcal/#getting-started)
 2. [Contributing](https://github.com/reexmonkey/xcal/#contributing)
 3. [Community](https://github.com/reexmonkey/xcal/#community)
@@ -15,6 +16,10 @@ Table of Contents
 6. [Contact](https://github.com/reexmonkey/xcal/#contact)
 7. [License](https://github.com/reexmonkey/xcal/#license)
 
+
+A Brief History
+===============
+A lot of people have asked me why do we need xCal when a lot of calendar applications exist.
 
 
 Getting Started
