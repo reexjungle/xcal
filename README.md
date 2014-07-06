@@ -19,7 +19,9 @@ Table of Contents
 
 A Brief History
 ===============
-A lot of people have asked me why do we need xCal when a lot of calendar applications exist.
+Once I was interested in building a reservation-based software that involved booking of resources and event planning. Thinking it would not be a difficult task, I dived straight into the design of the system. However in mid-design, I figured out that the "simple notion" of assigning events to calendar days, weeks and months was far more complex than I had previously thought, especially when recurrent events were involved. After a short background research I stumbled on the iCalendar format and the interner protocol behind... but c'mon developers are lazy and against conventional stereotypes, we do not like "reinventing the wheel" in critical projects, when one of the "good fellas" have created something for us. So I went on a search for a calendar system - not just a client or monolithic system; rather a calendar web service, to which I could query for iCalendar objects and receive appropriate responses. 
+
+
 
 
 Getting Started
