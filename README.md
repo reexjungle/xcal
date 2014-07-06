@@ -24,7 +24,7 @@ Once I was interested in building a reservation-based software that involved boo
 My findings were quite interesting but not helpful:
 
 1. First of all, I stumbled upon [Google Calendar API](https://developers.google.com/google-apps/calendar/), which is well documented and has live demo on its usage. However, it has a few limitations which did not match to my taste, such as no total control on my calendar data, since it is hosted on Google Servers thus bringing trust issues. Also the number of queries were limited per day (not good if my reservation system needed to make more queries than permitted. Thirdly the API did not reflect much of RFC 5545 specifications.
-2. Then I found [Oracle Calendar Application Developer's Guide](http://docs.oracle.com/cd/B13866_04/calendar.904/b10893/wssoap.htm), which provides a documentation on the [Calendar Web Services Toolkit]() - a close implementation of the iCalendar protocol (*although it is actually an implementation of the older RFC 2245 and 2426 specifications*) that uses SOAP for message excchange between the calendar server, which arguably arguably are less performant than "better" formats like JSON and REST
+2. Then I found [Oracle Calendar Application Developer's Guide](http://docs.oracle.com/cd/B13866_04/calendar.904/b10893/wssoap.htm), which provides a documentation on the [Calendar Web Services Toolkit]() - a close implementation of the iCalendar protocol (*although it is actually an implementation of the older RFC 2245 and 2426 specifications*)
 
 
 Getting Started
