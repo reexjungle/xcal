@@ -82,12 +82,14 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 {
                     var keys = request.Events.Select(x => x.Id).ToArray();
                     if (!this.repository.EventRepository.ContainsKeys(keys))
-                        this.repository.EventRepository.SaveAll(request.Events);
+                        this.repository.EventRepository.SaveAll(request.Events.Distinct());
                 }
             }
+            catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
+
         }
 
         public void Put(UpdateEvent request)

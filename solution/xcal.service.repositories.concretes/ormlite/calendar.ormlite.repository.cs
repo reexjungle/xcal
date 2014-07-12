@@ -225,10 +225,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 
             try
             {
-                //var okeys = (!keys.NullOrEmpty())
-                //    ? db.SelectParam<VCALENDAR, string>(q => q.Id, p => Sql.In(p.Id, keys.ToArray()))
-                //    : db.SelectParam<VCALENDAR>(q => q.Id);
-                var okeys = keys.ToArray();
+                var okeys = (!keys.NullOrEmpty())
+                    ? db.SelectParam<VCALENDAR, string>(q => q.Id, p => Sql.In(p.Id, keys.ToArray()))
+                    : db.SelectParam<VCALENDAR>(q => q.Id);
                 if (!srelation.NullOrEmpty())
                 {
                     Expression<Func<VCALENDAR, object>> eventsexpr = y => y.Events;

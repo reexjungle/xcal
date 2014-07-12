@@ -1724,7 +1724,6 @@ namespace reexmonkey.xcal.domain.models
     {
         #region fields
 
-        private string id;
         private RecurFormat format;
         private FREQ freq;
         private DATE_TIME until;
@@ -1746,11 +1745,7 @@ namespace reexmonkey.xcal.domain.models
         #region properties
 
         [DataMember]
-        public string Id
-        {
-            get { return this.id; }
-            set { this.id = value; }
-        }
+        public string Id { get; set; }
 
         [DataMember]
         public RecurFormat Format
@@ -1965,7 +1960,6 @@ namespace reexmonkey.xcal.domain.models
 
         public RECUR(FREQ freq, DATE_TIME until)
         {
-            this.id = string.Empty;
             this.freq = freq;
             this.until = until;
             this.count = 0u;
@@ -1976,7 +1970,6 @@ namespace reexmonkey.xcal.domain.models
 
         public RECUR(FREQ freq, uint count, uint interval)
         {
-            this.id = string.Empty;
             this.freq = freq;
             this.until = new DATE_TIME();
             this.count = count;
@@ -2132,24 +2125,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override int GetHashCode()
         {
-            var hash =
-                this.FREQ.GetHashCode() ^
-                this.INTERVAL.GetHashCode() ^
-                this.BYSECOND.GetHashCode() ^
-                this.BYHOUR.GetHashCode() ^
-                this.BYDAY.GetHashCode() ^
-                this.BYMONTHDAY.GetHashCode() ^
-                this.BYYEARDAY.GetHashCode() ^
-                this.BYWEEKNO.GetHashCode() ^
-                this.BYMONTH.GetHashCode() ^
-                this.WKST.GetHashCode() ^
-                this.BYSETPOS.GetHashCode();
-
-            if (this.Format == RecurFormat.DateTime) hash ^= this.UNTIL.GetHashCode();
-            else hash ^= this.COUNT.GetHashCode();
-
-            return hash;
-
+            return this.Id.GetHashCode();
         }
 
         public static bool operator ==(RECUR a, RECUR b)

@@ -21,7 +21,9 @@ namespace reexmonkey.foundation.essentials.concretes
 
         public static bool AreDuplicatesOf<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second, IEqualityComparer<TValue> comparer = null)
         {
-            return (comparer == null)? first.Intersect(second).Count() == 0: first.Intersect(second, comparer).Count() == 0;
+            return (comparer == null)
+                ? first.Intersect(second).Count() == first.Count()
+                :first.Intersect(second, comparer).Count() == first.Count();
         }
 
         public static bool AreUnique<TValue>(this IEnumerable<TValue> source, IEqualityComparer<TValue> comparer = null)
@@ -56,8 +58,8 @@ namespace reexmonkey.foundation.essentials.concretes
             try
             {
                 var incoming = (comparer != null)
-                    ?collection.Except(list, comparer)
-                    : collection.Except(list);
+                    ?collection.ToArray().Except(list, comparer)
+                    : collection.ToArray().Except(list);
 
                 if (!incoming.NullOrEmpty()) list.AddRange(incoming);
             }

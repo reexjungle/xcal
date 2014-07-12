@@ -1210,11 +1210,8 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// ID of the current Attendee
         /// </summary>
-        public string Id
-        {
-            get { return (this.Address != null && !string.IsNullOrEmpty(this.Address.Path)) ? this.Address.Path : null; }
-            set { if (this.Address != null) this.Address.Path = value; }
-        }
+        [DataMember]
+        public string Id { get; set; }
 
         /// <summary>
         /// Address of the Current Attendee
@@ -1226,7 +1223,7 @@ namespace reexmonkey.xcal.domain.models
         /// Calendar User Type of the Attendee
         /// </summary>
         [DataMember]
-        public CUTYPE CalendarUserType { get; set; }
+        public CUTYPE CalendarUserType { get    ; set; }
 
         /// <summary>
         /// Membership of the Attendee
@@ -1372,7 +1369,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override int GetHashCode()
         {
-            return this.Id.GetHashCode() ^ ((this.Id != null) ? this.Id.GetHashCode() : 0);
+            return this.Id.GetHashCode();
         }
 
         public static bool operator ==(ATTENDEE a, ATTENDEE b)
