@@ -1,7 +1,9 @@
-xCal
-====
+Not another xCal again!
+==============================
+Yep! *xCal* is not the XML format for the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format as specifed by [RFC 6321](http://tools.ietf.org/html/rfc6321); rather it is a something more....
 
-xCal is a system that implements the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format as specified by the internet protocol [RFC 5545](http://tools.ietf.org/html/rfc5545). Moreover xCal also provides a calendar web services supporting various request and content content types such as as xml, csv, json, jsv and icalendar. xCal is created by [Emmanuel Ngwane](https://twitter.com/ngwanemk) with the support and involvement of the community.
+
+Unlike the xCal is a system that implements the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format as specified by the internet protocol [RFC 5545](http://tools.ietf.org/html/rfc5545). Moreover xCal also provides a calendar web services supporting various request and content content types such as as xml, csv, json, jsv and icalendar. xCal is created by [Emmanuel Ngwane](https://twitter.com/ngwanemk) with the support and involvement of the community.
 
  
 
