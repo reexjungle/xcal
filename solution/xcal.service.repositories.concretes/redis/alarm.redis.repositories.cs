@@ -11,7 +11,7 @@ using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.service.repositories.contracts;
 using reexmonkey.infrastructure.operations.contracts;
 using reexmonkey.xcal.service.repositories.concretes.relations;
-
+using reexmonkey.technical.data.concretes.extensions.redis;
 
 namespace reexmonkey.xcal.service.repositories.concretes.redis
 {
@@ -109,12 +109,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                 if (skip == null && take == null) return this.redis.As<AUDIO_ALARM>().GetAll();
                 else
                 {
-                    var allkeys = this.redis.As<AUDIO_ALARM>().GetAllKeys();
-                    var selected = !allkeys.NullOrEmpty()
-                        ? allkeys.Skip(skip.Value).Take(take.Value)
-                        : allkeys;
-                    var dry = this.redis.As<AUDIO_ALARM>().GetValues(selected.ToList());
-                    return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
+                    var alarms = this.redis.As<AUDIO_ALARM>().GetAll();
+                    var selected = !alarms.NullOrEmpty()
+                        ? alarms.Skip(skip.Value).Take(take.Value)
+                        : alarms;
+                    return !alarms.NullOrEmpty() ? this.HydrateAll(alarms) : new List<AUDIO_ALARM>();
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -162,9 +161,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                     #region save attributes and  relations
 
-                    if (entity.AttachmentBinary != null && entity.AttachmentBinary is ATTACH_BINARY)
+                    if (entity.AttachmentBinary != null)
                     {
-                        var attachbin = entity.AttachmentBinary as ATTACH_BINARY;
+                        var attachbin = entity.AttachmentBinary;
                         transaction.QueueCommand(x => x.Store(attachbin));
                         var rattachbin = new REL_AALARMS_ATTACHBINS
                         {
@@ -172,12 +171,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                             AlarmId = entity.Id,
                             AttachmentId = attachbin.Id
                         };
-                        var rclient = this.redis.As<REL_AALARMS_ATTACHBINS>();
-                        var orattachbin = rclient.GetAll().Where(x => x.AlarmId.Equals(entity.Id, StringComparison.OrdinalIgnoreCase));
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !orattachbin.NullOrEmpty()
-                            ? rattachbin.ToSingleton().Except(orattachbin)
-                            : rattachbin.ToSingleton()));
+                        var orattachbins = this.redis.As<REL_AALARMS_ATTACHBINS>().GetAll()
+                            .Where(x => x.AlarmId.Equals(entity.Id, StringComparison.OrdinalIgnoreCase));
+                        this.redis.SynchronizeAll(rattachbin.ToSingleton(), orattachbins, transaction);
                     }
 
                     if (entity.AttachmentUri != null)
@@ -191,11 +187,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                             AttachmentId = attachuri.Id
                         };
                         var rclient = this.redis.As<REL_AALARMS_ATTACHURIS>();
-                        var orattachuri = rclient.GetAll().Where(x => x.AlarmId.Equals(entity.Id, StringComparison.OrdinalIgnoreCase));
-                        transaction.QueueCommand(x => rclient.StoreAll(
-                            !orattachuri.NullOrEmpty()
-                            ? rattachuri.ToSingleton().Except(orattachuri)
-                            : rattachuri.ToSingleton()));
+                        var orattachuris = rclient.GetAll().Where(x => x.AlarmId.Equals(entity.Id, StringComparison.OrdinalIgnoreCase));
+                        this.redis.SynchronizeAll(rattachuri.ToSingleton(), orattachuris, transaction);
+
                     }
                     
                     #endregion   
@@ -204,27 +198,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                 
                 }
                 catch (ArgumentNullException) { throw; }
-                catch (RedisResponseException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (RedisException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
+                catch (RedisResponseException) { throw; }
+                catch (RedisException) { throw; }
+                catch (InvalidOperationException) { throw; }
             });
         }
 
@@ -282,10 +258,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                 });
 
                                 var orattachbins = this.redis.As<REL_AALARMS_ATTACHBINS>().GetAll().Where(x => keys.Contains(x.AlarmId));
-                                transaction.QueueCommand(x =>
-                                    x.StoreAll(!orattachbins.NullOrEmpty()
-                                    ? rattachbins.Except(orattachbins)
-                                    : rattachbins));
+                                this.redis.SynchronizeAll(rattachbins, orattachbins, transaction);
+
                             }
 
                             var attachuri = source.AttachmentUri;
@@ -300,10 +274,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                 });
 
                                 var orattachuris = this.redis.As<REL_AALARMS_ATTACHURIS>().GetAll().Where(x => keys.Contains(x.AlarmId));
-                                transaction.QueueCommand(x =>
-                                    x.StoreAll(!orattachuris.NullOrEmpty()
-                                    ? rattachuris.Except(orattachuris)
-                                    : rattachuris));
+                                this.redis.SynchronizeAll(rattachuris, orattachuris, transaction);
+
                             }
                         }
                     }
@@ -335,27 +307,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                 }
                 catch (ArgumentNullException) { throw; }
-                catch (RedisResponseException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (RedisException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
+                catch (RedisResponseException) { throw; }
+                catch (RedisException) { throw; }
+                catch (InvalidOperationException) { throw; }
             }); 
         }
 
@@ -392,15 +346,12 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                 {
                     var cclient = this.redis.As<AUDIO_ALARM>();
 
-                    //watch keys
                     var okeys = cclient.GetAllKeys().ToArray();
                     if (!okeys.NullOrEmpty()) this.redis.Watch(okeys);
 
-                    //save calendar
                     var keys = entities.Select(c => c.Id);
                     transaction.QueueCommand(x => x.StoreAll(entities));
 
-                    //save attachments
                     var attachbins = entities.Where(x => x.AttachmentBinary != null && x.AttachmentBinary is ATTACH_BINARY)
                         .Select(x => x.AttachmentBinary as ATTACH_BINARY);
                     if (!attachbins.NullOrEmpty())
@@ -416,9 +367,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var orattachbins = this.redis.As<REL_AALARMS_ATTACHBINS>().GetAll()
                             .Where(x => keys.Contains(x.AlarmId));
-                        transaction.QueueCommand(x => x.StoreAll(!orattachbins.NullOrEmpty()
-                            ? rattachbins.Except(orattachbins)
-                            : rattachbins));
+                        this.redis.SynchronizeAll(rattachbins, orattachbins, transaction);
                     }
 
                     var attachuris = entities.Where(x => x.AttachmentUri != null)
@@ -436,35 +385,16 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var orattachuris = this.redis.As<REL_AALARMS_ATTACHURIS>().GetAll()
                             .Where(x => keys.Contains(x.AlarmId));
-                        transaction.QueueCommand(x => x.StoreAll(!orattachuris.NullOrEmpty()
-                            ? rattachuris.Except(orattachuris)
-                            : rattachuris));
+                        this.redis.SynchronizeAll(rattachuris, orattachuris, transaction);
+
                     }
 
                     transaction.QueueCommand(x => x.StoreAll(this.Dehydrate(entities)));
                 }
                 catch (ArgumentNullException) { throw; }
-                catch (RedisResponseException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (RedisException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
+                catch (RedisResponseException) { throw; }
+                catch (RedisException) { throw; }
+                catch (InvalidOperationException) { throw; }
             });
         }
 
@@ -689,11 +619,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                 if (skip == null && take == null) return this.redis.As<DISPLAY_ALARM>().GetAll();
                 else
                 {
-                    var allkeys = this.redis.As<DISPLAY_ALARM>().GetAllKeys();
-                    var selected = !allkeys.NullOrEmpty()
-                        ? allkeys.Skip(skip.Value).Take(take.Value)
-                        : allkeys;
-                    return this.redis.As<DISPLAY_ALARM>().GetValues(selected.ToList());
+                    var alarms = this.redis.As<DISPLAY_ALARM>().GetAll();
+                    var selected = !alarms.NullOrEmpty()
+                        ? alarms.Skip(skip.Value).Take(take.Value)
+                        : alarms;
+                    return selected ?? new List<DISPLAY_ALARM>();
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -823,27 +753,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                 }
                 catch (ArgumentNullException) { throw; }
-                catch (RedisResponseException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (RedisException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
+                catch (RedisResponseException) { throw; }
+                catch (RedisException) { throw; }
+                catch (InvalidOperationException) { throw; }
             }); 
         }
 
@@ -876,27 +788,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                     transaction.QueueCommand(x => x.StoreAll(entities));
                 }
                 catch (ArgumentNullException) { throw; }
-                catch (RedisResponseException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (RedisException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
+                catch (RedisResponseException) { throw; }
+                catch (RedisException) { throw; }
+                catch (InvalidOperationException) { throw; }
             });
         }
 
@@ -1127,12 +1021,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                 if (skip == null && take == null) return this.redis.As<EMAIL_ALARM>().GetAll();
                 else
                 {
-                    var allkeys = this.redis.As<DISPLAY_ALARM>().GetAllKeys();
-                    var selected = !allkeys.NullOrEmpty()
-                        ? allkeys.Skip(skip.Value).Take(take.Value)
-                        : allkeys;
-                    var dry = this.redis.As<EMAIL_ALARM>().GetValues(selected.ToList());
-                    return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
+                    var alarms = this.redis.As<EMAIL_ALARM>().GetAll();
+                    var selected = !alarms.NullOrEmpty()
+                        ? alarms.Skip(skip.Value).Take(take.Value)
+                        : alarms;
+                    return !selected.NullOrEmpty() ? this.HydrateAll(selected) : new List<EMAIL_ALARM>();
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -1198,10 +1091,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var rclient = this.redis.As<REL_EALARMS_ATTENDEES>();
                         var orattendees = rclient.GetAll().Where(x => x.AlarmId == entity.Id);
-                        transaction.QueueCommand(x => x.StoreAll(
-                            !orattendees.NullOrEmpty()
-                            ? rattendees.Except(orattendees)
-                            : rattendees));
+                        this.redis.SynchronizeAll(rattendees, orattendees, transaction);
+
                     }
 
                     if (!attachbins.NullOrEmpty())
@@ -1216,10 +1107,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var rclient = this.redis.As<REL_EALARMS_ATTACHBINS>();
                         var orattachbins = rclient.GetAll().Where(x => x.AlarmId == entity.Id);
-                        transaction.QueueCommand(x => x.StoreAll(
-                            !orattachbins.NullOrEmpty()
-                            ? rattachbins.Except(orattachbins)
-                            : rattachbins));
+                        this.redis.SynchronizeAll(rattachbins, orattachbins, transaction);
+
                     }
 
                     if (!attachuris.NullOrEmpty())
@@ -1234,10 +1123,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var rclient = this.redis.As<REL_EALARMS_ATTACHURIS>();
                         var orattachuris = rclient.GetAll().Where(x => x.AlarmId == entity.Id);
-                        transaction.QueueCommand(x => x.StoreAll(
-                            !orattachuris.NullOrEmpty()
-                            ? rattachuris.Except(orattachuris)
-                            : rattachuris));
+                        this.redis.SynchronizeAll(rattachuris, orattachuris, transaction);
                     }
 
                     #endregion
@@ -1247,27 +1133,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                 }
                 catch (ArgumentNullException) { throw; }
-                catch (RedisResponseException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (RedisException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
+                catch (RedisResponseException) { throw; }
+                catch (RedisException) { throw; }
+                catch (InvalidOperationException) { throw; }
             });
         }
 
@@ -1334,10 +1202,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                                 var rclient = this.redis.As<REL_EALARMS_ATTENDEES>();
                                 var orattendees = rclient.GetAll().Where(x => x.AlarmId == source.Id);
-                                transaction.QueueCommand(x => rclient.StoreAll(
-                                    !orattendees.NullOrEmpty()
-                                    ? rattendees.Except(orattendees)
-                                    : rattendees));
+                                this.redis.SynchronizeAll(rattendees, orattendees, transaction);
+
                             }
                         }
 
@@ -1356,9 +1222,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                                 var rclient = this.redis.As<REL_EALARMS_ATTACHBINS>();
                                 var orattachbins = rclient.GetAll().Where(x => keys.Contains(x.AlarmId));
-                                transaction.QueueCommand(x => rclient.StoreAll(!orattachbins.NullOrEmpty()
-                                    ? rattachbins.Except(orattachbins)
-                                    : rattachbins));
+                                this.redis.SynchronizeAll(rattachbins, orattachbins, transaction);
+
                             }
 
                         }
@@ -1377,9 +1242,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                 }));
                                 var rclient = this.redis.As<REL_EALARMS_ATTACHURIS>();
                                 var orattachuris = rclient.GetAll().Where(x => keys.Contains(x.AlarmId));
-                                transaction.QueueCommand(x => rclient.StoreAll(!orattachuris.NullOrEmpty()
-                                    ? rattachuris.Except(orattachuris)
-                                    : rattachuris));
+                                this.redis.SynchronizeAll(rattachuris, orattachuris, transaction);
+
                             }
                         }
                     }
@@ -1414,27 +1278,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                     #endregion
                 }
                 catch (ArgumentNullException) { throw; }
-                catch (RedisResponseException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (RedisException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
-                catch (InvalidOperationException)
-                {
-                    try { transaction.Rollback(); }
-                    catch (RedisResponseException) { throw; }
-                    catch (RedisException) { throw; }
-                    catch (Exception) { throw; }
-                }
+                catch (RedisResponseException) { throw; }
+                catch (RedisException) { throw; }
+                catch (InvalidOperationException) { throw; }
             });
 
 
@@ -1492,9 +1338,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var rclient = this.redis.As<REL_EALARMS_ATTENDEES>();
                         var orattendees = rclient.GetAll().Where(x => keys.Contains(x.AlarmId));
-                        transaction.QueueCommand(x => x.StoreAll((!orattendees.NullOrEmpty())
-                            ? rattendees.Except(orattendees)
-                            : rattendees));
+                        this.redis.SynchronizeAll(rattendees, orattendees, transaction);
+
                     }
 
                     if (!attachbins.NullOrEmpty())
@@ -1509,9 +1354,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                 }));
                         var rclient = this.redis.As<REL_EALARMS_ATTACHBINS>();
                         var orattachbins = rclient.GetAll().Where(x => keys.Contains(x.AlarmId));
-                        transaction.QueueCommand(x => x.StoreAll((!orattachbins.NullOrEmpty())
-                            ? rattachbins.Except(orattachbins)
-                            : rattachbins));
+                        this.redis.SynchronizeAll(rattachbins, orattachbins, transaction);
+
                     }
 
                     if (!attachuris.NullOrEmpty())
@@ -1526,18 +1370,16 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                                 }));
                         var rclient = this.redis.As<REL_EALARMS_ATTACHURIS>();
                         var orattachuris = rclient.GetAll().Where(x => keys.Contains(x.AlarmId));
-                        transaction.QueueCommand(x => x.StoreAll((!orattachuris.NullOrEmpty())
-                            ? rattachuris.Except(orattachuris)
-                            : rattachuris));
+                        this.redis.SynchronizeAll(rattachuris, orattachuris, transaction);
+
                     }
 
                     transaction.Commit();
                 }
-                catch (Exception)
-                {
-                    try { transaction.Rollback(); }
-                    catch (Exception) { throw; }
-                }
+                catch (ArgumentNullException) { throw; }
+                catch (RedisResponseException) { throw; }
+                catch (RedisException) { throw; }
+                catch (InvalidOperationException) { throw; }
             }
 
             #endregion        

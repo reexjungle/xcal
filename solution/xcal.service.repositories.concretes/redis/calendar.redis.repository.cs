@@ -144,12 +144,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
             if (skip == null && take == null) return this.redis.As<VCALENDAR>().GetAll();
             else
             {
-                var keys = this.redis.As<VCALENDAR>().GetAllKeys().Where(k => !k.StartsWith("ids"));
-                var selected = !keys.NullOrEmpty()
-                    ? keys.Skip(skip.Value).Take(take.Value)
-                    : keys;
-                var calendars = this.redis.As<VCALENDAR>().GetValues(selected.ToList());
-                return (!calendars.NullOrEmpty()) ? this.HydrateAll(calendars) : new List<VCALENDAR>();
+                var calendars = this.redis.As<VCALENDAR>().GetAll();
+                var selected = !calendars.NullOrEmpty()
+                    ? calendars.Skip(skip.Value).Take(take.Value)
+                    : null;
+                return (!selected.NullOrEmpty()) ? this.HydrateAll(selected) : new List<VCALENDAR>();
             }
         }
 
@@ -164,9 +163,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                     if (!entity.Events.NullOrEmpty())
                     {
-                        var events = entity.Events;
-                        this.EventRepository.SaveAll(events);
-                        var revents = events.Select(x => new REL_CALENDARS_EVENTS
+                        this.EventRepository.SaveAll(entity.Events.Distinct());
+                        var revents = entity.Events.Select(x => new REL_CALENDARS_EVENTS
                         {
                             Id = this.KeyGenerator.GetNextKey(),
                             CalendarId = entity.Id,
@@ -174,7 +172,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         });
 
                         var orevents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => x.CalendarId == entity.Id);
-                        this.redis.SynchronizeAll<REL_CALENDARS_EVENTS>(revents, orevents, transaction);
+                        this.redis.SynchronizeAll(revents, orevents, transaction);
                     }
                     transaction.QueueCommand(x => x.Store(this.Dehydrate(entity)));
                 });
@@ -237,7 +235,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                         {
                             if (!events.NullOrEmpty())
                             {
-                                this.EventRepository.SaveAll(events);
+                                this.EventRepository.SaveAll(events.Distinct());
                                 var revents = keys.SelectMany(x => events.Select(y => new REL_CALENDARS_EVENTS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
@@ -351,7 +349,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                 {
                     if (!events.NullOrEmpty())
                     {
-                        this.EventRepository.SaveAll(events);
+                        this.EventRepository.SaveAll(events.Distinct());
                         var revents = entities.SelectMany(x => x.Events.Select(y => new REL_CALENDARS_EVENTS
                         {
                             Id = this.KeyGenerator.GetNextKey(),
@@ -361,7 +359,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                         var okeys = entities.Select(x => x.Id);
                         var orevents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => okeys.Contains(x.CalendarId));
-                        this.redis.SynchronizeAll<REL_CALENDARS_EVENTS>(revents, orevents, transaction);
+                        this.redis.SynchronizeAll(revents, orevents, transaction);
                     }
 
                     transaction.QueueCommand(x => x.StoreAll(this.DehydrateAll(entities)));
@@ -391,26 +389,27 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                     this.manager.ExecTrans(transaction =>
                     {
 
-                        if (!revents.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_EVENTS>()
-                            .DeleteByIds(revents.Where(x => keys.Contains(x.CalendarId, StringComparer.OrdinalIgnoreCase))));
+                        if (!revents.NullOrEmpty() &&
+                            !revents.Where(x => keys.Contains(x.CalendarId, StringComparer.OrdinalIgnoreCase)).NullOrEmpty())
+                            transaction.QueueCommand(t => t.As<REL_CALENDARS_EVENTS>().DeleteByIds(revents));
 
-                        if (!revents.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_TODOS>()
-                            .DeleteByIds(rtodos.Where(x => keys.Contains(x.CalendarId, StringComparer.OrdinalIgnoreCase))));
+                        //if (!rtodos.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_TODOS>()
+                        //    .DeleteByIds(rtodos.Where(x => keys.Contains(x.CalendarId, StringComparer.OrdinalIgnoreCase))));
 
-                        if (!rfreebusies.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_FREEBUSIES>()
-                            .DeleteByIds(rfreebusies.Where(x => keys.Contains(x.CalendarId, StringComparer.OrdinalIgnoreCase))));
+                        //if (!rfreebusies.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_FREEBUSIES>()
+                        //    .DeleteByIds(rfreebusies.Where(x => keys.Contains(x.CalendarId, StringComparer.OrdinalIgnoreCase))));
 
-                        if (!rtimezones.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_TIMEZONES>()
-                            .DeleteByIds(rtimezones.Where(x => keys.Contains(x.CalendarId, StringComparer.OrdinalIgnoreCase))));
+                        //if (!rtimezones.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_TIMEZONES>()
+                        //    .DeleteByIds(rtimezones.Where(x => keys.Contains(x.CalendarId, StringComparer.OrdinalIgnoreCase))));
 
-                        if (!rjournals.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_JOURNALS>()
-                            .DeleteByIds(rjournals.Where(x => keys.Contains(x.CalendarId, StringComparer.OrdinalIgnoreCase))));
+                        //if (!rjournals.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_JOURNALS>()
+                        //    .DeleteByIds(rjournals.Where(x => keys.Contains(x.CalendarId, StringComparer.OrdinalIgnoreCase))));
 
-                        if (!rianacs.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_IANAC>()
-                            .DeleteByIds(rianacs.Where(x => keys.Contains(x.CalendarId, StringComparer.OrdinalIgnoreCase))));
+                        //if (!rianacs.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_IANAC>()
+                        //    .DeleteByIds(rianacs.Where(x => keys.Contains(x.CalendarId, StringComparer.OrdinalIgnoreCase))));
 
-                        if (!rxcomponents.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_XC>()
-                            .DeleteByIds(rxcomponents.Where(x => keys.Contains(x.CalendarId, StringComparer.OrdinalIgnoreCase))));
+                        //if (!rxcomponents.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_XC>()
+                        //    .DeleteByIds(rxcomponents.Where(x => keys.Contains(x.CalendarId, StringComparer.OrdinalIgnoreCase))));
 
                         transaction.QueueCommand(t => t.As<VCALENDAR>().DeleteByIds(keys));
                     });

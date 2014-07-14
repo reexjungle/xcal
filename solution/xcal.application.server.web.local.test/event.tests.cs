@@ -358,6 +358,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 Assert.AreEqual(result.Attendees.Count, utwin2a.Attendees.Count);
                 Assert.AreEqual(result.Attendees.AreDuplicatesOf(utwin2a.Attendees), true);
             }
+
             this.client.Delete(new DeleteEvents { EventIds =  keys});
             var deleted = this.client.Post(new FindEvents { EventIds = keys });
             Assert.AreEqual(deleted.Count, 0);
