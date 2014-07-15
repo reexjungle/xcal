@@ -340,18 +340,22 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             Assert.AreEqual(utwin2a.Attendees.Count, tot_att_twin2a);
             Assert.AreEqual(utwin3a.Attendees.Count, tot_att_twin3a);
 
+            utwin2a.Organizer.Language = new LANGUAGE("fr");
+
             this.client.Patch(new PatchEvents 
             { 
                 EventIds = keys,
                 Transparency = TRANSP.OPAQUE, 
                 Classification = CLASS.CONFIDENTIAL,
                 Priority = new PRIORITY(PRIORITYLEVEL.HIGH),
+                Organizer = utwin2a.Organizer,
                 Attendees = utwin2a.Attendees
             });
 
             var patched = this.client.Post(new FindEvents { EventIds = keys });
             foreach (var result in patched)
             {
+                Assert.AreEqual(result.Organizer.Language.Tag, "fr");
                 Assert.AreEqual(result.Transparency, TRANSP.OPAQUE);
                 Assert.AreEqual(result.Classification, CLASS.CONFIDENTIAL);
                 Assert.AreEqual(result.Priority, new PRIORITY(PRIORITYLEVEL.HIGH));
