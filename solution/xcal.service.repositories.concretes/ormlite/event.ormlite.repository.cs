@@ -1170,6 +1170,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 
         public IEnumerable<VEVENT> HydrateAll(IEnumerable<VEVENT> dry)
         {
+
             List<VEVENT> full = null;
             try
             {
@@ -1199,7 +1200,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 
                     #endregion
 
-                    #region 2. retrieve secondary entities
+                    #region 2. retrieve secondary entitiesB
 
                     var orgs = (!rorgs.Empty()) ? db.Select<ORGANIZER>(q => Sql.In(q.Id, rorgs.Select(r => r.OrganizerId).ToList())) : null;
                     var rids = (!rrids.Empty()) ? db.Select<RECURRENCE_ID>(q => Sql.In(q.Id, rrids.Select(r => r.RecurrenceId_Id).ToList())) : null;
