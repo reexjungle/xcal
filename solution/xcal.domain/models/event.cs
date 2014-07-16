@@ -119,8 +119,7 @@ namespace reexmonkey.xcal.domain.models
             set 
             { 
                 this.end = value;
-                if (duration == default(DURATION)) 
-                    this.duration = this.end - this.start;
+                this.duration = this.end - this.start;
             }
         }
 
@@ -131,7 +130,7 @@ namespace reexmonkey.xcal.domain.models
             set
             {
                 this.duration = value;
-                if(this.end == default(DATE_TIME)) this.end = start + duration;
+                this.end = start + duration;
             }
         }
 

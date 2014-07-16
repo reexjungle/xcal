@@ -65,8 +65,12 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
             {
                 if (this.repository.ContainsKey(request.CalendarId))
                 {
-                    if (!this.repository.EventRepository.ContainsKey(request.Event.Id)) 
-                        this.repository.EventRepository.Save(request.Event);
+                    if (!this.repository.EventRepository.ContainsKey(request.Event.Id))
+                    {
+                        var calendar = this.repository.Find(request.CalendarId);
+                        calendar.Events.AddRangeComplement(request.Event.ToSingleton());
+                        this.repository.Save(calendar);
+                    }
                 }
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -82,7 +86,11 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                 {
                     var keys = request.Events.Select(x => x.Id).ToArray();
                     if (!this.repository.EventRepository.ContainsKeys(keys))
-                        this.repository.EventRepository.SaveAll(request.Events.Distinct());
+                    {
+                        var calendar = this.repository.Find(request.CalendarId);
+                        calendar.Events.AddRangeComplement(request.Events);
+                        this.repository.Save(calendar);
+                    }
                 }
             }
             catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); throw; }

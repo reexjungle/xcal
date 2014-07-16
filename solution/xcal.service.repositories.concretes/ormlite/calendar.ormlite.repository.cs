@@ -103,10 +103,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             try
             {
                 var keys = full.Select(q => q.Id).ToArray();
-                var okeys = db.SelectParam<VCALENDAR, string>(q => q.Id, p => Sql.In(p.Id, keys));
-                if (!okeys.NullOrEmpty())
+                //var okeys = db.SelectParam<VCALENDAR, string>(q => q.Id, p => Sql.In(p.Id, keys));
+                if (!keys.NullOrEmpty())
                 {
-                    var revents = this.db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, okeys));
+                    var revents = this.db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, keys));
                     if (!revents.NullOrEmpty())
                     {
                         var events = this.EventRepository.FindAll(revents.Select(x => x.EventId)).ToList();
@@ -174,7 +174,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 db.Save<VCALENDAR>(entity);
                 if (!entity.Events.NullOrEmpty())
                 {
-                    this.EventRepository.SaveAll(entity.Events);
+                    this.EventRepository.SaveAll(entity.Events.Distinct());
                     var revents = entity.Events.Select(x => new REL_CALENDARS_EVENTS
                     {
                         Id = this.KeyGenerator.GetNextKey(),
