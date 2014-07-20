@@ -27,16 +27,18 @@ Contributing
 Community
 ==========
 
+
 Documentation
 =============
 
+
 Versioning
 ==========
-For better release management and backward commpability, the assemblies of xCal are maintained under the [Semantic Versioning](https://github.com/twbs/bootstrap) guidelines. Moreover, the branching of the source code follows the *Development and Release Strategy* of the [Version Control Guide](http://vsarbranchingguide.codeplex.com/releases) proposed by Microsoft Visual Studio ALM Rangers.
+For better release management and backward commpability, the assemblies of xCal are maintained under the [Semantic Versioning](https://github.com/twbs/bootstrap) guidelines. Moreover, the branching of the source code follows the *Development and Release Isolation Strategy* of the [Version Control Guide](http://vsarbranchingguide.codeplex.com/releases) proposed by Microsoft Visual Studio ALM Rangers.
 
 Contact
 ========
-* https://github.com/reexmonkey/
+* https://github.com/reexmonkey
 * https://twitter.com/ngwanemk
 
 
@@ -44,4 +46,4 @@ License
 =======
 Copyright (c) 2014, Emmanuel Ngwane
 All rights reserved.
-xCal code is released under the [BSD](https://github.com/reexmonkey/xcal/blob/master/LICENSE) License.
+xCal source code is released under the [BSD](https://github.com/reexmonkey/xcal/blob/master/LICENSE) License. Its docmentation is released under the [Creative Commons]() license.
