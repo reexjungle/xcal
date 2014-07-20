@@ -23,7 +23,7 @@ There are 2 quick ways experience at firsthand the latest release of xCal source
 * Clone the master repository: https://github.com/reexmonkey/xcal.git
 
 
-After obtaining the code, if you are using Visual studio, then it suffices to double-click on the solution file **xcal.sln** file and *voila* - you are *done!* Otherwise, you will find the following logical layout of directories and project(*.csproj) files helpful:
+If you are using Visual studio, then it suffices to double-click on the solution file **xcal.sln** file and *voila* - you are *done!* Otherwise, you will find the following logical layout of directories and project(*.csproj) files helpful:
 
 ```
 solution/
@@ -60,6 +60,8 @@ solution/
 |   ├── xcal.applications.server.web.local.csproj
 
 ```
+
+The [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) contains more information on the web service, its architecture, code examples and more...
 
 
 Contributing
