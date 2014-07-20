@@ -46,5 +46,4 @@ License
 =======
 Copyright (c) 2014, Emmanuel Ngwane
 All rights reserved.
-xCal source code is released under the [BSD](https://github.com/reexmonkey/xcal/blob/master/LICENSE) License. Its docmentation is released under the [Creative Commons](https://github.com/reexmonkey/xcal/docs/#license)
-) license.
+xCal source code is released under the [BSD](https://github.com/reexmonkey/xcal/blob/master/LICENSE) License. Its docmentation is released under the [Creative Commons](https://github.com/reexmonkey/xcal/docs/license) license.
