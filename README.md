@@ -39,17 +39,11 @@ solution/
 |   ├── crosscut.security.concretes.csproj
 ├── domain/
 |   ├── xcal.domain.csproj
-|   |   ├── contracts/
-|   |   ├── models/
-|   |   ├── operations/
-|   |   ├── extensions/
 ├── foundation/
 |   ├── foundation.essential.concretes.csproj
 |   ├── foundation.essential.contracts.csproj
 ├── infrastructure/
 |   ├── infrastructure.essential.concretes.csproj
-|   |   ├── io/
-|   |   ├── operations/
 |   ├── infrastructre.essential.contracts.csproj
 ├── service/
 |   ├── xcal.service.clients.concretes.csproj
@@ -61,7 +55,6 @@ solution/
 |   ├── xcal.service.validators.concretes.csproj
 ├── technical/
 |   ├── technical.data.concretes.csproj
-|   |   ├── extensions/
 |   ├── technical.data.contracts.csproj
 ├── tests/
 |   ├── xcal.applications.server.web.local.csproj
