@@ -44,7 +44,7 @@ solution/
 |   ├── foundation.essential.contracts.csproj
 ├── infrastructure/
 |   ├── infrastructure.essential.concretes.csproj
-|   ├── infrastructre.essential.contracts.csproj
+|   ├── infrastructure.essential.contracts.csproj
 ├── service/
 |   ├── xcal.service.clients.concretes.csproj
 |   ├── xcal.service.formats.concretes.csproj
