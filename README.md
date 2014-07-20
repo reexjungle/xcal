@@ -1,15 +1,11 @@
 Not another xCal again!
 ==============================
-Yep! *xCal* is not the XML format for the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format as specifed by [RFC 6321](http://tools.ietf.org/html/rfc6321); rather it is a something more....
-
-
-Unlike the xCal is a system that implements the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format as specified by the internet protocol [RFC 5545](http://tools.ietf.org/html/rfc5545). Moreover xCal also provides a calendar web services supporting various request and content content types such as as xml, csv, json, jsv and icalendar. xCal is created by [Emmanuel Ngwane](https://twitter.com/ngwanemk) with the support and involvement of the community.
+You may be forgiven if you thought the only definition of xCal is the [XML](http://en.wikipedia.org/wiki/XML) representation of the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format as specifed by [RFC 6321](http://tools.ietf.org/html/rfc6321) because *this* **xCal** (unlike the *others*) is a system that implements the standard [iCalendar](http://en.wikipedia.org/wiki/ICalendar) specification ([RFC 5545](http://tools.ietf.org/html/rfc5545)), as well as provides a web service platform for calendar data to be distributed under various content types such as [CSV](http://en.wikipedia.org/wiki/Comma-separated_values), [JSON](http://en.wikipedia.org/wiki/JSON), [JSV](http://mono.servicestack.net/docs/text-serializers/jsv-format), *iCalendar* and of course XML. xCal is a project started by [Emmanuel Ngwane](https://twitter.com/ngwanemk) (*after his many frustrated attempts to find a free open-source calendar web service*) with the support and involvement of the community.
 
  
 
 Table of Contents
 =================
-1. [A Brief History](https://github.com/reexmonkey/xcal/#a-brief-history) 
 1. [Getting Started](https://github.com/reexmonkey/xcal/#getting-started)
 2. [Contributing](https://github.com/reexmonkey/xcal/#contributing)
 3. [Community](https://github.com/reexmonkey/xcal/#community)
@@ -17,10 +13,6 @@ Table of Contents
 5. [Versioning](https://github.com/reexmonkey/xcal/#versioning)
 6. [Contact](https://github.com/reexmonkey/xcal/#contact)
 7. [License](https://github.com/reexmonkey/xcal/#license)
-
-
-A Brief History
-===============
 
 
 Getting Started
