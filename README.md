@@ -6,7 +6,7 @@ You may be forgiven if you only thought of xCal as the [XML](http://en.wikipedia
 
 Table of Contents
 =================
-1. [Getting Started](https://github.com/reexmonkey/xcal/#getting-started)
+1. [First things first](https://github.com/reexmonkey/xcal/#first-things-first)
 2. [Contributing](https://github.com/reexmonkey/xcal/#contributing)
 3. [Community](https://github.com/reexmonkey/xcal/#community)
 4. [Documentation](https://github.com/reexmonkey/xcal/#documentation)
@@ -15,8 +15,12 @@ Table of Contents
 7. [License](https://github.com/reexmonkey/xcal/#license)
 
 
-Getting Started
-===============
+First things first
+==================
+There are 2 quick ways experience at firsthand the latest release of xCal code:
+
+* [Download as ZIP file from the master repository](https://github.com/reexmonkey/xcal/archive/master.zip)
+* Clone the master repository: https://github.com/reexmonkey/xcal.git
 
 
 
