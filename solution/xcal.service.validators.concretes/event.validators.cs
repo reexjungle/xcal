@@ -12,7 +12,7 @@ namespace reexmonkey.xcal.service.validators.concretes
 
     public class EventValidator: AbstractValidator<VEVENT>
     {
-        public EventValidator(): base()
+        public  EventValidator(): base()
         {
             RuleFor(x => x.Url).SetValidator(new UriValidator()).When(x => x.Url != null);
             RuleFor(x => x.Location).SetValidator(new TextValidator()).When(x => x.Location != null);

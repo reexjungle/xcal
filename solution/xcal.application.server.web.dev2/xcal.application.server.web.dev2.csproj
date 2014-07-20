@@ -141,6 +141,7 @@
     </Content>
     <None Include="NLog.xsd" />
     <Content Include="packages.config" />
+    <None Include="Properties\PublishProfiles\xCal Dev2 FTPS.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

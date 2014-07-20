@@ -17,6 +17,7 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.ProdId).Must((x, y) => !string.IsNullOrEmpty(x.ProdId) || !string.IsNullOrWhiteSpace(x.ProdId));
             RuleFor(x => x.Version).Must((x, y) => !string.IsNullOrEmpty(x.ProdId) || !string.IsNullOrWhiteSpace(x.ProdId));
             RuleFor(x => x.Events).NotNull();
+            RuleFor(x => x.Events).SetCollectionValidator(new EventValidator()).When(x => !x.Events.NullOrEmpty());
             RuleFor(x => x.ToDos).NotNull();
             RuleFor(x => x.Journals).NotNull();
             RuleFor(x => x.FreeBusies).NotNull();

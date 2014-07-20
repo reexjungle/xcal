@@ -88,7 +88,7 @@ namespace reexmonkey.xcal.application.server.web.dev1.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Server=localhost;Uid = dev1;Pwd=dev1;allow user variables=true")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server=localhost;Uid = dev;Pwd=dev;allow user variables=true")]
         public string mysql_server {
             get {
                 return ((string)(this["mysql_server"]));
@@ -98,8 +98,8 @@ namespace reexmonkey.xcal.application.server.web.dev1.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Server=localhost;Uid =dev1;Pwd=dev1;Database=xcal_elmah_dev1_db;allow user variab" +
-            "les=true")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server=localhost;Uid =dev;Pwd=dev;Database=xcal_elmah_dev1_db;allow user variable" +
+            "s=true")]
         public string elmah_mysql_db {
             get {
                 return ((string)(this["elmah_mysql_db"]));
