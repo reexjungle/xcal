@@ -23,7 +23,7 @@ There are 2 quick ways experience at firsthand the latest release of xCal source
 * Clone the master repository: https://github.com/reexmonkey/xcal.git
 
 
-After obtaining the code, if you are using Visual studio, then it suffices to double-click on the solution file **xcal.sln** file and *voila* - you are *done!* Otherwise, you will find the following logical layout of directories and project(*.csproj) files helpful:
+If you are using Visual studio, then it suffices to double-click on the solution file **xcal.sln** file and *voila* - you are *done!* Otherwise, you will find the following logical layout of directories and project(*.csproj) files helpful:
 
 ```
 solution/
@@ -44,7 +44,7 @@ solution/
 |   ├── foundation.essential.contracts.csproj
 ├── infrastructure/
 |   ├── infrastructure.essential.concretes.csproj
-|   ├── infrastructre.essential.contracts.csproj
+|   ├── infrastructure.essential.contracts.csproj
 ├── service/
 |   ├── xcal.service.clients.concretes.csproj
 |   ├── xcal.service.formats.concretes.csproj
@@ -60,6 +60,8 @@ solution/
 |   ├── xcal.applications.server.web.local.csproj
 
 ```
+
+The [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) contains more information on the web service, its architecture, code examples and more...
 
 
 Contributing
@@ -86,6 +88,5 @@ Contact
 
 License
 =======
-Copyright (c) 2014, Emmanuel Ngwane
-All rights reserved.
+Copyright (c) 2014, Emmanuel Ngwane. All rights reserved.
 xCal source code is released under the [BSD](https://github.com/reexmonkey/xcal/blob/master/LICENSE) License. Its documentation is released under the [Creative Commons](https://github.com/reexmonkey/xcal/blob/master/docs/LICENSE) license.
