@@ -17,11 +17,22 @@ Table of Contents
 
 First things first
 ==================
-There are 2 quick ways experience at firsthand the latest release of xCal code:
+There are 2 quick ways experience at firsthand the latest release of xCal source code:
 
 * [Download as ZIP file from the master repository](https://github.com/reexmonkey/xcal/archive/master.zip)
 * Clone the master repository: https://github.com/reexmonkey/xcal.git
 
+
+As a project initially created with Visual Studio 2013 Express, the logical structure resembles closely the typical directory structure proposed by Visual Studio; albeit with minor differences. Indeed, if you are using Visual studio, it suffices to double-click on the solution file **xcal.sln** file and *voila* - you are *done!* 
+
+Otherwise, you will find the following logical layout of directories and projects(*visual-studio-speak*) helpful:
+
+```
+solution/
+|-------application
+        |----------xcal.application.server.web.dev1
+
+```
 
 
 Contributing
