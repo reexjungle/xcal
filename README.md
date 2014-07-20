@@ -23,14 +23,48 @@ There are 2 quick ways experience at firsthand the latest release of xCal source
 * Clone the master repository: https://github.com/reexmonkey/xcal.git
 
 
-As a project initially created with Visual Studio 2013 Express, the logical structure resembles closely the typical directory structure proposed by Visual Studio; albeit with minor differences. Indeed, if you are using Visual studio, it suffices to double-click on the solution file **xcal.sln** file and *voila* - you are *done!* 
-
-Otherwise, you will find the following logical layout of directories and projects(*visual-studio-speak*) helpful:
+After obtaining the code, if you are using Visual studio, then it suffices to double-click on the solution file **xcal.sln** file and *voila* - you are *done!* Otherwise, you will find the following logical layout of directories and project(*.csproj) files helpful:
 
 ```
 solution/
-|-------application
-        |----------xcal.application.server.web.dev1
+├── application/
+|   ├── xcal.application.server.web.dev1.csproj
+|   ├── xcal.application.server.web.dev2.csproj
+|   ├── xcal.application.server.web.prod1.csproj
+|   ├── xcal.application.server.web.prod2.csproj
+|   ├── xcal.application.server.web.local.csproj
+├── crosscut/
+|   ├── crosscut.operations.concretes.csproj
+|   ├── crosscut.operations.contracts.csproj
+|   ├── crosscut.security.concretes.csproj
+├── domain/
+|   ├── xcal.domain.csproj
+|   |   ├── contracts/
+|   |   ├── models/
+|   |   ├── operations/
+|   |   ├── extensions/
+├── foundation/
+|   ├── foundation.essential.concretes.csproj
+|   ├── foundation.essential.contracts.csproj
+├── infrastructure/
+|   ├── infrastructure.essential.concretes.csproj
+|   |   ├── io/
+|   |   ├── operations/
+|   ├── infrastructre.essential.contracts.csproj
+├── service/
+|   ├── xcal.service.clients.concretes.csproj
+|   ├── xcal.service.formats.concretes.csproj
+|   ├── xcal.service.interfaces.concretes.csproj
+|   ├── xcal.service.interfaces.contracts.csproj
+|   ├── xcal.service.repositories.concretes.csproj
+|   ├── xcal.service.repositories.contracts.csproj
+|   ├── xcal.service.validators.concretes.csproj
+├── technical/
+|   ├── technical.data.concretes.csproj
+|   |   ├── extensions/
+|   ├── technical.data.contracts.csproj
+├── tests/
+|   ├── xcal.applications.server.web.local.csproj
 
 ```
 
