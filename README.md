@@ -17,7 +17,7 @@ Table of Contents
 
 First things first
 ==================
-There are 2 quick ways experience at firsthand the latest release of xCal source code:
+There are 2 quick ways to experience at firsthand the latest xCal code:
 
 * [Download as ZIP file from the master repository](https://github.com/reexmonkey/xcal/archive/master.zip)
 * Clone the master repository: https://github.com/reexmonkey/xcal.git
