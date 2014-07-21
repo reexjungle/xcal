@@ -78,7 +78,7 @@ Documentation
 
 Versioning
 ==========
-For better release management and backward commpability, the assemblies of xCal are maintained under the [Semantic Versioning](https://github.com/twbs/bootstrap) guidelines. Moreover, the branching of the source code follows the *Development and Release Isolation Strategy* of the [Version Control Guide](http://vsarbranchingguide.codeplex.com/releases) proposed by Microsoft Visual Studio ALM Rangers.
+For better release management and backward commpability, the assemblies of xCal are maintained under the [Semantic Versioning](http://semver.org/) guidelines. Moreover, the branching of the source code follows the *Development and Release Isolation Strategy* of the [Version Control Guide](http://vsarbranchingguide.codeplex.com/releases) proposed by Microsoft Visual Studio ALM Rangers.
 
 Contact
 ========
