@@ -36,6 +36,12 @@ namespace reexmonkey.foundation.essentials.concretes
             return (comparer == null) ? first.Intersect(second).Count() == 0 : first.Intersect(second, comparer).Count() == 0;
         }
 
+        public static bool Intersects<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second, IEqualityComparer<TValue> comparer = null)
+        {
+            return (comparer == null) ? first.Intersect(second).Count() > 0 : first.Intersect(second, comparer).Count() > 0;
+        }
+
+
         public static IEnumerable<TValue> Duplicates<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second, IEqualityComparer<TValue> comparer = null)
         {
             return (comparer == null)? second.Intersect(first): second.Intersect(first, comparer);
@@ -58,8 +64,8 @@ namespace reexmonkey.foundation.essentials.concretes
             try
             {
                 var incoming = (comparer != null)
-                    ?collection.ToArray().Except(list, comparer)
-                    : collection.ToArray().Except(list);
+                    ?collection.ToArray().Except(list.Distinct(), comparer)
+                    : collection.ToArray().Except(list.Distinct());
 
                 if (!incoming.NullOrEmpty()) list.AddRange(incoming);
             }
@@ -94,6 +100,8 @@ namespace reexmonkey.foundation.essentials.concretes
         {
             return new TValue[] { value };
         }
+
+
 
 
     }

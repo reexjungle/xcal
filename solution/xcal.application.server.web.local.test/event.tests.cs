@@ -279,9 +279,10 @@ namespace reexmonkey.xcal.application.server.web.dev.test
         public void MaintainMultipleEvents()
         {
             this.Teardown();
-            var events = this.GenerateNEvents(10);
-            var attendees = this.GenerateNAttendees(35);
+            var events = this.GenerateNEvents(5);
+            var attendees = this.GenerateNAttendees(60);
             this.RandomlyAttendEvents(ref events, attendees);
+            
 
             var calendar = new VCALENDAR
             {

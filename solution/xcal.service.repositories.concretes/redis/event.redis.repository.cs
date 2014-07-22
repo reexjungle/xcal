@@ -206,7 +206,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
             try
             {
                 var full = dry.ToList();
-                var keys = full.Select(x => x.Id).Distinct().ToList();
+                var keys = full.Select(x => x.Id).ToList();
+                var okeys = this.redis.GetAllKeys().Intersect(keys).ToArray();
 
                 #region 1. retrieve relationships
 
@@ -906,9 +907,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
 
                     if (!attendees.NullOrEmpty())
                     {
-                        transaction.QueueCommand(x => x.StoreAll(attendees.Distinct()));
-                        var rattendees = entities.Where(x => !x.Attendees.NullOrEmpty()).SelectMany(e => e.Attendees
-                            .Select(x => new REL_EVENTS_ATTENDEES
+                        var rattendees = entities.Where(x => !x.Attendees.NullOrEmpty())
+                            .SelectMany(e => e.Attendees
+                                .Select(x => new REL_EVENTS_ATTENDEES
                             {
                                 Id = this.KeyGenerator.GetNextKey(),
                                 EventId = e.Id,
@@ -916,6 +917,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
                             }));
                         var orattendees = this.redis.As<REL_EVENTS_ATTENDEES>().GetAll().Where(x => okeys.Contains(x.EventId));
                         this.redis.SynchronizeAll(rattendees, orattendees, transaction);
+                        transaction.QueueCommand(x => x.StoreAll(attendees.Distinct()));
                     }
 
                     if (!attachbins.NullOrEmpty())

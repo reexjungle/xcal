@@ -108,7 +108,7 @@ namespace reexmonkey.xcal.application.server.web.local.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("rdbms")]
+        [global::System.Configuration.DefaultSettingValueAttribute("nosql")]
         public string primary_storage {
             get {
                 return ((string)(this["primary_storage"]));
