@@ -66,11 +66,13 @@ solution/
 
 ```
 
-### Replicated the xCal project on my developer machine - any further configuration?
-Speaking from the heart, there is no greater killjoy (*perhaps with the exception of exceptions*) than an initial waste of precious development time with mindless extra configurations during project setup. As such, the configuration of the project has been reduced to minimal as possible. This means, external library dependencies are [NuGet](https://www.nuget.org/)-based packages and are automatically resolved on first project build. Nevertheless, xCal is built to support either [relational database management systems](http://en.wikipedia.org/wiki/Relational_database_management_system) (*we all know [MySQL](http://en.wikipedia.org/wiki/MySQL)- don't we*) or NoSQL database systems (*[Redis](http://en.wikipedia.org/wiki/Redis) comes to the rescue*) and as such needs the systems to operate (preferably as background services on the host machine).
+### Done with project setup - any further configuration?
+Speaking from the heart, there is no greater killjoy (*perhaps with the exception of exceptions*) than an initial waste of precious development time with mindless extra configurations during project setup. As such, the configuration of the project has been reduced to minimal as possible. This means, external library dependencies are [NuGet](https://www.nuget.org/)-based packages and are automatically resolved on first project build. 
+
+Nevertheless, xCal also depends on backend data management systems for logging and data storage purposes. In fact, xCal uses the [Service Stack V3](https://github.com/ServiceStackV3/ServiceStackV3) lightweight [Ormlite](https://github.com/ServiceStack/ServiceStack.OrmLite/tree/v3) and [Redis](https://github.com/ServiceStack/ServiceStack.Redis/tree/v3) libraries to respectively support either [relational database management systems](http://en.wikipedia.org/wiki/Relational_database_management_system) (*we all know [MySQL](http://www.mysql.com/)- don't we?*) or the respectable (*[Redis](http://redis.io/) NoSQL database. In particular, the backend systems must pre-exist on the host machine and consequently access to them must be spcified in the application settings file, as well as configuration file of [Nlog](http://nlog-project.org/); one of the logging providers used by xCal. 
 
 
-The [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) contains more information on the project, web service, its architecture, dependencies, code examples and more...
+For further information on the project, web service, its architecture, dependencies, code examples and more, please do not hesitate to consult the [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) 
 
 
 Contributing
