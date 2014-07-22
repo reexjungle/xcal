@@ -1,8 +1,7 @@
 Not another xCal again!
 ==============================
-You may be forgiven if you only thought of xCal as the [XML](http://en.wikipedia.org/wiki/XML) representation of the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format([RFC 6321](http://tools.ietf.org/html/rfc6321)). However, there is *another* xCal, which implements the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) specification ([RFC 5545](http://tools.ietf.org/html/rfc5545)) and in addition provides a web service interface for calendar data to be distributed under various content types such as [CSV](http://en.wikipedia.org/wiki/Comma-separated_values), [JSON](http://en.wikipedia.org/wiki/JSON), [JSV](http://mono.servicestack.net/docs/text-serializers/jsv-format), iCalendar format and of course XML. This *so-called* xCal is a project started by [Emmanuel Ngwane](https://twitter.com/ngwanemk) (*after his many frustrated attempts to find a free open-source calendar web service*) with the support and involvement of the community.
+You may be forgiven if you only thought of xCal as the [XML](http://en.wikipedia.org/wiki/XML) representation of the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format([RFC 6321](http://tools.ietf.org/html/rfc6321)). However, there is *another* xCal, which implements the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) specification ([RFC 5545](http://tools.ietf.org/html/rfc5545)) and in addition provides a web service interface for calendar data to be distributed under various content types such as [CSV](http://en.wikipedia.org/wiki/Comma-separated_values), [JSON](http://en.wikipedia.org/wiki/JSON), [JSV](http://mono.servicestack.net/docs/text-serializers/jsv-format), iCalendar format and of course XML. This *so-called* xCal is a project started by [Emmanuel Ngwane](https://twitter.com/ngwanemk) (*after his many frustrated attempts to find a free open-source calendar web service*) with the support and involvement of the community. 
 
- 
 
 Table of Contents
 =================
@@ -15,15 +14,21 @@ Table of Contents
 7. [License](https://github.com/reexmonkey/xcal/#license)
 
 
-First things first
+First things first 
 ==================
-There are 2 quick ways to experience at firsthand the latest xCal code:
+### As a developer, How do I obtain a fresh copy of the latest xCal code?
+
+Here are 2 quick ways to receive the code:
 
 * [Download as ZIP file from the master repository](https://github.com/reexmonkey/xcal/archive/master.zip)
 * Clone the master repository: https://github.com/reexmonkey/xcal.git
 
 
-xCal is written entirely in C# and if you are using Visual studio, then it suffices to double-click on the solution file **xcal.sln** file and *voila* - you are *done!* Otherwise, you will find the following logical layout of directories and project(*.csproj) files helpful:
+### Got the source code already - what next?
+
+xCal is written entirely in C# and in case your favorite [IDE](http://en.wikipedia.org/wiki/Integrated_development_environment) is [Microsoft Visual Studio](http://www.visualstudio.com/), then the setup is guaranteed to be *pain-free* (*yeah you do not need the pain-killers*). All, you have to do is look for the solution file **xcal.sln** in the downloaded package, double-click it and *voila* - xCal project tree is automatically loaded. 
+
+However, you may not be a Visual Studio enthusiast - perhaps a hardcore programmer who types on a basic text editor and uses command line tools to build the code or an expert user of another third-party .NET IDE. Well, in that case you may have to manually manage the project folders and files but lo! do not fear it is not a daunting task either - the following illustration hepls provide an overview of the logical layout of the directories and project files (*~~not~~ all that ends with .csproj,...*).
 
 ```
 solution/
@@ -61,7 +66,13 @@ solution/
 
 ```
 
-The [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) contains more information on the project, web service, its architecture, dependencies, code examples and more...
+### Done with project setup - any further configuration?
+Speaking from the heart, there is no greater killjoy (*perhaps with the exception of bugging exceptions*) than an initial waste of precious development time with mindless extra configurations during project setup. As such, the configuration of xCal is kept to the minimum. This means, no need to fret about maintaining external library dependencies, which happen to be [NuGet](https://www.nuget.org/) packages that are automatically and happily resolved on the first project build. 
+
+Nevertheless, xCal also depends on backend data management systems for logging and data storage purposes. In fact, xCal uses the [Service Stack V3](https://github.com/ServiceStackV3/ServiceStackV3) lightweight [Ormlite](https://github.com/ServiceStack/ServiceStack.OrmLite/tree/v3) and [Redis](https://github.com/ServiceStack/ServiceStack.Redis/tree/v3) libraries to respectively support either [relational database management systems](http://en.wikipedia.org/wiki/Relational_database_management_system) (*we all know [MySQL](http://www.mysql.com/)- don't we?*) or the respectable [Redis](http://redis.io/) NoSQL database. In particular, the backend systems must pre-exist on the host machine and consequently access to them must be spcified in the application settings file, as well as configuration file of [Nlog](http://nlog-project.org/); one of the logging providers used by xCal. 
+
+
+###### For further information on the project, web service, its architecture, dependencies, code examples and more, please do not hesitate to visit the [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) 
 
 
 Contributing
