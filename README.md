@@ -16,7 +16,7 @@ Table of Contents
 
 First things first 
 ==================
-### As a devloper, How do I obtain a fresh copy of the latest xCal code?
+### As a developer, How do I obtain a fresh copy of the latest xCal code?
 
 Here are 2 quick ways to receive the code:
 
