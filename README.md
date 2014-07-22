@@ -17,7 +17,7 @@ Table of Contents
 
 First things first
 ==================
-There are 2 quick ways experience at firsthand the latest release of xCal source code:
+There are 2 quick ways to experience at firsthand the latest xCal code:
 
 * [Download as ZIP file from the master repository](https://github.com/reexmonkey/xcal/archive/master.zip)
 * Clone the master repository: https://github.com/reexmonkey/xcal.git
@@ -78,7 +78,7 @@ Documentation
 
 Versioning
 ==========
-For better release management and backward commpability, the assemblies of xCal are maintained under the [Semantic Versioning](https://github.com/twbs/bootstrap) guidelines. Moreover, the branching of the source code follows the *Development and Release Isolation Strategy* of the [Version Control Guide](http://vsarbranchingguide.codeplex.com/releases) proposed by Microsoft Visual Studio ALM Rangers.
+For better release management and backward commpability, the assemblies of xCal are maintained under the [Semantic Versioning](http://semver.org/) guidelines. Moreover, the branching of the source code follows the *Development and Release Isolation Strategy* of the [Version Control Guide](http://vsarbranchingguide.codeplex.com/releases) proposed by Microsoft Visual Studio ALM Rangers.
 
 Contact
 ========
