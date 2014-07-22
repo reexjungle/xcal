@@ -16,9 +16,9 @@ Table of Contents
 
 First things first 
 ==================
-### I am a devloper, How do I obtain a fresh copy of the latest xCal code?
+### As a devloper, How do I obtain a fresh copy of the latest xCal code?
 
-here are 2 quick ways to receive the code:
+Here are 2 quick ways to receive the code:
 
 * [Download as ZIP file from the master repository](https://github.com/reexmonkey/xcal/archive/master.zip)
 * Clone the master repository: https://github.com/reexmonkey/xcal.git
@@ -26,9 +26,9 @@ here are 2 quick ways to receive the code:
 
 ### Got the source code already - what next?
 
-xCal is written entirely in C# and in case your favorite [IDE](http://en.wikipedia.org/wiki/Integrated_development_environment) is [Microsoft Visual Studio](http://www.visualstudio.com/), then the setup is guaranteed to be *pain-free* (*yeah you do not need pain-killers at all*). All, you need to do is to look for the solution file **xcal.sln** in the downloaded package, double-click it and *voila* - all the projects are automatically loaded. Project dependencies of the projects are in the form of [NuGet](https://www.nuget.org/) packages, which are automatically downloaded during first project build.   
+xCal is written entirely in C# and in case your favorite [IDE](http://en.wikipedia.org/wiki/Integrated_development_environment) is [Microsoft Visual Studio](http://www.visualstudio.com/), then the setup is guaranteed to be *pain-free* (*yeah you do not need the pain-killers*). All, you have to do is look for the solution file **xcal.sln** in the downloaded package, double-click it and *voila* - xCal project tree is automatically loaded. 
 
-However, you may not be a Visual Studio enthusiast - perhaps a hardcore programmer who types on a basic text editor and uses command line tools to build the code or an expert user of another third-party .NET IDE. Well, in that case you may have to manually manage the project folders and files but lo! do not fear it is not a daunting task either - the following illustration hepls provide an overview of the logical layout of the directories (*see the forward slashes?*) and project files(*all that ends with .csproj...*).
+However, you may not be a Visual Studio enthusiast - perhaps a hardcore programmer who types on a basic text editor and uses command line tools to build the code or an expert user of another third-party .NET IDE. Well, in that case you may have to manually manage the project folders and files but lo! do not fear it is not a daunting task either - the following illustration hepls provide an overview of the logical layout of the directories and project files (*~~not~~ all that ends with .csproj,...*).
 
 ```
 solution/
@@ -66,8 +66,9 @@ solution/
 
 ```
 
-### xCal project is setup - further configuration needed?
-Speaking from the heart, this project is aimed primarily at developers and from experience no killjoy (*except broken code*) is worse than wasting a devloper's time with extra configurations before getting down to core work. As such, the configuration of the project has been reduced to minimal. That is, the library dependencies have been taken care of by Nuget packages. Nevertheless, the usual configuration culprit (data sources) need to be added by hand. 
+### Replicated the xCal project on my developer machine - any further configuration?
+Speaking from the heart, there is no greater killjoy (*perhaps with the exception of exceptions*) than an initial waste of precious development time with mindless extra configurations during project setup. As such, the configuration of the project has been reduced to minimal as possible. This means, external library dependencies are [NuGet](https://www.nuget.org/)-based packages and are automatically resolved on first project build. Nevertheless, xCal is built to support either [relational database management systems](http://en.wikipedia.org/wiki/Relational_database_management_system) (*we all know [MySQL](http://en.wikipedia.org/wiki/MySQL)- don't we*) or NoSQL database systems (*[Redis](http://en.wikipedia.org/wiki/Redis) comes to the rescue*) and as such needs the systems to operate (preferably as background services on the host machine).
+
 
 The [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) contains more information on the project, web service, its architecture, dependencies, code examples and more...
 
