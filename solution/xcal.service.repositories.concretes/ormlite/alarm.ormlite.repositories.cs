@@ -152,10 +152,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 
             try
             {
-                db.SaveAll(entities);
-                if (attachbins != null)
+                db.SaveAll(entities.Distinct());
+                if (!attachbins.NullOrEmpty())
                 {
-                    db.SaveAll(attachbins);
+                    db.SaveAll(attachbins.Distinct());
                     var rattachbins = entities.Where(x => x.AttachmentBinary != null).Select(x => new REL_AALARMS_ATTACHBINS
                     {
                         Id = this.KeyGenerator.GetNextKey(),
@@ -166,9 +166,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     db.SynchronizeAll(rattachbins, orattachbins);
                 }
 
-                if (attachuris != null)
+                if (!attachuris.NullOrEmpty())
                 {
-                    db.SaveAll(attachuris);
+                    db.SaveAll(attachuris.Distinct());
                     var rattachuris = entities.Where(x => x.AttachmentUri != null).Select(x => new REL_AALARMS_ATTACHURIS
                     {
                         Id = this.KeyGenerator.GetNextKey(),
@@ -699,45 +699,55 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             {
                 var keys = dry.Select(q => q.Id).ToArray();
                 var full = db.Select<EMAIL_ALARM>(q => Sql.In(q.Id, keys));
+                //var full = dry.ToList();
+               // var okeys = db.SelectParam<VEVENT, string>(q => q.Id, p => Sql.In(p.Id, keys));
 
                 //1. retrieve relationships
                 if (!full.NullOrEmpty())
                 {
-                    var rattends = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, keys));
-                    var rattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, keys));
-                    var rattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, keys));
+                    var rattendees = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.AlarmId, keys));
+                    var rattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.AlarmId, keys));
+                    var rattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.AlarmId, keys));
 
                     //2. retrieve secondary entities
-                    var attends = (!rattends.Empty()) ? db.Select<ATTENDEE>(q => Sql.In(q.Id, rattends.Select(r => r.AttendeeId).ToArray())) : null;
-                    var attachbins = (!rattachbins.Empty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToArray())) : null;
-                    var attachuris = (!rattachuris.Empty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachuris.Select(r => r.AttachmentId).ToArray())) : null;
+                    var attendees = (!rattendees.NullOrEmpty()) ? db.Select<ATTENDEE>(q => Sql.In(q.Id, rattendees.Select(r => r.AttendeeId).ToArray())) : null;
+                    var attachbins = (!rattachbins.NullOrEmpty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId))) : null;
+                    var attachuris = (!rattachuris.NullOrEmpty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachuris.Select(r => r.AttachmentId))) : null;
 
                     //3. Use Linq to stitch secondary entities to primary entities
                     full.ForEach(x =>
                     {
-                        var xattachbins = from y in attachbins
-                                          join r in rattachbins on y.Id equals r.AttachmentId
-                                          join a in dry on r.AlarmId equals a.Id
-                                          where a.Id == x.Id
-                                          select y;
-                        if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.AddRangeComplement(xattachbins);
+                        if (!rattachbins.NullOrEmpty())
+                        {
+                            var xattachbins = from y in attachbins
+                                              join r in rattachbins on y.Id equals r.AttachmentId
+                                              join a in full on r.AlarmId equals a.Id
+                                              where a.Id == x.Id
+                                              select y;
+                            if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.AddRangeComplement(xattachbins); 
+                        }
 
-
-                        var xattachuris = from y in attachuris
-                                          join r in rattachuris on y.Id equals r.AttachmentId
-                                          join a in dry on r.AlarmId equals a.Id
-                                          where a.Id == x.Id
-                                          select y;
+                        if (!rattachuris.NullOrEmpty())
+                        {
+                            var xattachuris = from y in attachuris
+                                              join r in rattachuris on y.Id equals r.AttachmentId
+                                              join a in full on r.AlarmId equals a.Id
+                                              where a.Id == x.Id
+                                              select y;
                         if (!xattachuris.NullOrEmpty()) x.AttachmentUris.AddRangeComplement(xattachuris);
+                            
+                        }
 
-
-                        var xattendees = from y in attends
-                                         join r in rattends on y.Id equals r.AlarmId
-                                         join a in dry on r.Id equals a.Id
-                                         where a.Id == x.Id
-                                         select y;
-                        if (!xattendees.NullOrEmpty()) x.Attendees.AddRangeComplement(xattendees);
-
+                        if (!rattendees.NullOrEmpty())
+                        {
+                            var xattendees = from y in attendees
+                                             join r in rattendees on y.Id equals r.AttendeeId
+                                             join f in full on r.AlarmId equals f.Id
+                                             where f.Id == x.Id
+                                             select y;
+                            if (!xattendees.NullOrEmpty()) x.Attendees.AddRangeComplement(xattendees);
+                            
+                        }
                     });
                 }
 
@@ -845,35 +855,51 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 db.SaveAll(entities);
 
                 //1. retrieve details of events
-                var attendees = entities.Where(x => x.Attendees.Count() > 0).SelectMany(x => x.Attendees);
+                var attendees = entities.Where(x => !x.Attendees.NullOrEmpty()).SelectMany(x => x.Attendees);
                 var attachbins = entities.Where(x => x.AttachmentBinaries.Count() > 0).SelectMany(x => x.AttachmentBinaries);
                 var attachuris = entities.Where(x => x.AttachmentUris.Count() > 0).SelectMany(x => x.AttachmentUris);
+                var keys = entities.Select(x => x.Id);
 
                 //2. save details of events
                 if (!attendees.NullOrEmpty())
                 {
-                    db.SaveAll(attendees);
+                    db.SaveAll(attendees.Distinct());
                     var rattendees = entities.Where(x => !x.Attendees.NullOrEmpty())
-                        .SelectMany(a => a.Attendees.Select(x => new REL_EALARMS_ATTENDEES { Id = a.Id, AttendeeId = x.Id }));
-                    var orattendees = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttendeeId, attendees.Select(x => x.Id).ToArray()));
-                    db.SynchronizeAll(rattendees, orattendees);
+                        .SelectMany(a => a.Attendees.Select(x => new REL_EALARMS_ATTENDEES 
+                        {
+                            Id = this.KeyGenerator.GetNextKey(),
+                            AlarmId = a.Id,
+                            AttendeeId = x.Id
+                        }));
+                    var orattendees = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, keys));
+                   db.SynchronizeAll(rattendees, orattendees);
                 }
 
                 if (!attachbins.NullOrEmpty())
                 {
-                    db.SaveAll(attachbins);
+                    db.SaveAll(attachbins.Distinct());
                     var rattachbins = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty())
-                        .SelectMany(a => a.AttachmentBinaries.Select(x => new REL_EALARMS_ATTACHBINS { Id = a.Id, AttachmentId = x.Id }));
-                    var orattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
+                        .SelectMany(a => a.AttachmentBinaries.Select(x => new REL_EALARMS_ATTACHBINS 
+                        {
+                            Id = this.KeyGenerator.GetNextKey(),
+                            AlarmId = a.Id,
+                            AttachmentId = x.Id
+                        }));
+                    var orattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, keys));
                     db.SynchronizeAll(rattachbins, orattachbins);
                 }
 
                 if (!attachuris.NullOrEmpty())
                 {
-                    db.SaveAll(attachuris);
+                    db.SaveAll(attachuris.Distinct());
                     var rattachuris = entities.Where(x => !x.AttachmentUris.NullOrEmpty())
-                        .SelectMany(a => a.AttachmentUris.Select(x => new REL_EALARMS_ATTACHURIS { Id = a.Id, AttachmentId = x.Id }));
-                    var orattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, entities.Select(x => x.Id)) && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id)));
+                        .SelectMany(a => a.AttachmentUris.Select(x => new REL_EALARMS_ATTACHURIS 
+                        {
+                            Id = this.KeyGenerator.GetNextKey(),
+                            AlarmId = a.Id,
+                            AttachmentId = x.Id
+                        }));
+                    var orattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, keys));
                     db.SynchronizeAll(rattachuris, orattachuris);
                 }
 

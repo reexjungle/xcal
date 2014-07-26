@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using ServiceStack.Redis;
 using reexmonkey.xcal.service.repositories.contracts;
+using reexmonkey.infrastructure.operations.contracts;
 
 
 
@@ -45,9 +46,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.redis
             this.client = client;
         }
 
-        public void Flush(bool hard = false)
+        public void Flush(FlushMode mode = FlushMode.soft)
         {
-            if (!hard) this.client.FlushDb();
+            if (mode == FlushMode.soft) this.client.FlushDb();
             else this.client.FlushAll();
         }
     }

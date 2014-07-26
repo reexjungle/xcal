@@ -6,6 +6,7 @@ using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.xcal.domain.operations;
 using reexmonkey.infrastructure.operations.concretes;
+using reexmonkey.infrastructure.operations.contracts;
 using System.Collections.Generic;
 
 namespace reexmonkey.xcal.application.server.web.dev.test
@@ -14,13 +15,13 @@ namespace reexmonkey.xcal.application.server.web.dev.test
     public class CalendarServiceUnitTests
     {
         private JsonServiceClient client;
-        private GuidKeyGenerator guidkeygen;
+        private GuidKeyGenerator uidkeygen;
         private FPIKeyGenerator<string> fpikeygen;
 
         public CalendarServiceUnitTests()
         {
             client = new JsonServiceClient(Properties.Settings.Default.local_server);
-            guidkeygen = new GuidKeyGenerator();
+            uidkeygen = new GuidKeyGenerator();
             fpikeygen = new FPIKeyGenerator<string>
             {
                 Owner = Properties.Settings.Default.fpiOwner,
@@ -32,7 +33,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
         private void Teardown()
         {
-            client.Post(new FlushDatabase { Hard = false });
+            client.Post(new FlushDatabase { Mode = FlushMode.soft });
         }
 
         [TestMethod]
@@ -41,7 +42,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             this.Teardown();
             var calendar = new VCALENDAR
             {
-                Id = this.guidkeygen.GetNextKey(),
+                Id = this.uidkeygen.GetNextKey(),
                 ProdId = this.fpikeygen.GetNextKey(),
                 Method = METHOD.PUBLISH
             };
@@ -83,7 +84,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             {
                 calendars[i] = new VCALENDAR 
                 {
-                    Id = this.guidkeygen.GetNextKey(),
+                    Id = this.uidkeygen.GetNextKey(),
                     ProdId = this.fpikeygen.GetNextKey()
                 };
             }
@@ -149,7 +150,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             this.Teardown();
             var calendar = new VCALENDAR
             {
-                Id = this.guidkeygen.GetNextKey(),
+                Id = this.uidkeygen.GetNextKey(),
                 ProdId = this.fpikeygen.GetNextKey(),
                 Method = METHOD.PUBLISH
             };
@@ -159,16 +160,16 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             {
                 events[i] = new VEVENT
                 {
-                    Uid = guidkeygen.GetNextKey(),
+                    Uid = uidkeygen.GetNextKey(),
                     RecurrenceId = new RECURRENCE_ID
                     {
-                        Id = guidkeygen.GetNextKey(),
+                        Id = uidkeygen.GetNextKey(),
                         Range = RANGE.THISANDFUTURE,
                         Value = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc))
                     },
                     RecurrenceRule = new RECUR
                     {
-                        Id = guidkeygen.GetNextKey(),
+                        Id = uidkeygen.GetNextKey(),
                         FREQ = FREQ.DAILY,
                         Format = RecurFormat.DateTime,
                         UNTIL = new DATE_TIME(new DateTime(2014, 6, 25, 18, 03, 08, 0, DateTimeKind.Utc))
@@ -176,9 +177,9 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
                     Organizer = new ORGANIZER
                     {
-                        Id = guidkeygen.GetNextKey(),
+                        Id = uidkeygen.GetNextKey(),
                         CN = "Emmanuel Ngwane",
-                        Address = new URI("ngwanemk@gmail.com"),
+                        Address = new URI("example@gmail.com"),
                         Language = new LANGUAGE("en")
                     },
                     Location = new LOCATION
@@ -248,7 +249,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             {
                 calendars[i] = new VCALENDAR
                 {
-                    Id = this.guidkeygen.GetNextKey(),
+                    Id = this.uidkeygen.GetNextKey(),
                     ProdId = this.fpikeygen.GetNextKey()
                 };
             }
@@ -271,16 +272,16 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             {
                 events[i] = new VEVENT
                 {
-                    Uid = guidkeygen.GetNextKey(),
+                    Uid = uidkeygen.GetNextKey(),
                     RecurrenceId = new RECURRENCE_ID
                     {
-                        Id = guidkeygen.GetNextKey(),
+                        Id = uidkeygen.GetNextKey(),
                         Range = RANGE.THISANDFUTURE,
                         Value = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc))
                     },
                     RecurrenceRule = new RECUR
                     {
-                        Id = guidkeygen.GetNextKey(),
+                        Id = uidkeygen.GetNextKey(),
                         FREQ = FREQ.DAILY,
                         Format = RecurFormat.DateTime,
                         UNTIL = new DATE_TIME(new DateTime(2014, 6, 25, 18, 03, 08, 0, DateTimeKind.Utc))
@@ -288,7 +289,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
                     Organizer = new ORGANIZER
                     {
-                        Id = guidkeygen.GetNextKey(),
+                        Id = uidkeygen.GetNextKey(),
                         CN = "Emmanuel Ngwane",
                         Address = new URI("ngwanemk@gmail.com"),
                         Language = new LANGUAGE("en")

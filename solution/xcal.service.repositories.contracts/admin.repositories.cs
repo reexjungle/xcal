@@ -4,12 +4,13 @@ using ServiceStack.OrmLite;
 using ServiceStack.Redis;
 using reexmonkey.xcal.domain.models;
 using reexmonkey.technical.data.contracts;
+using reexmonkey.infrastructure.operations.contracts;
 
 namespace reexmonkey.xcal.service.repositories.contracts
 {
     public interface IAdminRepository: IRepository
     {
-        void Flush(bool force=false);
+        void Flush(FlushMode mode = FlushMode.soft);
     }
 
     public interface IAdminOrmLiteRepository : IAdminRepository

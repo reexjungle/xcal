@@ -174,6 +174,7 @@ namespace reexmonkey.xcal.domain.contracts
     {
         //trigrel
         DURATION Duration { get; set; }
+
         RELATED Related { get; set; }
 
         //trigabs

@@ -36,7 +36,10 @@ namespace reexmonkey.xcal.domain.models
         [Ignore]
         public ATTACH_URI AttachmentUri { get; set; }
 
-        public AUDIO_ALARM(): base() { }
+        public AUDIO_ALARM(): base() 
+        {
+            this.Action = ACTION.AUDIO;
+        }
 
         public AUDIO_ALARM(ACTION action, TRIGGER trigger, ATTACH_BINARY attachbin = null, ATTACH_URI attachuri = null)
         {
@@ -87,11 +90,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override int GetHashCode()
         {
-            return this.Action.GetHashCode() ^
-                ((this.Trigger != null)? this.Trigger.GetHashCode(): 0)^
-                this.Duration.GetHashCode()^
-                this.Repeat.GetHashCode() ^
-                ((this.AttachmentBinary != null)? this.AttachmentBinary.GetHashCode(): 0);
+            return this.Id.GetHashCode();
         }
 
         public static bool operator ==(AUDIO_ALARM a, AUDIO_ALARM b)
@@ -129,7 +128,10 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public DESCRIPTION Description { get; set; }
 
-        public DISPLAY_ALARM(): base(){}
+        public DISPLAY_ALARM(): base()
+        {
+            this.Action = ACTION.DISPLAY;
+        }
 
         public DISPLAY_ALARM(ACTION action, TRIGGER trigger, DESCRIPTION description)
         {
@@ -234,9 +236,9 @@ namespace reexmonkey.xcal.domain.models
         public List<ATTACH_URI> AttachmentUris { get; set; }
 
 
-
         public EMAIL_ALARM() : base() 
         {
+            this.Action = ACTION.EMAIL;
             this.Attendees = new List<ATTENDEE>();
             this.AttachmentBinaries = new  List<ATTACH_BINARY>();
             this.AttachmentUris = new List<ATTACH_URI>();
@@ -304,15 +306,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override int GetHashCode()
         {
-            return this.Action.GetHashCode() ^
-                ((this.Trigger != null)? this.Trigger.GetHashCode(): 0) ^
-                ((this.Duration != null)? this.Duration.GetHashCode(): 0) ^
-                (this.Repeat.GetHashCode()) ^
-                ((this.Description != null) ? this.Description.GetHashCode() : 0) ^
-                ((this.Summary != null) ? this.Description.GetHashCode() : 0) ^
-                ((!this.Attendees.NullOrEmpty()) ? this.Attendees.GetHashCode() : 0) ^
-                ((!this.AttachmentBinaries.NullOrEmpty()) ? this.AttachmentBinaries.GetHashCode() : 0) ^
-                ((!this.AttachmentUris.NullOrEmpty()) ? this.AttachmentUris.GetHashCode() : 0);
+            return this.Id.GetHashCode();
         }
 
         public static bool operator ==(EMAIL_ALARM a, EMAIL_ALARM b)

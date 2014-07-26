@@ -36,7 +36,7 @@ namespace reexmonkey.xcal.domain.models
                 if (!string.IsNullOrEmpty(this.Value))
                 {
                     if (this.encoding == ENCODING.BASE64) this.Value = this.Value.EncodeToBase64();
-                    else if (this.encoding == ENCODING.BIT8) this.Value = this.Value.EncodeToUtf8();
+                    else this.Value = this.Value.EncodeToUtf8();
                 };
             }
 
@@ -46,12 +46,6 @@ namespace reexmonkey.xcal.domain.models
         {
             this.Value = string.Empty;
             this.Encoding = ENCODING.UNKNOWN;
-        }
-
-        public BINARY(string value)
-        {
-            this.Value = value;
-            this.Encoding = ENCODING.BASE64;
         }
 
         public BINARY(string value, ENCODING encoding)
@@ -968,7 +962,7 @@ namespace reexmonkey.xcal.domain.models
             sb.AppendFormat("{0}P", sym);
             if (this.weeks != 0) sb.AppendFormat("{0}W", this.weeks);
             if (this.days != 0) sb.AppendFormat("{0}D", this.days);
-            if (this.hours != 0 || this.minutes != 0 && this.seconds != 0) sb.Append("T");
+            if (this.hours != 0 || this.minutes != 0 || this.seconds != 0) sb.Append("T");
             if (this.hours != 0) sb.AppendFormat("{0}H", this.hours);
             if (this.minutes != 0) sb.AppendFormat("{0}M", this.minutes);
             if (this.seconds != 0) sb.AppendFormat("{0}S", this.seconds);
@@ -1005,40 +999,6 @@ namespace reexmonkey.xcal.domain.models
             var span = (this.sign == SignType.Negative) ? this.ToTimeSpan().Negate(): this.ToTimeSpan();
             var ospan = (other.Sign == SignType.Negative) ? other.ToTimeSpan().Negate() : other.ToTimeSpan();
             return span.CompareTo(ospan);
-
-            //if (other == null) return -2; //undefined
-            //var w = this.weeks + (this.days / 7) + (this.hours / 168) + (this.minutes / 10080) + (this.seconds / 604800);
-            //var ow = other.WEEKS + (other.DAYS / 7) + (other.HOURS / 168) + (other.MINUTES / 10080) + (other.SECONDS / 604800);
-            //if (w < ow) return -1;
-            //else if (w > ow) return 1;
-            //else
-            //{
-            //    var d = this.days + (this.hours / 24) + (this.minutes / 1440) + (this.seconds / 86400);
-            //    var od = other.DAYS + (other.HOURS / 24) + (other.MINUTES / 1440) + (other.SECONDS / 86400);
-            //    if (d < od) return -1;
-            //    else if (d > od) return 1;
-            //    else
-            //    {
-            //        var h = this.hours + (this.minutes / 60) + (this.seconds / 3600);
-            //        var oh = other.HOURS + (other.MINUTES / 60) + (other.SECONDS / 3600);
-            //        if (h < oh) return -1;
-            //        else if (h > oh) return 1;
-            //        else
-            //        {
-            //            var m = this.minutes + (this.seconds / 60);
-            //            var om = this.minutes + (this.seconds / 60);
-            //            if (m < om) return -1;
-            //            else if (m > om) return 1;
-            //            else
-            //            {
-            //                if (this.seconds < other.SECONDS) return -1;
-            //                else if (this.seconds > other.SECONDS) return 1;
-            //                else return 0;
-            //            }
-
-            //        }
-            //    }
-            //}
 
         }
 

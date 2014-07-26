@@ -64,8 +64,8 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
         {
             try
             {
-                if(request.Hard != null && request.Hard.HasValue) 
-                    this.AdminRepository.Flush(request.Hard.Value);
+                if(request.Mode != null && request.Mode.HasValue) 
+                    this.AdminRepository.Flush(request.Mode.Value);
                 else 
                     this.AdminRepository.Flush();
             }

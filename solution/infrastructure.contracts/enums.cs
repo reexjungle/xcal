@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace reexmonkey.infrastructure.operations.contracts
 {
+    public enum FlushMode { soft, hard };
+
     public enum ExpectationMode
     {
         optimistic,

@@ -5,6 +5,7 @@ using System.Text;
 using System.Runtime.Serialization;
 using ServiceStack.ServiceHost;
 using reexmonkey.infrastructure.io.contracts;
+using reexmonkey.infrastructure.operations.contracts;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
 
@@ -15,6 +16,6 @@ namespace reexmonkey.xcal.domain.operations
     public class FlushDatabase: IReturnVoid 
     {
         [DataMember]
-        public bool? Hard { get; set; }
+        public FlushMode? Mode { get; set; }
     }
 }

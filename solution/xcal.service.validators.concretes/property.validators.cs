@@ -96,7 +96,6 @@ namespace reexmonkey.xcal.service.validators.concretes
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Content).NotNull().SetValidator(new BinaryValidator());
-            RuleFor(x => x.Encoding).NotEqual(ENCODING.UNKNOWN);
         }
     }
 

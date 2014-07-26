@@ -20,48 +20,23 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public class ATTACH_BINARY : IATTACH<BINARY>, IEquatable<ATTACH_BINARY>, IContainsKey<string>
     {
-        private FMTTYPE format;
-        private BINARY content;
-        private ENCODING encoding;
-
         /// <summary>
         /// ID of an Attachment for a particular Calendar component
         /// </summary>
+        [DataMember]
         public string Id { get; set; }
 
         /// <summary>
         /// Binary encoded content of the attachment
         /// </summary>
         [DataMember]
-        public BINARY Content 
-        {
-            get { return this.content; }
-            set { this.content = value;}
-        }
+        public BINARY Content { get; set; }
 
         /// <summary>
         /// Media Type of the resource in an Attachmant
         /// </summary>
         [DataMember]
-        public FMTTYPE FormatType
-        {
-            get { return this.format; }
-            set { this.format = (FMTTYPE)value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the encoding used for the binary type.
-        /// </summary>
-        [DataMember]
-        public ENCODING Encoding 
-        {
-            get { return this.encoding; }
-            set 
-            { 
-                this.encoding = value;
-                if(this.Content != null) this.Content.Encoding = this.encoding;
-            }
-        }
+        public FMTTYPE FormatType { get; set; }
 
 
         /// <summary>
@@ -69,31 +44,19 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         public ATTACH_BINARY()
         {
-            this.Id = Guid.NewGuid().ToString();
             this.FormatType = null;
             this.Content = null;
-            this.Encoding = ENCODING.BASE64;
         }
 
-        public ATTACH_BINARY(IATTACH<BINARY> attachment, ENCODING encoding = ENCODING.UNKNOWN, string id = null)
+        public ATTACH_BINARY(IATTACH<BINARY> attachment)
         {
-            this.Id = id;
-            this.Encoding = encoding;
             this.FormatType = attachment.FormatType;
             this.Content = attachment.Content;
         }
 
-        public ATTACH_BINARY(string value, FMTTYPE format = null, ENCODING encoding = ENCODING.BASE64)
-        {
-            this.Id = Guid.NewGuid().ToString();
-            if(!string.IsNullOrEmpty(value)) this.Content = new BINARY(value, encoding);
-            this.FormatType = format;
-        }
-
         public ATTACH_BINARY(BINARY content, FMTTYPE format = null)
         {
-            this.Id = Guid.NewGuid().ToString();
-            this.content = content;
+            this.Content = content;
             this.FormatType = format;
         }
 
@@ -108,7 +71,7 @@ namespace reexmonkey.xcal.domain.models
             {
                 sb.AppendFormat("ATTACH");
                 if (this.FormatType != null) sb.AppendFormat(";{0};", this.FormatType);
-                sb.AppendFormat("ENCODING={0};", this.Encoding);
+                sb.AppendFormat("ENCODING={0};", this.Content.Encoding);
                 sb.AppendFormat("VALUE=BINARY:{0}", this.Content);
             }
 
@@ -129,7 +92,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override int GetHashCode()
         {
-            return this.Content.GetHashCode() ^ this.FormatType.GetHashCode();
+            return this.Id.GetHashCode();
         }
 
         public static bool operator ==(ATTACH_BINARY a, ATTACH_BINARY b)
@@ -156,6 +119,7 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// ID of an Attachment for a particular Calendar component
         /// </summary>
+        [DataMember]
         public string Id { get; set; }
 
         /// <summary>
@@ -175,22 +139,9 @@ namespace reexmonkey.xcal.domain.models
         public URI Content { get; set; }
 
         /// <summary>
-        /// Indicates, if the Attachment was dafaulted
-        /// </summary>
-        public bool IsDefault()
-        {
-            return this.FormatType.Equals(string.Empty) && this.Content.IsDefault();
-        }
-
-        /// <summary>
         /// Default Constructor
         /// </summary>
-        public ATTACH_URI()
-        {
-            this.Content = null;
-            this.Id = Guid.NewGuid().ToString();
-
-        }
+        public ATTACH_URI() { }
 
         public ATTACH_URI(IATTACH<URI> attachment)
         {
@@ -201,14 +152,12 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// Constructor on the base of CONTENT of the Attachment and it's TYPE 
         /// </summary>
-        /// <param name="type">Type of the attached resource</param>
         /// <param name="content">URI of the attached content</param>
-        public ATTACH_URI(string type, URI content, FMTTYPE format = null)
+        /// <param name="format">The format type of the attachmen</param>
+        public ATTACH_URI(URI content, FMTTYPE format = null)
         {
             this.FormatType = format;
             this.Content = content;
-            this.Id = Guid.NewGuid().ToString();
-
         }
 
         /// <summary>
@@ -238,7 +187,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override int GetHashCode()
         {
-            return this.Content.GetHashCode() ^ this.FormatType.GetHashCode();
+            return this.Id.GetHashCode();
         }
 
         public int CompareTo(ATTACH_URI other)
@@ -1976,10 +1925,6 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public class TRIGGER : ITRIGGER, IEquatable<TRIGGER>, IContainsKey<string>
     {
-        private DURATION duration;
-        private RELATED related;
-        private DATE_TIME datetime;
-        private ValueFormat vformat;
         private TriggerFormat tformat;
 
         /// <summary>
@@ -1991,73 +1936,37 @@ namespace reexmonkey.xcal.domain.models
         /// Duration between two alarm actions
         /// </summary>
         [DataMember]
-        public DURATION Duration 
-        {
-            get { return duration; }
-            set 
-            {
-                //if (this.tformat != TriggerFormat.Related) throw new ArgumentException("Duration values are only allowed for relative triggers");
-                this.duration = value;
-                this.tformat = TriggerFormat.Related;
-            }
-        }
+        public DURATION Duration { get; set; }
 
         /// <summary>
         /// Date-Time, when the Alarm action must be invoked
         /// </summary>
         [DataMember]
-        public DATE_TIME DateTime 
-        {
-            get { return this.datetime; }
-            set 
-            {
-                //if (this.tformat != TriggerFormat.Absolute) throw new ArgumentException("Duration values are only allowed for absolute triggers");
-                this.datetime = value;
-                this.tformat = TriggerFormat.Absolute;
-            }
-        }
+        public DATE_TIME DateTime { get; set;}
 
         /// <summary>
         /// Action value mode, for example "AUDIO", "DISPLAY", "EMAIL"
         /// </summary>
         [DataMember]
-        public ValueFormat Format 
-        {
-            get { return this.vformat; }
-            set { this.vformat = value; } 
-        }
+        public ValueFormat Format { get; set; }
 
         [DataMember]
-        public RELATED Related
-        {
-            get { return this.related; }
-            set { this.related = value; }
-        }
+        public RELATED Related { get; set; }
 
-        public TRIGGER()
-        {
-            this.duration = default(DURATION);
-            this.related = RELATED.UNKNOWN;
-            this.vformat = ValueFormat.UNKNOWN;
-            this.tformat = TriggerFormat.Related;
-        }
+        public TRIGGER() { }
 
         public TRIGGER(DURATION duration, RELATED related = RELATED.UNKNOWN, ValueFormat vformat = ValueFormat.UNKNOWN)
         {
-            this.duration = duration;
-            this.related = related;
-            this.vformat = vformat;
-            this.datetime = default(DATE_TIME);
+            this.Duration = duration;
+            this.Related = related;
+            this.Format = vformat;
             this.tformat = TriggerFormat.Related;
         }
 
         public TRIGGER(DATE_TIME datetime, ValueFormat vformat = ValueFormat.UNKNOWN)
         {
-
-            this.duration = default(DURATION);
-            this.related = RELATED.UNKNOWN;
-            this.vformat = vformat;
-            this.datetime = datetime;
+            this.Format = vformat;
+            this.DateTime = default(DATE_TIME);
             this.tformat = TriggerFormat.Absolute;
         }
 
@@ -2071,14 +1980,14 @@ namespace reexmonkey.xcal.domain.models
             sb.AppendFormat("TRIGGER");
             if(this.tformat == TriggerFormat.Related)
             {
-                if (this.vformat == ValueFormat.DURATION) sb.AppendFormat(";VALUE={0}", this.vformat);
-                else if (this.related != RELATED.UNKNOWN) sb.AppendFormat(";RELATED={0}", this.related);
-                sb.AppendFormat(":{0}", this.duration).AppendLine();
+                if (this.Format == ValueFormat.DURATION) sb.AppendFormat(";VALUE={0}", this.Format);
+                else if (this.Related != default(RELATED)) sb.AppendFormat(";RELATED={0}", this.Related);
+                sb.AppendFormat(":{0}", this.Duration);
             }
             else
             {
-                if (this.vformat == ValueFormat.DATE_TIME) sb.AppendFormat(";VALUE={0}", this.vformat);
-                sb.AppendFormat(":{0}", this.datetime);
+                if (this.Format == ValueFormat.DATE_TIME) sb.AppendFormat(";VALUE={0}", this.Format);
+                sb.AppendFormat(":{0}", this.DateTime);
             }
             return sb.ToString();
         }
@@ -2097,9 +2006,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override int GetHashCode()
         {
-            return ((this.Duration != null)? this.Duration.GetHashCode() : 0 ) ^
-                ((this.DateTime != null)? this.DateTime.GetHashCode() : 0 ) ^
-                this.Format.GetHashCode();
+            return this.Id.GetHashCode();
         }
 
         public static bool operator ==(TRIGGER a, TRIGGER b)

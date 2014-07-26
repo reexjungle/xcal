@@ -15,7 +15,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         [Index(true)]
         public string Id { get; set; }
 
-        [ForeignKey(typeof(REL_AALARMS_ATTACHBINS), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        [ForeignKey(typeof(AUDIO_ALARM), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AlarmId { get; set; }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         [Index(true)]
         public string Id { get; set; }
 
-        [ForeignKey(typeof(REL_AALARMS_ATTACHURIS), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        [ForeignKey(typeof(AUDIO_ALARM), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AlarmId { get; set; }
 
 
@@ -114,7 +114,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [ForeignKey(typeof(REL_EALARMS_ATTENDEES), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        [ForeignKey(typeof(EMAIL_ALARM), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AlarmId { get; set; }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [ForeignKey(typeof(REL_EALARMS_ATTACHBINS), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        [ForeignKey(typeof(EMAIL_ALARM), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AlarmId { get; set; }
 
         /// <summary>
@@ -220,7 +220,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.relations
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
-        [ForeignKey(typeof(REL_EALARMS_ATTACHURIS), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        [ForeignKey(typeof(EMAIL_ALARM), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string AlarmId { get; set; }
 
         /// <summary>
