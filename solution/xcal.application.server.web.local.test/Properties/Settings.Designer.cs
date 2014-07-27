@@ -23,48 +23,63 @@ namespace reexmonkey.xcal.application.server.web.dev.test.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://reexux.com/xcal")]
-        public string remote_server {
+        [global::System.Configuration.DefaultSettingValueAttribute("https://reexux.com/xcal/dev2/")]
+        public string remote_server_redis {
             get {
-                return ((string)(this["remote_server"]));
+                return ((string)(this["remote_server_redis"]));
+            }
+            set {
+                this["remote_server_redis"] = value;
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("iCalendar Web Services Provider")]
         public string fpiDescription {
             get {
                 return ((string)(this["fpiDescription"]));
             }
+            set {
+                this["fpiDescription"] = value;
+            }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("reexMonkey")]
+        [global::System.Configuration.DefaultSettingValueAttribute("reexmonkey")]
         public string fpiOwner {
             get {
                 return ((string)(this["fpiOwner"]));
             }
+            set {
+                this["fpiOwner"] = value;
+            }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("EN")]
         public string fpiLanguageId {
             get {
                 return ((string)(this["fpiLanguageId"]));
             }
+            set {
+                this["fpiLanguageId"] = value;
+            }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("None")]
         public global::reexmonkey.infrastructure.operations.contracts.Authority fpiAuthority {
             get {
                 return ((global::reexmonkey.infrastructure.operations.contracts.Authority)(this["fpiAuthority"]));
+            }
+            set {
+                this["fpiAuthority"] = value;
             }
         }
         
@@ -77,6 +92,18 @@ namespace reexmonkey.xcal.application.server.web.dev.test.Properties {
             }
             set {
                 this["local_server"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://reexux.com/xcal/dev1/")]
+        public string remote_server_mysql {
+            get {
+                return ((string)(this["remote_server_mysql"]));
+            }
+            set {
+                this["remote_server_mysql"] = value;
             }
         }
     }

@@ -24,7 +24,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
         public EventServiceUnitTests()
         {
-            client = new JsonServiceClient(Properties.Settings.Default.local_server);
+            client = new JsonServiceClient(Properties.Settings.Default.remote_server_mysql);
             uidkeygen = new GuidKeyGenerator();
             fpikeygen = new FPIKeyGenerator<string>
             {
