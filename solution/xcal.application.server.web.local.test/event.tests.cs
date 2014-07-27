@@ -437,7 +437,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 AttachmentUri = new ATTACH_URI
                 {
                     Id = uidkeygen.GetNextKey(),
-                    Content = new URI("wakeup.mp3"),
+                    Content = new URI("http://xyz/wakeup.mp3"),
                     FormatType = new FMTTYPE("file", "audio")
                 }
             });

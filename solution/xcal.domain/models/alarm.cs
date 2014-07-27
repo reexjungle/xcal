@@ -281,6 +281,7 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:VALARM").AppendLine();
+            sb.AppendFormat("ACTION:{0}", this.Action.ToString()).AppendLine();
             if (this.Description != null) sb.AppendFormat("{0}", this.Description.ToString()).AppendLine();
             if (this.Summary != null) sb.AppendFormat("{0}", this.Summary.ToString()).AppendLine();
             if (this.Trigger != null) sb.Append(this.Trigger.ToString()).AppendLine();
@@ -289,11 +290,11 @@ namespace reexmonkey.xcal.domain.models
                 sb.AppendFormat("DURATION:{0}", this.Duration.ToString()).AppendLine();
                 sb.AppendFormat("REPEAT:{0}", this.Repeat.ToString()).AppendLine();
             }
-            foreach (var attendee in this.Attendees) sb.Append(attendee.ToString());
+            foreach (var attendee in this.Attendees) sb.Append(attendee.ToString()).AppendLine();
             if(!this.AttachmentBinaries.NullOrEmpty())
-                foreach (var attachment in this.AttachmentBinaries) sb.Append(attachment.ToString());
+                foreach (var attachment in this.AttachmentBinaries) sb.Append(attachment.ToString()).AppendLine();
             else if(!this.AttachmentUris.NullOrEmpty())
-                foreach (var attachment in this.AttachmentUris) sb.Append(attachment.ToString());
+                foreach (var attachment in this.AttachmentUris) sb.Append(attachment.ToString()).AppendLine();
             sb.Append("END:VALARM");
             return sb.ToString();
         }

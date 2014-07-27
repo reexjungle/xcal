@@ -19,11 +19,11 @@ namespace reexmonkey.xcal.service.plugins.formats.concretes
         public void Register(IAppHost appHost)
         {
             appHost.ContentTypeFilters.Register(mime_type, iCalendarFormat.SerializeToStream, iCalendarFormat.DeserializeFromStream);
-            appHost.RequestFilters.Add((req, res, dto) =>
-                {
-                    //if (req.ResponseContentType.Equals(mime, StringComparison.OrdinalIgnoreCase))
-                        //res.AddHeader(HttpHeaders.ContentType, mime);
-                });
+            //appHost.RequestFilters.Add((req, res, dto) =>
+            //    {
+            //        if (req.ResponseContentType.Equals(mime_type, StringComparison.OrdinalIgnoreCase))
+            //            res.AddHeader(HttpHeaders.ContentType, mime_type);
+            //    });
 
             appHost.ResponseFilters.Add((req, res, dto) =>
                 {

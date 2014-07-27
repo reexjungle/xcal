@@ -1296,9 +1296,9 @@ namespace reexmonkey.xcal.domain.models
             if (this.Delegatee != null) sb.AppendFormat(";DELEGATED-TO={0}", this.Delegatee);
             if (this.Delegator != null) sb.AppendFormat(";DELEGATED-FROM={0}", this.Delegator);
             if (this.SentBy != null ) sb.AppendFormat("SENT-BY=\"mailto:{0}\"", this.SentBy);
-            if (!string.IsNullOrEmpty(this.CN)) sb.AppendFormat("CN={0}", this.CN);
-            if (this.Directory != null) sb.AppendFormat("DIR={0}", this.Directory);            
-            if (this.Language != null) sb.AppendFormat("{0}", this.Language);
+            if (!string.IsNullOrEmpty(this.CN)) sb.AppendFormat(";CN={0}", this.CN);
+            if (this.Directory != null) sb.AppendFormat(";DIR={0}", this.Directory);            
+            if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
             sb.AppendFormat(":mailto:{0}", this.Address);
             return sb.ToString();
         }

@@ -406,7 +406,10 @@ namespace reexmonkey.xcal.domain.models
 
             if(!this.Attendees.NullOrEmpty())
             {
-                foreach (var attendee in this.Attendees) if (attendee != null) sb.Append(attendee.ToString()).AppendLine();
+                foreach (var attendee in this.Attendees)
+                {
+                    if (attendee != null) sb.Append(attendee.ToString()).AppendLine();
+                }
             }
 
             if (this.Categories != null && !this.Categories.Values.NullOrEmpty()) sb.Append(this.Categories.ToString()).AppendLine();
