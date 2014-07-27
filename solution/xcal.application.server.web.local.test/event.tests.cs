@@ -402,7 +402,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 {
                     Id = uidkeygen.GetNextKey(),
                     CN = "Emmanuel Ngwane",
-                    Address = new URI("ngwanemk@gmail.com"),
+                    Address = new URI("organizer@gmail.com"),
                     Language = new LANGUAGE("en")
                 },
                 Location = new LOCATION

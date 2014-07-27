@@ -70,9 +70,9 @@ namespace reexmonkey.xcal.domain.models
             if (this.Content != null)
             {
                 sb.AppendFormat("ATTACH");
-                if (this.FormatType != null) sb.AppendFormat(";{0};", this.FormatType);
-                sb.AppendFormat("ENCODING={0};", this.Content.Encoding);
-                sb.AppendFormat("VALUE=BINARY:{0}", this.Content);
+                if (this.FormatType != null) sb.AppendFormat(";{0}", this.FormatType);
+                sb.AppendFormat(";ENCODING={0}", this.Content.Encoding);
+                sb.AppendFormat(";VALUE=BINARY:{0}", this.Content);
             }
 
             return sb.ToString();
