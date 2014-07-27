@@ -61,7 +61,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals((TZID)obj);
         }
 
@@ -166,7 +166,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as FMTTYPE);
         }
 
@@ -262,7 +262,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as LANGUAGE);
         }
 
@@ -358,7 +358,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as DELEGATE);
         }
 
@@ -463,7 +463,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as MEMBER);
         }
 

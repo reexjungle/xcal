@@ -86,7 +86,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as ATTACH_BINARY);
         }
 
@@ -181,7 +181,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as ATTACH_URI);
         }
 
@@ -294,7 +294,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as CATEGORIES);
         }
 
@@ -393,7 +393,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as TEXTUAL);
         }
 
@@ -588,7 +588,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals((GEO)obj);
         }
 
@@ -703,7 +703,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as RESOURCES);
         }
 
@@ -920,7 +920,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals((PRIORITY)obj);
         }
 
@@ -1090,7 +1090,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as TZNAME);
         }
 
@@ -1428,9 +1428,8 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var other = (ORGANIZER)obj;
-            return this.Equals(other);
+            if (obj == null || GetType() != obj.GetType()) return false;
+            return this.Equals(obj as ORGANIZER);
         }
 
         public override int GetHashCode()
@@ -1534,9 +1533,8 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var other = (RECURRENCE_ID)obj;
-            return this.Equals(other);
+            if (obj == null || GetType() != obj.GetType()) return false;
+            return this.Equals(obj as RECURRENCE_ID);
         }
 
         public override int GetHashCode()
@@ -1621,14 +1619,13 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var other = (RELATEDTO)obj;
-            return this.Equals(other);
+            if (obj == null || GetType() != obj.GetType()) return false;
+            return this.Equals(obj as RELATEDTO);
         }
 
         public override int GetHashCode()
         {
-            return this.Reference.GetHashCode() ^ this.RelationshipType.GetHashCode();
+            return this.Id.GetHashCode();
         }
 
         public static bool operator ==(RELATEDTO a, RELATEDTO b)
@@ -1661,6 +1658,7 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         ///  ID of the Date-Time Exception
         /// </summary>
+        [DataMember]
         public string Id{ get; set; }
 
         /// <summary>
@@ -1728,17 +1726,13 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as EXDATE);
         }
 
         public override int GetHashCode()
         {
-            return 
-                this.DateTimes.GetHashCode() ^
-                ((this.TimeZoneId != null) ? this.TimeZoneId.GetHashCode() : 0) ^
-                this.Format.GetHashCode();
-            ;
+            return this.Id.GetHashCode();
         }
 
         public static bool operator ==(EXDATE a, EXDATE b)
@@ -1769,6 +1763,7 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// ID of the list of DATE-TIME values for recurring events, to-dos, journal entries or time-zone definitions
         /// </summary>
+        [DataMember]
         public string Id{ get; set; }
 
         /// <summary>
@@ -1890,16 +1885,13 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as RDATE);
         }
 
         public override int GetHashCode()
         {
-            return this.datetimes.GetHashCode() ^
-                this.periods.GetHashCode() ^
-                ((this.tzid != null) ? this.tzid.GetHashCode() : 0) ^
-                this.Format.GetHashCode();
+            return this.Id.GetHashCode();
         }
 
         public static bool operator ==(RDATE a, RDATE b)
@@ -1930,6 +1922,7 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// ID of the trigger
         /// </summary>
+        [DataMember]
         public string Id{ get; set; }      
 
         /// <summary>
@@ -2000,7 +1993,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as TRIGGER);
         }
 
@@ -2170,8 +2163,8 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            return this.Equals((STATCODE)(obj));
+            if (obj == null || GetType() != obj.GetType()) return false;
+            return this.Equals((STATCODE)obj);
         }
 
         public override int GetHashCode()
@@ -2226,6 +2219,7 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// ID of the status code
         /// </summary>
+        [DataMember]
         public string Id{ get; set; }
 
         /// <summary>
@@ -2298,16 +2292,13 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as REQUEST_STATUS);
         }
 
         public override int GetHashCode()
         {
-            return this.Code.GetHashCode() ^
-                this.Description.GetHashCode() ^
-                ((!string.IsNullOrEmpty(this.ExceptionData))?this.ExceptionData.GetHashCode():0) ^
-                ((this.Language != null) ?this.Language.GetHashCode():0);
+            return this.Id.GetHashCode();
         }
 
         public static bool operator ==(REQUEST_STATUS a, REQUEST_STATUS b)

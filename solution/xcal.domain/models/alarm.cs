@@ -84,7 +84,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as AUDIO_ALARM);
         }
 
@@ -173,7 +173,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as DISPLAY_ALARM);
         }
 
@@ -300,7 +300,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as EMAIL_ALARM);
         }
 

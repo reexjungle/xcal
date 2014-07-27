@@ -69,9 +69,8 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var other = obj as BINARY;
-            return (other != null) ? this.Equals(other) : false;
+            if (obj == null || GetType() != obj.GetType()) return false;
+            return this.Equals((BINARY)obj);
         }
 
         public override int GetHashCode()
@@ -188,9 +187,8 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var other = (DATE)obj;
-            return this.Equals(other);
+            if (obj == null || GetType() != obj.GetType()) return false;
+            return this.Equals((DATE)obj);
         }
 
         public override int GetHashCode()
@@ -505,9 +503,8 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var other = (DATE_TIME)obj;
-            return this.Equals(other);
+            if (obj == null || GetType() != obj.GetType()) return false;
+            return this.Equals((DATE_TIME)obj);
         }
 
         public override int GetHashCode()
@@ -768,9 +765,8 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var other = (TIME)obj;
-            return this.Equals(other);
+            if (obj == null || GetType() != obj.GetType()) return false;
+            return this.Equals((TIME)obj);
         }
 
         public override int GetHashCode()
@@ -979,9 +975,8 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var other = (DURATION)obj;
-            return this.Equals(other);
+            if (obj == null || GetType() != obj.GetType()) return false;
+            return this.Equals((DURATION)obj);
         }
 
         public override int GetHashCode()
@@ -1183,7 +1178,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals((WEEKDAYNUM)obj);
         }
 
@@ -1372,7 +1367,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals((UTC_OFFSET)obj);
         }
 
@@ -1617,7 +1612,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals((PERIOD)obj);
         }
 
@@ -2079,8 +2074,8 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            return this.Equals((RECUR)obj);
+            if (obj == null || GetType() != obj.GetType()) return false;
+            return this.Equals(obj as RECUR);
         }
 
         public override int GetHashCode()
@@ -2150,9 +2145,8 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var other = (URI)obj;
-            return (other == null) ? false : Equals(other);
+            if (obj == null || GetType() != obj.GetType()) return false;
+            return this.Equals(obj as URI);
         }
 
         public override int GetHashCode()

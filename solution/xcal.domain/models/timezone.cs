@@ -41,10 +41,8 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var other = obj as VTIMEZONE;
-            if (other == null) return false;
-            return this.Equals(other);
+            if (obj == null || GetType() != obj.GetType()) return false;
+            return this.Equals(obj as VTIMEZONE);
         }
 
         public override int GetHashCode()
@@ -130,8 +128,7 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            if (!(obj is OBSERVANCE)) return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as OBSERVANCE);
 
         }
