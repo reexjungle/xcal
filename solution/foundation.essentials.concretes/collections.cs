@@ -10,8 +10,12 @@ namespace reexmonkey.foundation.essentials.concretes
     {
         public static bool Empty<TValue>(this IEnumerable<TValue> source)
         {
-            if (source == null) throw new ArgumentNullException("source", "Enumerable type should not be null!");
             return (source.Count() == 0);
+        }
+
+        public static bool SafeEmpty<TValue>(this IEnumerable<TValue> source)
+        {
+            return (source != null) ? source.Count() == 0 : false;
         }
 
         public static bool NullOrEmpty<TValue>(this IEnumerable<TValue> source)
@@ -61,15 +65,11 @@ namespace reexmonkey.foundation.essentials.concretes
 
         public static void AddRangeComplement<TValue>(this List<TValue> list, IEnumerable<TValue> collection, IEqualityComparer<TValue> comparer = null)
         {
-            try
-            {
-                var incoming = (comparer != null)
-                    ?collection.ToArray().Except(list.Distinct(), comparer)
-                    : collection.ToArray().Except(list.Distinct());
+            var incoming = (comparer != null)
+                ? collection.ToArray().Except(list.Distinct(), comparer)
+                : collection.ToArray().Except(list.Distinct());
 
-                if (!incoming.NullOrEmpty()) list.AddRange(incoming);
-            }
-            catch (ArgumentNullException) { throw; }
+            if (!incoming.NullOrEmpty()) list.AddRange(incoming);
         }
 
         public static void Add<TValue>(this IList<TValue> list, TValue value, bool precondition)

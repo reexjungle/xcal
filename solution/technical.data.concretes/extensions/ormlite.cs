@@ -1960,7 +1960,6 @@ namespace reexmonkey.technical.data.concretes.extensions.ormlite
                 if (!incoming.NullOrEmpty()) db.SaveAll(incoming);
                 var outgoing = oentities.Except(entities).ToArray();
                 if (!outgoing.NullOrEmpty()) db.DeleteByIds<T>(outgoing.Select(y => y.Id).ToArray());
-
             }
             else db.SaveAll(entities);
         }
@@ -1970,6 +1969,7 @@ namespace reexmonkey.technical.data.concretes.extensions.ormlite
         {
             redis.SynchronizeAll<T, string>(entities, oentities);
         }
+
 
     }
 }

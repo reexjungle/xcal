@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using reexmonkey.xcal.domain.models;
+using System;
 
 namespace reexmonkey.xcal.domain.contracts
 {
@@ -178,7 +179,7 @@ namespace reexmonkey.xcal.domain.contracts
         /// Valid values are from 0 to 23.
         /// </summary>
         List<uint> BYHOUR { get; set; }
-       
+
         /// <summary>
         /// 
         /// </summary>

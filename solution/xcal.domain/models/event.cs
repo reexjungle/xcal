@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
@@ -6,6 +7,7 @@ using ServiceStack.DataAnnotations;
 using reexmonkey.foundation.essentials.contracts;
 using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
+using reexmonkey.xcal.domain.extensions;
 
 namespace reexmonkey.xcal.domain.models
 {
@@ -16,10 +18,10 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public class VEVENT : IEVENT, IEquatable<VEVENT>, IComparable<VEVENT>, IContainsKey<string>
     {
-        private string id;
         private DATE_TIME start;
         private DATE_TIME end;
         private DURATION duration;
+        private RECURRENCE_ID rid;
 
         /// <summary>
         /// Gets or sets the unique identifier of the event.. 
@@ -28,17 +30,8 @@ namespace reexmonkey.xcal.domain.models
         [Index(Unique = true)]
         public string Id 
         {
-            get 
-            {
-                if (string.IsNullOrEmpty(this.id))
-                {
-                    return this.RecurrenceId != null
-                        ? string.Format("{0}-{1}", this.Uid, this.RecurrenceId.Id)
-                        : this.Uid;
-                }
-                else return this.id;
-            }
-            set { this.id = value; }
+            get { return this.Uid; }
+            set { this.Uid = value; }
         }
 
         /// <summary>
@@ -61,6 +54,7 @@ namespace reexmonkey.xcal.domain.models
                 this.start = value;
                 if (this.end == default(DATE_TIME))
                     this.end = this.start;
+                if(this.RecurrenceId != null) this.RecurrenceId.Value = this.start;
             }
         }
 
@@ -106,7 +100,15 @@ namespace reexmonkey.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public RECURRENCE_ID RecurrenceId { get; set; }
+        public RECURRENCE_ID RecurrenceId 
+        {
+            get { return this.rid; }
+            set
+            {
+                this.rid = value;
+                if(value != null) this.rid.Value = start;
+            }
+        }
 
         [DataMember]
         [Ignore]
@@ -197,6 +199,7 @@ namespace reexmonkey.xcal.domain.models
         [Ignore]
         public Dictionary<string, X_PROPERTY> XProperties { get; set; }
 
+
         public VEVENT()
         {
             this.RecurrenceId = null;
@@ -218,6 +221,7 @@ namespace reexmonkey.xcal.domain.models
             this.EmailAlarms = new List<EMAIL_ALARM>();
             this.IANAProperties = new Dictionary<string, IANA_PROPERTY>();
             this.XProperties = new Dictionary<string, X_PROPERTY>();
+           
         }
 
         public VEVENT(DATE_TIME dtstamp, string uid, DATE_TIME start, DATE_TIME end,  PRIORITY priority, ORGANIZER organizer = null, LOCATION location = null, 
@@ -475,6 +479,87 @@ namespace reexmonkey.xcal.domain.models
             return sb.ToString();
         }
 
+        private List<DATE_TIME> GenerateRecurrences(DATE_TIME start, RECUR rrule, List<RDATE> rdates, List<EXDATE> exdates)
+        {
+            var dates = new List<DATE_TIME>();
+
+            //Generate dates according to recurrence rule
+            switch(rrule.FREQ)
+            {
+
+                case FREQ.SECONDLY:
+                    Func<DATE_TIME, uint, DATE_TIME> get_secondly = (x, y) =>
+                        {
+                            return (x = x.ToDateTime().AddSeconds(y).ToDATE_TIME());
+                        };
+                        
+                        if(rrule.UNTIL != default(DATE_TIME))
+                        {
+                            var current = start;
+                            while (current < rrule.UNTIL) dates.Add(get_secondly(current, rrule.INTERVAL));
+                        }
+                        else 
+                        {
+                            var current = start;
+                            for(var i = 0; i < rrule.COUNT; i++) dates.Add(get_secondly(current, rrule.INTERVAL));
+                        }
+
+                        if (!rrule.BYMONTH.NullOrEmpty()) dates = dates.Where(x => rrule.BYMONTH.Contains(x.MONTH)).ToList();
+                        if (!rrule.BYYEARDAY.NullOrEmpty()) dates = dates.Where(x => rrule.BYYEARDAY.Contains(x.ToDateTime().DayOfYear)).ToList();
+                        if (!rrule.BYMONTHDAY.NullOrEmpty()) dates = dates.Where(x =>  rrule.BYMONTHDAY.Contains(x.ToDateTime().Day)).ToList();
+                        if (!rrule.BYDAY.NullOrEmpty()) dates = dates.Where(x => rrule.BYYEARDAY.Contains(x.ToDateTime().DayOfYear)).ToList();
+
+                        break;
+
+                case FREQ.MINUTELY:
+                    Func<DATE_TIME, uint, DATE_TIME> get_minutely = (x, y) =>
+                        {
+                            var current = start;
+                            return (x = x.ToDateTime().AddMinutes(y).ToDATE_TIME());
+                        };
+                        
+                        if(rrule.UNTIL != default(DATE_TIME))
+                        {
+                            var current = start;
+                            while (current < rrule.UNTIL) dates.Add(get_minutely(current, rrule.INTERVAL));
+                        }
+                        else 
+                        {
+                            var current = start;
+                            for (var i = 0; i < rrule.COUNT; i++) dates.Add(get_minutely(current, rrule.INTERVAL));
+                        }
+                        break;
+
+                case FREQ.HOURLY:
+                        Func<DATE_TIME, uint, DATE_TIME> get_hourly = (x, y) =>
+                        {
+                            var current = start;
+                            return (x = x.ToDateTime().AddHours(y).ToDATE_TIME());
+                        };
+
+                        if (rrule.UNTIL != default(DATE_TIME))
+                        {
+                            var current = start;
+                            while (current < rrule.UNTIL) dates.Add(get_hourly(current, rrule.INTERVAL));
+                        }
+                        else
+                        {
+                            var current = start;
+                            for (var i = 0; i < rrule.COUNT; i++) dates.Add(get_hourly(current, rrule.INTERVAL));
+                        }
+                        break;
+
+            }
+
+
+
+            //add specific recur dates
+            dates.AddRangeComplement(rdates.SelectMany(x => x.DateTimes));
+
+            //filter by exception dates;
+            dates = dates.Except(exdates.SelectMany(x => x.DateTimes)).ToList();
+            return dates;
+        }
     }
 
 }

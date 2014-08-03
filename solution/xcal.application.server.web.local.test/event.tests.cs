@@ -379,17 +379,20 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             {
                 Id = this.uidkeygen.GetNextKey(),
                 ProdId = this.fpikeygen.GetNextKey(),
-                Version = "2.0"
+                Version = "2.0",
+                Method = METHOD.PUBLISH
             };
             var ev = new VEVENT
             {
                 Uid = uidkeygen.GetNextKey(),
-                RecurrenceId = new RECURRENCE_ID
-                {
-                    Id = uidkeygen.GetNextKey(),
-                    Range = RANGE.THISANDFUTURE,
-                    Value = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc))
-                },
+                                
+                Summary = new SUMMARY("Test Meeting"),
+                Description = new DESCRIPTION("A test meeting for freaks"),
+                Start = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc)),
+                End = new DATE_TIME(new DateTime(2014, 6, 15, 18, 03, 08, 0, DateTimeKind.Utc)),
+                Status = STATUS.CONFIRMED,
+                Transparency = TRANSP.TRANSPARENT,
+                Classification = CLASS.PUBLIC,
                 RecurrenceRule = new RECUR
                 {
                     Id = uidkeygen.GetNextKey(),
@@ -409,16 +412,10 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 {
                     Text = "Düsseldorf",
                     Language = new LANGUAGE("de", "DE")
-                },
-
-                Summary = new SUMMARY("Test Meeting"),
-                Description = new DESCRIPTION("A test meeting for freaks"),
-                Start = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc)),
-                End = new DATE_TIME(new DateTime(2014, 6, 15, 18, 03, 08, 0, DateTimeKind.Utc)),
-                Status = STATUS.CONFIRMED,
-                Transparency = TRANSP.TRANSPARENT,
-                Classification = CLASS.PUBLIC
+                }
             };
+
+            ev.Attendees.AddRange(this.GenerateNAttendees(15));
 
             ev.AudioAlarms.Add(new AUDIO_ALARM
             {
@@ -437,7 +434,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 AttachmentUri = new ATTACH_URI
                 {
                     Id = uidkeygen.GetNextKey(),
-                    Content = new URI("http://xyz/wakeup.mp3"),
+                    Content = new URI("http://localhost:8900/music/wakeup.mp3"),
                     FormatType = new FMTTYPE("file", "audio")
                 }
             });
@@ -528,21 +525,16 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             
             var retrieved = this.client.Get(new FindEvent { EventId = ev.Id });
             Assert.AreEqual(retrieved, ev);
+            Assert.AreEqual(retrieved.AudioAlarms.AreDuplicatesOf(ev.AudioAlarms), true);
+            Assert.AreNotEqual(retrieved.EmailAlarms.AreDuplicatesOf(ev.EmailAlarms), false);
 
-            //Assert.AreEqual(retrieved.Calscale, CALSCALE.GREGORIAN);
-            //Assert.AreEqual(retrieved.ProdId, calendar.ProdId);
-            //Assert.AreEqual(retrieved.Events.Count, 5);
+            ////remove email alarm and update
+            ev.AudioAlarms.First().AttachmentUri.FormatType = new FMTTYPE("file", "video");
+            ev.EmailAlarms.Clear();
 
-            //calendar.Method = METHOD.REQUEST;
-            //calendar.Version = "3.0";
-            //calendar.Calscale = CALSCALE.HEBREW;
-
-            ////remove 4 events and update
-            //calendar.Events.RemoveRange(0, 4);
-
-            //this.client.Put(new UpdateCalendar { Calendar = calendar });
-            //retrieved = this.client.Get(new FindCalendar { CalendarId = calendar.Id });
-            //Assert.AreEqual(retrieved.Calscale, CALSCALE.HEBREW);
+            this.client.Put(new UpdateEvent { Event = ev });
+            retrieved = this.client.Get(new FindEvent { EventId = ev.Id });
+            Assert.AreEqual(retrieved.EmailAlarms.Count, 0);
             //Assert.AreEqual(retrieved.Version, "3.0");
             //Assert.AreEqual(retrieved.Method, METHOD.REQUEST);
             //Assert.AreEqual(retrieved.Events.Count, 1);

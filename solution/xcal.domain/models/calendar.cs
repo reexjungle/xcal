@@ -153,8 +153,8 @@ namespace reexmonkey.xcal.domain.models
             sb.Append("BEGIN:VCALENDAR").AppendLine();
             sb.AppendFormat("VERSION:{0}", this.Version.ToString()).AppendLine();
             sb.AppendFormat("PRODID:{0}", this.ProdId.ToString()).AppendLine();
-            if (this.Calscale != CALSCALE.UNKNOWN) sb.AppendFormat("CALSCALE:{0}", this.Calscale.ToString()).AppendLine();
-            if (this.Method != METHOD.UNKNOWN) sb.AppendFormat("METHOD:{0}", this.Method.ToString()).AppendLine();
+            if (this.Calscale != default(CALSCALE)) sb.AppendFormat("CALSCALE:{0}", this.Calscale.ToString()).AppendLine();
+            if (this.Method != default(METHOD)) sb.AppendFormat("METHOD:{0}", this.Method.ToString()).AppendLine();
             if (!this.Events.NullOrEmpty()) this.Events.ForEach(x => sb.Append(x.ToString()).AppendLine());
             if (!this.ToDos.NullOrEmpty()) this.ToDos.ForEach(x => sb.Append(x.ToString()).AppendLine());
             if (!this.FreeBusies.NullOrEmpty()) this.FreeBusies.ForEach(x => sb.Append(x.ToString()).AppendLine());
