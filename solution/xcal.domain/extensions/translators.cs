@@ -184,11 +184,6 @@ namespace reexmonkey.xcal.domain.extensions
 
         #region  specialized date-time translators
 
-        public static DATE ToDATE(this DateTime value)
-        {
-            return new DATE((uint)value.Year, (uint)value.Month, (uint)value.Day);
-        }
-
         public static DATE_TIME ToDATE_TIME(this DateTime value, TimeZoneInfo tzinfo = null)
         {
             if(tzinfo != null)
@@ -214,6 +209,11 @@ namespace reexmonkey.xcal.domain.extensions
                 if (value.Kind == DateTimeKind.Utc) return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.Utc);
                 else return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.Local);
             }
+        }
+
+        public static  DATE  ToDATE(this DateTime value)
+        {
+            return new DATE((uint)value.Year, (uint)value.Month, (uint)value.Day);
         }
 
         public static TIME ToTIME(this DateTime value, TimeZoneInfo tzinfo = null)
@@ -264,15 +264,15 @@ namespace reexmonkey.xcal.domain.extensions
             }
         }
 
-        public static TimeSpan ToTimeSpan(this TIME value)
+        public static  TimeSpan ToTimeSpan(this DATE_TIME value)
         {
-            if (value == default(TIME)) return new TimeSpan();
+            if (value == default(DATE_TIME)) return new TimeSpan();
             return new TimeSpan((int)value.HOUR, (int)value.MINUTE, (int)value.SECOND);
         }
 
-        public static TimeSpan ToTimeSpan(this DATE_TIME value)
+        public static TimeSpan ToTimeSpan(this TIME value)
         {
-            if (value == default(DATE_TIME)) return new TimeSpan();
+            if (value == default(TIME)) return new TimeSpan();
             return new TimeSpan((int)value.HOUR, (int)value.MINUTE, (int)value.SECOND);
         }
 
@@ -329,6 +329,39 @@ namespace reexmonkey.xcal.domain.extensions
                 ? (new TimeSpan((int)duration.DAYS, (int)duration.HOURS, (int)duration.MINUTES, (int)duration.SECONDS)).Negate()
                 : new TimeSpan((int)duration.DAYS, (int)duration.HOURS, (int)duration.MINUTES, (int)duration.SECONDS);
         }
+
+        public static DayOfWeek ToDayOfWeek(this WEEKDAY weekday)
+        {
+            switch(weekday)
+            {
+                case WEEKDAY.SU: return DayOfWeek.Sunday;
+                case WEEKDAY.MO: return DayOfWeek.Monday;
+                case WEEKDAY.TU: return DayOfWeek.Tuesday;
+                case WEEKDAY.WE: return DayOfWeek.Wednesday;
+                case WEEKDAY.TH: return DayOfWeek.Thursday;
+                case WEEKDAY.FR: return DayOfWeek.Friday;
+                case WEEKDAY.SA: return DayOfWeek.Saturday;
+                default:
+                    return DayOfWeek.Sunday;
+            }
+        }
+
+        public static WEEKDAY ToWEEKDAY (this DayOfWeek dayofweek)
+        {
+            switch(dayofweek)
+            {
+                case DayOfWeek.Sunday: return WEEKDAY.SU;
+                case DayOfWeek.Monday: return WEEKDAY.MO;
+                case DayOfWeek.Tuesday: return WEEKDAY.TU;
+                case DayOfWeek.Wednesday: return WEEKDAY.WE;
+                case DayOfWeek.Thursday: return WEEKDAY.TH;
+                case DayOfWeek.Friday: return WEEKDAY.FR;
+                case DayOfWeek.Saturday: return WEEKDAY.SA;
+                default:
+                    return WEEKDAY.UNKNOWN;
+            }
+        }
+
 
         #endregion
 

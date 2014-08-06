@@ -270,6 +270,7 @@ namespace reexmonkey.xcal.domain.models
             if (duration.Sign == SignType.Negative) return end + duration;
             return (end.ToDateTime().Subtract(duration.ToTimeSpan())).ToDATE();
         }
+
     }
 
     [DataContract]

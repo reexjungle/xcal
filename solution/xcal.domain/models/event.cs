@@ -496,19 +496,51 @@ namespace reexmonkey.xcal.domain.models
                         if(rrule.UNTIL != default(DATE_TIME))
                         {
                             var current = start;
-                            while (current < rrule.UNTIL) dates.Add(get_secondly(current, rrule.INTERVAL));
+                            while (current < rrule.UNTIL) dates.Add(current = get_secondly(current, rrule.INTERVAL));
                         }
                         else 
                         {
                             var current = start;
-                            for(var i = 0; i < rrule.COUNT; i++) dates.Add(get_secondly(current, rrule.INTERVAL));
+                            for(var i = 0; i < rrule.COUNT; i++) dates.Add(current = get_secondly(current, rrule.INTERVAL));
                         }
 
-                        if (!rrule.BYMONTH.NullOrEmpty()) dates = dates.Where(x => rrule.BYMONTH.Contains(x.MONTH)).ToList();
-                        if (!rrule.BYYEARDAY.NullOrEmpty()) dates = dates.Where(x => rrule.BYYEARDAY.Contains(x.ToDateTime().DayOfYear)).ToList();
-                        if (!rrule.BYMONTHDAY.NullOrEmpty()) dates = dates.Where(x =>  rrule.BYMONTHDAY.Contains(x.ToDateTime().Day)).ToList();
-                        if (!rrule.BYDAY.NullOrEmpty()) dates = dates.Where(x => rrule.BYYEARDAY.Contains(x.ToDateTime().DayOfYear)).ToList();
+                        if (!rrule.BYMONTH.NullOrEmpty())
+                        {
+                            dates = dates.Where(x => rrule.BYMONTH.Contains(x.MONTH)).ToList();
+                            if (!rrule.BYSETPOS.NullOrEmpty())
+                            {
+                                var nvalues = rrule.BYSETPOS.Where(x => x < 0).ToList();
+                                var pvalues = rrule.BYSETPOS.Where(x => x > 0).ToList();
+                                var converted = (nvalues.NullOrEmpty()) ? nvalues.Select(x => 366 - Math.Abs(x)) : null;
+                                var values = (!converted.NullOrEmpty()) ? pvalues.Union(converted) : pvalues;
+                                //dates = dates.Where(x => values.Contains().ToList();
+                            }
+                        }
+                        if (!rrule.BYYEARDAY.NullOrEmpty())
+                        {
+                            var nvalues = rrule.BYYEARDAY.Where(x => x < 0).ToList();
+                            var pvalues = rrule.BYYEARDAY.Where(x => x > 0).ToList();
+                            var converted = (nvalues.NullOrEmpty()) ? nvalues.Select(x => 366 - Math.Abs(x)).Except(new int[] { 0 }) : null;
+                            var values = (!converted.NullOrEmpty()) ? pvalues.Union(converted) : pvalues; 
+                            dates = dates.Where(x => values.Contains(x.ToDateTime().DayOfYear)).ToList();
 
+                        }
+                        if (!rrule.BYMONTHDAY.NullOrEmpty()) 
+                        {
+                            var nvalues = rrule.BYMONTHDAY.Where(x => x < 0).ToList();
+                            var pvalues = rrule.BYMONTHDAY.Where(x => x > 0).ToList();
+                            var converted = (nvalues.NullOrEmpty()) ? nvalues.Select(x => 31 - Math.Abs(x)).Except(new int[]{0}): null;
+                            var values = (!converted.NullOrEmpty()) ? pvalues.Union(converted): pvalues; 
+                            dates = dates.Where(x => values.Contains(x.ToDateTime().Day)).ToList();
+                        }
+                        if (!rrule.BYDAY.NullOrEmpty())
+                        {
+                            var weekdays = rrule.BYDAY.Select(x => x.Weekday).ToList();
+                            dates = dates.Where(x => weekdays.Contains(x.ToDateTime().DayOfWeek.ToWEEKDAY())).ToList();
+                        }
+                        if (!rrule.BYHOUR.NullOrEmpty()) dates = dates.Where(x => rrule.BYHOUR.Contains(x.HOUR)).ToList();
+                        if (!rrule.BYMINUTE.NullOrEmpty()) dates = dates.Where(x => rrule.BYMINUTE.Contains(x.MINUTE)).ToList();
+                        if (!rrule.BYSECOND.NullOrEmpty()) dates = dates.Where(x => rrule.BYMINUTE.Contains(x.SECOND)).ToList();
                         break;
 
                 case FREQ.MINUTELY:
@@ -521,12 +553,47 @@ namespace reexmonkey.xcal.domain.models
                         if(rrule.UNTIL != default(DATE_TIME))
                         {
                             var current = start;
-                            while (current < rrule.UNTIL) dates.Add(get_minutely(current, rrule.INTERVAL));
+                            while (current < rrule.UNTIL) dates.Add(current = get_minutely(current, rrule.INTERVAL));
                         }
                         else 
                         {
                             var current = start;
-                            for (var i = 0; i < rrule.COUNT; i++) dates.Add(get_minutely(current, rrule.INTERVAL));
+                            for (var i = 0; i < rrule.COUNT; i++) dates.Add(current = get_minutely(current, rrule.INTERVAL));
+                        }
+                                            
+                        if (!rrule.BYMONTH.NullOrEmpty()) dates = dates.Where(x => rrule.BYMONTH.Contains(x.MONTH)).ToList();
+                        if (!rrule.BYYEARDAY.NullOrEmpty())
+                        {
+                            var nvalues = rrule.BYYEARDAY.Where(x => x < 0).ToList();
+                            var pvalues = rrule.BYYEARDAY.Where(x => x > 0).ToList();
+                            var converted = (nvalues.NullOrEmpty()) ? nvalues.Select(x => 366 - Math.Abs(x)).Except(new int[] { 0 }) : null;
+                            var values = (!converted.NullOrEmpty()) ? pvalues.Union(converted) : pvalues; 
+                            dates = dates.Where(x => values.Contains(x.ToDateTime().DayOfYear)).ToList();
+
+                        }
+                        if (!rrule.BYMONTHDAY.NullOrEmpty()) 
+                        {
+                            var nvalues = rrule.BYMONTHDAY.Where(x => x < 0).ToList();
+                            var pvalues = rrule.BYMONTHDAY.Where(x => x > 0).ToList();
+                            var converted = (nvalues.NullOrEmpty()) ? nvalues.Select(x => 31 - Math.Abs(x)).Except(new int[]{0}): null;
+                            var values = (!converted.NullOrEmpty()) ? pvalues.Union(converted): pvalues; 
+                            dates = dates.Where(x => values.Contains(x.ToDateTime().Day)).ToList();
+                        }
+                        if (!rrule.BYDAY.NullOrEmpty())
+                        {
+                            var weekdays = rrule.BYDAY.Select(x => x.Weekday).ToList();
+                            dates = dates.Where(x => weekdays.Contains(x.ToDateTime().DayOfWeek.ToWEEKDAY())).ToList();
+                        }
+                        if (!rrule.BYHOUR.NullOrEmpty()) dates = dates.Where(x => rrule.BYHOUR.Contains(x.HOUR)).ToList();
+                        if (!rrule.BYMINUTE.NullOrEmpty()) dates = dates.Where(x => rrule.BYMINUTE.Contains(x.MINUTE)).ToList();
+                        if (!rrule.BYSECOND.NullOrEmpty()) dates = dates.Where(x => rrule.BYMINUTE.Contains(x.SECOND)).ToList();
+                        if(!rrule.BYSETPOS.NullOrEmpty())
+                        {
+                            var nvalues = rrule.BYSETPOS.Where(x => x < 0).ToList();
+                            var pvalues = rrule.BYSETPOS.Where(x => x > 0).ToList();
+                            var converted = (nvalues.NullOrEmpty()) ? nvalues.Select(x => 60 - Math.Abs(x)): null;
+                            var values = (!converted.NullOrEmpty()) ? pvalues.Union(converted) : pvalues;
+                            dates = dates.Where(x => values.Contains((int)x.MINUTE)).ToList();
                         }
                         break;
 
@@ -540,13 +607,149 @@ namespace reexmonkey.xcal.domain.models
                         if (rrule.UNTIL != default(DATE_TIME))
                         {
                             var current = start;
-                            while (current < rrule.UNTIL) dates.Add(get_hourly(current, rrule.INTERVAL));
+                            while (current < rrule.UNTIL) dates.Add(current = get_hourly(current, rrule.INTERVAL));
                         }
                         else
                         {
                             var current = start;
-                            for (var i = 0; i < rrule.COUNT; i++) dates.Add(get_hourly(current, rrule.INTERVAL));
+                            for (var i = 0; i < rrule.COUNT; i++) dates.Add(current = get_hourly(current, rrule.INTERVAL));
                         }
+
+                        if (!rrule.BYMONTH.NullOrEmpty()) dates = dates.Where(x => rrule.BYMONTH.Contains(x.MONTH)).ToList();
+                        if (!rrule.BYYEARDAY.NullOrEmpty())
+                        {
+                            var nvalues = rrule.BYYEARDAY.Where(x => x < 0).ToList();
+                            var pvalues = rrule.BYYEARDAY.Where(x => x > 0).ToList();
+                            var converted = (nvalues.NullOrEmpty()) ? nvalues.Select(x => 366 - Math.Abs(x)).Except(new int[] { 0 }) : null;
+                            var values = (!converted.NullOrEmpty()) ? pvalues.Union(converted) : pvalues; 
+                            dates = dates.Where(x => values.Contains(x.ToDateTime().DayOfYear)).ToList();
+
+                        }
+                        if (!rrule.BYMONTHDAY.NullOrEmpty()) 
+                        {
+                            var nvalues = rrule.BYMONTHDAY.Where(x => x < 0).ToList();
+                            var pvalues = rrule.BYMONTHDAY.Where(x => x > 0).ToList();
+                            var converted = (nvalues.NullOrEmpty()) ? nvalues.Select(x => 31 - Math.Abs(x)).Except(new int[]{0}): null;
+                            var values = (!converted.NullOrEmpty()) ? pvalues.Union(converted): pvalues; 
+                            dates = dates.Where(x => values.Contains(x.ToDateTime().Day)).ToList();
+                        }
+                        if (!rrule.BYDAY.NullOrEmpty())
+                        {
+                            var weekdays = rrule.BYDAY.Select(x => x.Weekday).ToList();
+                            dates = dates.Where(x => weekdays.Contains(x.ToDateTime().DayOfWeek.ToWEEKDAY())).ToList();
+                        }
+                        if (!rrule.BYHOUR.NullOrEmpty()) dates = dates.Where(x => rrule.BYHOUR.Contains(x.HOUR)).ToList();
+                        if (!rrule.BYMINUTE.NullOrEmpty()) dates = dates.Where(x => rrule.BYMINUTE.Contains(x.MINUTE)).ToList();
+                        if (!rrule.BYSECOND.NullOrEmpty()) dates = dates.Where(x => rrule.BYMINUTE.Contains(x.SECOND)).ToList();
+                        if(!rrule.BYSETPOS.NullOrEmpty())
+                        {
+                            var nvalues = rrule.BYSETPOS.Where(x => x < 0).ToList();
+                            var pvalues = rrule.BYSETPOS.Where(x => x > 0).ToList();
+                            var converted = (nvalues.NullOrEmpty()) ? nvalues.Select(x => 24 - Math.Abs(x)): null;
+                            var values = (!converted.NullOrEmpty()) ? pvalues.Union(converted) : pvalues;
+                            dates = dates.Where(x => values.Contains((int)x.HOUR)).ToList();
+                        }
+                        break;
+
+                case FREQ.DAILY:
+                    Func<DATE_TIME, uint, DATE_TIME> get_daily = (x, y) =>
+                        {
+                            var current = start;
+                            return (x = x.ToDateTime().AddDays(y).ToDATE_TIME());
+                        };
+
+                        if (rrule.UNTIL != default(DATE_TIME))
+                        {
+                            var current = start;
+                            while (current < rrule.UNTIL) dates.Add(current = get_daily(current, rrule.INTERVAL));
+                        }
+                        else
+                        {
+                            var current = start;
+                            for (var i = 0; i < rrule.COUNT; i++) dates.Add(current = get_daily(current, rrule.INTERVAL));
+                        }
+
+                        if (!rrule.BYMONTH.NullOrEmpty()) dates = dates.Where(x => rrule.BYMONTH.Contains(x.MONTH)).ToList();
+                        if (!rrule.BYMONTHDAY.NullOrEmpty()) 
+                        {
+                            var nvalues = rrule.BYMONTHDAY.Where(x => x < 0).ToList();
+                            var pvalues = rrule.BYMONTHDAY.Where(x => x > 0).ToList();
+                            var converted = (nvalues.NullOrEmpty()) ? nvalues.Select(x => 31 - Math.Abs(x)).Except(new int[]{0}): null;
+                            var values = (!converted.NullOrEmpty()) ? pvalues.Union(converted): pvalues; 
+                            dates = dates.Where(x => values.Contains(x.ToDateTime().Day)).ToList();
+                        }
+                        if (!rrule.BYDAY.NullOrEmpty())
+                        {
+                            var weekdays = rrule.BYDAY.Select(x => x.Weekday).ToList();
+                            dates = dates.Where(x => weekdays.Contains(x.ToDateTime().DayOfWeek.ToWEEKDAY())).ToList();
+                        }
+                        if (!rrule.BYHOUR.NullOrEmpty()) dates = dates.Where(x => rrule.BYHOUR.Contains(x.HOUR)).ToList();
+                        if (!rrule.BYMINUTE.NullOrEmpty()) dates = dates.Where(x => rrule.BYMINUTE.Contains(x.MINUTE)).ToList();
+                        if (!rrule.BYSECOND.NullOrEmpty()) dates = dates.Where(x => rrule.BYMINUTE.Contains(x.SECOND)).ToList();
+                        if(!rrule.BYSETPOS.NullOrEmpty())
+                        {
+                            var nvalues = rrule.BYSETPOS.Where(x => x < 0).ToList();
+                            var pvalues = rrule.BYSETPOS.Where(x => x > 0).ToList();
+                            var converted = (nvalues.NullOrEmpty()) ? nvalues.Select(x => 31 - Math.Abs(x)).Except(new int[] { 0 }) : null;
+                            var values = (!converted.NullOrEmpty()) ? pvalues.Union(converted) : pvalues;
+                            dates = dates.Where(x => values.Contains((int)x.MDAY)).ToList();
+                        }
+                        break;
+                case FREQ.WEEKLY:
+                                        
+                    Func<DATE_TIME, uint, DATE_TIME> get_weekly = (x, y) =>
+                        {
+                            var current = start;
+                            return (x = x.ToDateTime().AddDays(7*y).ToDATE_TIME());
+                        };
+
+                        if (rrule.UNTIL != default(DATE_TIME))
+                        {
+                            var current = start;
+                            while (current < rrule.UNTIL) dates.Add(current = get_weekly(current, rrule.INTERVAL));
+                        }
+                        else
+                        {
+                            var current = start;
+                            for (var i = 0; i < rrule.COUNT; i++) dates.Add(current = get_weekly(current, rrule.INTERVAL));
+                        }
+                                            
+                        if (!rrule.BYMONTH.NullOrEmpty()) dates = dates.Where(x => rrule.BYMONTH.Contains(x.MONTH)).ToList();
+                        if (!rrule.BYDAY.NullOrEmpty())
+                        {
+                            var weekdays = rrule.BYDAY.Select(x => x.Weekday).ToList();
+                            dates = dates.Where(x => weekdays.Contains(x.ToDateTime().DayOfWeek.ToWEEKDAY())).ToList();
+                        }
+                        if (!rrule.BYHOUR.NullOrEmpty()) dates = dates.Where(x => rrule.BYHOUR.Contains(x.HOUR)).ToList();
+                        if (!rrule.BYMINUTE.NullOrEmpty()) dates = dates.Where(x => rrule.BYMINUTE.Contains(x.MINUTE)).ToList();
+                        if (!rrule.BYSECOND.NullOrEmpty()) dates = dates.Where(x => rrule.BYMINUTE.Contains(x.SECOND)).ToList();
+                        if(!rrule.BYSETPOS.NullOrEmpty())
+                        {
+                            var nvalues = rrule.BYSETPOS.Where(x => x < 0).ToList();
+                            var pvalues = rrule.BYSETPOS.Where(x => x > 0).ToList();
+                            var converted = (nvalues.NullOrEmpty()) ? nvalues.Select(x => 7 - Math.Abs(x)).Except(new int[] { 0 }) : null;
+                            var values = (!converted.NullOrEmpty()) ? pvalues.Union(converted) : pvalues;
+                            //dates = dates.Where(x => values.Contains(x.ToDateTime().).ToList();
+                        }
+                        break;
+                case FREQ.MONTHLY:
+                    Func<DATE_TIME, uint, DATE_TIME> get_monthly = (x, y) =>
+                        {
+                            var current = start;
+                            return (x = x.ToDateTime().AddMonths((int)y).ToDATE_TIME());
+                        };
+
+                        if (rrule.UNTIL != default(DATE_TIME))
+                        {
+                            var current = start;
+                            while (current < rrule.UNTIL) dates.Add(current = get_monthly(current, rrule.INTERVAL));
+                        }
+                        else
+                        {
+                            var current = start;
+                            for (var i = 0; i < rrule.COUNT; i++) dates.Add(current = get_monthly(current, rrule.INTERVAL));
+                        }
+
                         break;
 
             }
@@ -554,10 +757,13 @@ namespace reexmonkey.xcal.domain.models
 
 
             //add specific recur dates
-            dates.AddRangeComplement(rdates.SelectMany(x => x.DateTimes));
+            var rdatetimes = rdates.SelectMany(x => x.DateTimes).ToList();
+            if(!rdatetimes.NullOrEmpty()) dates.AddRange(rdatetimes);
 
             //filter by exception dates;
-            dates = dates.Except(exdates.SelectMany(x => x.DateTimes)).ToList();
+            var exdatetimes = exdates.SelectMany(x => x.DateTimes).ToList();
+            if(!exdatetimes.NullOrEmpty()) dates.Except(exdatetimes);
+
             return dates;
         }
     }
