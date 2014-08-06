@@ -21,7 +21,7 @@ First things first
 ### How to obtain xCal run-times 
 
 
-### Nope, how to get xCal source code :p
+### Nope, how to get xCal source code
 
 Here are 2 quick ways to receive the code:
 
