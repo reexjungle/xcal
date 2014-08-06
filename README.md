@@ -18,7 +18,10 @@ Table of Contents
 
 First things first 
 ==================
-### As a developer, how do I obtain a copy of the latest xCal code?
+### How to obtain xCal run-times 
+
+
+### Nope, how to get xCal source code :p
 
 Here are 2 quick ways to receive the code:
 
