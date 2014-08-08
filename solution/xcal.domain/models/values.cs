@@ -1815,7 +1815,7 @@ namespace reexmonkey.xcal.domain.models
             this.count = 0u;
             this.interval = 1u;
             this.wkst = WEEKDAY.SU;
-            this.format = RecurFormat.DateTime;
+            this.format = RecurFormat.None;
         }
 
         public RECUR(string value)
@@ -1825,7 +1825,7 @@ namespace reexmonkey.xcal.domain.models
             this.count = 0u;
             this.interval = 1u;
             this.wkst = WEEKDAY.SU;
-            this.format = RecurFormat.DateTime;
+            this.format = RecurFormat.None;
 
             var tokens = value.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
             if (tokens == null || tokens.Length == 0) throw new FormatException("Invalid Recur format");
