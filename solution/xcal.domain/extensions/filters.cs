@@ -26,7 +26,7 @@ namespace reexmonkey.xcal.domain.extensions
                     //normalize dates to zero hour of each date
                     var ndates = dates.Select(x => new Tuple<DATE_TIME, DATE_TIME>(new DATE_TIME(x.Item1.FULLYEAR, x.Item1.MONTH, x.Item1.MDAY, 0, 0, 0), x.Item2));
                     //adjust each normalized date to second position in day
-                    var adjusted = ndates.SelectMany(x => pos.Select(p => new Tuple<DATE_TIME, DATE_TIME>( x.Item1 + new DURATION(0, 0, 0, 0, (uint)p), x.Item2)));
+                    var adjusted = ndates.SelectMany(x => pos.Select(p => new Tuple<DATE_TIME, DATE_TIME>( x.Item1 + new DURATION(0, 0, 0, 0, p), x.Item2)));
                     filtered = dates.Intersect(adjusted);
                 }
                 else
@@ -39,7 +39,7 @@ namespace reexmonkey.xcal.domain.extensions
                         //normalize dates to zero hour of each date
                         var ndates = dates.Select(x => new Tuple<DATE_TIME, DATE_TIME>(new DATE_TIME(x.Item1.FULLYEAR, x.Item1.MONTH, x.Item1.MDAY, 0, 0, 0), x.Item2));                        
                         //adjust each normalized date to minute position in day
-                        var adjusted = ndates.SelectMany(x => pos.Select(p => new Tuple<DATE_TIME, DATE_TIME>(x.Item1 + new DURATION(0, 0, 0, (uint)p), x.Item2))); 
+                        var adjusted = ndates.SelectMany(x => pos.Select(p => new Tuple<DATE_TIME, DATE_TIME>(x.Item1 + new DURATION(0, 0, 0, p), x.Item2))); 
                         filtered = dates.Intersect(adjusted);
                     }
                     else
@@ -52,7 +52,7 @@ namespace reexmonkey.xcal.domain.extensions
                             //normalize dates to zero hour of each date
                             var ndates = dates.Select(x => new Tuple<DATE_TIME, DATE_TIME>(new DATE_TIME(x.Item1.FULLYEAR, x.Item1.MONTH, x.Item1.MDAY, 0, 0, 0), x.Item2));
                             //adjust each normalized date to hour position in day
-                            var adjusted = ndates.SelectMany(x => pos.Select(p => new Tuple<DATE_TIME, DATE_TIME>(x.Item1 + new DURATION(0, 0, 0, (uint)p), x.Item2)));
+                            var adjusted = ndates.SelectMany(x => pos.Select(p => new Tuple<DATE_TIME, DATE_TIME>(x.Item1 + new DURATION (0, 0, p), x.Item2)));
                             filtered = dates.Intersect(adjusted);
                         }
                     }

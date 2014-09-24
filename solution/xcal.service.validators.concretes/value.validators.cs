@@ -43,8 +43,8 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.HOUR).InclusiveBetween(0u, 23u);
             RuleFor(x => x.MINUTE).InclusiveBetween(0u, 59u);
             RuleFor(x => x.SECOND).InclusiveBetween(0u, 60u);
-            RuleFor(x => x.TimeFormat).NotEqual(TimeFormat.Utc).When(x => x.TimeZoneId != null);
-            RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null || x.TimeFormat == TimeFormat.Utc);
+            RuleFor(x => x.Type).NotEqual(TimeType.Utc).When(x => x.TimeZoneId != null);
+            RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null || x.Type == TimeType.Utc);
         }
     }
 
@@ -56,8 +56,8 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.HOUR).InclusiveBetween(0u, 23u);
             RuleFor(x => x.MINUTE).InclusiveBetween(0u, 59u);
             RuleFor(x => x.SECOND).InclusiveBetween(0u, 60u);
-            RuleFor(x => x.TimeFormat).NotEqual(TimeFormat.Utc).When(x => x.TimeZoneId != null);
-            RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null || x.TimeFormat == TimeFormat.Utc);
+            RuleFor(x => x.Type).NotEqual(TimeType.Utc).When(x => x.TimeZoneId != null);
+            RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null || x.Type == TimeType.Utc);
         }
     }
 
@@ -65,7 +65,7 @@ namespace reexmonkey.xcal.service.validators.concretes
     {
         public DurationValidator()
         {
-            RuleFor(x => x.Sign).NotEqual(SignType.Neutral);
+            //RuleFor(x => x.Sign).NotEqual(SignType.Neutral);
         }
     }
 
@@ -147,13 +147,12 @@ namespace reexmonkey.xcal.service.validators.concretes
         public UtcOffsetValidator()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.Continue;
-            RuleFor(x => x.HOUR).InclusiveBetween(0u, 23u);
-            RuleFor(x => x.MINUTE).InclusiveBetween(0u, 59u);
-            RuleFor(x => x.SECOND).InclusiveBetween(0u, 59u);
-            RuleFor(x => x.Sign).NotEqual(SignType.Neutral);
-            RuleFor(x => x.HOUR).NotEqual(0u).When(x => x.MINUTE == 0u && x.SECOND == 0u);
-            RuleFor(x => x.MINUTE).NotEqual(0u).When(x => x.HOUR == 0u && x.SECOND == 0u);
-            RuleFor(x => x.SECOND).NotEqual(0u).When(x => x.MINUTE == 0u && x.SECOND == 0u);
+            RuleFor(x => x.HOUR).InclusiveBetween(-23, 23);
+            RuleFor(x => x.MINUTE).InclusiveBetween(-59, 59);
+            RuleFor(x => x.SECOND).InclusiveBetween(-59, 59);
+            RuleFor(x => x.HOUR).NotEqual(0).When(x => x.MINUTE == 0 && x.SECOND == 0);
+            RuleFor(x => x.MINUTE).NotEqual(0).When(x => x.HOUR == 0 && x.SECOND == 0);
+            RuleFor(x => x.SECOND).NotEqual(0).When(x => x.MINUTE == 0 && x.SECOND == 0);
         }
     }
 

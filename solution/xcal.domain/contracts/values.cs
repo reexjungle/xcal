@@ -67,29 +67,28 @@ namespace reexmonkey.xcal.domain.contracts
         /// <summary>
         /// Gets the duration in weeks
         /// </summary>
-        uint WEEKS { get;}
+        int WEEKS { get;}
 
         /// <summary>
         /// Gets the duration in hours
         /// </summary>
-        uint HOURS { get;}
+        int HOURS { get;}
 
         /// <summary>
         /// Gets the duration in minutes
         /// </summary>
-        uint MINUTES { get;}
+        int MINUTES { get;}
 
         /// <summary>
         /// Gets the duration in seconds
         /// </summary>
-        uint SECONDS { get; }
+        int SECONDS { get; }
 
         /// <summary>
         /// Gets the duration in days
         /// </summary>
-        uint DAYS { get; }
+        int DAYS { get; }
 
-        SignType Sign { get;}
     }
 
     /// <summary>
@@ -260,7 +259,7 @@ namespace reexmonkey.xcal.domain.contracts
         /// </summary>
         uint SECOND { get;}
 
-        TimeFormat TimeFormat { get;}
+        TimeType Type { get;}
 
         TZID TimeZoneId { get;}
 
@@ -279,22 +278,20 @@ namespace reexmonkey.xcal.domain.contracts
     /// </summary>
     public interface IUTC_OFFSET : IVALUE 
     {
-        SignType Sign { get; }
-
         /// <summary>
         /// Gets or sets the 2-digit representation of an hour
         /// </summary>
-        uint HOUR { get; }
+        int HOUR { get; }
 
         /// <summary>
         /// Gets or sets the 2-digit representation of a minute
         /// </summary>
-        uint MINUTE { get; }
+        int MINUTE { get; }
 
         /// <summary>
         /// Gets or sets the 2-digit representation of a second
         /// </summary>
-        uint SECOND { get; }
+        int SECOND { get; }
     }
 
 }

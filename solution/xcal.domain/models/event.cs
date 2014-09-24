@@ -52,7 +52,7 @@ namespace reexmonkey.xcal.domain.models
             set
             {
                 this.start = value;
-                if(this.end == default(DATE_TIME))this.end = this.start + new DURATION(0,0,1,0,0, SignType.Positive); //same value as start time
+                if(this.end == default(DATE_TIME))this.end = this.start + new DURATION(0,0,1,0,0); //same value as start time
             }
         }
 

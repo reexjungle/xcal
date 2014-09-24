@@ -257,17 +257,11 @@ namespace reexmonkey.xcal.domain.models
 
         public static DATE operator +(DATE start, DURATION duration)
         {
-            if (duration.Sign == SignType.Negative)
-            {
-                var pduration = new DURATION(duration.WEEKS, duration.DAYS, duration.HOURS, duration.MINUTES, duration.SECONDS, SignType.Positive);
-                return start - pduration;
-            }
             return (start.ToDateTime().Add(duration.ToTimeSpan())).ToDATE();
         }
 
         public static DATE operator -(DATE end, DURATION duration)
         {
-            if (duration.Sign == SignType.Negative) return end + duration;
             return (end.ToDateTime().Subtract(duration.ToTimeSpan())).ToDATE();
         }
 
@@ -277,7 +271,7 @@ namespace reexmonkey.xcal.domain.models
     public struct DATE_TIME : IDATE_TIME, IEquatable<DATE_TIME>, IComparable<DATE_TIME>
     {
         private readonly uint hour, minute, second, fullyear, month, mday;
-        private readonly TimeFormat format;
+        private readonly TimeType format;
         private readonly TZID tzid;
 
         /// <summary>
@@ -329,7 +323,7 @@ namespace reexmonkey.xcal.domain.models
             get { return this.second; }
         }
 
-        public TimeFormat TimeFormat
+        public TimeType Type
         {
             get { return this.format; }
         }
@@ -340,7 +334,7 @@ namespace reexmonkey.xcal.domain.models
         }
 
         public DATE_TIME(uint fullyear, uint month, uint mday, uint hour, uint minute, uint second,
-            TimeFormat format = TimeFormat.Local, TZID tzid = null)
+            TimeType format = TimeType.Local, TZID tzid = null)
         {
             this.fullyear = fullyear;
             this.month = month;
@@ -361,14 +355,14 @@ namespace reexmonkey.xcal.domain.models
             this.minute = (uint)datetime.Minute;
             this.second = (uint)datetime.Second;
             this.tzid = null;
-            this.format = contracts.TimeFormat.Unknown;
+            this.format = contracts.TimeType.Unknown;
             if (tzinfo != null)
             {
                 this.tzid = new TZID(null, tzinfo.Id);
-                this.format = TimeFormat.LocalAndTimeZone;
+                this.format = TimeType.LocalAndTimeZone;
             }
-            else this.format = TimeFormat.Local;
-            if (datetime.Kind == DateTimeKind.Utc) this.format = TimeFormat.Utc;
+            else this.format = TimeType.Local;
+            if (datetime.Kind == DateTimeKind.Utc) this.format = TimeType.Utc;
         }
 
         public DATE_TIME(DateTime datetime, TZID tzid)
@@ -380,14 +374,14 @@ namespace reexmonkey.xcal.domain.models
             this.minute = (uint)datetime.Minute;
             this.second = (uint)datetime.Second;
             this.tzid = null;
-            this.format = contracts.TimeFormat.Unknown;
+            this.format = contracts.TimeType.Unknown;
             if (tzid != null)
             {
                 this.tzid = tzid;
-                this.format = TimeFormat.LocalAndTimeZone;
+                this.format = TimeType.LocalAndTimeZone;
             }
-            else this.format = TimeFormat.Local;
-            if (datetime.Kind == DateTimeKind.Utc) this.format = TimeFormat.Utc;
+            else this.format = TimeType.Local;
+            if (datetime.Kind == DateTimeKind.Utc) this.format = TimeType.Utc;
         }
 
         public DATE_TIME(DateTimeOffset datetime)
@@ -398,7 +392,7 @@ namespace reexmonkey.xcal.domain.models
             this.hour = (uint)datetime.Hour;
             this.minute = (uint)datetime.Minute;
             this.second = (uint)datetime.Second;
-            this.format = TimeFormat.Utc;
+            this.format = TimeType.Utc;
             this.tzid = null;
         }
 
@@ -412,9 +406,9 @@ namespace reexmonkey.xcal.domain.models
             this.minute = 0u;
             this.second = 0u;
             this.tzid = tzid;
-            if (this.tzid != null) this.format = TimeFormat.LocalAndTimeZone;
-            else this.format = TimeFormat.Unknown;
-            this.format = TimeFormat.Unknown;
+            if (this.tzid != null) this.format = TimeType.LocalAndTimeZone;
+            else this.format = TimeType.Unknown;
+            this.format = TimeType.Unknown;
         }
 
         public DATE_TIME(TIME time)
@@ -427,9 +421,9 @@ namespace reexmonkey.xcal.domain.models
             this.minute = time.MINUTE;
             this.second = time.SECOND;
             this.tzid = time.TimeZoneId;
-            if (this.tzid != null) this.format = TimeFormat.LocalAndTimeZone;
-            else this.format = TimeFormat.Unknown;
-            this.format = TimeFormat.Unknown;
+            if (this.tzid != null) this.format = TimeType.LocalAndTimeZone;
+            else this.format = TimeType.Unknown;
+            this.format = TimeType.Unknown;
         }
 
         public DATE_TIME(string value)
@@ -441,7 +435,7 @@ namespace reexmonkey.xcal.domain.models
             this.minute = 0u;
             this.second = 0u;
             this.tzid = null;
-            this.format = TimeFormat.Unknown;
+            this.format = TimeType.Unknown;
 
             var pattern = @"^(?<tzid>((\p{L})+)*(\/)*((\p{L}+\p{P}*\s*)+):)*(?<year>\d{2,4})(?<month>\d{1,2})(?<day>\d{1,2})(T(?<hour>\d{1,2})(?<min>\d{1,2})(?<sec>\d{1,2})(?<utc>Z?))?$";
             if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
@@ -457,14 +451,14 @@ namespace reexmonkey.xcal.domain.models
                     if (match.Groups["utc"].Success)
                     {
                         if (match.Groups["utc"].Value.Equals("Z", StringComparison.OrdinalIgnoreCase))
-                            this.format = TimeFormat.Utc;
+                            this.format = TimeType.Utc;
                         else if (match.Groups["utc"].Value.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
-                            this.format = TimeFormat.Local;
+                            this.format = TimeType.Local;
                     }
                     if (match.Groups["tzid"].Success)
                     {
                         this.tzid = new TZID(match.Groups["tzid"].Value);
-                        this.format = TimeFormat.LocalAndTimeZone;
+                        this.format = TimeType.LocalAndTimeZone;
                     }
                 }
             }
@@ -478,17 +472,17 @@ namespace reexmonkey.xcal.domain.models
             this.hour = datetime.HOUR;
             this.minute = datetime.MINUTE;
             this.second = datetime.SECOND;
-            this.format = datetime.TimeFormat;
+            this.format = datetime.Type;
             this.tzid = datetime.TimeZoneId;
         }
 
         public override string ToString()
         {
-            if (this.format == TimeFormat.Local) return string.Format("{0:D4}{1:D2}{2:D2}T{3:D2}{4:D2}{5:D2}", this.fullyear, this.month, this.mday, this.hour, this.minute, this.second);
+            if (this.format == TimeType.Local) return string.Format("{0:D4}{1:D2}{2:D2}T{3:D2}{4:D2}{5:D2}", this.fullyear, this.month, this.mday, this.hour, this.minute, this.second);
 
-            else if (this.format == TimeFormat.Utc)
+            else if (this.format == TimeType.Utc)
                 return string.Format("{0:D4}{1:D2}{2:D2}T{3:D2}{4:D2}{5:D2}Z", this.fullyear, this.month, this.mday, this.hour, this.minute, this.second);
-            else if (this.TimeFormat == TimeFormat.LocalAndTimeZone)
+            else if (this.Type == TimeType.LocalAndTimeZone)
                 return string.Format("{0}:{1:D4}{2:D2}{3:D2}T{4:D2}{5:D2}{6:D2}", this.tzid, this.fullyear, this.month, this.mday, this.hour, this.minute, this.second);
             else
                 return string.Format("{0:D4}{1:D2}{2:D2}T{3:D2}{4:D2}{5:D2}", this.fullyear, this.month, this.mday, this.hour, this.minute, this.second);
@@ -557,17 +551,11 @@ namespace reexmonkey.xcal.domain.models
 
         public static DATE_TIME operator +(DATE_TIME start, DURATION duration)
         {
-            if (duration.Sign == SignType.Negative)
-            {
-                var pduration = new DURATION(duration.WEEKS, duration.DAYS, duration.HOURS, duration.MINUTES, duration.SECONDS, SignType.Positive);
-                return start - pduration;
-            }
             return (start.ToDateTime().Add(duration.ToTimeSpan())).ToDATE_TIME();
         }
 
         public static DATE_TIME operator -(DATE_TIME end, DURATION duration)
         {
-            if (duration.Sign == SignType.Negative) return end + duration;
             return (end.ToDateTime().Subtract(duration.ToTimeSpan())).ToDATE_TIME(end.TimeZoneId);
         }
 
@@ -621,7 +609,7 @@ namespace reexmonkey.xcal.domain.models
     public struct TIME : ITIME, IEquatable<TIME>, IComparable<TIME>
     {
         private readonly uint hour, minute, second;
-        private readonly TimeFormat format;
+        private readonly TimeType format;
         private readonly TZID tzid;
 
         /// <summary>
@@ -651,7 +639,7 @@ namespace reexmonkey.xcal.domain.models
             get { return this.second; }
         }
 
-        public TimeFormat TimeFormat
+        public TimeType Type
         {
             get { return this.format; }
         }
@@ -661,7 +649,7 @@ namespace reexmonkey.xcal.domain.models
             get { return this.tzid; }
         }
 
-        public TIME(uint hour, uint minute, uint second, TimeFormat format = TimeFormat.Local, TZID tzid = null)
+        public TIME(uint hour, uint minute, uint second, TimeType format = TimeType.Local, TZID tzid = null)
         {
             this.hour = hour;
             this.minute = minute;
@@ -676,14 +664,14 @@ namespace reexmonkey.xcal.domain.models
             this.minute = (uint)datetime.Minute;
             this.second = (uint)datetime.Second;
             this.tzid = null;
-            this.format = contracts.TimeFormat.Unknown;
+            this.format = contracts.TimeType.Unknown;
             if (tzinfo != null)
             {
                 this.tzid = new TZID(null, tzinfo.Id);
-                this.format = TimeFormat.LocalAndTimeZone;
+                this.format = TimeType.LocalAndTimeZone;
             }
-            else this.format = TimeFormat.Local;
-            if (datetime.Kind == DateTimeKind.Utc) this.format = TimeFormat.Utc;
+            else this.format = TimeType.Local;
+            if (datetime.Kind == DateTimeKind.Utc) this.format = TimeType.Utc;
         }
 
         public TIME(DateTimeOffset datetime)
@@ -691,7 +679,7 @@ namespace reexmonkey.xcal.domain.models
             this.hour = (uint)datetime.Hour;
             this.minute = (uint)datetime.Minute;
             this.second = (uint)datetime.Second;
-            this.format = TimeFormat.Utc;
+            this.format = TimeType.Utc;
             this.tzid = null;
         }
 
@@ -701,7 +689,7 @@ namespace reexmonkey.xcal.domain.models
             this.minute = 0u;
             this.second = 0u;
             this.tzid = null;
-            this.format = TimeFormat.Unknown;
+            this.format = TimeType.Unknown;
 
             var pattern = @"^(?<tzid>((\p{L})+)*(\/)*((\p{L}+\p{P}*\s*)+):)*(T(?<hour>\d{1,2})(?<min>\d{1,2})(?<sec>\d{1,2})(?<utc>Z?))?$";
             if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
@@ -714,14 +702,14 @@ namespace reexmonkey.xcal.domain.models
                     if (match.Groups["utc"].Success)
                     {
                         if (match.Groups["utc"].Value.Equals("Z", StringComparison.OrdinalIgnoreCase))
-                            this.format = TimeFormat.Utc;
+                            this.format = TimeType.Utc;
                         else if (match.Groups["utc"].Value.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
-                            this.format = TimeFormat.Local;
+                            this.format = TimeType.Local;
                     }
                     if (match.Groups["tzid"].Success)
                     {
                         this.tzid = new TZID(match.Groups["tzid"].Value);
-                        this.format = TimeFormat.LocalAndTimeZone;
+                        this.format = TimeType.LocalAndTimeZone;
                     }
                 }
             }
@@ -732,7 +720,7 @@ namespace reexmonkey.xcal.domain.models
             this.hour = datetime.HOUR;
             this.minute = datetime.MINUTE;
             this.second = datetime.SECOND;
-            this.format = datetime.TimeFormat;
+            this.format = datetime.Type;
             this.tzid = datetime.TimeZoneId;
         }
 
@@ -742,17 +730,17 @@ namespace reexmonkey.xcal.domain.models
             this.hour = time.HOUR;
             this.minute = time.MINUTE;
             this.second = time.SECOND;
-            this.format = time.TimeFormat;
+            this.format = time.Type;
             this.tzid = time.TimeZoneId;
         }
 
         public override string ToString()
         {
-            if (this.format == TimeFormat.Local) return string.Format("T{0:D2}{1:D2}{2:D2}", this.hour, this.minute, this.second);
+            if (this.format == TimeType.Local) return string.Format("T{0:D2}{1:D2}{2:D2}", this.hour, this.minute, this.second);
 
-            else if (this.format == TimeFormat.Utc)
+            else if (this.format == TimeType.Utc)
                 return string.Format("T{0:D2}{1:D2}{2:D2}Z", this.hour, this.minute, this.second);
-            else if (this.TimeFormat == TimeFormat.LocalAndTimeZone)
+            else if (this.Type == TimeType.LocalAndTimeZone)
                 return string.Format("{0}:T{0:D2}{1:D2}{2:D2}", this.tzid, this.hour, this.minute, this.second);
             else
                 return string.Format("T{0:D2}{1:D2}{2:D2}", this.hour, this.minute, this.second);
@@ -789,17 +777,11 @@ namespace reexmonkey.xcal.domain.models
 
         public static TIME operator +(TIME start, DURATION duration)
         {
-            if (duration.Sign == SignType.Negative)
-            {
-                var pduration = new DURATION(duration.WEEKS, duration.DAYS, duration.HOURS, duration.MINUTES, duration.SECONDS, SignType.Positive);
-                return start - pduration;
-            }
             return (start.ToTimeSpan().Add(duration.ToTimeSpan())).ToTIME(start.TimeZoneId);
         }
 
         public static TIME operator -(TIME end, DURATION duration)
         {
-            if (duration.Sign == SignType.Negative) return end + duration;
             return (end.ToTimeSpan().Subtract(duration.ToTimeSpan())).ToTIME(end.TimeZoneId);
         }
 
@@ -851,37 +833,31 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public struct DURATION : IDURATION, IEquatable<DURATION>, IComparable<DURATION>
     {
-        private readonly uint weeks, days, hours, minutes, seconds;
-        private readonly SignType sign;
+        private readonly int weeks, days, hours, minutes, seconds;
 
-        public uint WEEKS
+        public int WEEKS
         {
             get { return weeks; }
         }
 
-        public uint HOURS
+        public int HOURS
         {
             get { return this.hours; }
         }
 
-        public uint MINUTES
+        public int MINUTES
         {
             get { return this.minutes; }
         }
 
-        public uint SECONDS
+        public int SECONDS
         {
             get { return this.seconds; }
         }
 
-        public uint DAYS
+        public int DAYS
         {
             get { return this.days; }
-        }
-
-        public SignType Sign
-        {
-            get { return this.sign; }
         }
 
         public DURATION(DURATION duration)
@@ -891,52 +867,50 @@ namespace reexmonkey.xcal.domain.models
             this.hours = duration.HOURS;
             this.minutes = duration.MINUTES;
             this.seconds = duration.SECONDS;
-            this.sign = duration.Sign;
         }
 
-        public DURATION(uint weeks, uint days = 0, uint hours = 0, uint minutes = 0, uint seconds = 0, SignType sign = SignType.Neutral)
+        public DURATION(int weeks, int days = 0, int hours = 0, int minutes = 0, int seconds = 0)
         {
             this.weeks = weeks;
             this.days = days;
             this.hours = hours;
             this.minutes = minutes;
             this.seconds = seconds;
-            this.sign = sign;
         }
 
         public DURATION(TimeSpan span)
         {
-            this.days = (uint)span.Days;
-            this.hours = (uint)span.Hours;
-            this.minutes = (uint)span.Minutes;
-            this.seconds = (uint)span.Seconds;
-            this.weeks = (uint)(span.TotalDays - (span.Days + (span.Hours / 24) + (span.Minutes / (24 * 60)) + (span.Seconds / (24 * 3600)) + (span.Milliseconds / (24 * 3600000)))) / 7u;
-            var scheck = span.CompareTo(TimeSpan.Zero);
-            if (scheck > 0) this.sign = SignType.Positive;
-            else if (scheck < 0) this.sign = SignType.Negative;
-            else this.sign = SignType.Neutral;
+            this.days = span.Days;
+            this.hours = span.Hours;
+            this.minutes = span.Minutes;
+            this.seconds = span.Seconds;
+            this.weeks = span.Days 
+                + (span.Hours / 24) 
+                + (span.Minutes / (24 * 60)) 
+                + (span.Seconds / (24 * 3600)) 
+                + (span.Milliseconds / (24 * 3600000)) / 7;
         }
 
         public DURATION(string value)
         {
-            this.weeks = 0u;
-            this.days = 0u;
-            this.hours = 0u;
-            this.minutes = 0u;
-            this.seconds = 0u;
-            this.sign = SignType.Neutral;
+            this.weeks = this.days = this.hours = this.minutes = this.seconds = 0;
             var pattern = @"^(?<minus>\-)?P((?<weeks>\d*)W)?((?<days>\d*)D)?(T((?<hours>\d*)H)?((?<mins>\d*)M)?((?<secs>\d*)S)?)?$";
             if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
             {
                 foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
                 {
-                    if (match.Groups["weeks"].Success) this.weeks = uint.Parse(match.Groups["weeks"].Value);
-                    if (match.Groups["days"].Success) this.days = uint.Parse(match.Groups["days"].Value);
-                    if (match.Groups["hours"].Success) this.hours = uint.Parse(match.Groups["hours"].Value);
-                    if (match.Groups["mins"].Success) this.minutes = uint.Parse(match.Groups["mins"].Value);
-                    if (match.Groups["secs"].Success) this.seconds = uint.Parse(match.Groups["secs"].Value);
-                    if (match.Groups["minus"].Success) this.sign = SignType.Negative;
-                    else this.sign = SignType.Positive;
+                    if (match.Groups["weeks"].Success) this.weeks = int.Parse(match.Groups["weeks"].Value);
+                    if (match.Groups["days"].Success) this.days = int.Parse(match.Groups["days"].Value);
+                    if (match.Groups["hours"].Success) this.hours = int.Parse(match.Groups["hours"].Value);
+                    if (match.Groups["mins"].Success) this.minutes = int.Parse(match.Groups["mins"].Value);
+                    if (match.Groups["secs"].Success) this.seconds = int.Parse(match.Groups["secs"].Value);
+                    if (match.Groups["minus"].Success)
+                    {
+                        this.weeks = -this.weeks;
+                        this.days = -this.days;
+                        this.minutes = -this.minutes;
+                        this.seconds = -this.seconds;
+                    }
                 }
             }
         }
@@ -949,14 +923,13 @@ namespace reexmonkey.xcal.domain.models
             this.hours = duration.HOURS;
             this.minutes = duration.MINUTES;
             this.seconds = duration.SECONDS;
-            this.sign = duration.Sign;
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
-            var sym = (this.sign == SignType.Negative) ? "-" : string.Empty;
-            sb.AppendFormat("{0}P", sym);
+            var sign = (this.weeks < 0 || this.days < 0 || this.hours < 0 || this.minutes < 0 || this.seconds < 0) ? "-" : string.Empty;
+            sb.AppendFormat("{0}P", sign);
             if (this.weeks != 0) sb.AppendFormat("{0}W", this.weeks);
             if (this.days != 0) sb.AppendFormat("{0}D", this.days);
             if (this.hours != 0 || this.minutes != 0 || this.seconds != 0) sb.Append("T");
@@ -992,93 +965,43 @@ namespace reexmonkey.xcal.domain.models
 
         public int CompareTo(DURATION other)
         {
-            var span = (this.sign == SignType.Negative) ? this.ToTimeSpan().Negate(): this.ToTimeSpan();
-            var ospan = (other.Sign == SignType.Negative) ? other.ToTimeSpan().Negate() : other.ToTimeSpan();
+            var span = this.ToTimeSpan();
+            var ospan = other.ToTimeSpan();
             return span.CompareTo(ospan);
-
         }
 
         #region overloaded operators
 
+        public static DURATION operator - (DURATION duration)
+        {
+            return new DURATION(-duration.WEEKS, -duration.DAYS, -duration.HOURS, -duration.MINUTES, -duration.SECONDS);
+        }
+
+        public static DURATION operator +(DURATION duration)
+        {
+            return new DURATION(duration.WEEKS, duration.DAYS, duration.HOURS, duration.MINUTES, duration.SECONDS);
+        }
+
         public static DURATION operator +(DURATION a, DURATION b)
         {
-            if (a.Sign == SignType.Negative)
-            {
-                if (b.Sign == SignType.Negative)
-                    return new DURATION(a.WEEKS + b.WEEKS, a.DAYS + b.DAYS, a.HOURS + b.HOURS, a.MINUTES + b.MINUTES, a.SECONDS + b.SECONDS, SignType.Negative);
-                else if (b.Sign == SignType.Positive)
-                    return b - a;
-                else 
-                    return new DURATION(a.WEEKS + b.WEEKS, a.DAYS + b.DAYS, a.HOURS + b.HOURS, a.MINUTES + b.MINUTES, a.SECONDS + b.SECONDS, SignType.Negative);
-            }
-            else if(a.Sign == SignType.Positive)
-            {
-                if (b.Sign == SignType.Negative) return a - b;
-                else
-                    return new DURATION(a.WEEKS + b.WEEKS, a.DAYS + b.DAYS, a.HOURS + b.HOURS, a.MINUTES + b.MINUTES, a.SECONDS + b.SECONDS, SignType.Positive);
-            }
-            else
-            {
-                if (b.Sign == SignType.Negative ) return a - b;
-                else
-                {
-                    var sign = SignType.Neutral;
-                    if (a > b) sign = SignType.Positive;
-                    else if (a < b) sign = SignType.Negative;
-                    return new DURATION(a.WEEKS + b.WEEKS, a.DAYS + b.DAYS, a.HOURS + b.HOURS, a.MINUTES + b.MINUTES, a.SECONDS + b.SECONDS, sign);
-                }
-            }
-
+            return new DURATION(a.WEEKS + b.WEEKS, a.DAYS + b.DAYS, a.HOURS + b.HOURS, a.MINUTES + b.MINUTES, a.SECONDS + b.SECONDS);
         }
 
         public static DURATION operator -(DURATION a, DURATION b)
         {
-            if (a.Sign == SignType.Negative)
-            {
-                if (b.Sign == SignType.Negative)
-                {
-                    var sign = SignType.Neutral;
-                    if (b > a) sign = SignType.Positive;
-                    else if (b < a) sign = SignType.Negative;
-                    return new DURATION(b.WEEKS - a.WEEKS, b.DAYS - a.DAYS, b.HOURS - a.HOURS, b.MINUTES - a.MINUTES, b.SECONDS - a.SECONDS, sign);
-                }
-                else if (b.Sign == SignType.Positive)
-                    return new DURATION(a.WEEKS + a.WEEKS, a.DAYS + b.DAYS, a.HOURS + b.HOURS, a.MINUTES + b.MINUTES, a.SECONDS + b.SECONDS, SignType.Negative);
-                else
-                {
-                    var sign = SignType.Neutral;
-                    if (b > a) sign = SignType.Positive;
-                    else if (b < a) sign = SignType.Negative;
-                    return new DURATION(b.WEEKS - b.WEEKS, b.DAYS - a.DAYS, b.HOURS - b.HOURS, b.MINUTES - a.MINUTES, b.SECONDS - a.SECONDS, sign);
+            return new DURATION(a.WEEKS - b.WEEKS, a.DAYS - b.DAYS, a.HOURS - b.HOURS, a.MINUTES - b.MINUTES, a.SECONDS - b.SECONDS);
 
-                }
-            }
-            else if (a.Sign == SignType.Positive)
-            {
-                if (b.Sign == SignType.Negative)
-                    return new DURATION(a.WEEKS + b.WEEKS, a.DAYS + b.DAYS, a.HOURS + b.HOURS, a.MINUTES + b.MINUTES, a.SECONDS + b.SECONDS, SignType.Positive);
-                else
-                {
-                    var sign = SignType.Neutral;
-                    if (a > b) sign = SignType.Positive;
-                    else if (a < b) sign = SignType.Negative;
-                    return new DURATION(a.WEEKS - b.WEEKS, a.DAYS - b.DAYS, a.HOURS - b.HOURS, a.MINUTES - b.MINUTES, a.SECONDS - b.SECONDS, sign);
-                }
-            }
-            else
-            {
-                if (b.Sign == SignType.Negative)
-                {
-                    return new DURATION(a.WEEKS + b.WEEKS, a.DAYS + b.DAYS, a.HOURS + b.HOURS, a.MINUTES + b.MINUTES, a.SECONDS + b.SECONDS, SignType.Positive);
-                }
-                else
-                {
-                    var sign = SignType.Neutral;
-                    if (a > b) sign = SignType.Positive;
-                    else if (a < b) sign = SignType.Negative;
-                    return new DURATION(a.WEEKS - b.WEEKS, a.DAYS - b.DAYS, a.HOURS - b.HOURS, a.MINUTES - b.MINUTES, a.SECONDS - b.SECONDS, sign);
-                }
-            }
+        }
+
+        public static DURATION operator *(DURATION duration, int scalar)
+        {
+            return new DURATION(duration.WEEKS * scalar, duration.DAYS * scalar, duration.HOURS * scalar, duration.MINUTES *scalar, duration.SECONDS *scalar);
+        }
+
+        public static DURATION operator /(DURATION duration, int scalar)
+        {
+            if (scalar == 0) throw new DivideByZeroException("Zero dividend is forbidden!");
+            return new DURATION(duration.WEEKS / scalar, duration.DAYS / scalar, duration.HOURS / scalar, duration.MINUTES / scalar, duration.SECONDS / scalar);
         }
 
         public static bool operator <(DURATION a, DURATION b)
@@ -1258,19 +1181,13 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public struct UTC_OFFSET : IUTC_OFFSET, IEquatable<UTC_OFFSET>, IComparable<UTC_OFFSET>
     {
-        private readonly uint hour, minute, second;
-        private readonly SignType sign;
-
-        public SignType Sign
-        {
-            get { return this.sign; }
-        }
+        private readonly int hour, minute, second;
 
         /// <summary>
         /// Gets or sets the value of the hours
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the value &lt;0 and value &gt;23 </exception>
-        public uint HOUR
+        public int HOUR
         {
             get { return this.hour; }
         }
@@ -1278,7 +1195,7 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// Gets or sets the value of the minutes
         /// </summary>
-        public uint MINUTE
+        public int MINUTE
         {
             get { return this.minute; }
         }
@@ -1287,60 +1204,39 @@ namespace reexmonkey.xcal.domain.models
         /// Gets or sets the value of the seconds
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the value &lt;0 and value &gt;60 </exception>
-        public uint SECOND
+        public int SECOND
         {
             get { return this.second; }
         }
 
         public UTC_OFFSET(string value)
         {
-            this.hour = 0u;
-            this.minute = 0u;
-            this.second = 1u;
-            this.sign = SignType.Positive;
+            this.hour = this.minute = 0;
+            this.second = 1;
 
             var pattern = @"^(?<minus>\-|?<plus>\+)(?<hours>\d{1,2})(?<mins>\d{1,2})(?<secs>\d{1,2})?$";
             if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
             {
                 foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
                 {
-                    if (match.Groups["hours"].Success) this.hour = uint.Parse(match.Groups["hours"].Value);
-                    if (match.Groups["mins"].Success) this.minute = uint.Parse(match.Groups["mins"].Value);
-                    if (match.Groups["secs"].Success) this.second = uint.Parse(match.Groups["secs"].Value);
-                    if (match.Groups["minus"].Success) this.sign = SignType.Negative;
-                    else if (match.Groups["plus"].Success) this.sign = SignType.Positive;
+                    if (match.Groups["hours"].Success) this.hour = int.Parse(match.Groups["hours"].Value);
+                    if (match.Groups["mins"].Success) this.minute = int.Parse(match.Groups["mins"].Value);
+                    if (match.Groups["secs"].Success) this.second = int.Parse(match.Groups["secs"].Value);
+                    if (match.Groups["minus"].Success)
+                    {
+                        this.hour = -this.hour;
+                        this.minute = -this.minute;
+                        this.second = -this.second;
+                    }
                 }
             }
         }
 
-        public UTC_OFFSET(uint hour, uint minute, uint second, SignType sign)
+        public UTC_OFFSET(int hour, int minute, int second)
         {
             this.hour = hour;
             this.minute = minute;
             this.second = second;
-            this.sign = sign;
-        }
-
-        public UTC_OFFSET(int hours, int minutes, int seconds)
-        {
-            this.hour = (uint)hours;
-            this.minute = (uint)minutes;
-            this.second = (uint)seconds;
-            this.sign = SignType.Neutral;
-
-            if (hours > 0) this.sign = SignType.Positive;
-            else if (hours < 0) this.sign = SignType.Negative;
-            else if (hours == 0)
-            {
-                if (minutes > 0) this.sign = SignType.Positive;
-                else if (minutes < 0) this.sign = SignType.Negative;
-                else if (minutes == 0)
-                {
-                    if (seconds > 0) this.sign = SignType.Positive;
-                    else if (seconds < 0) this.sign = SignType.Negative;
-                    else this.sign = SignType.Neutral;
-                }
-            }
         }
 
         public UTC_OFFSET(IUTC_OFFSET offset)
@@ -1348,19 +1244,20 @@ namespace reexmonkey.xcal.domain.models
             this.hour = offset.HOUR;
             this.minute = offset.MINUTE;
             this.second = offset.SECOND;
-            this.sign = offset.Sign;
         }
 
         public override string ToString()
         {
-            if (this.sign == SignType.Negative) return string.Format("-{0:D2}{1:D2}{2:D2}", this.hour, this.minute, this.second);
-            else return string.Format("+{0:D2}{1:D2}{2:D2}", this.hour, this.minute, this.second);
+            if (this.hour < 0 || this.minute < 0 || this.second < 0) 
+                return string.Format("-{0:D2}{1:D2}{2:D2}", this.hour, this.minute, this.second);
+            else 
+                return string.Format("+{0:D2}{1:D2}{2:D2}", this.hour, this.minute, this.second);
         }
 
         public bool Equals(UTC_OFFSET other)
         {
             if (other == null) return false;
-            return (this.hour == other.HOUR) && (this.minute == other.MINUTE) && (this.second == other.SECOND) && (this.sign == other.Sign);
+            return (this.hour == other.HOUR) && (this.minute == other.MINUTE) && (this.second == other.SECOND);
         }
 
         public override bool Equals(object obj)
@@ -1371,80 +1268,47 @@ namespace reexmonkey.xcal.domain.models
 
         public override int GetHashCode()
         {
-            return this.sign.GetHashCode() ^ this.hour.GetHashCode() ^ this.minute.GetHashCode() ^ this.second.GetHashCode();
+            return this.hour.GetHashCode() ^ this.minute.GetHashCode() ^ this.second.GetHashCode();
         }
 
         public int CompareTo(UTC_OFFSET other)
         {
-            if (other == null) return 3;
-            if (this.sign == SignType.Negative && other.Sign == SignType.Negative)
+            if (this.hour < other.hour) return -1;
+            else if (this.hour > other.hour) return 1;
+            else
             {
-                if (this.hour < other.hour) return 1;
-                else if (this.hour > other.hour) return -1;
+                if (this.minute < other.minute) return -1;
+                else if (this.minute > other.minute) return 1;
                 else
                 {
-                    if (this.minute < other.minute) return 1;
-                    else if (this.minute > other.minute) return -1;
-                    else
-                    {
-                        if (this.second < other.second) return 1;
-                        else if (this.second > other.second) return -1;
-                        else return 0;
-                    }
+                    if (this.second < other.second) return -1;
+                    else if (this.second > other.second) return 1;
+                    else return 0;
                 }
             }
-            else if (this.sign == SignType.Negative && other.Sign == SignType.Positive) return -1;
-            else if (this.sign == SignType.Positive && other.sign == SignType.Negative) return 1;
-            else if (this.sign == SignType.Positive && other.sign == SignType.Positive)
-            {
-                if (this.hour > other.hour) return 1;
-                else if (this.hour < other.hour) return -1;
-                else
-                {
-                    if (this.minute > other.minute) return 1;
-                    else if (this.minute < other.minute) return -1;
-                    else
-                    {
-                        if (this.second > other.second) return 1;
-                        else if (this.second < other.second) return -1;
-                        else return 0;
-                    }
-                }
-            }
-
-            return -2; //undefined
-
         }
 
         #region overloaded operators
 
+        public static UTC_OFFSET operator +(UTC_OFFSET offset)
+        {
+            return new UTC_OFFSET(offset.HOUR, offset.MINUTE, offset.SECOND);
+        }
+
+        public static UTC_OFFSET operator -(UTC_OFFSET offset)
+        {
+            return new UTC_OFFSET(-offset.HOUR, -offset.MINUTE, -offset.SECOND);
+        }
+
         public static UTC_OFFSET operator +(UTC_OFFSET a, UTC_OFFSET b)
         {
-            var sign = SignType.Neutral;
-            if (a.Sign == SignType.Positive && b.Sign == SignType.Positive) sign = SignType.Positive;
-            else if (a.Sign == SignType.Neutral && b.Sign == SignType.Positive) sign = SignType.Positive;
-            else if (a.Sign == SignType.Positive && b.Sign == SignType.Neutral) sign = SignType.Positive;
-            else if (a.Sign == SignType.Negative && b.Sign == SignType.Negative) sign = SignType.Negative;
-            else if (a.Sign == SignType.Neutral && b.Sign == SignType.Negative) sign = SignType.Negative;
-            else if (a.Sign == SignType.Negative && b.Sign == SignType.Neutral) sign = SignType.Negative;
-            else if (a.Sign == SignType.Neutral && b.Sign == SignType.Neutral) sign = SignType.Neutral;
-            var offset = new UTC_OFFSET((a.HOUR + b.HOUR) % 24, (a.MINUTE + b.MINUTE) % 60u, (a.SECOND + b.SECOND) % 60u, sign);
-            return offset;
+            return new UTC_OFFSET((a.HOUR + b.HOUR) % 24, (a.MINUTE + b.MINUTE) % 60, (a.SECOND + b.SECOND)% 60);
         }
 
         public static UTC_OFFSET operator -(UTC_OFFSET a, UTC_OFFSET b)
         {
-            var sign = SignType.Neutral;
-            if (a.Sign == SignType.Positive && b.Sign == SignType.Positive) sign = SignType.Positive;
-            else if (a.Sign == SignType.Neutral && b.Sign == SignType.Positive) sign = SignType.Positive;
-            else if (a.Sign == SignType.Positive && b.Sign == SignType.Neutral) sign = SignType.Positive;
-            else if (a.Sign == SignType.Negative && b.Sign == SignType.Negative) sign = SignType.Negative;
-            else if (a.Sign == SignType.Neutral && b.Sign == SignType.Negative) sign = SignType.Negative;
-            else if (a.Sign == SignType.Negative && b.Sign == SignType.Neutral) sign = SignType.Negative;
-            else if (a.Sign == SignType.Neutral && b.Sign == SignType.Neutral) sign = SignType.Neutral;
+            return new UTC_OFFSET((a.HOUR - b.HOUR).Modulo(60), (a.MINUTE - b.MINUTE).Modulo(60), (a.SECOND - b.SECOND).Modulo(60));
 
-            var offset = new UTC_OFFSET(a.HOUR - b.HOUR, (a.MINUTE - b.MINUTE).Modulo(60u), (a.SECOND - b.SECOND).Modulo(60u), sign);
-            return offset;
         }
 
         public static bool operator <(UTC_OFFSET a, UTC_OFFSET b)

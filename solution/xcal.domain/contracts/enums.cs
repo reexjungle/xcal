@@ -19,7 +19,7 @@ namespace reexmonkey.xcal.domain.contracts
     public enum ENCODING {UNKNOWN, BIT8, BASE64 }
 
 
-    public enum TimeFormat { Unknown, Local, Utc, LocalAndTimeZone  }
+    public enum TimeType { Unknown, Local, Utc, LocalAndTimeZone  }
 
     /// <summary>
     /// Represents the type of Free Busy Time

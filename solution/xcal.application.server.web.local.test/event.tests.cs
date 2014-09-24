@@ -538,12 +538,12 @@ namespace reexmonkey.xcal.application.server.web.dev.test
         {
             var bevents = this.GenerateNEvents(3).ToArray();
             var first = bevents[0];
-            first.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0, TimeFormat.LocalAndTimeZone, new TZID("America", "New_York"));
-            first.End = new DATE_TIME(2014, 9, 1, 11, 30, 0, TimeFormat.LocalAndTimeZone, new TZID("America", "New_York"));
+            first.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0, TimeType.LocalAndTimeZone, new TZID("America", "New_York"));
+            first.End = new DATE_TIME(2014, 9, 1, 11, 30, 0, TimeType.LocalAndTimeZone, new TZID("America", "New_York"));
             first.RecurrenceRule = new RECUR 
             { 
                 FREQ = FREQ.DAILY,
-                UNTIL = new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeFormat.Utc)
+                UNTIL = new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeType.Utc)
             };
 
             var recurrences = first.GenerateRecurrences();
