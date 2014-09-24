@@ -68,17 +68,10 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             var minimal = new VEVENT 
             {
                 Uid = new GuidKeyGenerator().GetNextKey(),
-                RecurrenceId = new RECURRENCE_ID
-                {
-                    Id = new GuidKeyGenerator().GetNextKey(),
-                    Range = RANGE.THISANDFUTURE,
-                    Value = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc))
-                },
                 RecurrenceRule = new RECUR
                 {
                     Id = new GuidKeyGenerator().GetNextKey(),
-                    FREQ = FREQ.DAILY,
-                    Format = RecurFormat.DateTime,
+                    FREQ = FREQ.MONTHLY,
                     UNTIL = new DATE_TIME(new DateTime(2014, 6, 25, 18, 03, 08, 0, DateTimeKind.Utc))
                 },
 
@@ -193,34 +186,20 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 var ev = new VEVENT
                 {
                     Uid = new GuidKeyGenerator().GetNextKey(),
-                    RecurrenceId = new RECURRENCE_ID
-                    {
-                        Id = new GuidKeyGenerator().GetNextKey(),
-                        Range = RANGE.THISANDFUTURE,
-                        Value = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc))
-                    },
-                    RecurrenceRule = new RECUR
-                    {
-                        Id = new GuidKeyGenerator().GetNextKey(),
-                        FREQ = FREQ.DAILY,
-                        Format = RecurFormat.DateTime,
-                        UNTIL = new DATE_TIME(new DateTime(2014, 6, 25, 18, 03, 08, 0, DateTimeKind.Utc))
-                    },
                     Organizer = new ORGANIZER
                     {
                         Id = new GuidKeyGenerator().GetNextKey(),
-                        CN = string.Format("Risk Monkey {0}", i+1),
-                        Address = new URI(string.Format("riskmonkey{0}@jungle.com", i+1)),
+                        CN = string.Format("Reex Monkey {0}", i+1),
+                        Address = new URI(string.Format("reexmonkey{0}@jungle.com", i+1)),
                         Language = new LANGUAGE("en")
                     },
                     Location = new LOCATION
                     {
-                        Text = string.Format("Risk Jungle {0}", i+1),
+                        Text = string.Format("Reex Jungle {0}", i+1),
                         Language = new LANGUAGE("de", "DE")
                     },
-
-                    Summary = new SUMMARY(string.Format("Test Meeting {0}", i+1)),
-                    Description = new DESCRIPTION("Another test meeting for risk monkeys"),
+                    Summary = new SUMMARY(string.Format("Reex Meeting {0}", i+1)),
+                    Description = new DESCRIPTION("Another extreme meeting for reex monkeys"),
                     Start = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc)),
                     End = new DATE_TIME(new DateTime(2014, 6, 15, 18, 03, 08, 0, DateTimeKind.Utc)),
                     Status = STATUS.CONFIRMED,
@@ -243,8 +222,8 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 var att = new ATTENDEE
                 {
                     Id = uidkeygen.GetNextKey(),
-                    Address = new URI(string.Format("riskmonkey{0}@twitter.com", i+1)),
-                    CN = string.Format("Risk Monkey {0}", i+1),
+                    Address = new URI(string.Format("reex_attendee{0}@tree.com", i+1)),
+                    CN = string.Format("Reex Attendee {0}", i+1),
                     Participation = PARTSTAT.ACCEPTED,
                     Role = ROLE.REQ_PARTICIPANT,
                     CalendarUserType = CUTYPE.INDIVIDUAL,
@@ -304,13 +283,13 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
             twin2A.Start = new DATE_TIME(new DateTime(2014, 6, 16, 10, 30, 0, 0, DateTimeKind.Utc));
             twin2A.Duration = new DURATION(1, 5, 2, 30);
-            twin2A.RecurrenceRule.FREQ = FREQ.WEEKLY;
-            twin2A.Organizer.CN = "Risk Monkey 2 Updated";
+            twin2A.Priority = new PRIORITY(PRIORITYLEVEL.MEDIUM);
+            twin2A.Organizer.CN = "Reex Monkey 2 Updated";
 
             twin3A.Start = new DATE_TIME(new DateTime(2014, 6, 16, 10, 30, 0, 0, DateTimeKind.Local));
             twin3A.Duration = new DURATION(10, 11, 00, 00);
-            twin3A.RecurrenceRule.FREQ = FREQ.MONTHLY;
-            twin3A.Organizer.CN = "Risk Monkey 3 Updated";
+            twin3A.Priority = new PRIORITY(PRIORITYLEVEL.LOW);
+            twin3A.Organizer.CN = "Reex Monkey 3 Updated";
 
             this.client.Put(new UpdateEvents { Events = new List<VEVENT> { twin2A, twin3A } });
             var updated = this.client.Post(new FindEvents { EventIds = new List<string> { twin2A.Id, twin3A.Id} });
@@ -320,8 +299,8 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             Assert.AreEqual(utwin2a.End, twin2A.End);
             Assert.AreEqual(utwin3a.Duration, twin3A.Duration);
 
-            Assert.AreEqual(utwin2a.RecurrenceRule.FREQ, FREQ.WEEKLY);
-            Assert.AreEqual(utwin3a.Organizer.CN, "Risk Monkey 3 Updated");
+            Assert.AreEqual(utwin2a.Priority.Level, PRIORITYLEVEL.MEDIUM);
+            Assert.AreEqual(utwin3a.Organizer.CN, "Reex Monkey 3 Updated");
             Assert.AreEqual(utwin2a, twin2A);
             Assert.AreEqual(utwin3a, twin3A);
 
@@ -397,7 +376,6 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 {
                     Id = uidkeygen.GetNextKey(),
                     FREQ = FREQ.DAILY,
-                    Format = RecurFormat.DateTime,
                     UNTIL = new DATE_TIME(new DateTime(2014, 6, 25, 18, 03, 08, 0, DateTimeKind.Utc))
                 },
 
@@ -478,7 +456,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                     new ATTENDEE 
                     { 
                         Id = uidkeygen.GetNextKey(),
-                        Address = new URI("example1@ygmail.com"),
+                        Address = new URI("example1@gmail.com"),
                         CN = "Emmanuel Ngwane",
                         Participation = PARTSTAT.ACCEPTED,
                         Role = ROLE.CHAIR,
@@ -530,32 +508,53 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
             ////remove email alarm and update
             ev.AudioAlarms.First().AttachmentUri.FormatType = new FMTTYPE("file", "video");
+            var ealarm = ev.EmailAlarms.First();
             ev.EmailAlarms.Clear();
 
             this.client.Put(new UpdateEvent { Event = ev });
             retrieved = this.client.Get(new FindEvent { EventId = ev.Id });
             Assert.AreEqual(retrieved.EmailAlarms.Count, 0);
-            //Assert.AreEqual(retrieved.Version, "3.0");
-            //Assert.AreEqual(retrieved.Method, METHOD.REQUEST);
-            //Assert.AreEqual(retrieved.Events.Count, 1);
-            //Assert.AreEqual(retrieved.Events[0], events[4]);
-            //Assert.AreEqual(retrieved, calendar);
 
-            ////reinsert some events and update
-            //calendar.Events.AddRange(new VEVENT[] { events[0], events[1] });
-            //this.client.Put(new UpdateCalendar { Calendar = calendar });
-            //retrieved = this.client.Get(new FindCalendar { CalendarId = calendar.Id });
-            //Assert.AreEqual(retrieved.Events.Count, 3);
+            //reinsert some alarms and update
+            ev.EmailAlarms.AddRange(new EMAIL_ALARM[] { ealarm });
+            this.client.Put(new UpdateEvent { Event = ev });
+            retrieved = this.client.Get(new FindEvent { EventId = ev.Id });
+            Assert.AreEqual(retrieved.EmailAlarms.Count, 1);
 
-            //this.client.Patch(new PatchCalendar { Scale = CALSCALE.JULIAN, CalendarId = calendar.Id });
-            //var patched = this.client.Get(new FindCalendar { CalendarId = calendar.Id });
-            //Assert.AreEqual(patched.Calscale, CALSCALE.JULIAN);
+            ev.EmailAlarms.First().Description.Text = "This is a patched alarm";
+            this.client.Patch(new PatchEvent { EmailAlarms = ev.EmailAlarms, EventId = ev.Id });
+            var patched = this.client.Get(new FindEvent { EventId = ev.Id });
+            Assert.AreEqual(patched.EmailAlarms.First().Description.Text, "This is a patched alarm");
 
-            //this.client.Delete(new DeleteCalendar { CalendarId = calendar.Id });
-            //var deleted = this.client.Get(new FindCalendar { CalendarId = calendar.Id });
-            //Assert.AreEqual(deleted, null);
+            this.client.Delete(new DeleteEvent { EventId = ev.Id });
+            var deleted = this.client.Get(new FindEvent { EventId = ev.Id });
+            Assert.AreEqual(deleted, null);
 
         }
+
+
+        [TestMethod]
+        public void TestRecurrenceRules()
+        {
+            var bevents = this.GenerateNEvents(3).ToArray();
+            var first = bevents[0];
+            first.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0, TimeFormat.LocalAndTimeZone, new TZID("America", "New_York"));
+            first.End = new DATE_TIME(2014, 9, 1, 11, 30, 0, TimeFormat.LocalAndTimeZone, new TZID("America", "New_York"));
+            first.RecurrenceRule = new RECUR 
+            { 
+                FREQ = FREQ.DAILY,
+                UNTIL = new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeFormat.Utc)
+            };
+
+            var recurrences = first.GenerateRecurrences();
+            Assert.AreEqual(recurrences.First().Start.TimeZoneId, first.Start.TimeZoneId);
+            Assert.AreEqual(recurrences.Count, 29);
+            //Assert.AreEqual(recurrences.Last().Start.TimeZoneId, first.Start.TimeZoneId);
+
+            
+
+        }
+
 
     }
 }

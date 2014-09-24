@@ -234,7 +234,6 @@ namespace reexmonkey.xcal.domain.contracts
         /// </remarks>
         List<int> BYSETPOS { get; set; }
 
-        RecurFormat Format { get; set; }
     
     }
 

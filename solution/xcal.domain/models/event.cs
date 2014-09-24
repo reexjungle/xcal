@@ -6,6 +6,7 @@ using System.Text;
 using ServiceStack.DataAnnotations;
 using reexmonkey.foundation.essentials.contracts;
 using reexmonkey.foundation.essentials.concretes;
+using reexmonkey.infrastructure.io.concretes;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.extensions;
 
@@ -21,7 +22,6 @@ namespace reexmonkey.xcal.domain.models
         private DATE_TIME start;
         private DATE_TIME end;
         private DURATION duration;
-        private RECURRENCE_ID rid;
 
         /// <summary>
         /// Gets or sets the unique identifier of the event.. 
@@ -52,9 +52,7 @@ namespace reexmonkey.xcal.domain.models
             set
             {
                 this.start = value;
-                if (this.end == default(DATE_TIME))
-                    this.end = this.start;
-                if(this.RecurrenceId != null) this.RecurrenceId.Value = this.start;
+                if(this.end == default(DATE_TIME))this.end = this.start + new DURATION(0,0,1,0,0, SignType.Positive); //same value as start time
             }
         }
 
@@ -100,15 +98,7 @@ namespace reexmonkey.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public RECURRENCE_ID RecurrenceId 
-        {
-            get { return this.rid; }
-            set
-            {
-                this.rid = value;
-                if(value != null) this.rid.Value = start;
-            }
-        }
+        public RECURRENCE_ID RecurrenceId { get; set; }
 
         [DataMember]
         [Ignore]
@@ -199,7 +189,6 @@ namespace reexmonkey.xcal.domain.models
         [Ignore]
         public Dictionary<string, X_PROPERTY> XProperties { get; set; }
 
-
         public VEVENT()
         {
             this.RecurrenceId = null;
@@ -243,6 +232,7 @@ namespace reexmonkey.xcal.domain.models
             this.Attendees = attendees;
             this.Categories = categories;
             this.RelatedTos = relatedtos;
+
         }
 
 
@@ -264,12 +254,12 @@ namespace reexmonkey.xcal.domain.models
             this.Attendees = attendees;
             this.Categories = categories;
             this.RelatedTos = relatedtos;
+
         }
 
         public VEVENT(IEVENT value)
         {
             if (value == null) throw new ArgumentNullException("value");
-            this.Datestamp = value.Datestamp;
             this.Uid = value.Uid;
             this.RecurrenceId = value.RecurrenceId;
             this.Start = value.Start;
@@ -479,47 +469,43 @@ namespace reexmonkey.xcal.domain.models
             return sb.ToString();
         }
 
-        private List<DATE_TIME> GenerateRecurrences(DATE_TIME start, RECUR rrule, List<RDATE> rdates, List<EXDATE> exdates)
+        public List<IEVENT> GenerateRecurrences()
         {
-            var dates = new List<DATE_TIME>();
-            var date_limit = start.ToDateTime().AddYears(10); //temporary date bound of recurrences
-            switch(rrule.FREQ)
+            var recurs = new List<IEVENT>();
+            var dates = this.Start.GenerateRecurrences(this.End, this.RecurrenceRule);
+            if(!this.RecurrenceDates.NullOrEmpty())
             {
-                case FREQ.SECONDLY:
-                    Func<DATE_TIME, uint, DATE_TIME> next_second = (x, y) => x.ToDateTime().AddSeconds(y).ToDATE_TIME();
-
-                    if (rrule.Format == RecurFormat.DateTime)
-                    {
-                        var current = start;
-                        while (current < start) dates.Add(current = next_second(current, rrule.INTERVAL));
-                    }
-                    else if (rrule.Format == RecurFormat.Range)
-                    {
-
-                    }
-                    else //None 
-                    { 
-
-                    
-                    }
-                    break;
-                default: break;
+                var rdates = this.RecurrenceDates.Where(x => !x.DateTimes.NullOrEmpty()).SelectMany(x => x.DateTimes);
+                var rperiods = this.RecurrenceDates.Where(x => !x.Periods.NullOrEmpty()).SelectMany(x => x.Periods);
+                if(!rdates.NullOrEmpty()) dates.AddRange(rdates.Select(x => new Tuple<DATE_TIME, DATE_TIME>(x, x)));
+                if(!rperiods.NullOrEmpty()) dates.AddRange(rperiods.Select(x => new Tuple<DATE_TIME, DATE_TIME>(x.Start, x.End)));
             }
 
+            if(!this.ExceptionDates.NullOrEmpty())
+            {
+                var exdates = this.ExceptionDates.Where(x => x.DateTimes.NullOrEmpty()).SelectMany(x => x.DateTimes);
+                if (!exdates.NullOrEmpty()) dates.RemoveAll(x => exdates.Contains(x.Item1));
+            }
 
+            var count = 0;
+            foreach(var recurrence in dates)
+            {
+                var instance = new VEVENT();
+                instance.Id = string.Format("{0}-{1}", this.Id, ++count);
+                instance.Start = recurrence.Item1;
+                instance.End = recurrence.Item2;
+                instance.RecurrenceRule = null;
+                instance.RecurrenceId = new RECURRENCE_ID 
+                { 
+                    Id = instance.Id,
+                    Range = RANGE.THISANDFUTURE,
+                    TimeZoneId = recurrence.Item1.TimeZoneId,
+                    Value = instance.Start
+                };
+                recurs.Add(instance);
+            }
 
-
-
-
-            //add specific recur dates
-            var rdatetimes = rdates.SelectMany(x => x.DateTimes).ToList();
-            if(!rdatetimes.NullOrEmpty()) dates.AddRange(rdatetimes);
-
-            //filter by exception dates;
-            var exdatetimes = exdates.SelectMany(x => x.DateTimes).ToList();
-            if(!exdatetimes.NullOrEmpty()) dates.Except(exdatetimes);
-
-            return dates;
+            return recurs;
         }
     }
 

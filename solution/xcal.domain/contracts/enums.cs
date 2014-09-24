@@ -115,7 +115,7 @@ namespace reexmonkey.xcal.domain.contracts
 
     public enum PeriodFormat { Explicit, Start }
 
-    public enum RecurFormat { None, DateTime, Range }
+    public enum RecurType { None, DateTime, Range }
 
     public enum TriggerFormat { Related, Absolute }
 

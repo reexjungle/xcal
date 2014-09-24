@@ -79,6 +79,8 @@ namespace reexmonkey.xcal.domain.contracts
         Dictionary<string, IANA_PROPERTY> IANAProperties { get; set; }
 
         Dictionary<string, X_PROPERTY> XProperties { get; set; }
+
+        List<IEVENT> GenerateRecurrences();
     }
 
 

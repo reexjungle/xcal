@@ -40,4 +40,35 @@ namespace reexmonkey.infrastructure.operations.concretes
     public class EqualByLongId<TPrimary> : EqualByTId<TPrimary, long>
         where TPrimary : IContainsKey<long>
     { }
+
+    public class ITupleEqualityComparer<T1, T2> : IEqualityComparer<Tuple<T1, T2>>
+    {
+        private T1 arg1 = default(T1);
+        private T2 arg2 = default(T2);
+
+        public ITupleEqualityComparer(T1 arg1)
+        {
+            this.arg1 = arg1;
+        }
+
+        public ITupleEqualityComparer(T2 arg2)
+        {
+            this.arg2 = arg2;
+        }
+
+        public bool Equals(Tuple<T1, T2> x, Tuple<T1, T2> y)
+        {
+            if (this.arg1.Equals(default(T1)) && arg2.Equals(default(T2))) return false;
+            else if (!this.arg1.Equals(default(T1)) && arg2.Equals(default(T2))) return x.Item1.Equals(arg1);
+            else if (this.arg1.Equals(default(T1)) && !arg2.Equals(default(T2))) return x.Item2.Equals(arg2);
+            else return x.Item1.Equals(arg1) && x.Item2.Equals(arg2);
+        }
+
+        public int GetHashCode(Tuple<T1, T2> obj)
+        {
+            if (obj == null || GetType() != obj.GetType()) return 0;
+            return obj.GetHashCode();
+        }
+    }
+
 }

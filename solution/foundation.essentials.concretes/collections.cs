@@ -105,5 +105,4 @@ namespace reexmonkey.foundation.essentials.concretes
 
 
     }
-
 }
