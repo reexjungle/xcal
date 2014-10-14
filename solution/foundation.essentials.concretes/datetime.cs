@@ -207,14 +207,12 @@ namespace reexmonkey.foundation.essentials.concretes
 
         public static bool IsNthWeekDayofMonth(this DateTime date, DayOfWeek weekday, int N)
         {
-            if (N > 0) return date.WeekOfMonth() == (N + 1)  && date.DayOfWeek == weekday;
+            if (N > 0) return date.WeekOfMonth() == (N + 1) && date.DayOfWeek == weekday;
             else
             {
-                var firstday = new DateTime(date.Year, date.Month, 1);
-                var lastday = firstday.AddMonths(1).AddDays(-1);
+                var lastday = new DateTime(date.Year, date.Month, 1).AddMonths(1).AddDays(-1);
                 var lastwk = lastday.WeekOfMonth();
-                var n = lastwk + N;
-                return date.WeekOfMonth() == n && date.DayOfWeek == weekday;
+                return date.WeekOfMonth() == (lastwk + N) && date.DayOfWeek == weekday;
             }
         }
 
