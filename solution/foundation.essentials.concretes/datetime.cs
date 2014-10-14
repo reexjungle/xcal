@@ -61,6 +61,11 @@ namespace reexmonkey.foundation.essentials.concretes
             return (years - 1) * 365u + years.CountLeaps();
         }
 
+        public static int CountMonths(this DateTime start, DateTime end)
+        {
+            return ((start.Year - end.Year) * 12) + start.Month - end.Month;
+        }
+
         public static uint CountYears(this uint days)
         {
             return 1 + (days - (days / 365u).CountLeaps()) / 365u; 
@@ -196,69 +201,23 @@ namespace reexmonkey.foundation.essentials.concretes
             DayOfWeek first = DayOfWeek.Monday)
         {
 
-            var current = new DateTime(value.Year, value.Month, 1);
-            return value.WeekOfYear() - current.WeekOfYear() + 1;
+            var firstday = new DateTime(value.Year, value.Month, 1);
+            return value.WeekOfYear() - firstday.WeekOfYear() + 1;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="date"></param>
-        /// <param name="weekday"></param>
-        /// <param name="month"></param>
-        /// <param name="year"></param>
-        /// <param name="N"></param>
-        /// <returns></returns>
-        /// <see cref="http://www.codeproject.com/Tips/437883/Get-the-Nth-Instance-of-a-Weekday-in-the-Specified"/>
-        public static DateTime NthWeekDayOfMonth(this DateTime date, DayOfWeek weekday, int month, int year, int N)
+        public static bool IsNthWeekDayofMonth(this DateTime date, DayOfWeek weekday, int N)
         {
-            N =  (N >= 0) 
-                ? Math.Min(Math.Max(N, 1), 5)
-                : Math.Min (6 - Math.Abs(N), 5);
-
-            month = Math.Min(Math.Max(month, 1), 12);
-
-            var instance = new DateTime(year, month, 1); //first day of given month
-            var last = new DateTime(year += (month + 1 > 12) ? 1 : 0, 
-                                    month += (month + 1 > 12) ? 11 : 1,
-                                    1).AddDays(-1); // last day of month succeeding given month
-
-            var max = (last - instance).Days + 1;
-
-            var interval = 0;
-            if(instance.DayOfWeek != weekday)
+            if (N > 0) return date.WeekOfMonth() == (N + 1)  && date.DayOfWeek == weekday;
+            else
             {
-
-                // determine the number of days between the first of the month and 
-                // the first instance of the specified day of week
-                interval = instance.DayOfWeek - weekday;
-                interval = (interval < 0) ? Math.Abs(interval) : 7 - interval;
-                instance = instance.AddDays(interval);
+                var firstday = new DateTime(date.Year, date.Month, 1);
+                var lastday = firstday.AddMonths(1).AddDays(-1);
+                var lastwk = lastday.WeekOfMonth();
+                var n = lastwk + N;
+                return date.WeekOfMonth() == n && date.DayOfWeek == weekday;
             }
-
-            if(N > 1)
-            {
-                int offset = 7 * (N - 1);
-                while(offset + interval > max - 1) offset -= 7;
-                instance = instance.AddDays(offset);
-            }
-
-            return instance;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="date"></param>
-        /// <param name="weekday"></param>
-        /// <param name="N"></param>
-        /// <returns></returns>
-        /// <see cref="http://stackoverflow.com/questions/3284452/get-nth-weekday-of-month-in-c-sharp"/>
-        public static DateTime NthWeekDayOfMonth(this DateTime date, DayOfWeek weekday, int N)
-        {
-            Func<DateTime, DayOfWeek, DateTime> next = (x, y) => x.AddDays((y < x.DayOfWeek)? 7 : 0 + weekday - x.DayOfWeek);
-            return next(date, weekday).AddDays((N - 1) * 7);
-        }
 
         /// <summary>
         /// 

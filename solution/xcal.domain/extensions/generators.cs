@@ -70,7 +70,7 @@ namespace reexmonkey.xcal.domain.extensions
                         filtered = generated
                             .FilterByMonth(r)
                             .FilterByMonthDay(r)
-                            .FilterByDay(r)
+                            .FilterByDayMonthly(r)
                             .FilterByHour(r)
                             .FilterByMinute(r)
                             .FilterBySecond(r)
@@ -122,39 +122,49 @@ namespace reexmonkey.xcal.domain.extensions
                 };
 
             var slimit = start.ToDateTime().AddMonths((int)window).ToDATE_TIME(start.TimeZoneId);
-            var results = generate_and_filter(start, end, slimit, rrule);
-            if (results.NullOrEmpty()) return new List<Tuple<DATE_TIME, DATE_TIME>>();
+            var results = new List<Tuple<DATE_TIME, DATE_TIME>>();
 
-            var lstart = results.Last().Item1;
-            var lend = results.Last().Item2;
+            var lstart = start;
+            var lend = end;
 
             if (rrule.UNTIL != default(DATE_TIME))
             {
                 while (lstart <= rrule.UNTIL)
                 {
-                    results = results.Union(generate_and_filter(lstart, lend, slimit, rrule));
-                    lstart = results.Last().Item1;
-                    lend = results.Last().Item2;
+                    results.AddRange(generate_and_filter(lstart, lend, slimit, rrule));
+                    if (!results.NullOrEmpty())
+                    {
+                        lstart = results.Last().Item1;
+                        lend = results.Last().Item2;
+                    }
+                    else lstart = new DATE_TIME(
+                        rrule.UNTIL.FULLYEAR, 
+                        rrule.UNTIL.MONTH, 
+                        rrule.UNTIL.MDAY + 1, 
+                        rrule.UNTIL.HOUR, 
+                        rrule.UNTIL.MINUTE,  
+                        rrule.UNTIL.SECOND );
+                    
                     slimit = slimit.ToDateTime().AddMonths((int)window).ToDATE_TIME();
                 }
 
-                results = results.TakeWhile(x => x.Item1 <= rrule.UNTIL);
+                results = results.OrderBy(r => r.Item1).TakeWhile(x => x.Item1 <= rrule.UNTIL).ToList();
 
             }
             else if (rrule.COUNT != 0)
             {
                 while (results.Count() < rrule.COUNT)
                 {
-                    results = results.Union(generate_and_filter(lstart, lend, slimit, rrule));
+                    results.AddRange(generate_and_filter(lstart, lend, slimit, rrule));
                     lstart = results.Last().Item1;
                     lend = results.Last().Item2;
                     slimit = slimit.ToDateTime().AddMonths((int)window).ToDATE_TIME();
                 }
 
-                results = results.Take((int)rrule.COUNT);
+                results = results.OrderBy(r => r.Item1).Take((int)rrule.COUNT).ToList();
             }
 
-            return results.ToList();
+            return results;
 
         }
 

@@ -603,6 +603,7 @@ namespace reexmonkey.xcal.domain.models
         }
 
         #endregion
+
     }
 
     [DataContract]
@@ -1677,7 +1678,6 @@ namespace reexmonkey.xcal.domain.models
             this.count = 0u;
             this.interval = 1u;
             this.wkst = WEEKDAY.SU;
-
             var tokens = value.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
             if (tokens == null || tokens.Length == 0) throw new FormatException("Invalid Recur format");
 
