@@ -174,7 +174,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 db.Save<VCALENDAR>(entity);
                 if (!entity.Events.NullOrEmpty())
                 {
-                    this.EventRepository.SaveAll(entity.Events.Distinct());
+                    this.EventRepository.SaveAll(entity.Events.Distinct());                   
                     var revents = entity.Events.Select(x => new REL_CALENDARS_EVENTS
                     {
                         Id = this.KeyGenerator.GetNextKey(),
