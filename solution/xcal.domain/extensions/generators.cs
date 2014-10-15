@@ -163,6 +163,24 @@ namespace reexmonkey.xcal.domain.extensions
 
                 results = results.OrderBy(r => r.Item1).Take((int)rrule.COUNT).ToList();
             }
+            else
+            {
+                results.AddRange(generate_and_filter(lstart, lend, slimit, rrule));
+                if (!results.NullOrEmpty())
+                {
+                    lstart = results.Last().Item1;
+                    lend = results.Last().Item2;
+                }
+                else lstart = new DATE_TIME(
+                    rrule.UNTIL.FULLYEAR,
+                    rrule.UNTIL.MONTH,
+                    rrule.UNTIL.MDAY + 1,
+                    rrule.UNTIL.HOUR,
+                    rrule.UNTIL.MINUTE,
+                    rrule.UNTIL.SECOND);
+
+                results = results.OrderBy(r => r.Item1).ToList();
+            }
 
             return results;
 
