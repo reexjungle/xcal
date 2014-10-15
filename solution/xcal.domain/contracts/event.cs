@@ -80,6 +80,7 @@ namespace reexmonkey.xcal.domain.contracts
 
         Dictionary<string, X_PROPERTY> XProperties { get; set; }
 
+        List<IEVENT> GenerateRecurrences();
     }
 
 

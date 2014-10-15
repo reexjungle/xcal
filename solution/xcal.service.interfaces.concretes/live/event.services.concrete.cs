@@ -344,7 +344,6 @@ namespace reexmonkey.xcal.service.interfaces.concretes.live
                     events = this.repository.EventRepository.Get((request.Page.Value - 1) * request.Size.Value, request.Size.Value);
                 else
                     events = this.repository.EventRepository.Get();
-
                 return !events.NullOrEmpty() ? events.ToList() : new List<VEVENT>();
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }

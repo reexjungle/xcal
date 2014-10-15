@@ -165,8 +165,6 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 
             #endregion
 
-
-
             #region save event and its attributes
             try
             {
@@ -183,6 +181,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     var ororgs = db.Select<REL_EVENTS_ORGANIZERS>(q => q.EventId == entity.Id);
                     db.SynchronizeAll(rorg.ToSingleton(), ororgs);
                 }
+                else
+                {
+                    var ororgs = db.Select<REL_EVENTS_ORGANIZERS>(q => q.EventId == entity.Id);
+                    if (!ororgs.NullOrEmpty()) db.DeleteById<ORGANIZER>(ororgs.Select(x => x.OrganizerId));
+
+                }
+
                 if (rid != null)
                 {
                     db.Save(rid);
@@ -194,6 +199,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     };
                     var orrids = db.Select<REL_EVENTS_RECURRENCE_IDS>(q => q.EventId == entity.Id);
                     db.SynchronizeAll(rrid.ToSingleton(), orrids);
+                }
+                else
+                {
+                    var orrids = db.Select<REL_EVENTS_RECURRENCE_IDS>(q => q.EventId == entity.Id);
+                    if (!orrids.NullOrEmpty()) db.DeleteById<RECURRENCE_ID>(orrids.Select(x => x.RecurrenceId_Id));
                 }
 
                 if (rrule != null)
@@ -207,7 +217,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     };
                     var orrrules = db.Select<REL_EVENTS_RECURS>(q => q.EventId == entity.Id);
                     db.SynchronizeAll(rrrule.ToSingleton(), orrrules);
-
+                }
+                else
+                {
+                    var orrrules = db.Select<REL_EVENTS_RECURS>(q => q.EventId == entity.Id);
+                    if (!orrrules.NullOrEmpty()) db.DeleteById<RECUR>(orrrules.Select(x => x.RecurrenceRuleId));
                 }
 
                 if (!attendees.NullOrEmpty())
@@ -222,6 +236,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     var orattendees = db.Select<REL_EVENTS_ATTENDEES>(q => q.EventId == entity.Id);
                     db.SynchronizeAll(rattendees, orattendees);
                 }
+                else if(attendees.SafeEmpty())
+                {
+                    var orattendees = db.Select<REL_EVENTS_ATTENDEES>(q => q.EventId == entity.Id);
+                    if(!orattendees.NullOrEmpty()) db.DeleteByIds<ATTENDEE>(orattendees.Select(x => x.AttendeeId));
+                }
 
                 if (!attachbins.NullOrEmpty())
                 {
@@ -235,6 +254,12 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     var orattachbins = db.Select<REL_EVENTS_ATTACHBINS>(q => q.EventId == entity.Id);
                     db.SynchronizeAll(rattachbins, orattachbins);
                 }
+                else if (attachbins.SafeEmpty())
+                {
+                    var orattachbins = db.Select<REL_EVENTS_ATTACHBINS>(q => q.EventId == entity.Id);
+                    if (!orattachbins.NullOrEmpty()) db.DeleteByIds<ATTACH_BINARY>(orattachbins.Select(x => x.AttachmentId));
+                } 
+
                 if (!attachuris.NullOrEmpty())
                 {
                     db.SaveAll(attachuris.Distinct());
@@ -247,6 +272,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     var orattachuris = db.Select<REL_EVENTS_ATTACHURIS>(q => q.EventId == entity.Id);
                     db.SynchronizeAll(rattachuris, orattachuris);
                 }
+                else if (attachuris.SafeEmpty())
+                {
+                    var orattachuris = db.Select<REL_EVENTS_ATTACHURIS>(q => q.EventId == entity.Id);
+                    if (!orattachuris.NullOrEmpty()) db.DeleteByIds<ATTACH_URI>(orattachuris.Select(x => x.AttachmentId));
+                }                
 
                 if (!contacts.NullOrEmpty())
                 {
@@ -259,6 +289,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     });
                     var orcontacts = db.Select<REL_EVENTS_CONTACTS>(q => q.EventId == entity.Id);
                     db.SynchronizeAll(rcontacts, orcontacts);
+                }
+                else if(contacts.SafeEmpty())
+                {
+                    var orcontacts = db.Select<REL_EVENTS_CONTACTS>(q => q.EventId == entity.Id);
+                    if (!orcontacts.NullOrEmpty()) db.DeleteByIds<CONTACT>(orcontacts.Select(x => x.ContactId));
                 }
 
                 if (!comments.NullOrEmpty())
@@ -273,6 +308,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     var orcomments = db.Select<REL_EVENTS_COMMENTS>(q => q.EventId == entity.Id);
                     db.SynchronizeAll(rcomments, orcomments);
                 }
+                else if (comments.SafeEmpty())
+                {
+                    var orcomments = db.Select<REL_EVENTS_COMMENTS>(q => q.EventId == entity.Id);
+                    if (!orcomments.NullOrEmpty()) db.DeleteByIds<COMMENT>(orcomments.Select(x => x.CommentId));
+                }
 
                 if (!rdates.NullOrEmpty())
                 {
@@ -285,7 +325,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     });
                     var orrdates = db.Select<REL_EVENTS_RDATES>(q => q.EventId == entity.Id);
                     db.SynchronizeAll(rrdates, orrdates);
-
+                }
+                else if (rdates.SafeEmpty())
+                {
+                    var orrdates = db.Select<REL_EVENTS_RDATES>(q => q.EventId == entity.Id);
+                    if (!orrdates.NullOrEmpty()) db.DeleteByIds<RDATE>(orrdates.Select(x => x.RecurrenceDateId));
                 }
 
                 if (!exdates.NullOrEmpty())
@@ -300,6 +344,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     var orexdates = db.Select<REL_EVENTS_EXDATES>(q => q.EventId == entity.Id);
                     db.SynchronizeAll(rexdates, orexdates);
                 }
+                else if (exdates.SafeEmpty())
+                {
+                    var orexdates = db.Select<REL_EVENTS_EXDATES>(q => q.EventId == entity.Id);
+                    if (!orexdates.NullOrEmpty()) db.DeleteByIds<EXDATE>(orexdates.Select(x => x.ExceptionDateId));
+                }
 
                 if (!relateds.NullOrEmpty())
                 {
@@ -312,6 +361,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     });
                     var orrelateds = db.Select<REL_EVENTS_RELATEDTOS>(q => q.EventId == entity.Id);
                     db.SynchronizeAll(rrelateds, orrelateds);
+                }
+                else if (relateds.SafeEmpty())
+                {
+                    var orrelateds = db.Select<REL_EVENTS_RELATEDTOS>(q => q.EventId == entity.Id);
+                    if (!orrelateds.NullOrEmpty()) db.DeleteByIds<RELATEDTO>(orrelateds.Select(x => x.RelatedToId));
                 }
 
                 if (!resources.NullOrEmpty())
@@ -326,6 +380,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     var orresources = db.Select<REL_EVENTS_RESOURCES>(q => q.EventId == entity.Id);
                     db.SynchronizeAll(rresources, orresources);
                 }
+                else if (resources.SafeEmpty())
+                {
+                    var orresources = db.Select<REL_EVENTS_RESOURCES>(q => q.EventId == entity.Id);
+                    if (!orresources.NullOrEmpty()) db.DeleteByIds<RESOURCES>(orresources.Select(x => x.ResourcesId));
+                }
 
                 if (!reqstats.NullOrEmpty())
                 {
@@ -338,7 +397,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     });
                     var orreqstats = db.Select<REL_EVENTS_REQSTATS>(q => q.EventId == entity.Id);
                     db.SynchronizeAll(rreqstats, orreqstats);
-
+                }
+                else if (reqstats.SafeEmpty())
+                {
+                    var oreqstats = db.Select<REL_EVENTS_REQSTATS>(q => q.EventId == entity.Id);
+                    if (!oreqstats.NullOrEmpty()) db.DeleteByIds<REQUEST_STATUS>(oreqstats.Select(x => x.ReqStatsId));
                 }
 
                 if (!aalarms.NullOrEmpty())
@@ -353,6 +416,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     var oraalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.EventId == entity.Id);
                     db.SynchronizeAll(raalarms, oraalarms);
                 }
+                else if (aalarms.SafeEmpty())
+                {
+                    var oraalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.EventId == entity.Id);
+                    if (!oraalarms.NullOrEmpty()) db.DeleteByIds<AUDIO_ALARM>(oraalarms.Select(x => x.AlarmId));
+                }
 
                 if (!dalarms.NullOrEmpty())
                 {
@@ -365,7 +433,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     });
                     var ordalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.EventId == entity.Id);
                     db.SynchronizeAll(rdalarms, ordalarms);
-
+                }
+                else if (dalarms.SafeEmpty())
+                {
+                    var ordalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.EventId == entity.Id);
+                    if (!ordalarms.NullOrEmpty()) db.DeleteByIds<DISPLAY_ALARM>(ordalarms.Select(x => x.AlarmId));
                 }
 
                 if (!ealarms.NullOrEmpty())
@@ -379,6 +451,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     });
                     var orealarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.EventId == entity.Id);
                     db.SynchronizeAll(realarms, orealarms);
+                }
+                else if (ealarms.SafeEmpty())
+                {
+                    var orealarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.EventId == entity.Id);
+                    if (!orealarms.NullOrEmpty()) db.DeleteByIds<EMAIL_ALARM>(orealarms.Select(x => x.AlarmId));
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -1140,23 +1217,22 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     e => e.Id == dry.Id);
                 if (!resources.NullOrEmpty()) full.Resources.AddRangeComplement(resources);
 
-                var raalarms = this.db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.Id == dry.Id);
+                var raalarms = this.db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.EventId == dry.Id);
                 if (!raalarms.NullOrEmpty())
                 {
                     full.AudioAlarms.AddRangeComplement(this.AudioAlarmRepository.FindAll(raalarms.Select(x => x.AlarmId).ToList()));
                 }
 
-                var rdalarms = this.db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.Id == dry.Id);
+                var rdalarms = this.db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.EventId == dry.Id);
                 if (!rdalarms.NullOrEmpty())
                 {
                     full.DisplayAlarms.AddRangeComplement(this.DisplayAlarmRepository.FindAll(rdalarms.Select(x => x.AlarmId).ToList()));
                 }
 
-                var realarms = this.db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.Id == dry.Id);
+                var realarms = this.db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.EventId == dry.Id);
                 if (!realarms.NullOrEmpty())
                 {
-                    full.EmailAlarms.AddRangeComplement(this.EmailAlarmRepository
-                        .HydrateAll(this.EmailAlarmRepository.FindAll(realarms.Select(x => x.AlarmId).ToList())));
+                    full.EmailAlarms.AddRangeComplement(this.EmailAlarmRepository.FindAll(realarms.Select(x => x.AlarmId).ToList()));
                 }
 
             }
@@ -1202,22 +1278,22 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 
                     #region 2. retrieve secondary entitiesB
 
-                    var orgs = (!rorgs.Empty()) ? db.Select<ORGANIZER>(q => Sql.In(q.Id, rorgs.Select(r => r.OrganizerId).ToList())) : null;
-                    var rids = (!rrids.Empty()) ? db.Select<RECURRENCE_ID>(q => Sql.In(q.Id, rrids.Select(r => r.RecurrenceId_Id).ToList())) : null;
-                    var rrules = (!rrrules.Empty()) ? db.Select<RECUR>(q => Sql.In(q.Id, rrrules.Select(r => r.RecurrenceRuleId).ToList())) : null;
-                    var attendees = (!rattendees.Empty()) ? db.Select<ATTENDEE>(q => Sql.In(q.Id, rattendees.Select(r => r.AttendeeId).ToList())) : null;
-                    var comments = (!rcomments.Empty()) ? db.Select<COMMENT>(q => Sql.In(q.Id, rcomments.Select(r => r.CommentId).ToList())) : null;
-                    var attachbins = (!rattachbins.Empty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToList())) : null;
-                    var attachuris = (!rattachuris.Empty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachuris.Select(r => r.AttachmentId).ToList())) : null;
-                    var contacts = (!rcontacts.Empty()) ? db.Select<CONTACT>(q => Sql.In(q.Id, rcontacts.Select(r => r.ContactId).ToList())) : null;
-                    var exdates = (!rexdates.Empty()) ? db.Select<EXDATE>(q => Sql.In(q.Id, rexdates.Select(r => r.ExceptionDateId).ToList())) : null;
-                    var rdates = (!rrdates.Empty()) ? db.Select<RDATE>(q => Sql.In(q.Id, rrdates.Select(r => r.RecurrenceDateId).ToList())) : null;
-                    var relatedtos = (!rrelatedtos.Empty()) ? db.Select<RELATEDTO>(q => Sql.In(q.Id, rrelatedtos.Select(r => r.RelatedToId).ToList())) : null;
-                    var reqstats = (!rreqstats.Empty()) ? db.Select<REQUEST_STATUS>(q => Sql.In(q.Id, rreqstats.Select(r => r.ReqStatsId).ToList())) : null;
-                    var resources = (!rresources.Empty()) ? db.Select<RESOURCES>(q => Sql.In(q.Id, rresources.Select(r => r.ResourcesId).ToList())) : null;
-                    var aalarms = (!raalarms.Empty()) ? this.AudioAlarmRepository.FindAll(raalarms.Select(x => x.AlarmId).ToList()) : null;
-                    var dalarms = (!rdalarms.Empty()) ? this.DisplayAlarmRepository.FindAll(rdalarms.Select(x => x.AlarmId).ToList()) : null;
-                    var ealarms = (!realarms.Empty()) ? this.EmailAlarmRepository.FindAll(realarms.Select(x => x.AlarmId).ToList()) : null;
+                    var orgs = (!rorgs.SafeEmpty()) ? db.Select<ORGANIZER>(q => Sql.In(q.Id, rorgs.Select(r => r.OrganizerId).ToList())) : null;
+                    var rids = (!rrids.SafeEmpty()) ? db.Select<RECURRENCE_ID>(q => Sql.In(q.Id, rrids.Select(r => r.RecurrenceId_Id).ToList())) : null;
+                    var rrules = (!rrrules.SafeEmpty()) ? db.Select<RECUR>(q => Sql.In(q.Id, rrrules.Select(r => r.RecurrenceRuleId).ToList())) : null;
+                    var attendees = (!rattendees.SafeEmpty()) ? db.Select<ATTENDEE>(q => Sql.In(q.Id, rattendees.Select(r => r.AttendeeId).ToList())) : null;
+                    var comments = (!rcomments.SafeEmpty()) ? db.Select<COMMENT>(q => Sql.In(q.Id, rcomments.Select(r => r.CommentId).ToList())) : null;
+                    var attachbins = (!rattachbins.SafeEmpty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToList())) : null;
+                    var attachuris = (!rattachuris.SafeEmpty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachuris.Select(r => r.AttachmentId).ToList())) : null;
+                    var contacts = (!rcontacts.SafeEmpty()) ? db.Select<CONTACT>(q => Sql.In(q.Id, rcontacts.Select(r => r.ContactId).ToList())) : null;
+                    var exdates = (!rexdates.SafeEmpty()) ? db.Select<EXDATE>(q => Sql.In(q.Id, rexdates.Select(r => r.ExceptionDateId).ToList())) : null;
+                    var rdates = (!rrdates.SafeEmpty()) ? db.Select<RDATE>(q => Sql.In(q.Id, rrdates.Select(r => r.RecurrenceDateId).ToList())) : null;
+                    var relatedtos = (!rrelatedtos.SafeEmpty()) ? db.Select<RELATEDTO>(q => Sql.In(q.Id, rrelatedtos.Select(r => r.RelatedToId).ToList())) : null;
+                    var reqstats = (!rreqstats.SafeEmpty()) ? db.Select<REQUEST_STATUS>(q => Sql.In(q.Id, rreqstats.Select(r => r.ReqStatsId).ToList())) : null;
+                    var resources = (!rresources.SafeEmpty()) ? db.Select<RESOURCES>(q => Sql.In(q.Id, rresources.Select(r => r.ResourcesId).ToList())) : null;
+                    var aalarms = (!raalarms.SafeEmpty()) ? this.AudioAlarmRepository.FindAll(raalarms.Select(x => x.AlarmId).ToList()) : null;
+                    var dalarms = (!rdalarms.SafeEmpty()) ? this.DisplayAlarmRepository.FindAll(rdalarms.Select(x => x.AlarmId).ToList()) : null;
+                    var ealarms = (!realarms.SafeEmpty()) ? this.EmailAlarmRepository.FindAll(realarms.Select(x => x.AlarmId).ToList()) : null;
 
                     #endregion
 

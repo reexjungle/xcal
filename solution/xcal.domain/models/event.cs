@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 using ServiceStack.DataAnnotations;
 using reexmonkey.foundation.essentials.contracts;
 using reexmonkey.foundation.essentials.concretes;
+using reexmonkey.infrastructure.io.concretes;
 using reexmonkey.xcal.domain.contracts;
+using reexmonkey.xcal.domain.extensions;
 
 namespace reexmonkey.xcal.domain.models
 {
@@ -16,7 +19,6 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public class VEVENT : IEVENT, IEquatable<VEVENT>, IComparable<VEVENT>, IContainsKey<string>
     {
-        private string id;
         private DATE_TIME start;
         private DATE_TIME end;
         private DURATION duration;
@@ -28,17 +30,8 @@ namespace reexmonkey.xcal.domain.models
         [Index(Unique = true)]
         public string Id 
         {
-            get 
-            {
-                if (string.IsNullOrEmpty(this.id))
-                {
-                    return this.RecurrenceId != null
-                        ? string.Format("{0}-{1}", this.Uid, this.RecurrenceId.Id)
-                        : this.Uid;
-                }
-                else return this.id;
-            }
-            set { this.id = value; }
+            get { return this.Uid; }
+            set { this.Uid = value; }
         }
 
         /// <summary>
@@ -59,8 +52,7 @@ namespace reexmonkey.xcal.domain.models
             set
             {
                 this.start = value;
-                if (this.end == default(DATE_TIME))
-                    this.end = this.start;
+                if(this.end == default(DATE_TIME))this.end = this.start + new DURATION(0,0,1,0,0); //same value as start time
             }
         }
 
@@ -218,6 +210,7 @@ namespace reexmonkey.xcal.domain.models
             this.EmailAlarms = new List<EMAIL_ALARM>();
             this.IANAProperties = new Dictionary<string, IANA_PROPERTY>();
             this.XProperties = new Dictionary<string, X_PROPERTY>();
+           
         }
 
         public VEVENT(DATE_TIME dtstamp, string uid, DATE_TIME start, DATE_TIME end,  PRIORITY priority, ORGANIZER organizer = null, LOCATION location = null, 
@@ -239,6 +232,7 @@ namespace reexmonkey.xcal.domain.models
             this.Attendees = attendees;
             this.Categories = categories;
             this.RelatedTos = relatedtos;
+
         }
 
 
@@ -260,12 +254,12 @@ namespace reexmonkey.xcal.domain.models
             this.Attendees = attendees;
             this.Categories = categories;
             this.RelatedTos = relatedtos;
+
         }
 
         public VEVENT(IEVENT value)
         {
             if (value == null) throw new ArgumentNullException("value");
-            this.Datestamp = value.Datestamp;
             this.Uid = value.Uid;
             this.RecurrenceId = value.RecurrenceId;
             this.Start = value.Start;
@@ -475,6 +469,44 @@ namespace reexmonkey.xcal.domain.models
             return sb.ToString();
         }
 
+        public List<IEVENT> GenerateRecurrences()
+        {
+            var recurs = new List<IEVENT>();
+            var dates = this.Start.GenerateRecurrences(this.End, this.RecurrenceRule);
+            if(!this.RecurrenceDates.NullOrEmpty())
+            {
+                var rdates = this.RecurrenceDates.Where(x => !x.DateTimes.NullOrEmpty()).SelectMany(x => x.DateTimes);
+                var rperiods = this.RecurrenceDates.Where(x => !x.Periods.NullOrEmpty()).SelectMany(x => x.Periods);
+                if(!rdates.NullOrEmpty()) dates.AddRange(rdates.Select(x => new Tuple<DATE_TIME, DATE_TIME>(x, x)));
+                if(!rperiods.NullOrEmpty()) dates.AddRange(rperiods.Select(x => new Tuple<DATE_TIME, DATE_TIME>(x.Start, x.End)));
+            }
+
+            if(!this.ExceptionDates.NullOrEmpty())
+            {
+                var exdates = this.ExceptionDates.Where(x => x.DateTimes.NullOrEmpty()).SelectMany(x => x.DateTimes);
+                if (!exdates.NullOrEmpty()) dates.RemoveAll(x => exdates.Contains(x.Item1));
+            }
+
+            var count = 0;
+            foreach(var recurrence in dates)
+            {
+                var instance = new VEVENT();
+                instance.Id = string.Format("{0}-{1}", this.Id, ++count);
+                instance.Start = recurrence.Item1;
+                instance.End = recurrence.Item2;
+                instance.RecurrenceRule = null;
+                instance.RecurrenceId = new RECURRENCE_ID 
+                { 
+                    Id = instance.Id,
+                    Range = RANGE.THISANDFUTURE,
+                    TimeZoneId = recurrence.Item1.TimeZoneId,
+                    Value = instance.Start
+                };
+                recurs.Add(instance);
+            }
+
+            return recurs;
+        }
     }
 
 }

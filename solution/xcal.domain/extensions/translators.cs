@@ -184,22 +184,17 @@ namespace reexmonkey.xcal.domain.extensions
 
         #region  specialized date-time translators
 
-        public static DATE ToDATE(this DateTime value)
-        {
-            return new DATE((uint)value.Year, (uint)value.Month, (uint)value.Day);
-        }
-
         public static DATE_TIME ToDATE_TIME(this DateTime value, TimeZoneInfo tzinfo = null)
         {
             if(tzinfo != null)
             {
                 if(value.Kind == DateTimeKind.Utc) throw new ArgumentException();
-                else return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.LocalAndTimeZone);
+                else return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.LocalAndTimeZone);
             }
             else
             {
-                if(value.Kind == DateTimeKind.Utc) return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.Utc);
-                else  return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.Local);
+                if(value.Kind == DateTimeKind.Utc) return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.Utc);
+                else  return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.Local);
             }
         }
 
@@ -208,12 +203,17 @@ namespace reexmonkey.xcal.domain.extensions
             if (tzid != null)
             {
                 if (value.Kind == DateTimeKind.Utc) throw new ArgumentException("UTC Date Time not compatible with Local Time with Time Zone Id");
-                else return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.LocalAndTimeZone, tzid);            }
+                else return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.LocalAndTimeZone, tzid);            }
             else
             {
-                if (value.Kind == DateTimeKind.Utc) return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.Utc);
-                else return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.Local);
+                if (value.Kind == DateTimeKind.Utc) return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.Utc);
+                else return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.Local);
             }
+        }
+
+        public static  DATE  ToDATE(this DateTime value)
+        {
+            return new DATE((uint)value.Year, (uint)value.Month, (uint)value.Day);
         }
 
         public static TIME ToTIME(this DateTime value, TimeZoneInfo tzinfo = null)
@@ -221,12 +221,12 @@ namespace reexmonkey.xcal.domain.extensions
             if (tzinfo != null)
             {
                 if (value.Kind == DateTimeKind.Utc) throw new ArgumentException();
-                else  return new TIME((uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.LocalAndTimeZone);
+                else  return new TIME((uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.LocalAndTimeZone);
             }
             else
             {
-                if (value.Kind == DateTimeKind.Utc) return new TIME((uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.Utc);
-                else return new TIME((uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeFormat.Local);
+                if (value.Kind == DateTimeKind.Utc) return new TIME((uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.Utc);
+                else return new TIME((uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.Local);
             }
         }
 
@@ -247,12 +247,12 @@ namespace reexmonkey.xcal.domain.extensions
         {
             if (value == default(DATE_TIME)) return default(DateTime);
 
-            if (value.TimeFormat == TimeFormat.Utc)
+            if (value.Type == TimeType.Utc)
             {
                 return new DateTime((int)value.FULLYEAR, (int)value.MONTH, (int)value.MDAY,
                     (int)value.HOUR, (int)value.MINUTE, (int)value.SECOND, DateTimeKind.Utc);
             }
-            else if (value.TimeFormat == TimeFormat.Local || value.TimeFormat == TimeFormat.LocalAndTimeZone)
+            else if (value.Type == TimeType.Local || value.Type == TimeType.LocalAndTimeZone)
             {
                 return new DateTime((int)value.FULLYEAR, (int)value.MONTH, (int)value.MDAY,
                     (int)value.HOUR, (int)value.MINUTE, (int)value.SECOND, DateTimeKind.Local);
@@ -264,71 +264,99 @@ namespace reexmonkey.xcal.domain.extensions
             }
         }
 
+        public static  TimeSpan ToTimeSpan(this DATE_TIME value)
+        {
+            if (value == default(DATE_TIME)) return new TimeSpan();
+            return new TimeSpan((int)value.HOUR, (int)value.MINUTE, (int)value.SECOND);
+        }
+
         public static TimeSpan ToTimeSpan(this TIME value)
         {
             if (value == default(TIME)) return new TimeSpan();
             return new TimeSpan((int)value.HOUR, (int)value.MINUTE, (int)value.SECOND);
         }
 
-        public static TimeSpan ToTimeSpan(this DATE_TIME value)
-        {
-            if (value == default(DATE_TIME)) return new TimeSpan();
-            return new TimeSpan((int)value.HOUR, (int)value.MINUTE, (int)value.SECOND);
-        }
-
         public static DURATION ToDURATION(this TimeSpan span)
         {
-            var days  = (uint)span.Days;
-            var hours = (uint)span.Hours;
-            var minutes = (uint)span.Minutes;
-            var seconds = (uint)span.Seconds;
-            var weeeks = (uint)(span.TotalDays - (span.Days + (span.Hours / 24) + (span.Minutes / (24 * 60)) + (span.Seconds / (24 * 3600)) + (span.Milliseconds / (24 * 3600000)))) / 7u;
-            var sum = span.Days + (span.Hours / 24) + (span.Minutes / (24 * 60)) + (span.Seconds / (24 * 3600)) + (span.Milliseconds / (24 * 3600000));
-            var sign = SignType.Neutral;
-            var scheck = span.CompareTo(TimeSpan.Zero);
-            if (scheck > 0) sign = SignType.Positive;
-            else if (scheck < 0) sign = SignType.Negative;
-            else sign = SignType.Neutral;
-            return new DURATION(weeeks, days, hours, minutes, seconds, sign);
+            var days = span.Days;
+            var hours = span.Hours;
+            var minutes = span.Minutes;
+            var seconds = span.Seconds;
+            var weeks = span.Days
+                + (span.Hours / 24)
+                + (span.Minutes / (24 * 60))
+                + (span.Seconds / (24 * 3600))
+                + (span.Milliseconds / (24 * 3600000)) / 7;
+            return new DURATION(weeks, days, hours, minutes, seconds);
         }
 
-        public static TIME ToTIME(this TimeSpan span, TimeZoneInfo tzinfo = null, TimeFormat format = TimeFormat.Unknown)
+        public static TIME ToTIME(this TimeSpan span, TimeZoneInfo tzinfo = null, TimeType format = TimeType.Unknown)
         {
            if (tzinfo != null)
            {
-               if (format == TimeFormat.Utc) throw new ArgumentException();
-               else if (format == TimeFormat.LocalAndTimeZone) return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds, format, tzinfo.ToTZID());
+               if (format == TimeType.Utc) throw new ArgumentException();
+               else if (format == TimeType.LocalAndTimeZone) return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds, format, tzinfo.ToTZID());
                else return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds);
            }
            else
            {
-               if (format == TimeFormat.Utc) return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds, format);
+               if (format == TimeType.Utc) return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds, format);
                else return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds);
            }
         }
 
-        public static TIME ToTIME(this TimeSpan span, TZID tzid, TimeFormat format = TimeFormat.Unknown)
+        public static TIME ToTIME(this TimeSpan span, TZID tzid, TimeType format = TimeType.Unknown)
         {
             if (tzid != null)
             {
-                if (format == TimeFormat.Utc) throw new ArgumentException();
-                else if (format == TimeFormat.LocalAndTimeZone) return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds, format, tzid);
+                if (format == TimeType.Utc) throw new ArgumentException();
+                else if (format == TimeType.LocalAndTimeZone) return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds, format, tzid);
                 else return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds);
             }
             else
             {
-                if (format == TimeFormat.Utc) return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds, format);
+                if (format == TimeType.Utc) return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds, format);
                 else return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds);
             }
         }
 
         public static TimeSpan ToTimeSpan(this DURATION duration)
         {
-            if (duration == default(DURATION)) return new TimeSpan();
-            return duration.Sign == SignType.Negative
-                ? (new TimeSpan((int)duration.DAYS, (int)duration.HOURS, (int)duration.MINUTES, (int)duration.SECONDS)).Negate()
-                : new TimeSpan((int)duration.DAYS, (int)duration.HOURS, (int)duration.MINUTES, (int)duration.SECONDS);
+            return new TimeSpan(duration.WEEKS * 7 + duration.DAYS, duration.HOURS, duration.MINUTES, duration.SECONDS);
         }
+
+        public static DayOfWeek ToDayOfWeek(this WEEKDAY weekday)
+        {
+            switch(weekday)
+            {
+                case WEEKDAY.SU: return DayOfWeek.Sunday;
+                case WEEKDAY.MO: return DayOfWeek.Monday;
+                case WEEKDAY.TU: return DayOfWeek.Tuesday;
+                case WEEKDAY.WE: return DayOfWeek.Wednesday;
+                case WEEKDAY.TH: return DayOfWeek.Thursday;
+                case WEEKDAY.FR: return DayOfWeek.Friday;
+                case WEEKDAY.SA: return DayOfWeek.Saturday;
+                default:
+                    return DayOfWeek.Sunday;
+            }
+        }
+
+        public static WEEKDAY ToWEEKDAY (this DayOfWeek dayofweek)
+        {
+            switch(dayofweek)
+            {
+                case DayOfWeek.Sunday: return WEEKDAY.SU;
+                case DayOfWeek.Monday: return WEEKDAY.MO;
+                case DayOfWeek.Tuesday: return WEEKDAY.TU;
+                case DayOfWeek.Wednesday: return WEEKDAY.WE;
+                case DayOfWeek.Thursday: return WEEKDAY.TH;
+                case DayOfWeek.Friday: return WEEKDAY.FR;
+                case DayOfWeek.Saturday: return WEEKDAY.SA;
+                default:
+                    return WEEKDAY.UNKNOWN;
+            }
+        }
+
 
         #endregion
 

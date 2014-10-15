@@ -171,7 +171,6 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                     {
                         Id = uidkeygen.GetNextKey(),
                         FREQ = FREQ.DAILY,
-                        Format = RecurFormat.DateTime,
                         UNTIL = new DATE_TIME(new DateTime(2014, 6, 25, 18, 03, 08, 0, DateTimeKind.Utc))
                     },
 
@@ -283,7 +282,6 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                     {
                         Id = uidkeygen.GetNextKey(),
                         FREQ = FREQ.DAILY,
-                        Format = RecurFormat.DateTime,
                         UNTIL = new DATE_TIME(new DateTime(2014, 6, 25, 18, 03, 08, 0, DateTimeKind.Utc))
                     },
 
