@@ -1,8 +1,8 @@
 What is xCal?
 ============
-While the answer to this question is fairly straightforward, it is simulatenously troublesome; considering first of all that the term **xCal** may ambgously refer to the XML representation of the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format ([RFC 6321](http://tools.ietf.org/html/rfc6321)) or other calendar-unrelated applications. 
+While the answer to this question is fairly straightforward, it is also troublesome; considering the fact that the term ***xCal*** may also ambiguously refer to the XML representation of the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format ([RFC 6321](http://tools.ietf.org/html/rfc6321)) or other calendar-unrelated applications. 
 
-However, without much fuss, *this* xCal is a project that basically does 2 things:
+However, without much fuss, *this* particular xCal is an open source project that basically does 2 things:
 
 1. Implements the [Internet Calendaring and Scheduling Core Object Specification](http://en.wikipedia.org/wiki/ICalendar) ([RFC 5545](http://tools.ietf.org/html/rfc5545))
 
@@ -11,14 +11,9 @@ However, without much fuss, *this* xCal is a project that basically does 2 thing
 
 Why xCal?
 ========
-Yeah - *why reinvent the wheel*, when popular calendar-based applications such as [Google Calendar](https://www.google.com/calendar), [Yahoo Calendar] (https://calendar.yahoo.com/), Apple's [Calender (formerly iCal)](https://www.apple.com/icloud/#ccm) and [Microsoft Outlook](http://products.office.com/en-us/outlook/email-and-calendar-software-microsoft-outlook) are used to schedule and exchange calendaring information? Furthermore, why build web services when [CalDav](http://en.wikipedia.org/wiki/CalDAV) ([RFC 4791](http://tools.ietf.org/html/rfc4791)) already allow for the accessibility and sharing of calendar data on remote servers?  
+Yeah - *why reinvent the wheel*, when existing calendar-based applications such as [Google Calendar](https://www.google.com/calendar), [Yahoo Calendar] (https://calendar.yahoo.com/), Apple's [Calender (formerly iCal)](https://www.apple.com/icloud/#ccm) and [Microsoft Outlook](http://products.office.com/en-us/outlook/email-and-calendar-software-microsoft-outlook) are popular and often used to schedule and exchange calendaring information? Furthermore, why build web services when existing cloud services exist to synchronize user calendar data with networked devices? Also, isn't it an overkill to provide web services, when there is already a standardized extension to WebDAv - [CalDav](http://en.wikipedia.org/wiki/CalDAV) ([RFC 4791](http://tools.ietf.org/html/rfc4791)), which allows for the accessibility and sharing of calendar data on remote servers?  
 
 
-Not another xCal again!
-==============================
-You are already forgiven if you only thought of xCal as the [XML](http://en.wikipedia.org/wiki/XML) representation of the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format([RFC 6321](http://tools.ietf.org/html/rfc6321)). However, there is *another* xCal that implements the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) specification ([RFC 5545](http://tools.ietf.org/html/rfc5545)) and provides a web service interface for iCalendar data to be distributed in other popular formats such as [CSV](http://en.wikipedia.org/wiki/Comma-separated_values), [MessagePack](http://msgpack.org/), [JSON](http://en.wikipedia.org/wiki/JSON), [JSV](http://mono.servicestack.net/docs/text-serializers/jsv-format) and of course XML. 
-
-This *particular version* of xCal is a project started by [Emmanuel Ngwane](https://twitter.com/ngwanemk) (*after failing to find to find a free open-source calendar web service*) with the support and involvement of the community. 
 
 
 Table of Contents
