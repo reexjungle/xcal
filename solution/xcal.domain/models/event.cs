@@ -472,19 +472,19 @@ namespace reexmonkey.xcal.domain.models
         public List<IEVENT> GenerateRecurrences()
         {
             var recurs = new List<IEVENT>();
-            var dates = this.Start.GenerateRecurrences(this.End, this.RecurrenceRule);
+            var dates = this.Start.GenerateRecurrences(this.RecurrenceRule);
             if(!this.RecurrenceDates.NullOrEmpty())
             {
                 var rdates = this.RecurrenceDates.Where(x => !x.DateTimes.NullOrEmpty()).SelectMany(x => x.DateTimes);
                 var rperiods = this.RecurrenceDates.Where(x => !x.Periods.NullOrEmpty()).SelectMany(x => x.Periods);
-                if(!rdates.NullOrEmpty()) dates.AddRange(rdates.Select(x => new Tuple<DATE_TIME, DATE_TIME>(x, x)));
-                if(!rperiods.NullOrEmpty()) dates.AddRange(rperiods.Select(x => new Tuple<DATE_TIME, DATE_TIME>(x.Start, x.End)));
+                if(!rdates.NullOrEmpty()) dates.AddRange(rdates);
+                if(!rperiods.NullOrEmpty()) dates.AddRange(rperiods.Select(x => x.Start));
             }
 
             if(!this.ExceptionDates.NullOrEmpty())
             {
                 var exdates = this.ExceptionDates.Where(x => x.DateTimes.NullOrEmpty()).SelectMany(x => x.DateTimes);
-                if (!exdates.NullOrEmpty()) dates.RemoveAll(x => exdates.Contains(x.Item1));
+                if (!exdates.NullOrEmpty()) dates = dates.Except(exdates).ToList();
             }
 
             var count = 0;
@@ -492,14 +492,14 @@ namespace reexmonkey.xcal.domain.models
             {
                 var instance = new VEVENT();
                 instance.Id = string.Format("{0}-{1}", this.Id, ++count);
-                instance.Start = recurrence.Item1;
-                instance.End = recurrence.Item2;
+                instance.Start = recurrence;
+                instance.End = recurrence + this.Duration;
                 instance.RecurrenceRule = null;
                 instance.RecurrenceId = new RECURRENCE_ID 
                 { 
                     Id = instance.Id,
                     Range = RANGE.THISANDFUTURE,
-                    TimeZoneId = recurrence.Item1.TimeZoneId,
+                    TimeZoneId = recurrence.TimeZoneId,
                     Value = instance.Start
                 };
                 recurs.Add(instance);

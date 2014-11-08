@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
+using System.Collections.Generic;
 
 namespace reexmonkey.xcal.domain.extensions
 {
@@ -198,6 +200,16 @@ namespace reexmonkey.xcal.domain.extensions
             }
         }
 
+        public static IEnumerable<DATE_TIME> ToDATE_TIMEs(this IEnumerable<DateTime> values, TimeZoneInfo tzinfo = null)
+        {
+            return values.Select(x => x.ToDATE_TIME(tzinfo));
+        }
+
+        public static IEnumerable<DATE_TIME> ToDATE_TIMEs(this IEnumerable<DateTime> values, TZID tzid = null)
+        {
+            return values.Select(x => x.ToDATE_TIME(tzid));
+        }
+
         public static DATE_TIME ToDATE_TIME(this DateTime value, TZID tzid)
         {
             if (tzid != null)
@@ -210,6 +222,7 @@ namespace reexmonkey.xcal.domain.extensions
                 else return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.Local);
             }
         }
+
 
         public static  DATE  ToDATE(this DateTime value)
         {

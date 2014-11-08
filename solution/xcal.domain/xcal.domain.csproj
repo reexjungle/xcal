@@ -75,7 +75,7 @@
     <Compile Include="contracts\journal.cs" />
     <Compile Include="contracts\misc.cs" />
     <Compile Include="contracts\todo.cs" />
-    <Compile Include="extensions\filters.cs" />
+    <Compile Include="extensions\engines.cs" />
     <Compile Include="extensions\generators.cs" />
     <Compile Include="models\event.cs" />
     <Compile Include="contracts\parameters.cs" />

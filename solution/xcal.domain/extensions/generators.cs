@@ -12,131 +12,142 @@ namespace reexmonkey.xcal.domain.extensions
 
     public static class Generators
     {
-        public static List<Tuple<DATE_TIME, DATE_TIME>> GenerateRecurrences(this DATE_TIME start, DATE_TIME end, RECUR rrule, uint window = 6)
+        public static List<DATE_TIME> GenerateRecurrences(this DATE_TIME start, RECUR rrule, uint window = 6)
         {
-            Func<DATE_TIME, DATE_TIME, DATE_TIME,  RECUR, IEnumerable<Tuple<DATE_TIME, DATE_TIME>>> 
-                generate_and_filter = (s, e, max, r) =>
-                {
-                    var generated = new List<Tuple<DATE_TIME, DATE_TIME>>();
-                    IEnumerable<Tuple<DATE_TIME, DATE_TIME>> filtered = null;
 
-                    if (r.FREQ == FREQ.SECONDLY)
+            Func<DATE_TIME, DATE_TIME, RECUR, IEnumerable<DATE_TIME>>
+                generate = (s, max, r) =>
+                {
+                    var dates = new List<DATE_TIME>();
+                    switch (r.FREQ)
                     {
-                        while (s < max)
-                            generated.Add(new Tuple<DATE_TIME, DATE_TIME>(s = s.ToDateTime().AddSeconds(r.INTERVAL).ToDATE_TIME(s.TimeZoneId),
-                                e = e.ToDateTime().AddSeconds(r.INTERVAL).ToDATE_TIME(e.TimeZoneId)));
-                        filtered = generated
-                            .FilterByMonth(r)
-                            .FilterByYearDay(r)
-                            .FilterByMonthDay(r)
-                            .FilterByDay(r)
-                            .FilterByHour(r)
-                            .FilterByMinute(r)
-                            .FilterBySecond(r);
+                        case FREQ.SECONDLY:
+                            while (s < max) dates.Add(new DATE_TIME(s = s.ToDateTime().AddSeconds(r.INTERVAL).ToDATE_TIME(s.TimeZoneId)));
+
+                            dates = dates
+                                .LimitByMonth(r)
+                                .LimitByYearDay(r)
+                                .LimitByMonthDay(r)
+                                .LimitByDay(r)
+                                .LimitByHour(r)
+                                .LimitByMinute(r)
+                                .LimitBySecond(r)
+                                .LimitBySetPos(r)
+                                .ToList(); break;
+                                
+                        case FREQ.MINUTELY:
+                            while (s < max) dates.Add(new DATE_TIME(s = s.ToDateTime().AddMinutes(r.INTERVAL).ToDATE_TIME(s.TimeZoneId)));
+                            
+                            dates = dates
+                                .LimitByMonth(r)
+                                .LimitByYearDay(r)
+                                .LimitByMonthDay(r)
+                                .LimitByDay(r)
+                                .LimitByHour(r)
+                                .LimitByMinute(r)
+                                .ExpandBySecond(r)
+                                .LimitBySetPos(r)
+                                .ToList(); break;
+
+                        case FREQ.HOURLY:
+                            while (s < max) dates.Add(new DATE_TIME(s = s.ToDateTime().AddHours(r.INTERVAL).ToDATE_TIME(s.TimeZoneId)));
+                                                        
+                            dates = dates
+                                .LimitByMonth(r)
+                                .LimitByYearDay(r)
+                                .LimitByMonthDay(r)
+                                .LimitByDay(r)
+                                .LimitByHour(r)
+                                .ExpandByMinute(r)
+                                .ExpandBySecond(r)
+                                .LimitBySetPos(r)
+                                .ToList(); break;
+
+                        case FREQ.DAILY:
+                            while (s < max) dates.Add(new DATE_TIME(s = s.ToDateTime().AddDays(r.INTERVAL).ToDATE_TIME(s.TimeZoneId)));
+                                                        
+                            dates = dates
+                                .LimitByMonth(r)
+                                .LimitByYearDay(r)
+                                .LimitByMonthDay(r)
+                                .LimitByDay(r)
+                                .ExpandByHour(r)
+                                .ExpandByMinute(r)
+                                .ExpandBySecond(r)
+                                .LimitBySetPos(r)
+                                .ToList(); break;
+
+                        case FREQ.WEEKLY:
+                            while (s < max) dates.Add(new DATE_TIME(s = s.ToDateTime().AddDays(7 * r.INTERVAL).ToDATE_TIME(s.TimeZoneId)));
+
+                            dates = dates
+                                .LimitByMonth(r)
+                                .ExpandByDayWeekly(r)
+                                .ExpandByHour(r)
+                                .ExpandByMinute(r)
+                                .ExpandBySecond(r)
+                                .LimitBySetPos(r)
+                                .ToList(); break;
+
+                        case FREQ.MONTHLY:
+                            while (s < max) dates.Add(new DATE_TIME(s = s.ToDateTime().AddDays(r.INTERVAL).ToDATE_TIME(s.TimeZoneId)));
+
+                            dates = dates
+                                .LimitByMonth(r).ToList();
+
+                               dates = !rrule.BYMONTHDAY.NullOrEmpty()
+                                   ? dates.LimitByDayMonthly(r).ToList()
+                                   : dates.ExpandByMonth(r).ToList();
+
+                                dates = dates.ExpandByDayMonthly(r)
+                                .ExpandByHour(r)
+                                .ExpandByMinute(r)
+                                .ExpandBySecond(r)
+                                .LimitBySetPos(r)
+                                .ToList(); break;
+
+                        case FREQ.YEARLY:
+                            while (s < max) dates.Add(new DATE_TIME(s = s.ToDateTime().AddDays(r.INTERVAL).ToDATE_TIME(s.TimeZoneId)));
+
+                            dates = dates
+                                .ExpandByMonth(r)
+                                .ExpandByWeekNo(r)
+                                .ExpandByYearDay(r)
+                                .ExpandByMonthDay(r).ToList();
+
+                            if (!rrule.BYYEARDAY.NullOrEmpty() || !rrule.BYMONTHDAY.NullOrEmpty()) dates = dates.LimitByDayYearly(r).ToList();
+                            else
+                            {
+                                if (!rrule.BYWEEKNO.NullOrEmpty()) dates = dates.ExpandByDayWeekly(r).ToList();
+                                else
+                                {
+                                    if (!rrule.BYMONTH.NullOrEmpty()) dates = dates.ExpandByDayMonthly(r).ToList();
+                                    else dates = dates.ExpandByDayYearly(r).ToList();
+                                }
+                            }
+
+                            dates = dates
+                                .ExpandByHour(r)
+                                .ExpandByMinute(r)
+                                .ExpandBySecond(r)
+                                .LimitBySetPos(r)
+                            .ToList(); break;
                     }
-                    else if (r.FREQ == FREQ.MINUTELY)
-                    {
-                        while (s < max)
-                            generated.Add(new Tuple<DATE_TIME, DATE_TIME>(s = s.ToDateTime().AddMinutes(r.INTERVAL).ToDATE_TIME(s.TimeZoneId),
-                                e = e.ToDateTime().AddMinutes(r.INTERVAL).ToDATE_TIME(e.TimeZoneId)));
-                        filtered = generated
-                            .FilterByMonth(r)
-                            .FilterByYearDay(r)
-                            .FilterByMonthDay(r)
-                            .FilterByDay(r)
-                            .FilterByHour(r)
-                            .FilterByMinute(r)
-                            .FilterBySecond(r);
-                    }
-                    else if (r.FREQ == FREQ.HOURLY)
-                    {
-                        while (s < max)
-                            generated.Add(new Tuple<DATE_TIME, DATE_TIME>(s = s.ToDateTime().AddHours(r.INTERVAL).ToDATE_TIME(s.TimeZoneId),
-                                e = e.ToDateTime().AddHours(r.INTERVAL).ToDATE_TIME(e.TimeZoneId)));
-                        filtered = generated
-                            .FilterByMonth(r)
-                            .FilterByYearDay(r)
-                            .FilterByMonthDay(r)
-                            .FilterByDay(r)
-                            .FilterByHour(r)
-                            .FilterByMinute(r)
-                            .FilterBySecond(r);
-                    }
-                    else if (r.FREQ == FREQ.DAILY)
-                    {
-                        while (s < max)
-                            generated.Add(new Tuple<DATE_TIME, DATE_TIME>(s = s.ToDateTime().AddDays(r.INTERVAL).ToDATE_TIME(s.TimeZoneId),
-                                e = e.ToDateTime().AddDays(r.INTERVAL).ToDATE_TIME(e.TimeZoneId)));
-                        filtered = generated
-                            .FilterByMonth(r)
-                            .FilterByMonthDay(r)
-                            .FilterByDayMonthly(r)
-                            .FilterByHour(r)
-                            .FilterByMinute(r)
-                            .FilterBySecond(r)
-                            .FilterBySetPosDaily(r);
-                    }
-                    else if (r.FREQ == FREQ.WEEKLY)
-                    {
-                        while (s < max)
-                            generated.Add(new Tuple<DATE_TIME, DATE_TIME>(s = s.ToDateTime().AddDays(7 * r.INTERVAL).ToDATE_TIME(s.TimeZoneId),
-                                e = e.ToDateTime().AddDays(7 * r.INTERVAL).ToDATE_TIME(e.TimeZoneId)));
-                        filtered = generated
-                            .FilterByMonth(r)
-                            .FilterByDay(r)
-                            .FilterByHour(r)
-                            .FilterByMinute(r)
-                            .FilterBySecond(r)
-                            .FilterBySetPosWeekly(r);
-                    }
-                    else if (r.FREQ == FREQ.MONTHLY)
-                    {
-                        while (s < max)
-                            generated.Add(new Tuple<DATE_TIME, DATE_TIME>(s = s.ToDateTime().AddMonths((int)r.INTERVAL).ToDATE_TIME(s.TimeZoneId),
-                                e = e.ToDateTime().AddMonths((int)r.INTERVAL).ToDATE_TIME(e.TimeZoneId)));
-                        filtered = generated
-                            .FilterByMonth(r)
-                            .FilterByMonthDay(r)
-                            .FilterByDayMonthly(r)
-                            .FilterByHour(r)
-                            .FilterByMinute(r)
-                            .FilterBySecond(r)
-                            .FilterBySetPosMonthly(r);
-                    }
-                    else if (r.FREQ == FREQ.YEARLY)
-                    {
-                        while (s < max)
-                            generated.Add(new Tuple<DATE_TIME, DATE_TIME>(s = s.ToDateTime().AddYears((int)r.INTERVAL).ToDATE_TIME(s.TimeZoneId),
-                                e = e.ToDateTime().AddYears((int)r.INTERVAL).ToDATE_TIME(e.TimeZoneId)));
-                        filtered = generated
-                            .FilterByMonth(r)
-                            .FilterByMonthDay(r)
-                            .FilterByDayYearly(r)
-                            .FilterByHour(r)
-                            .FilterByMinute(r)
-                            .FilterBySecond(r)
-                            .FilterBySetPosYearly(r);
-                    }
-                
-                    return filtered;
+
+                    return dates;
                 };
 
             var slimit = start.ToDateTime().AddMonths((int)window).ToDATE_TIME(start.TimeZoneId);
-            var results = new List<Tuple<DATE_TIME, DATE_TIME>>();
+            IEnumerable<DATE_TIME> results = new List<DATE_TIME>();
 
             var lstart = start;
-            var lend = end;
 
             if (rrule.UNTIL != default(DATE_TIME))
             {
                 while (lstart <= rrule.UNTIL)
                 {
-                    results.AddRange(generate_and_filter(lstart, lend, slimit, rrule));
-                    if (!results.NullOrEmpty())
-                    {
-                        lstart = results.Last().Item1;
-                        lend = results.Last().Item2;
-                    }
+                    results = results.Union(generate(lstart, slimit, rrule));
+                    if (!results.NullOrEmpty()) lstart = results.Last();
                     else lstart = new DATE_TIME(
                         rrule.UNTIL.FULLYEAR, 
                         rrule.UNTIL.MONTH, 
@@ -148,29 +159,24 @@ namespace reexmonkey.xcal.domain.extensions
                     slimit = slimit.ToDateTime().AddMonths((int)window).ToDATE_TIME();
                 }
 
-                results = results.OrderBy(r => r.Item1).TakeWhile(x => x.Item1 <= rrule.UNTIL).ToList();
+                results = results.OrderBy(r => r).TakeWhile(x => x <= rrule.UNTIL);
 
             }
             else if (rrule.COUNT != 0)
             {
                 while (results.Count() < rrule.COUNT)
                 {
-                    results.AddRange(generate_and_filter(lstart, lend, slimit, rrule));
-                    lstart = results.Last().Item1;
-                    lend = results.Last().Item2;
+                    results = results.Union(generate(lstart, slimit, rrule)); 
+                    lstart = results.Last();
                     slimit = slimit.ToDateTime().AddMonths((int)window).ToDATE_TIME();
                 }
 
-                results = results.OrderBy(r => r.Item1).Take((int)rrule.COUNT).ToList();
+                results = results.OrderBy(r => r).Take((int)rrule.COUNT);
             }
             else
             {
-                results.AddRange(generate_and_filter(lstart, lend, slimit, rrule));
-                if (!results.NullOrEmpty())
-                {
-                    lstart = results.Last().Item1;
-                    lend = results.Last().Item2;
-                }
+                results = results.Union(generate(lstart, slimit, rrule)); 
+                if (!results.NullOrEmpty()) lstart = results.Last();
                 else lstart = new DATE_TIME(
                     rrule.UNTIL.FULLYEAR,
                     rrule.UNTIL.MONTH,
@@ -178,11 +184,9 @@ namespace reexmonkey.xcal.domain.extensions
                     rrule.UNTIL.HOUR,
                     rrule.UNTIL.MINUTE,
                     rrule.UNTIL.SECOND);
-
-                results = results.OrderBy(r => r.Item1).ToList();
             }
 
-            return results;
+            return results.ToList();
 
         }
 

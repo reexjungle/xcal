@@ -7,7 +7,7 @@ namespace reexmonkey.foundation.essentials.concretes
 {
     public static class DateTimeExtensions
     {
-        public static uint CountDays(this uint month, uint year)
+        public static uint CountDaysInMonth(this uint month, uint year)
         {
             //if (month < 1 || month > 12) throw new ArgumentOutOfRangeException("month", "Non-valid value for month");
             //if (year < 1 || year > 9999) throw new ArgumentOutOfRangeException("year", "Non-valid value for year");
@@ -30,14 +30,14 @@ namespace reexmonkey.foundation.essentials.concretes
             }
         }
 
-        public static uint CountDays(this uint startmonth, uint endmonth, uint year)
+        public static uint CountDaysInMonthRange(this uint startmonth, uint endmonth, uint year)
         {
             //if (startmonth > endmonth) throw new ArgumentException("The end month should be bigger or equal to the start month", "startmonth");
             //if (startmonth < 1 || startmonth > 12) throw new ArgumentOutOfRangeException("startmonth", "Non-valid value for start month");
             //if (endmonth < 1 || endmonth > 12) throw new ArgumentOutOfRangeException("endmonth", "Non-valid value for end month");
             //if (year < 1 || year > 9999) throw new ArgumentOutOfRangeException("year", "Non-valid value for year");
             var days = 0u;
-            for (uint m = startmonth; m < endmonth; m++) days += m.CountDays(year);
+            for (uint m = startmonth; m < endmonth; m++) days += m.CountDaysInMonth(year);
             return days;
         }
 
@@ -46,7 +46,7 @@ namespace reexmonkey.foundation.essentials.concretes
             return (year % 4 == 0 && year % 100 != 0 && year % 400 == 0);
         }
 
-        public static uint CountYearDays(this uint year)
+        public static uint CountDaysOfYear(this uint year)
         {
             return (year.IsLeapYear()) ? 366u : 365u;
         }
@@ -56,7 +56,7 @@ namespace reexmonkey.foundation.essentials.concretes
             return ((years - 1) / 4 - (years - 1)/ 100 + (years - 1)/400 );
         }
 
-        public static uint CountDays(this uint years)
+        public static uint CountDaysOfYears(this uint years)
         {
             return (years - 1) * 365u + years.CountLeaps();
         }
@@ -157,14 +157,14 @@ namespace reexmonkey.foundation.essentials.concretes
 
         }
 
-        public static bool InFirstWeek(this DateTime value)
+        public static bool InFirstWeekOfYear(this DateTime value)
         {
             var first = new DateTime(value.Year, 1, 1, 0, 0, 0, value.Kind);
             var fdays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday };
             return fdays.Contains(first.DayOfWeek);
         }
 
-        public static bool InLastWeek(this DateTime value)
+        public static bool InLastWeekOfYear(this DateTime value)
         {
             var last = new DateTime(value.Year, 12, 31, 0, 0, 0, value.Kind);
             var ldays = new DayOfWeek[] { DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday };
@@ -184,10 +184,17 @@ namespace reexmonkey.foundation.essentials.concretes
             DayOfWeek first = DayOfWeek.Monday)
         {
             var day = value.DayOfWeek;
-            //adjust
-            if (day >= DayOfWeek.Monday && day <= DayOfWeek.Wednesday) value.AddDays(3);
+
+            //adjust for ISO 8601
+            if (rule == CalendarWeekRule.FirstFourDayWeek 
+                && first == DayOfWeek.Monday 
+                && day >= DayOfWeek.Monday 
+                && day <= DayOfWeek.Wednesday) 
+                value.AddDays(3);
+            
             return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(value, rule, first);
         }
+
 
         /// <summary>
         /// 
@@ -205,13 +212,9 @@ namespace reexmonkey.foundation.essentials.concretes
             return value.WeekOfYear() - firstday.WeekOfYear() + 1;
         }
 
-        public static bool IsNthWeekDayofMonth(this DateTime date, DayOfWeek weekday, int N)
+        public static bool IsNthWeekdayOfMonth(this DateTime date, DayOfWeek weekday, int N)
         {
-            if (N > 0)
-            {
-                var first = new DateTime(date.Year, date.Month, 1);
-                return (date.Day - first.Day)/ 7 == N - 1 && date.DayOfWeek == weekday;
-            }
+            if (N > 0) return (date.Day - 1)/ 7 == N - 1 && date.DayOfWeek == weekday;
             else
             {
 
@@ -220,53 +223,99 @@ namespace reexmonkey.foundation.essentials.concretes
             }
         }
 
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="date"></param>
-        /// <param name="weekday"></param>
-        /// <param name="year"></param>
-        /// <param name="N"></param>
-        /// <returns></returns>
-        /// <see cref="http://www.codeproject.com/Tips/437883/Get-the-Nth-Instance-of-a-Weekday-in-the-Specified"/>
-        public static DateTime NthWeekDayOfYear(this DateTime date, DayOfWeek weekday, int year, int N)
+        public static bool IsNthWeekdayOfYear(this DateTime date, DayOfWeek weekday, int N, CalendarWeekRule rule = CalendarWeekRule.FirstFourDayWeek,
+            DayOfWeek start = DayOfWeek.Monday)
         {
-            if(DateTime.IsLeapYear(year))            
-                N = (N >= 0)
-                ? Math.Min(Math.Max(N, 1), 366)
-                : Math.Min(367 - Math.Abs(N), 366);
-            else
-                N = (N >= 0)
-                ? Math.Min(Math.Max(N, 1), 365)
-                : Math.Min(366 - Math.Abs(N), 365);
-
-            var instance = new DateTime(year, 1, 1); //first day of first month of given year
-            var last = new DateTime(year, 12, 31); // last day of last month of given year
-
-            var max = (last - instance).Days + 1;
-
-            var interval = 0;
-            if (instance.DayOfWeek != weekday)
-            {
-
-                // determine the number of days between the first of the year and 
-                // the first instance of the specified day of week
-                interval = instance.DayOfWeek - weekday;
-                interval = (interval < 0) ? Math.Abs(interval) : 7 - interval;
-                instance = instance.AddDays(interval);
-            }
-
-            if (N > 1)
-            {
-                int offset = 7 * (N - 1);
-                while (offset + interval > max - 1) offset -= 7;
-                instance = instance.AddDays(offset);
-            }
-
-            return instance;
+            var sylvester = new DateTime(date.Year, 12, 31);
+            var weeks = sylvester.WeekOfYear(rule, start);
+            if (N > 0) return (date.Day - 1) / 7 * weeks == N - 1 && date.DayOfWeek == weekday;
+            else return (sylvester.Day - date.Day) / 7 * weeks == (Math.Abs(N) - 1) && date.DayOfWeek == weekday;
         }
 
+        public static DateTime GetNthDateOfMonth(this DayOfWeek weekday, int N, int month, int year)
+        {
+            if (N > 0)
+            {
+                var date = new DateTime(year, month, 1);
+                var d = 7 * (N - 1) + 1;
+                while (date.DayOfWeek < weekday) date = date.AddDays(d++);
+                return date;
+            }
+            else if (N < 0)
+            {
+                var date = new DateTime(year, month, 1).AddMonths(1).AddDays(-1); //get last day of month
+                var d = date.Day - (7 * (Math.Abs(N) - 1));
+                while (date.DayOfWeek > weekday) date = date.AddDays(d--);
+                return date;
+            }
+            else throw new ArgumentException("Zero values of N not allowed");
+        }
+
+        public static DateTime GetNthDateOfYear(this DayOfWeek weekday, int year, int N, CalendarWeekRule rule = CalendarWeekRule.FirstFourDayWeek,
+            DayOfWeek start = DayOfWeek.Monday)
+        {
+            var sylvester = new DateTime(year, 12, 31);
+            var weeks = sylvester.WeekOfYear(rule, start);
+
+            if (N > 0)
+            {
+                var date = new DateTime(year, 1, 1);
+                var d = weeks * 7 * (N - 1) + 1;
+                while (date.DayOfWeek < weekday) date = date.AddDays(d++);
+                return date;
+            }
+            else if (N < 0)
+            {
+                var date = sylvester;
+                var d = date.Day - (weeks * 7 * (Math.Abs(N) - 1));
+                while (date.DayOfWeek > weekday) date = date.AddDays(d--);
+                return date;
+            }
+            else throw new ArgumentException("Zero values of N not allowed");
+        }
+
+        public static IEnumerable<DateTime> GetSimilarDatesOfMonth(this DayOfWeek weekday, int month, int year)
+        {
+            var first = new DateTime(year, month, 1);
+            return weekday.GetSimilarDatesInRange(first, first.AddMonths(1).AddDays(-1));
+        }
+
+        public static IEnumerable<DateTime> GetSimilarDatesOfYear(this DayOfWeek weekday, int year)
+        {
+            return weekday.GetSimilarDatesInRange(new DateTime(year, 1, 1, 0, 0, 0), new DateTime(year, 12, 31, 23, 59, 59));
+        }
+
+        public static IEnumerable<DateTime> GetSimilarDatesInRange(this DayOfWeek weekday, DateTime start, DateTime end, bool include_end = true)
+        {
+            var dates = new List<DateTime>();
+            
+            var offset = start.DayOfWeek - weekday;
+            var match = start.AddDays(offset);
+
+            if (include_end)
+            {
+                while (match <= end)
+                {
+                    dates.Add(match);
+                    match = match.AddDays(7);
+                }  
+            }
+            else
+            {
+                while (match < end)
+                {
+                    dates.Add(match);
+                    match = match.AddDays(7);
+                } 
+            }
+
+            return dates;
+        }
+
+        public static DateTime AddWeeks(this DateTime value, int weeks)
+        {
+            return value.AddDays(7 * weeks);
+        }
 
         public static DateTime PreviousMinute(this DateTime value)
         {
