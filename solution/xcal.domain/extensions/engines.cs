@@ -16,7 +16,7 @@ namespace reexmonkey.xcal.domain.extensions
 
         public static IEnumerable<DATE_TIME> LimitBySetPos(this IEnumerable<DATE_TIME> dates, RECUR rrule)
         {
-            if (dates.NullOrEmpty() || rrule.BYSETPOS.NullOrEmpty()) return dates;
+            if (rrule.BYSETPOS.NullOrEmpty()) return dates;
             
             var positives = rrule.BYSETPOS.Where(x => x > 0);
             var negatives = rrule.BYSETPOS.Where(x => x < 0);
@@ -28,6 +28,8 @@ namespace reexmonkey.xcal.domain.extensions
             //Group per recurring instance
             switch (rrule.FREQ)
             {
+                case FREQ.SECONDLY:
+                    groups = dates.GroupBy(x => x.SECOND); break;
                 case FREQ.MINUTELY:
                     groups = dates.GroupBy(x => x.MINUTE); break;
                 case FREQ.HOURLY:
@@ -42,9 +44,11 @@ namespace reexmonkey.xcal.domain.extensions
                     groups = dates.GroupBy(x => x.FULLYEAR); break;
             }
 
+            var g = groups.ToList();
+
             foreach (var group in groups)
             {
-                var array = group.ToArray(); var len = array.Count();
+                var array = group.OrderBy(x => x).ToArray(); var len = array.Count();
                 results = results.Union(positives.Where(p => p >= 1 && p <= len).Select(p => array[p - 1]));
                 results = results.Union(negatives.Where(n => Math.Abs(n) >= 1 && Math.Abs(n) <= len).Select(n => array[len + n])); 
             }
@@ -151,10 +155,10 @@ namespace reexmonkey.xcal.domain.extensions
 
         public static IEnumerable<DATE_TIME> LimitByYearDay(this IEnumerable<DATE_TIME> dates, RECUR rrule)
         {
-            if (rrule.BYMONTHDAY.NullOrEmpty()) return dates;
+            if (rrule.BYYEARDAY.NullOrEmpty()) return dates;
 
-            var positives = rrule.BYMONTHDAY.Where(x => x > 0).ToList();
-            var negatives = rrule.BYMONTHDAY.Where(x => x < 0).ToList();
+            var positives = rrule.BYYEARDAY.Where(x => x > 0).ToList();
+            var negatives = rrule.BYYEARDAY.Where(x => x < 0).ToList();
 
             IEnumerable<DATE_TIME> results = new List<DATE_TIME>();
             var byyears = dates.GroupBy(x => x.FULLYEAR); //group by year
@@ -253,7 +257,6 @@ namespace reexmonkey.xcal.domain.extensions
         {
             if (rrule.BYDAY.NullOrEmpty()) return dates;
 
-            IEnumerable<DateTime> results = new List<DateTime>();
             var ranked = rrule.BYDAY.Where(x => x.OrdinalWeek != 0);
             var unranked = rrule.BYDAY.Where(x => x.OrdinalWeek == 0);
 
@@ -265,8 +268,8 @@ namespace reexmonkey.xcal.domain.extensions
 
             if (!unranked.NullOrEmpty())
             {
-                results = results.Union(dates.SelectMany(date => unranked.SelectMany(u =>
-                    u.Weekday.ToDayOfWeek().GetSimilarDatesOfMonth((int)date.MONTH, (int)date.FULLYEAR))));
+                dates = dates.Union(dates.SelectMany(date => unranked.SelectMany(u => u.Weekday.ToDayOfWeek().GetSimilarDatesOfMonth((int)date.MONTH, (int)date.FULLYEAR).ToDATE_TIMEs(date.TimeZoneId)).ToList()));
+
             }
 
             return dates.LimitByDayMonthly(rrule);
@@ -363,6 +366,7 @@ namespace reexmonkey.xcal.domain.extensions
 
         public static IEnumerable<DATE_TIME> ExpandByMonth(this IEnumerable<DATE_TIME> dates, RECUR rrule)
         {
+            if (rrule.BYMONTH.NullOrEmpty()) return dates;
             dates = dates.Union(dates.SelectMany(date => rrule.BYMONTH.Select(x =>
                 new DATE_TIME(date.FULLYEAR, x, date.MDAY, date.HOUR, date.MINUTE, date.SECOND, date.Type, date.TimeZoneId))));
 

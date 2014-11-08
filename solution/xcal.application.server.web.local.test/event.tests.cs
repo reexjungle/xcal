@@ -606,51 +606,93 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             };
 
             var Rx = x.GenerateRecurrences();
-            //Assert.AreEqual(Rx.Count, 29);
-            //Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeType.Utc));
+            Assert.AreEqual(Rx.Count, 29);
+            Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeType.Utc));
 
-            //x.Start = new DATE_TIME(2014, 1, 1, 9, 0, 0, TimeType.Utc);
-            //x.End = new DATE_TIME(2014, 1, 1, 11, 30, 0, TimeType.Utc);
 
-            ////check bymonth filter
-            //x.RecurrenceRule = new RECUR
-            //{
-            //    FREQ = FREQ.SECONDLY,
-            //    INTERVAL = 24 * 60 * 60,
-            //    UNTIL = new DATE_TIME(2014, 12, 31, 23, 59, 59, TimeType.Utc),
-            //    BYMONTH = new List<uint> { 1, 3, 9, 7 }
-            //};
+            //check bymonth filter
+            x.Start = new DATE_TIME(2014, 1, 1, 9, 0, 0, TimeType.Utc);
+            x.End = new DATE_TIME(2014, 1, 1, 11, 30, 0, TimeType.Utc);
 
-            //Rx = x.GenerateRecurrences();
-            //Assert.AreEqual(Rx.Count, 122);
-            //Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 09, 30, 9, 0, 0, TimeType.Utc));
+            x.RecurrenceRule = new RECUR
+            {
+                FREQ = FREQ.SECONDLY,
+                INTERVAL = 24 * 60 * 60,
+                UNTIL = new DATE_TIME(2014, 12, 31, 23, 59, 59, TimeType.Utc),
+                BYMONTH = new List<uint> { 1, 3, 9, 7 }
+            };
 
-            ////check byyeardday filter
-            //x.RecurrenceRule = new RECUR
-            //{
-            //    FREQ = FREQ.SECONDLY,
-            //    INTERVAL = 24 * 60 * 60,
-            //    UNTIL = new DATE_TIME(2014, 12, 31, 23, 59, 59, TimeType.Utc),
-            //    BYYEARDAY = new List<int> { -31, 36, 38, 40 }
-            //};
+            Rx = x.GenerateRecurrences();
+            Assert.AreEqual(Rx.Count, 122);
+            Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 09, 30, 9, 0, 0, TimeType.Utc));
 
-            //Rx = x.GenerateRecurrences();
-            //Assert.AreEqual(Rx.First().Start.MDAY, 5u);
-            //Assert.AreEqual(Rx.Last().Start.MONTH, 12u);
+            //check byyeardday filter
+            x.RecurrenceRule = new RECUR
+            {
+                FREQ = FREQ.SECONDLY,
+                INTERVAL = 24 * 60 * 60,
+                UNTIL = new DATE_TIME(2014, 12, 31, 23, 59, 59, TimeType.Utc),
+                BYYEARDAY = new List<int> { -31, 36, 38, 40 }
+            };
 
-            ////check bymonthday filter
-            //x.RecurrenceRule = new RECUR
-            //{
-            //    FREQ = FREQ.SECONDLY,
-            //    INTERVAL = 24 * 60 * 60,
-            //    UNTIL = new DATE_TIME(2014, 12, 31, 23, 59, 59, TimeType.Utc),
-            //    BYMONTHDAY = new List<int> { 1, -1 }
-            //};
+            Rx = x.GenerateRecurrences();
+            Assert.AreEqual(Rx.First().Start.MDAY, 5u);
+            Assert.AreEqual(Rx.Last().Start.MONTH, 12u);
 
-            //Rx = x.GenerateRecurrences();
-            //Assert.AreEqual(Rx.Count(), 24);
-            //Assert.AreEqual(Rx.First().Start, new DATE_TIME(2014, 1, 31, 9, 0, 0, TimeType.Utc));
-            //Assert.AreEqual(Rx.Last().End, new DATE_TIME(2014, 12, 31, 11, 30, 0, TimeType.Utc));
+            //check bymonthday filter
+            x.RecurrenceRule = new RECUR
+            {
+                FREQ = FREQ.SECONDLY,
+                INTERVAL = 24 * 60 * 60,
+                UNTIL = new DATE_TIME(2014, 12, 31, 23, 59, 59, TimeType.Utc),
+                BYMONTHDAY = new List<int> { 1, -1 }
+            };
+
+            Rx = x.GenerateRecurrences();
+            Assert.AreEqual(Rx.Count(), 23);
+            Assert.AreEqual(Rx.First().Start, new DATE_TIME(2014, 1, 31, 9, 0, 0, TimeType.Utc));
+            Assert.AreEqual(Rx.Last().End, new DATE_TIME(2014, 12, 31, 11, 30, 0, TimeType.Utc));
+
+            //check byday filter
+            x.Start = new DATE_TIME(2014, 11, 1, 10, 15, 0, TimeType.Utc);
+            x.End = new DATE_TIME(2014, 11, 1, 12, 45, 0, TimeType.Utc);
+            x.RecurrenceRule = new RECUR
+            {
+                FREQ = FREQ.SECONDLY,
+                INTERVAL = 24* 60* 60,
+                UNTIL = new DATE_TIME(2014, 11, 30, 23, 59, 59, TimeType.Utc),
+                BYDAY = new List<WEEKDAYNUM> 
+                {
+                    new WEEKDAYNUM(WEEKDAY.MO),
+                    new WEEKDAYNUM(WEEKDAY.TU),
+                    new WEEKDAYNUM(WEEKDAY.WE),
+                    new WEEKDAYNUM(WEEKDAY.TH),
+                    new WEEKDAYNUM(WEEKDAY.FR),
+                }
+            };
+
+            Rx = x.GenerateRecurrences();
+            Assert.AreEqual(Rx.Count(), 20);
+            Assert.AreEqual(Rx.First().Start, new DATE_TIME(2014, 11, 03, 10, 15, 0, TimeType.Utc));
+            Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 11, 28, 10, 15, 0, TimeType.Utc));
+
+            //check byhour, byminute and bysecond filters
+            x.Start = new DATE_TIME(2014, 12, 1, 08, 30, 30, TimeType.Utc);
+            x.End = new DATE_TIME(2014, 12, 1, 08, 30, 0, TimeType.Utc);
+            x.RecurrenceRule = new RECUR
+            {
+                FREQ = FREQ.SECONDLY,
+                INTERVAL = 60,
+                UNTIL = new DATE_TIME(2014, 12, 01, 10, 30, 30, TimeType.Utc),
+                BYHOUR = new List<uint> {9, 10},
+                BYMINUTE = new List<uint> { 15, 20, 25 },
+                BYSECOND = new List<uint> {30 }
+            };
+
+            Rx = x.GenerateRecurrences();
+            Assert.AreEqual(Rx.Count(), 6);
+            Assert.AreEqual(Rx.ElementAt(1).Start, new DATE_TIME(2014, 12, 01, 9, 20, 30, TimeType.Utc));
+            Assert.AreEqual(Rx.ElementAt(3).Start, new DATE_TIME(2014, 12, 01, 10, 15, 30, TimeType.Utc));
 
         }
 

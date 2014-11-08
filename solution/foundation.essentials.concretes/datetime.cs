@@ -288,27 +288,23 @@ namespace reexmonkey.foundation.essentials.concretes
         public static IEnumerable<DateTime> GetSimilarDatesInRange(this DayOfWeek weekday, DateTime start, DateTime end, bool include_end = true)
         {
             var dates = new List<DateTime>();
-            
-            var offset = start.DayOfWeek - weekday;
-            var match = start.AddDays(offset);
-
+            var date = start;
             if (include_end)
             {
-                while (match <= end)
+                while(date <= end)
                 {
-                    dates.Add(match);
-                    match = match.AddDays(7);
-                }  
+                    if (date.DayOfWeek == weekday) dates.Add(date);
+                    date = date.AddDays(1);
+                } 
             }
             else
             {
-                while (match < end)
+                while (date < end)
                 {
-                    dates.Add(match);
-                    match = match.AddDays(7);
+                    if (date.DayOfWeek == weekday) dates.Add(date);
+                    date = date.AddDays(1);
                 } 
             }
-
             return dates;
         }
 
