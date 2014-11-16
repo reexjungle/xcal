@@ -1,17 +1,17 @@
 What is xCal?
 ============
-While the answer to this question is fairly straightforward, it is also troublesome; considering the fact that the term ***xCal*** may also ambiguously refer to the XML representation of the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format ([RFC 6321](http://tools.ietf.org/html/rfc6321)) or other calendar-unrelated applications. 
+While the answer to this question is straightforward, it is also troublesome; considering the fact that the term ***xCal*** may also ambiguously refer to the XML representation of the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format ([RFC 6321](http://tools.ietf.org/html/rfc6321)) or other calendar-unrelated applications. 
 
 However, without much fuss, *this* particular xCal is an open source project that basically does 2 things:
 
 1. Implements the [Internet Calendaring and Scheduling Core Object Specification](http://en.wikipedia.org/wiki/ICalendar) ([RFC 5545](http://tools.ietf.org/html/rfc5545))
 
-2. Provides [REST](http://en.wikipedia.org/wiki/Representational_state_transfer)-compliant web services for the above implementation, by which calendar data is communicated under different popular data formats including [CSV](http://en.wikipedia.org/wiki/Comma-separated_values), [MessagePack](http://msgpack.org/), [JSON](http://en.wikipedia.org/wiki/JSON), [JSV](http://mono.servicestack.net/docs/text-serializers/jsv-format) and of course [XML](http://en.wikipedia.org/wiki/XML).
+2. Provides [REST](http://en.wikipedia.org/wiki/Representational_state_transfer)-compliant web services for the above implementation, by which calendar data is communicated under different data formats including [CSV](http://en.wikipedia.org/wiki/Comma-separated_values), [MessagePack](http://msgpack.org/), [JSON](http://en.wikipedia.org/wiki/JSON), [JSV](http://mono.servicestack.net/docs/text-serializers/jsv-format) and of course [XML](http://en.wikipedia.org/wiki/XML).
 
 
 Why xCal?
 ========
-Yeah - *why reinvent the wheel*, when existing calendar-based applications such as [Google Calendar](https://www.google.com/calendar), [Yahoo Calendar] (https://calendar.yahoo.com/), Apple's [Calender ](https://www.apple.com/icloud/#ccm)(formerly iCal) and [Microsoft Outlook](http://products.office.com/en-us/outlook/email-and-calendar-software-microsoft-outlook) are popular and often used to schedule and exchange calendaring information? Furthermore, why build web services when existing cloud services exist to synchronize user calendar data with networked devices? Also, isn't it an overkill to provide web services, when there is already a standardized extension to WebDAv - [CalDav](http://en.wikipedia.org/wiki/CalDAV) ([RFC 4791](http://tools.ietf.org/html/rfc4791)), which allows for the accessibility and sharing of calendar data on remote servers?  
+Hmmm... Are there not enough popular calendar application such as [Google Calendar](https://www.google.com/calendar), [Yahoo Calendar] (https://calendar.yahoo.com/), Apple's [Calender ](https://www.apple.com/icloud/#ccm)(formerly iCal) and [Microsoft Outlook](http://products.office.com/en-us/outlook/email-and-calendar-software-microsoft-outlook), which seem to provide the same scheduling and calendaring features, which xCal promises to deliver? Also, this talk about web services for iCalendar - is it even new at all? [CalDav](http://en.wikipedia.org/wiki/CalDAV) ([RFC 4791](http://tools.ietf.org/html/rfc4791)) being a standardized extension to WebDAv was developed to enhance the accessibility and sharing of calendar data on remote servers... or it seems...  
 
 
 
