@@ -699,13 +699,54 @@ namespace reexmonkey.xcal.application.server.web.dev.test
         [TestMethod]
         public void CheckMinutelyRecurrenceRule()
         {
+            var events = this.GenerateNEvents(1).ToArray();
+            var x = events[0];
+            x.Start = new DATE_TIME(2014, 01, 02, 08, 30, 00, TimeType.Utc);
+            x.End = new DATE_TIME(2014, 01, 02, 11, 30, 00, TimeType.Utc);
+
+            x.RecurrenceRule = new RECUR
+            {
+                FREQ = FREQ.MINUTELY,
+                INTERVAL = 1,
+                UNTIL = new DATE_TIME(2014, 01, 02, 08, 45, 0, TimeType.Utc),
+                BYMINUTE = new List<uint> {30, 31, 33, 35, 37, 39, 40, 45},
+                BYSECOND =  new List<uint>{0, 15, 30, 45 },
+            };
+
+            //var Rx = x.GenerateRecurrences();
+            //Assert.AreEqual(Rx.Count, 4);
+            //Assert.AreEqual(Rx.First().Start, new DATE_TIME(2014, 1, 02, 08, 30, 15, TimeType.Utc));
+            //Assert.AreEqual(Rx.ElementAt(2).Start, new DATE_TIME(2014, 1, 02, 08, 30, 45, TimeType.Utc));
+            //Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 1, 02, 08, 31, 00, TimeType.Utc));
+
+            x.RecurrenceRule.BYSETPOS = new List<int> {1, -1};
+            var Rx = x.GenerateRecurrences();
+            Assert.AreEqual(Rx.Count, 2);
+            Assert.AreEqual(Rx.First().Start, new DATE_TIME(2014, 1, 02, 08, 30, 15, TimeType.Utc));
+            Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 1, 02, 08, 31, 00, TimeType.Utc));
+
 
         }
 
         [TestMethod]
         public void CheckHourlyRecurrenceRule()
         {
+            var events = this.GenerateNEvents(1).ToArray();
+            var x = events[0];
+            x.Start = new DATE_TIME(2014, 1, 1, 9, 0, 0, TimeType.Utc);
+            x.End = new DATE_TIME(2014, 1, 1, 11, 30, 0, TimeType.Utc);
 
+            //check byday filter
+            x.RecurrenceRule = new RECUR
+            {
+                FREQ = FREQ.HOURLY,
+                INTERVAL = 1,
+                UNTIL = new DATE_TIME(2014, 1, 1, 12, 0, 0, TimeType.Utc),
+                BYMINUTE = new List<uint> { 5, 10, 15, 20, 25 },
+                BYSETPOS = new List<int> {1, -1 }
+            };
+
+            var Rx = x.GenerateRecurrences();
         }
 
         [TestMethod]
@@ -721,18 +762,14 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             {
                 FREQ = FREQ.DAILY,
                 INTERVAL = 1,
-                UNTIL = new DATE_TIME(2014, 12, 31, 23, 59, 59, TimeType.Utc),
-                BYDAY = new List<WEEKDAYNUM> 
-                { 
-                    new WEEKDAYNUM(1, WEEKDAY.MO), //first monday of each month
-                    new WEEKDAYNUM(-1, WEEKDAY.MO) //last mondays of each month
-                }
+                UNTIL = new DATE_TIME(2014, 1, 3, 23, 0, 0, TimeType.Utc),
+                BYHOUR = new List<uint> { 9, 12, 15, 18, 21 },
+                BYMINUTE = new List<uint> { 5, 10, 15, 20, 25 },
+                BYSETPOS = new List<int> { 1, -1}
             };
 
             var Rx = x.GenerateRecurrences();
-            Assert.AreEqual(Rx.Count(), 24);
-            Assert.AreEqual(Rx.First().Start, new DATE_TIME(2014, 01, 6, 9, 0, 0, TimeType.Utc));
-            Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 12, 29, 9, 0, 0, TimeType.Utc));
+
         }
 
         [TestMethod]

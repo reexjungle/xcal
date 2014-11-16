@@ -183,7 +183,7 @@ namespace reexmonkey.xcal.domain.extensions
                     slimit = calculate_limit(slimit, (int)window, rrule);
                 }
 
-                results = results.OrderBy(r => r).TakeWhile(x => x <= rrule.UNTIL);
+                results = results.Where(x => x <= rrule.UNTIL);
 
             }
             else if (rrule.COUNT != 0)
