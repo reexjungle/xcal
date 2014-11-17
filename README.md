@@ -11,10 +11,9 @@ However, without much fuss, *this* particular xCal is an open source project tha
 
 Why xCal?
 ========
-Hmmm... Are there not enough popular calendar application such as [Google Calendar](https://www.google.com/calendar), [Yahoo Calendar] (https://calendar.yahoo.com/), Apple's [Calender ](https://www.apple.com/icloud/#ccm)(formerly iCal) and [Microsoft Outlook](http://products.office.com/en-us/outlook/email-and-calendar-software-microsoft-outlook), which seem to provide the same scheduling and calendaring features, which xCal promises to deliver? Also, this talk about web services for iCalendar - is it even new at all? [CalDav](http://en.wikipedia.org/wiki/CalDAV) ([RFC 4791](http://tools.ietf.org/html/rfc4791)) being a standardized extension to WebDAv was developed to enhance the accessibility and sharing of calendar data on remote servers... or it seems...  
+Hmmm... Are there not enough popular calendar application such as [Google Calendar](https://www.google.com/calendar), [Yahoo Calendar] (https://calendar.yahoo.com/), Apple's [Calender ](https://www.apple.com/icloud/#ccm)(formerly iCal) and [Microsoft Outlook](http://products.office.com/en-us/outlook/email-and-calendar-software-microsoft-outlook), which seem to provide the same scheduling and calendaring features, which xCal promises to deliver? Also, this talk about web services for iCalendar - is it even new at all? [CalDav](http://en.wikipedia.org/wiki/CalDAV) ([RFC 4791](http://tools.ietf.org/html/rfc4791)) being a standardized extension to WebDav was developed to enhance the accessibility and sharing of calendar data on remote servers?... or so it seems...  
 
-
-
+If you are a normal home user, who needs a calendar application to schedule appointments and maybe share the calendar information with others, then xCal would be redudant for this purpose, since existing applications are sufficient.... but as a developer tasked with the creation or maintenance of a time-based system (e.g. reservation/booking system), (*aha!*) would you risk reinventing the wheel by designing and implementing a custom solution OR would you integrate services provided by well-implemented solution of the standard RFC-5545 into your application? You decide....
 
 Table of Contents
 =================
