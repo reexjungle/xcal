@@ -23,8 +23,6 @@ Fourthly, as a developer, you do not need to *reinvent the wheel* when tasked wi
 
 Finally since xCal is open-source, you gain the awesome [benefits][1] of using open source software, which include low-cost (*zero-cost in this case*), quality improvement through continuous community input, business agility and mitigation of business risks. 
 
-[1]: http://www.computerworld.com/article/2486991/app-development-4-reasons-companies-say-yes-to-open-source.html?page=1 "4 reasons companies say yes to open source"
-
 Table of Contents
 =================
 1. [Get Started](https://github.com/reexmonkey/xcal/#get-started)
@@ -41,21 +39,13 @@ Get Started
 ===========
 To get started on the xCal, you might want to choose one of the following options:
 
-1. Preview a [demo][1] of a running xCal server. 
-2. Download the master repository [ZIP][2] file from GitHub.
-3. [Clone][3] the master repository on desktop using the Github application. 
+1. Preview a [demo][2] of a running xCal server. 
+2. Download the master repository [ZIP][3] file from GitHub.
+3. [Clone][4] the master repository on desktop using the Github application. 
 
-[1]: https://reexux.com/xcal/dev1/metadata "Live Demo of xCal Web Services"
-[2]: https://github.com/reexmonkey/xcal/archive/master.zip "Download xCal as ZIP file"
-[3]: https://github.com/reexmonkey/xcal.git "Clone the master repository"
+### Contents of Download Package
 
-
-
-### Contents of Downloaded Package
-
-xCal is written entirely in C# and in case your favorite [IDE](http://en.wikipedia.org/wiki/Integrated_development_environment) is [Microsoft Visual Studio](http://www.visualstudio.com/), then the setup is guaranteed to be *pain-free* (*yeah you do not need the pain-killers*). All, you have to do is look for the solution file **xcal.sln** in the downloaded package, double-click it and *voila* - xCal project tree is automatically loaded. 
-
-However, you may not be a Visual Studio enthusiast - perhaps a hardcore programmer who types on a basic text editor and uses command line tools to build the code or an expert user of another third-party .NET IDE. Well, in that case you may have to manually manage the project folders and files but lo! do not fear it is not a daunting task either - the following illustration hepls provide an overview of the logical layout of the directories and project files (*~~not~~ all that ends with .csproj,...*).
+The download package contains source codes and versioning files of xCal. It is also worth mentioning here that xCal is written entirely in C# and thus C# files are located within respective .NET project directories, which in turn are enclosed in a single solution directory. Illustrated below is the overview of such a physical layout: 
 
 ```
 solution/
@@ -93,6 +83,13 @@ solution/
 
 ```
 
+### Setting Up Project
+
+### Compiling the Source Code
+
+Nevertheless, a specialized IDE such as [Microsoft Visual Studio][5] with an advanced editor, debugger and compiler is recommended for this project. As a matter of fact, the Visual Studio Community 2013 version is now free for an unlimited number of users for all open source purposes and can be grabbed [here][6].
+
+
 ### Done with project setup - any further configuration?
 Speaking from the heart, there is no greater killjoy (*perhaps with the exception of bugging exceptions*) than an initial waste of precious development time with mindless extra configurations during project setup. As such, the configuration of xCal is kept to the minimum. This means, no need to fret about maintaining external library dependencies, which happen to be [NuGet](https://www.nuget.org/) packages that are automatically and happily resolved on the first project build. 
 
@@ -128,3 +125,10 @@ License
 =======
 Copyright (c) 2014, Emmanuel Ngwane. All rights reserved.
 xCal source code is released under the [BSD](https://github.com/reexmonkey/xcal/blob/master/LICENSE) License. Its documentation is released under the [Creative Commons](https://github.com/reexmonkey/xcal/blob/master/docs/LICENSE) license.
+
+[1]: http://www.computerworld.com/article/2486991/app-development-4-reasons-companies-say-yes-to-open-source.html?page=1 "4 reasons companies say yes to open source"
+[2]: https://reexux.com/xcal/dev1/metadata "Live Demo of xCal Web Services"
+[3]: https://github.com/reexmonkey/xcal/archive/master.zip "Download xCal as ZIP file"
+[4]: https://github.com/reexmonkey/xcal.git "Clone the master repository"
+[5]: http://www.visualstudio.com/ "Visual Studio"
+[6]: http://www.visualstudio.com/en-us/visual-studio-community-vs.aspx "Visual Studio Community 2013"
