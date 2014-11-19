@@ -83,11 +83,18 @@ solution/
 
 ```
 
-### Setting up the xCal Project
+### Development Tools for xCal
 
-xCal is written entirely in C# and therefore it is recommended to use a specialized IDE such as [Microsoft Visual Studio][5] whose editor, debugger and compiler features facilitate the maintenance, compiling and testing of the source files. As a matter of fact, Microsoft now  offers [Visual Studio Community 2013][6] at no cost to an unlimited number of users developing open source projects. However if Visual Studio does not suit your tastes, please feel free to use other third-party text editors and development tools.
+xCal is written entirely in C# and therefore it is recommended to use a specialized IDE such as [Microsoft Visual Studio][5] whose editor, debugger and compiler features facilitate the maintenance, compiling and testing of the source files. As a matter of fact, Microsoft now  offers [Visual Studio Community 2013][6] at no cost to an unlimited number of users developing open source projects. However if Visual Studio does not suit your tastes, please feel free to use other third-party text editors and development tools. 
 
-### Configuring xCal
+*For the remainder of this Get Started section, it would be assumed for the sake of simplicity, that you are using visual studio as the main development tool.*
+
+### Setting up xCal
+Many would agree that the setup process of a software project should be as less painful as possible. This implies minimal configurations or setup with a click. Following, the setup of xCal is fairly straight-forward as described below depending on which download opton you chose above.
+
+#### Source Code downloaded as ZIP file
+
+#### Source Code opened directly in GitHub desktop application 
 
 ### Building xCal
 
