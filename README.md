@@ -13,7 +13,7 @@ First of all it is free - yeah **free** as in *free air* and not as in *free bee
 
 Secondly, it allows you to host and maintain your  calendar data on your own private data - it respects your privacy by giving you total control over your data and thus eliminates the risk of sharing your data with unkown third parties.
 
-Thirdly, as a developer, you do not need to *reinvent the wheel* when tasked with incorporating a time-based system (e.g. reservation/booking systems) in your applications. xCal takes this burden off your shoulders by reducing the overhead to simple direct and REST calls (though the API) to the calendar web server, thereby allowing you to concentrate on the goals of your application.  
+Thirdly, as a developer, you do not need to *reinvent the wheel* when tasked with incorporating a time-based system (e.g. reservation/booking systems) in your applications. xCal takes this burden off your shoulders by reducing the overhead to simple calls from your client application (though the API) to the calendar web server, thereby allowing you to concentrate on the goals of your application.  
 
 Fourthly, since it open-source xCal gains the same benefits as other open source software such as low-cost of usage (*indeed free in this case*), quality improvement through continuous community input, business agility and mitigation of business risks. 
 
