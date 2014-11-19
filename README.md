@@ -9,9 +9,9 @@ The xCal project is an **open-source** project that basically does 2 things:
 
 Why xCal?
 =========
-First of all it is free - yes **free** as in *free air* and not as in *free beer* i.e. *"free with no strings attached"*. 
+First of all it is free - yes **free** as in *free air* and not as in *free beer* ditto *with no strings attached*. 
 
-Secondly, it allows you **to host and maintain your calendar data on your own private server** - it respects your privacy by giving you total control over your data and thus eliminates the risk of sharing your data with unkown third parties.
+Secondly, it allows you **to host and maintain your calendar data on your own server** - that is, it respects your privacy by giving you total control over your data and thus eliminates the risk of sharing your data with unkown third parties.
 
 Thirdly, xCal also supports (in addition to iCalendar) various calendar data representations: 
 * [CSV](http://en.wikipedia.org/wiki/Comma-separated_values)
@@ -22,8 +22,9 @@ Thirdly, xCal also supports (in addition to iCalendar) various calendar data rep
 
 Fourthly, as a developer, you do not need to *reinvent the wheel* when tasked with incorporating a time-based system (e.g. reservation/booking systems) in your applications. xCal takes this burden off your shoulders by reducing the overhead to simple calls from your client application (though the API) to the calendar web server, thereby allowing you to concentrate on the goals of your application.  
 
-Finally since xCal is open-source, you gain the awesome benefits of using open source software, which include low-cost (*zero-cost in this case*), quality improvement through continuous community input, business agility and mitigation of business risks. 
+Finally since xCal is open-source, you gain the awesome [benefits][1] of using open source software, which include low-cost (*zero-cost in this case*), quality improvement through continuous community input, business agility and mitigation of business risks. 
 
+[1]: http://www.computerworld.com/article/2486991/app-development-4-reasons-companies-say-yes-to-open-source.html?page=1 "4 reasons companies say yes to open source"
 
 Table of Contents
 =================
