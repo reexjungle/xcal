@@ -99,7 +99,7 @@ Many would agree that the setup process of a software project should be as less 
 
 
 #### Source Code Cloned directly in GitHub desktop application 
-1. Local Github desktop application starts up when [link][4] is clicked.
+1. Local Github desktop application starts up when the clone [link][4] is clicked.
 2. Chose location where code should be cloned.
 3. Open the *solution* folder and search for the \*.sln file.
 4. Double-click the file and Visual Studio starts up and loads the entire project tree.
@@ -109,14 +109,14 @@ Many would agree that the setup process of a software project should be as less 
 1. Select the root of the Solution Explorer Tree
 2. Right-click and choose *Rebuild Solution* from context menu
 
-#### Notes on Building xCal
-* You need a running internet connection on first build becuase dependencies shall be automatically downloaded on first build
+#### *Notes on Building xCal*
+* You need a running internet connection on first build for Visual Studio to automatically download Nuget Packages for dependencies.
 
 ### Running xCal
-1. Select the *xcal.application.server.web.local* project as start project
-2. Run the project -> voila! xCal starts running (see [Notes on Running xCal][])
+1. Select the *xcal.application.server.web.local* as start project.
+2. Run the project -> voila! xCal starts running!
 
-#### Notes on Running xCal
+#### *Notes on Running xCal*
 * All dependencies should be correctly-configured for xCal to run successfully (More on [Dependencies][])
 
 ### Deploying xCal
