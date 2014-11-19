@@ -93,12 +93,34 @@ xCal is written entirely in C# and therefore it is recommended to use a speciali
 Many would agree that the setup process of a software project should be as less painful as possible. This implies minimal configurations or setup with a click. Following, the setup of xCal is fairly straight-forward as described below depending on which download opton you chose above.
 
 #### Source Code downloaded as ZIP file
+1. Extract source code to desired location
+2. Open the *solution* folder and search for the \*.sln file
+3. Double-click the file and Visual Studio starts up and loads the entire project tree.
 
-#### Source Code opened directly in GitHub desktop application 
+
+#### Source Code Cloned directly in GitHub desktop application 
+1. Local Github desktop application starts up when [link][4] is clicked.
+2. Chose location where code should be cloned.
+3. Open the *solution* folder and search for the \*.sln file.
+4. Double-click the file and Visual Studio starts up and loads the entire project tree.
+
 
 ### Building xCal
+1. Select the root of the Solution Explorer Tree
+2. Right-click and choose *Rebuild Solution* from context menu
+
+#### Notes on Building xCal
+* You need a running internet connection on first build becuase dependencies shall be automatically downloaded on first build
+
+### Running xCal
+1. Select the *xcal.application.server.web.local* project as start project
+2. Run the project -> voila! xCal starts running (see [Notes on Running xCal][])
+
+#### Notes on Running xCal
+* All dependencies should be correctly-configured for xCal to run successfully (More on [Dependencies][])
 
 ### Deploying xCal
+
 
 ### Done with project setup - any further configuration?
 Speaking from the heart, there is no greater killjoy (*perhaps with the exception of bugging exceptions*) than an initial waste of precious development time with mindless extra configurations during project setup. As such, the configuration of xCal is kept to the minimum. This means, no need to fret about maintaining external library dependencies, which happen to be [NuGet](https://www.nuget.org/) packages that are automatically and happily resolved on the first project build. 
@@ -108,6 +130,9 @@ Nevertheless, xCal also depends on backend data management systems for logging a
 
 ###### For further information on the project, web service, its architecture, dependencies, code examples and more, please do not hesitate to visit the [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) 
 
+
+Dependencies
+============
 
 Contributing
 ============
