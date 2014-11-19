@@ -9,7 +9,7 @@ The xCal project is an **open-source** project that basically does 2 things:
 
 Why xCal?
 =========
-First of all it is free - yeah **free** as in *free air* and not as in *free beer* i.e. *"free with no strings attached"*. 
+First of all it is free - yes **free** as in *free air* and not as in *free beer* i.e. *"free with no strings attached"*. 
 
 Secondly, it allows you to host and maintain your  calendar data on your own private data - it respects your privacy by giving you total control over your data and thus eliminates the risk of sharing your data with unkown third parties.
 
