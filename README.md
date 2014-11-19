@@ -29,30 +29,30 @@ Finally since xCal is open-source, you gain the awesome [benefits][1] of using o
 Table of Contents
 =================
 1. [Get Started](https://github.com/reexmonkey/xcal/#get-started)
-2. [Contributing](https://github.com/reexmonkey/xcal/#contributing)
-3. [Community](https://github.com/reexmonkey/xcal/#community)
-4. [Documentation](https://github.com/reexmonkey/xcal/#documentation)
-5. [Versioning](https://github.com/reexmonkey/xcal/#versioning)
-6. [Contact](https://github.com/reexmonkey/xcal/#contact)
-7. [License](https://github.com/reexmonkey/xcal/#license)
+2. [Dependencies](https://github.com/reexmonkey/xcal/#contributing)
+3. [Contributing](https://github.com/reexmonkey/xcal/#contributing)
+4. [Community](https://github.com/reexmonkey/xcal/#community)
+5. [Documentation](https://github.com/reexmonkey/xcal/#documentation)
+6. [Versioning](https://github.com/reexmonkey/xcal/#versioning)
+7. [Contact](https://github.com/reexmonkey/xcal/#contact)
+8. [License](https://github.com/reexmonkey/xcal/#license)
 
 
 Get Started 
-==================
-Welcome, if you are reading this, it means your curiosity on xCal has gone one notch higher and this section is dedicated to help you get started. 
+===========
+To get started on the xCal, you might want to choose one of the following options:
 
-### How to obtain xCal run-times 
+1. Preview a [demo][1] of a running xCal server. 
+2. Download the master repository [ZIP][2] file from GitHub.
+3. [Clone][3] the master repository on desktop using the Github application. 
 
-
-### Nope, how to get xCal source code
-
-Here are 2 quick ways to receive the code:
-
-* [Download as ZIP file from the master repository](https://github.com/reexmonkey/xcal/archive/master.zip)
-* Clone the master repository: https://github.com/reexmonkey/xcal.git
+[1]: https://reexux.com/xcal/dev1/metadata "Live Demo of xCal Web Services"
+[2]: https://github.com/reexmonkey/xcal/archive/master.zip "Download xCal as ZIP file"
+[3]: https://github.com/reexmonkey/xcal.git "Clone the master repository"
 
 
-### Got the source code already - what next?
+
+### Contents of Download Package?
 
 xCal is written entirely in C# and in case your favorite [IDE](http://en.wikipedia.org/wiki/Integrated_development_environment) is [Microsoft Visual Studio](http://www.visualstudio.com/), then the setup is guaranteed to be *pain-free* (*yeah you do not need the pain-killers*). All, you have to do is look for the solution file **xcal.sln** in the downloaded package, double-click it and *voila* - xCal project tree is automatically loaded. 
 
