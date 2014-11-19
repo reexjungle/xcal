@@ -104,9 +104,6 @@ Many would agree that the setup process of a software project should be rendered
 3. Open the *solution* folder and search for the \*.sln file.
 4. Double-click the file and Visual Studio starts up and loads the entire project tree.
 
-##### *Notes*
-* If you have do no yet have the GitHub application, you have to download from 
-
 ### Building xCal
 1. Select the root of the Solution Explorer Tree
 2. Right-click and choose *Rebuild Solution* from context menu
@@ -116,7 +113,7 @@ Many would agree that the setup process of a software project should be rendered
 
 ### Running xCal
 1. Select the *xcal.application.server.web.local* as start project.
-2. Run the project -> voila! xCal starts running!
+2. Run the project -> voila! xCal runs!
 
 ##### *Notes*
 * All dependencies should be correctly-configured for xCal to run successfully (More on [Dependencies][])
