@@ -92,13 +92,13 @@ xCal is written entirely in C# and therefore it is recommended to use a speciali
 ### Setting up xCal
 Many would agree that the setup process of a software project should be as less painful as possible. This implies minimal configurations or setup with a click. Following, the setup of xCal is fairly straight-forward as described below depending on which download opton you chose above.
 
-#### Source Code downloaded as ZIP file
+##### Source Code downloaded as ZIP file
 1. Extract source code to desired location
 2. Open the *solution* folder and search for the \*.sln file
 3. Double-click the file and Visual Studio starts up and loads the entire project tree.
 
 
-#### Source Code Cloned directly in GitHub desktop application 
+##### Source Code Cloned directly in GitHub desktop application 
 1. Local Github desktop application starts up when the clone [link][4] is clicked.
 2. Chose location where code should be cloned.
 3. Open the *solution* folder and search for the \*.sln file.
@@ -109,14 +109,14 @@ Many would agree that the setup process of a software project should be as less 
 1. Select the root of the Solution Explorer Tree
 2. Right-click and choose *Rebuild Solution* from context menu
 
-#### *Notes on Building xCal*
+##### *Notes*
 * You need a running internet connection on first build for Visual Studio to automatically download Nuget Packages for dependencies.
 
 ### Running xCal
 1. Select the *xcal.application.server.web.local* as start project.
 2. Run the project -> voila! xCal starts running!
 
-#### *Notes on Running xCal*
+##### *Notes*
 * All dependencies should be correctly-configured for xCal to run successfully (More on [Dependencies][])
 
 ### Deploying xCal
