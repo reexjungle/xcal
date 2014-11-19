@@ -52,7 +52,7 @@ To get started on the xCal, you might want to choose one of the following option
 
 
 
-### Contents of Download Package?
+### Contents of Downloaded Package
 
 xCal is written entirely in C# and in case your favorite [IDE](http://en.wikipedia.org/wiki/Integrated_development_environment) is [Microsoft Visual Studio](http://www.visualstudio.com/), then the setup is guaranteed to be *pain-free* (*yeah you do not need the pain-killers*). All, you have to do is look for the solution file **xcal.sln** in the downloaded package, double-click it and *voila* - xCal project tree is automatically loaded. 
 
