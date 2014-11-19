@@ -31,6 +31,9 @@ Table of Contents
 
 Getting Started 
 ==================
+Welcome, if you have reading this, it means your curiosity on xCal has gone one notch higher.  
+
+
 ### How to obtain xCal run-times 
 
 
