@@ -20,7 +20,7 @@ Fourthly, since it open-source xCal gains the same benefits as other open source
 
 Table of Contents
 =================
-1. [Getting Started](https://github.com/reexmonkey/xcal/#getting-started)
+1. [Get Started](https://github.com/reexmonkey/xcal/#get-started)
 2. [Contributing](https://github.com/reexmonkey/xcal/#contributing)
 3. [Community](https://github.com/reexmonkey/xcal/#community)
 4. [Documentation](https://github.com/reexmonkey/xcal/#documentation)
@@ -29,10 +29,9 @@ Table of Contents
 7. [License](https://github.com/reexmonkey/xcal/#license)
 
 
-Getting Started 
+Get Started 
 ==================
-Welcome, if you have reading this, it means your curiosity on xCal has gone one notch higher.  
-
+Welcome, if you are reading this, it means your curiosity on xCal has gone one notch higher and this section is dedicated to help you get started. 
 
 ### How to obtain xCal run-times 
 
