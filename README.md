@@ -4,9 +4,9 @@ xCal is an **open-source** software project, which basically does 2 things:
 
 1. Implements the [Internet Calendaring and Scheduling Core Object Specification](http://en.wikipedia.org/wiki/ICalendar) ([RFC 5545](http://tools.ietf.org/html/rfc5545))
 
-2. Provides [REST](http://en.wikipedia.org/wiki/Representational_state_transfer)-compliant web services for the above implementation, by which calendar data is communicated under different data formats including [CSV](http://en.wikipedia.org/wiki/Comma-separated_values), [MessagePack](http://msgpack.org/), [JSON](http://en.wikipedia.org/wiki/JSON), [JSV](http://mono.servicestack.net/docs/text-serializers/jsv-format) and of course [XML](http://en.wikipedia.org/wiki/XML).
+2. Provides [REST](http://en.wikipedia.org/wiki/Representational_state_transfer)-compliant web services for the above implementation, to facilitate the communication of calendar data through various data formats including [iCalendar](http://en.wikipedia.org/wiki/ICalendar), [CSV](http://en.wikipedia.org/wiki/Comma-separated_values), [MessagePack](http://msgpack.org/), [JSON](http://en.wikipedia.org/wiki/JSON), [JSV](http://mono.servicestack.net/docs/text-serializers/jsv-format) and [XML](http://en.wikipedia.org/wiki/XML).
 
-*It is also worth noting that the term xCal may also ambigously refer to the XML representation of the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) format ([RFC 6321](http://tools.ietf.org/html/rfc6321)) or other calendar-unrelated applications.* 
+
 
 
 Why xCal?
