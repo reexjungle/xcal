@@ -45,7 +45,7 @@ To get started on the xCal, you might want to choose one of the following option
 
 ### Contents of Download Package
 
-The download package contains source codes and versioning files of xCal. It is also worth mentioning here that xCal is a .NET project and thus source files are logically arrange according to respective project files (\*.csproj), which in turn are linked to a single solution file (\*.sln) as illustrated below: 
+The download package contains source codes and versioning files of xCal. It is also worth mentioning here that xCal is a .NET project and thus source files are logically associated to respective project files (\*.csproj), which in turn are linked to a single solution file (\*.sln) as illustrated below: 
 
 ```
 solution/
@@ -85,13 +85,13 @@ solution/
 
 ### Setting up the xCal Project
 
-xCal is written entirely in C# and therefore it is recommended to use a specialized IDE such as [Microsoft Visual Studio][5] whose editor, debugger and compiler features facilitate the maintenance, compiling and testing of the source files. As a matter of fact, Microsoft now  offers [Visual Studio Community 2013][6] at no cost to an unlimited number of users developing open source projects. However, please feel free to use other third-party tools´for the same purposes.
+xCal is written entirely in C# and therefore it is recommended to use a specialized IDE such as [Microsoft Visual Studio][5] whose editor, debugger and compiler features facilitate the maintenance, compiling and testing of the source files. As a matter of fact, Microsoft now  offers [Visual Studio Community 2013][6] at no cost to an unlimited number of users developing open source projects. However if Visual Studio does not suit your tastes, please feel free to use other third-party text editors and development tools.
 
+### Configuring xCal
 
-### Compiling the Source Code
+### Building xCal
 
-Nevertheless, 
-
+### Deploying xCal
 
 ### Done with project setup - any further configuration?
 Speaking from the heart, there is no greater killjoy (*perhaps with the exception of bugging exceptions*) than an initial waste of precious development time with mindless extra configurations during project setup. As such, the configuration of xCal is kept to the minimum. This means, no need to fret about maintaining external library dependencies, which happen to be [NuGet](https://www.nuget.org/) packages that are automatically and happily resolved on the first project build. 
