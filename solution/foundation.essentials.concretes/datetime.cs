@@ -251,8 +251,7 @@ namespace reexmonkey.foundation.essentials.concretes
             else throw new ArgumentException("Zero values of N not allowed");
         }
 
-        public static DateTime GetNthDateOfYear(this DayOfWeek weekday, int year, int N, CalendarWeekRule rule = CalendarWeekRule.FirstFourDayWeek,
-            DayOfWeek start = DayOfWeek.Monday)
+        public static DateTime GetNthDateOfYear(this DayOfWeek weekday, int N, int year, CalendarWeekRule rule = CalendarWeekRule.FirstFourDayWeek, DayOfWeek start = DayOfWeek.Monday)
         {
             var sylvester = new DateTime(year, 12, 31);
             var weeks = sylvester.WeekOfYear(rule, start);
