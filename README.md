@@ -39,7 +39,7 @@ Get Started
 ===========
 To get started on the xCal, you might want to choose one of the following options:
 
-1. Preview a [demo][2] of a running xCal server. 
+1. Preview a [demo][2] of xCal web serivices. 
 2. Download the master repository [ZIP][3] file from GitHub.
 3. [Clone][4] the master repository on desktop using the Github application. 
 
@@ -85,25 +85,27 @@ solution/
 
 ### Development Tools for xCal
 
-xCal is written entirely in C# and therefore it is recommended to use a specialized IDE such as [Microsoft Visual Studio][5] whose editor, debugger and compiler features facilitate the maintenance, compiling and testing of the source files. As a matter of fact, Microsoft now  offers [Visual Studio Community 2013][6] at no cost to an unlimited number of users developing open source projects. However if Visual Studio does not suit your tastes, please feel free to use other third-party text editors and development tools. 
+xCal is written entirely in C# - therefore it is recommended to use a specialized IDE such as [Microsoft Visual Studio][5] whose editor, debugger and compiler features facilitate rapid application development. As a matter of fact, Microsoft now  offers [Visual Studio Community 2013][6] at no cost to an unlimited number of users developing open source projects. In any case, if Visual Studio does not suit your tastes, please feel free to use other third-party tools. 
 
 *For the remainder of this Get Started section, it would be assumed for the sake of simplicity, that you are using visual studio as the main development tool.*
 
 ### Setting up xCal
-Many would agree that the setup process of a software project should be as less painful as possible. This implies minimal configurations or setup with a click. Following, the setup of xCal is fairly straight-forward as described below depending on which download opton you chose above.
+Many would agree that the setup process of a software project should be rendered less painful as possible. This often implies minimal configuration and non-complex set up procedures. As such, xCal can be set up in more than one way.
 
-##### Source Code downloaded as ZIP file
+##### Setup from downloaded zipped source file
 1. Extract source code to desired location
 2. Open the *solution* folder and search for the \*.sln file
 3. Double-click the file and Visual Studio starts up and loads the entire project tree.
 
 
-##### Source Code Cloned directly in GitHub desktop application 
+##### Setup from cloned source in GitHub desktop application 
 1. Local Github desktop application starts up when the clone [link][4] is clicked.
 2. Chose location where code should be cloned.
 3. Open the *solution* folder and search for the \*.sln file.
 4. Double-click the file and Visual Studio starts up and loads the entire project tree.
 
+##### *Notes*
+* If you have do no yet have the GitHub application, you have to download from 
 
 ### Building xCal
 1. Select the root of the Solution Explorer Tree
@@ -164,6 +166,6 @@ xCal source code is released under the [BSD](https://github.com/reexmonkey/xcal/
 [1]: http://www.computerworld.com/article/2486991/app-development-4-reasons-companies-say-yes-to-open-source.html?page=1 "4 reasons companies say yes to open source"
 [2]: https://reexux.com/xcal/dev1/metadata "Live Demo of xCal Web Services"
 [3]: https://github.com/reexmonkey/xcal/archive/master.zip "Download xCal as ZIP file"
-[4]: https://github.com/reexmonkey/xcal.git "Clone the master repository"
+[4]: github-windows://openRepo/https://github.com/reexmonkey/xcal "Clone the master repository"
 [5]: http://www.visualstudio.com/ "Visual Studio"
 [6]: http://www.visualstudio.com/en-us/visual-studio-community-vs.aspx "Visual Studio Community 2013"
