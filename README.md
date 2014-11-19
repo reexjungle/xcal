@@ -45,7 +45,7 @@ To get started on the xCal, you might want to choose one of the following option
 
 ### Contents of Download Package
 
-The download package contains source codes and versioning files of xCal. It is also worth mentioning here that xCal is written entirely in C# and thus C# files are located within respective .NET project directories, which in turn are enclosed in a single solution directory. Illustrated below is the overview of such a physical layout: 
+The download package contains source codes and versioning files of xCal. It is also worth mentioning here that xCal is a .NET project and thus source files are logically arrange according to respective project files (\*.csproj), which in turn are linked to a single solution file (\*.sln) as illustrated below: 
 
 ```
 solution/
@@ -83,11 +83,14 @@ solution/
 
 ```
 
-### Setting Up Project
+### Setting up the xCal Project
+
+xCal is written entirely in C# and therefore it is recommended to use a specialized IDE such as [Microsoft Visual Studio][5] whose editor, debugger and compiler features facilitate the maintenance, compiling and testing of the source files. As a matter of fact, Microsoft now  offers [Visual Studio Community 2013][6] at no cost to an unlimited number of users developing open source projects. However, please feel free to use other third-party tools´for the same purposes.
+
 
 ### Compiling the Source Code
 
-Nevertheless, a specialized IDE such as [Microsoft Visual Studio][5] with an advanced editor, debugger and compiler is recommended for this project. As a matter of fact, the Visual Studio Community 2013 version is now free for an unlimited number of users for all open source purposes and can be grabbed [here][6].
+Nevertheless, 
 
 
 ### Done with project setup - any further configuration?
