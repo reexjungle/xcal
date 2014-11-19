@@ -4,14 +4,12 @@ The xCal project is an **open-source** project that basically does 2 things:
 
 1. Implements the [Internet Calendaring and Scheduling Core Object Specification (RFC 5545)](http://tools.ietf.org/html/rfc5545) such that calendaring and scheduling information (events, to-dos, journals and free/busy) are represented in the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) data format.
 
-2. Develops a sofware library to facilitate the setup and hosting of calendar services, in which operations to access and edit calendar are exposed through a calendar API. 
+2. Develops a sofware library to facilitate the setup and hosting of calendar services, in which operations to access and edit calendar data are exposed through a calendar API.
 
 
 Why xCal?
-========
-Hmmm... Are there not enough popular calendar application such as [Google Calendar](https://www.google.com/calendar), [Yahoo Calendar] (https://calendar.yahoo.com/), Apple's [Calender ](https://www.apple.com/icloud/#ccm)(formerly iCal) and [Microsoft Outlook](http://products.office.com/en-us/outlook/email-and-calendar-software-microsoft-outlook), which seem to provide the same scheduling and calendaring features, which xCal promises to deliver? Also, this talk about web services for iCalendar - is it even new at all? [CalDav](http://en.wikipedia.org/wiki/CalDAV) ([RFC 4791](http://tools.ietf.org/html/rfc4791)) being a standardized extension to WebDav was developed to enhance the accessibility and sharing of calendar data on remote servers?... or so it seems...  
-
-If you are a normal home user, who needs a calendar application to schedule appointments and maybe share the calendar information with others, then xCal would be redudant for this purpose, since existing applications are sufficient.... but as a developer tasked with the creation or maintenance of a time-based system (e.g. reservation/booking system), (*aha!*) would you risk reinventing the wheel by designing and implementing a custom solution OR would you integrate services provided by well-implemented solution of the standard RFC-5545 into your application? You decide....
+=========
+First of all it is free - yeah **free** as in *free air* and not as in *free beer* i.e. "no strings attached"! 
 
 Table of Contents
 =================
