@@ -9,11 +9,18 @@ The xCal project is an **open-source** project that basically does 2 things:
 
 Why xCal?
 =========
-First of all it is free - yeah **free** as in *free air* and not as in *free beer* i.e. "no strings attached"! 
+First of all it is free - yeah **free** as in *free air* and not as in *free beer* i.e. *"free with no strings attached"*. 
+
+Secondly, it allows you to host and maintain your  calendar data on your own private data - it respects your privacy by giving you total control over your data and thus eliminates the risk of sharing your data with unkown third parties.
+
+Thirdly, as a developer, you do not need to *reinvent the wheel* when tasked with incorporating a time-based system (e.g. reservation/booking systems) in your applications. xCal takes this burden off your shoulders by reducing the overhead to simple direct and REST calls (though the API) to the calendar web server, thereby allowing you to concentrate on the goals of your application.  
+
+Fourthly, since it open-source xCal gains the same benefits as other open source software such as low-cost of usage (*indeed free in this case*), quality improvement through continuous community input, business agility and mitigation of business risks. 
+
 
 Table of Contents
 =================
-1. [First things first](https://github.com/reexmonkey/xcal/#first-things-first)
+1. [Getting Started](https://github.com/reexmonkey/xcal/#getting-started)
 2. [Contributing](https://github.com/reexmonkey/xcal/#contributing)
 3. [Community](https://github.com/reexmonkey/xcal/#community)
 4. [Documentation](https://github.com/reexmonkey/xcal/#documentation)
@@ -22,7 +29,7 @@ Table of Contents
 7. [License](https://github.com/reexmonkey/xcal/#license)
 
 
-First things first 
+Getting Started 
 ==================
 ### How to obtain xCal run-times 
 
