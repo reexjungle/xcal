@@ -177,7 +177,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                     Organizer = new ORGANIZER
                     {
                         Id = uidkeygen.GetNextKey(),
-                        CN = "Emmanuel Ngwane",
+                        CN = "King Reexmonkey",
                         Address = new URI("example@gmail.com"),
                         Language = new LANGUAGE("en")
                     },
@@ -288,8 +288,8 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                     Organizer = new ORGANIZER
                     {
                         Id = uidkeygen.GetNextKey(),
-                        CN = "Emmanuel Ngwane",
-                        Address = new URI("ngwanemk@gmail.com"),
+                        CN = "King Reexmonkey",
+                        Address = new URI("king.reexmonkey@jungle.com"),
                         Language = new LANGUAGE("en")
                     },
                     Location = new LOCATION

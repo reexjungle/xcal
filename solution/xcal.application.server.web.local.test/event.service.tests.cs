@@ -159,8 +159,8 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 Organizer = new ORGANIZER
                 {
                     Id = new GuidKeyGenerator().GetNextKey(),
-                    CN = "Emmanuel Ngwane",
-                    Address = new URI("ngwanemk@gmail.com"),
+                    CN = "King Reexmonkey",
+                    Address = new URI("king.reexmonkey@jungle.com"),
                     Language = new LANGUAGE("en")
                 },
                 Location = new LOCATION
@@ -182,8 +182,8 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                     new ATTENDEE 
                     { 
                         Id = uidkeygen.GetNextKey(),
-                        Address = new URI("ngwanemk@ygmail.com"),
-                        CN = "Emmanuel Ngwane",
+                        Address = new URI("king.reexmonkey@jungle.com"),
+                        CN = "King Reexmonkey",
                         Participation = PARTSTAT.ACCEPTED,
                         Role = ROLE.CHAIR,
                         CalendarUserType = CUTYPE.INDIVIDUAL,
@@ -228,7 +228,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             this.client.Post(new AddCalendar { Calendar = calendar });
             this.client.Post(new AddEvent { CalendarId = calendar.Id, Event = minimal });
             var retrieved = this.client.Get(new FindEvent { EventId = minimal.Id });
-            Assert.AreEqual(retrieved.Organizer.CN, "Emmanuel Ngwane");
+            Assert.AreEqual(retrieved.Organizer.CN, "King Reexmonkey");
             Assert.AreEqual(retrieved.Start, minimal.Start);
             Assert.AreEqual(retrieved, minimal);
 
@@ -387,7 +387,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 Organizer = new ORGANIZER
                 {
                     Id = uidkeygen.GetNextKey(),
-                    CN = "Emmanuel Ngwane",
+                    CN = "King Reexmonkey",
                     Address = new URI("organizer@gmail.com"),
                     Language = new LANGUAGE("en")
                 },
@@ -462,7 +462,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                     { 
                         Id = uidkeygen.GetNextKey(),
                         Address = new URI("example1@gmail.com"),
-                        CN = "Emmanuel Ngwane",
+                        CN = "King Reexmonkey",
                         Participation = PARTSTAT.ACCEPTED,
                         Role = ROLE.CHAIR,
                         CalendarUserType = CUTYPE.INDIVIDUAL,
