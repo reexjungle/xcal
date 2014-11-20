@@ -98,25 +98,22 @@ Many would agree that the setup process of a software project should be rendered
 3. Double-click the file and Visual Studio starts up and loads the entire project tree.
 
 
-##### Setup from cloned source in GitHub desktop application 
-1. Local Github desktop application starts up when the clone [link][4] is clicked.
-2. Chose location where code should be cloned.
+##### Setup through cloning in GitHub desktop application 
+1. Open locally-installed instance of Github desktop application.
+2. Chose to clone source and select local storage location.
 3. Open the *solution* folder and search for the \*.sln file.
 4. Double-click the file and Visual Studio starts up and loads the entire project tree.
-
-##### *Notes*
-* If you have do no yet have the GitHub application, you have to download from 
 
 ### Building xCal
 1. Select the root of the Solution Explorer Tree
 2. Right-click and choose *Rebuild Solution* from context menu
 
 ##### *Notes*
-* You need a running internet connection on first build for Visual Studio to automatically download Nuget Packages for dependencies.
+* You need a running internet connection on first build for Visual Studio to automatically download [NuGet](https://www.nuget.org/) Packages for dependencies.
 
 ### Running xCal
 1. Select the *xcal.application.server.web.local* as start project.
-2. Run the project -> voila! xCal starts running!
+2. Run the project -> voila! xCal runs!
 
 ##### *Notes*
 * All dependencies should be correctly-configured for xCal to run successfully (More on [Dependencies][])
@@ -125,9 +122,7 @@ Many would agree that the setup process of a software project should be rendered
 
 
 ### Done with project setup - any further configuration?
-Speaking from the heart, there is no greater killjoy (*perhaps with the exception of bugging exceptions*) than an initial waste of precious development time with mindless extra configurations during project setup. As such, the configuration of xCal is kept to the minimum. This means, no need to fret about maintaining external library dependencies, which happen to be [NuGet](https://www.nuget.org/) packages that are automatically and happily resolved on the first project build. 
-
-Nevertheless, xCal also depends on backend data management systems for logging and data storage purposes. In fact, xCal uses the [Service Stack V3](https://github.com/ServiceStackV3/ServiceStackV3) lightweight [Ormlite](https://github.com/ServiceStack/ServiceStack.OrmLite/tree/v3) and [Redis](https://github.com/ServiceStack/ServiceStack.Redis/tree/v3) libraries to respectively support either [relational database management systems](http://en.wikipedia.org/wiki/Relational_database_management_system) (*we all know [MySQL](http://www.mysql.com/)- don't we?*) or the respectable [Redis](http://redis.io/) NoSQL database. In particular, the backend systems must pre-exist on the host machine and consequently access to them must be spcified in the application settings file, as well as configuration file of [Nlog](http://nlog-project.org/); one of the logging providers used by xCal. 
+xCal also depends on backend data management systems for logging and data storage purposes. In fact, xCal uses the [Service Stack V3](https://github.com/ServiceStackV3/ServiceStackV3) lightweight [Ormlite](https://github.com/ServiceStack/ServiceStack.OrmLite/tree/v3) and [Redis](https://github.com/ServiceStack/ServiceStack.Redis/tree/v3) libraries to respectively support either [relational database management systems](http://en.wikipedia.org/wiki/Relational_database_management_system) (*we all know [MySQL](http://www.mysql.com/)- don't we?*) or the respectable [Redis](http://redis.io/) NoSQL database. In particular, the backend systems must pre-exist on the host machine and consequently access to them must be spcified in the application settings file, as well as configuration file of [Nlog](http://nlog-project.org/); one of the logging providers used by xCal. 
 
 
 ###### For further information on the project, web service, its architecture, dependencies, code examples and more, please do not hesitate to visit the [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) 
