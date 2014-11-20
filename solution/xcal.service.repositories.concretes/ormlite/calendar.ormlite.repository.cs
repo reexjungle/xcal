@@ -1,24 +1,24 @@
-﻿using System;
+﻿using reexmonkey.foundation.essentials.concretes;
+using reexmonkey.foundation.essentials.contracts;
+using reexmonkey.infrastructure.io.concretes;
+using reexmonkey.infrastructure.operations.contracts;
+using reexmonkey.technical.data.concretes.extensions.ormlite;
+using reexmonkey.xcal.domain.models;
+using reexmonkey.xcal.service.repositories.concretes.relations;
+using reexmonkey.xcal.service.repositories.contracts;
+using ServiceStack.OrmLite;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Collections.Generic;
-using ServiceStack.OrmLite;
-using reexmonkey.technical.data.contracts;
-using reexmonkey.technical.data.concretes.extensions.ormlite;
-using reexmonkey.crosscut.operations.concretes;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.infrastructure.io.concretes;
-using reexmonkey.xcal.domain.models;
-using reexmonkey.xcal.service.repositories.contracts;
-using reexmonkey.infrastructure.operations.contracts;
-using reexmonkey.infrastructure.operations.concretes;
-using reexmonkey.xcal.service.repositories.concretes.relations;
 
 namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 {
-    public class CalendarOrmLiteRepository: ICalendarOrmLiteRepository, IDisposable
+    /// <summary>
+    /// ORMLite Repository for Calendars
+    /// </summary>
+    public class CalendarOrmLiteRepository : ICalendarOrmLiteRepository, IDisposable
     {
         private IDbConnection conn = null;
         private IDbConnectionFactory factory = null;
@@ -29,7 +29,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
         {
             get { return (this.conn) ?? (this.conn = factory.OpenDbConnection()); }
         }
-        
+
+        /// <summary>
+        /// Gets or sets the connection factory of ORMLite datasources
+        /// </summary>
+        /// <exception cref="System.ArgumentNullException">Null factory</exception>
         public IDbConnectionFactory DbConnectionFactory
         {
             get { return this.factory; }
@@ -39,7 +43,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 this.factory = value;
             }
         }
-        
+
+        /// <summary>
+        /// Gets or sets the provider of identifiers
+        /// </summary>
+        /// <exception cref="System.ArgumentNullException">Null KeyGenerator</exception>
         public IKeyGenerator<string> KeyGenerator
         {
             get { return this.keygen; }
@@ -50,6 +58,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             }
         }
 
+        /// <summary>
+        /// Gets or sets the repository of addressing the event aggregate root
+        /// </summary>
+        /// <exception cref="System.ArgumentNullException">Null EventRepository</exception>
         public IEventRepository EventRepository
         {
             get { return this.eventrepository; }
@@ -60,20 +72,41 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             }
         }
 
-        public CalendarOrmLiteRepository() { }
-        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CalendarOrmLiteRepository"/> class.
+        /// </summary>
+        public CalendarOrmLiteRepository()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CalendarOrmLiteRepository"/> class.
+        /// </summary>
+        /// <param name="factory">The factory.</param>
         public CalendarOrmLiteRepository(IDbConnectionFactory factory)
         {
             this.DbConnectionFactory = factory;
             this.conn = this.factory.OpenDbConnection();
         }
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CalendarOrmLiteRepository"/> class.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <exception cref="System.ArgumentNullException">connection</exception>
         public CalendarOrmLiteRepository(IDbConnection connection)
         {
             if (connection == null) throw new ArgumentNullException("connection");
-            this.conn = connection; 
+            this.conn = connection;
         }
 
+        /// <summary>
+        /// Populates a sparse calendar entity with details from its consitutent entities
+        /// </summary>
+        /// <param name="dry">The sparse calendar entity to be populated</param>
+        /// <returns>
+        /// The populated calendar entity
+        /// </returns>
         public VCALENDAR Hydrate(VCALENDAR dry)
         {
             VCALENDAR full = dry;
@@ -86,7 +119,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     if (!revents.NullOrEmpty())
                     {
                         var events = this.EventRepository.FindAll(revents.Select(x => x.EventId).ToList());
-                        full.Events.AddRangeComplement(this.EventRepository.HydrateAll( events));
+                        full.Events.AddRangeComplement(this.EventRepository.HydrateAll(events));
                     }
                 }
             }
@@ -97,6 +130,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             return full ?? dry;
         }
 
+        /// <summary>
+        /// Populates respective calendars with aggregate entities
+        /// </summary>
+        /// <param name="dry">The sparse calendar entities to be populated</param>
+        /// <returns>
+        /// Populated calendar entities
+        /// </returns>
         public IEnumerable<VCALENDAR> HydrateAll(IEnumerable<VCALENDAR> dry)
         {
             var full = dry.ToList();
@@ -128,6 +168,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             return full ?? dry;
         }
 
+        /// <summary>
+        /// Finds an entity in the repository based on a unique identifier
+        /// </summary>
+        /// <param name="key">Type of unique identifier for retrieval of entity from repository</param>
+        /// <returns>
+        /// The found entity from the repository
+        /// </returns>
         public VCALENDAR Find(string key)
         {
             try
@@ -139,12 +186,21 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (Exception) { throw; }
         }
 
+        /// <summary>
+        /// Finds entities in the repository based on unique identifiers
+        /// </summary>
+        /// <param name="keys">Unique identifiers for retrieving the entities</param>
+        /// <param name="skip">The the number of rows to skip</param>
+        /// <param name="take">The nummber of result rows to retrieve</param>
+        /// <returns>
+        /// Found entities from the repository
+        /// </returns>
         public IEnumerable<VCALENDAR> FindAll(IEnumerable<string> keys, int? skip = null, int? take = null)
         {
             try
             {
                 IEnumerable<VCALENDAR> dry = null;
-                if(skip == null && take == null) dry = db.Select<VCALENDAR>(q => Sql.In(q.Id, keys.ToArray()));
+                if (skip == null && take == null) dry = db.Select<VCALENDAR>(q => Sql.In(q.Id, keys.ToArray()));
                 else dry = db.Select<VCALENDAR>(q => Sql.In(q.Id, keys.ToArray()), skip.Value, take.Value);
                 return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
             }
@@ -153,12 +209,18 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (Exception) { throw; }
         }
 
+        /// <summary>
+        /// Gets all entities from the repository
+        /// </summary>
+        /// <param name="skip">The the number of rows to skip</param>
+        /// <param name="take">The nummber of result rows to retrieve</param>
+        /// <returns></returns>
         public IEnumerable<VCALENDAR> Get(int? skip = null, int? take = null)
         {
             try
             {
                 IEnumerable<VCALENDAR> dry = null;
-                if(skip == null && take == null) dry = db.Select<VCALENDAR>();
+                if (skip == null && take == null) dry = db.Select<VCALENDAR>();
                 else dry = db.Select<VCALENDAR>(skip, take);
                 return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
             }
@@ -167,6 +229,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Inserts a new entity or updates an existing one in the repository
+        /// </summary>
+        /// <param name="entity">The entity to save</param>
         public void Save(VCALENDAR entity)
         {
             try
@@ -174,7 +240,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 db.Save<VCALENDAR>(entity);
                 if (!entity.Events.NullOrEmpty())
                 {
-                    this.EventRepository.SaveAll(entity.Events.Distinct());                   
+                    this.EventRepository.SaveAll(entity.Events.Distinct());
                     var revents = entity.Events.Select(x => new REL_CALENDARS_EVENTS
                     {
                         Id = this.KeyGenerator.GetNextKey(),
@@ -188,13 +254,18 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
-
         }
 
+        /// <summary>
+        /// Patches fields of an entity in the repository
+        /// </summary>
+        /// <param name="source">The source containing patch details</param>
+        /// <param name="fields">Specfies which fields are used for the patching. The fields are specified in an anonymous variable</param>
+        /// <param name="keys">Filters the entities to patch by keys. No filter implies all entities are patched</param>
         public void Patch(VCALENDAR source, Expression<Func<VCALENDAR, object>> fields, IEnumerable<string> keys = null)
         {
             #region construct anonymous fields using expression lambdas
-            
+
             var selection = fields.GetMemberNames().ToArray();
 
             Expression<Func<VCALENDAR, object>> primitives = x => new
@@ -204,15 +275,15 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 x.Calscale
             };
 
-            Expression<Func<VCALENDAR, object>> relations = x => new 
-            { 
-                Events = x.Events, 
-                Todos = x.ToDos, 
-                FreeBusies = x.FreeBusies, 
-                Journals = x.Journals, 
-                TimeZones = x.TimeZones, 
-                IanaComponents = x.IanaComponents, 
-                XComponents = x.XComponents 
+            Expression<Func<VCALENDAR, object>> relations = x => new
+            {
+                Events = x.Events,
+                Todos = x.ToDos,
+                FreeBusies = x.FreeBusies,
+                Journals = x.Journals,
+                TimeZones = x.TimeZones,
+                IanaComponents = x.IanaComponents,
+                XComponents = x.XComponents
             };
 
             //4. Get list of selected relationals
@@ -221,7 +292,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             //5. Get list of selected primitives
             var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase);
 
-            #endregion
+            #endregion construct anonymous fields using expression lambdas
 
             try
             {
@@ -261,9 +332,12 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
-
         }
 
+        /// <summary>
+        /// Erases an entity from the repository based on a unique identifier
+        /// </summary>
+        /// <param name="key">The unique identifier of the entity</param>
         public void Erase(string key)
         {
             try
@@ -275,6 +349,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Inserts new entities or updates existing ones in the repository
+        /// </summary>
+        /// <param name="entities">The entities to save</param>
         public void SaveAll(IEnumerable<VCALENDAR> entities)
         {
             try
@@ -295,13 +373,16 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, keys));
                     db.SynchronizeAll(revents, orevents);
                 }
-
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }  
+            catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Erases entities from the repository based on unique identifiers
+        /// </summary>
+        /// <param name="keys">The unique identifier of the entity</param>
         public void EraseAll(IEnumerable<string> keys = null)
         {
             try
@@ -314,6 +395,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Checks if the repository contains an entity
+        /// </summary>
+        /// <param name="key">The unique identifier of the entity</param>
+        /// <returns>
+        /// True if the entity is found in the repository, otherwise false
+        /// </returns>
         public bool ContainsKey(string key)
         {
             try
@@ -325,6 +413,14 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Checks if the repository contains entities
+        /// </summary>
+        /// <param name="keys">The unique identifiers of the entities</param>
+        /// <param name="mode">How the search is performed. Optimistic if at least one entity found, Pessimistic if all entities are found</param>
+        /// <returns>
+        /// True if the entities are found, otherwise false
+        /// </returns>
         public bool ContainsKeys(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
         {
             try
@@ -339,6 +435,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Depopulates aggregate entities from respective calendars.
+        /// </summary>
+        /// <param name="full">The full.</param>
+        /// <returns></returns>
         public IEnumerable<VCALENDAR> DehydrateAll(IEnumerable<VCALENDAR> full)
         {
             try
@@ -352,6 +453,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (AggregateException) { throw; }
         }
 
+        /// <summary>
+        /// Depopulates aggregate entities from a calendar
+        /// </summary>
+        /// <param name="full">The calendar to be depopulated</param>
+        /// <returns>
+        /// A depopulated calendar
+        /// </returns>
         public VCALENDAR Dehydrate(VCALENDAR full)
         {
             try
@@ -368,6 +476,12 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ArgumentNullException) { throw; }
         }
 
+        /// <summary>
+        /// Gets the keys from the non-relational repository
+        /// </summary>
+        /// <param name="skip">The number of results to skip</param>
+        /// <param name="take">The number of results per page to retrieve</param>
+        /// <returns></returns>
         public IEnumerable<string> GetKeys(int? skip = null, int? take = null)
         {
             try
@@ -379,6 +493,9 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             if (this.conn != null) this.conn.Dispose();

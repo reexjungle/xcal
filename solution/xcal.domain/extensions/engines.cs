@@ -1,19 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.foundation.essentials.concretes;
+﻿using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace reexmonkey.xcal.domain.extensions
 {
     public static class RecurrenceEngine
     {
-
         #region Limit BYSETPOS
 
+
+        /// <summary>
+        /// Filters dates by indexed position within recurrence interval
+        /// </summary>
+        /// <param name="dates">The dates to filter</param>
+        /// <param name="rrule">The recurrence rule</param>
+        /// <returns></returns>
         public static IEnumerable<DATE_TIME> LimitBySetPos(this IEnumerable<DATE_TIME> dates, RECUR rrule)
         {
             if (rrule.BYSETPOS.NullOrEmpty()) return dates;
@@ -22,7 +26,6 @@ namespace reexmonkey.xcal.domain.extensions
             var negatives = rrule.BYSETPOS.Where(x => x < 0);
 
             IEnumerable<DATE_TIME> results = new List<DATE_TIME>();
-
 
             //Group per recurring instance
             switch (rrule.FREQ)
@@ -41,16 +44,14 @@ namespace reexmonkey.xcal.domain.extensions
             return results;
         }
 
-        private static IEnumerable<DATE_TIME> LimitBySetPosSecondly(this IEnumerable<DATE_TIME> dates, RECUR rrule, 
-            IEnumerable<int> positives, IEnumerable<int> negatives)
+        private static IEnumerable<DATE_TIME> LimitBySetPosSecondly(this IEnumerable<DATE_TIME> dates, RECUR rrule, IEnumerable<int> positives, IEnumerable<int> negatives)
         {
             //return dates since an interval of 1 second cannot be subdivided anymore
             return dates.OrderBy(x => x);
         }
 
-        private static IEnumerable<DATE_TIME> LimitBySetPosMinutely(this IEnumerable<DATE_TIME> dates, RECUR rrule, 
-            IEnumerable<int> positives, IEnumerable<int> negatives)
-        {            
+        private static IEnumerable<DATE_TIME> LimitBySetPosMinutely(this IEnumerable<DATE_TIME> dates, RECUR rrule, IEnumerable<int> positives, IEnumerable<int> negatives)
+        {
             IEnumerable<DATE_TIME> results = new List<DATE_TIME>();
 
             var bymins = dates.GroupBy(d => d.FULLYEAR)
@@ -69,9 +70,7 @@ namespace reexmonkey.xcal.domain.extensions
             return results.OrderBy(x => x);
         }
 
-
-        private static IEnumerable<DATE_TIME> LimitBySetPosHourly(this IEnumerable<DATE_TIME> dates, RECUR rrule,
-    IEnumerable<int> positives, IEnumerable<int> negatives)
+        private static IEnumerable<DATE_TIME> LimitBySetPosHourly(this IEnumerable<DATE_TIME> dates, RECUR rrule, IEnumerable<int> positives, IEnumerable<int> negatives)
         {
             IEnumerable<DATE_TIME> results = new List<DATE_TIME>();
 
@@ -93,9 +92,9 @@ namespace reexmonkey.xcal.domain.extensions
             }
             else //empty BYSECOND
             {
-                if(!rrule.BYMINUTE.NullOrEmpty())
+                if (!rrule.BYMINUTE.NullOrEmpty())
                 {
-                    foreach(var hh in byhours)
+                    foreach (var hh in byhours)
                     {
                         var occurrences = hh.GroupBy(x => x.MINUTE).SelectMany(x => x).ToArray();
                         var len = occurrences.Count();
@@ -108,17 +107,15 @@ namespace reexmonkey.xcal.domain.extensions
             return results.OrderBy(x => x);
         }
 
-        private static IEnumerable<DATE_TIME> LimitBySetPosDaily(this IEnumerable<DATE_TIME> dates, RECUR rrule,
-IEnumerable<int> positives, IEnumerable<int> negatives)
+        private static IEnumerable<DATE_TIME> LimitBySetPosDaily(this IEnumerable<DATE_TIME> dates, RECUR rrule, IEnumerable<int> positives, IEnumerable<int> negatives)
         {
             IEnumerable<DATE_TIME> results = new List<DATE_TIME>();
 
             var byyears = dates.GroupBy(x => x.FULLYEAR);
             var bymonths = byyears.SelectMany(x => x.GroupBy(m => m.MONTH));
-
+            var bydays = bymonths.SelectMany(x => x.GroupBy(d => d.MDAY));
             if (!rrule.BYSECOND.NullOrEmpty())
             {
-                var bydays = bymonths.SelectMany(x => x.GroupBy(d => d.MDAY));
                 var byhours = bydays.SelectMany(x => x.GroupBy(h => h.HOUR));
                 var bymins = byhours.SelectMany(byhour => byhour.GroupBy(x => x.MINUTE));
                 foreach (var bymin in bymins)
@@ -133,7 +130,6 @@ IEnumerable<int> positives, IEnumerable<int> negatives)
             {
                 if (!rrule.BYMINUTE.NullOrEmpty())
                 {
-                    var bydays = bymonths.SelectMany(x => x.GroupBy(d => d.MDAY));
                     var byhours = bydays.SelectMany(x => x.GroupBy(h => h.HOUR));
 
                     foreach (var byhour in byhours)
@@ -148,14 +144,13 @@ IEnumerable<int> positives, IEnumerable<int> negatives)
                 {
                     if (!rrule.BYHOUR.NullOrEmpty())
                     {
-                        var bydays = bymonths.SelectMany(x => x.GroupBy(d => d.MDAY));
                         foreach (var byday in bydays)
                         {
                             var occurrences = byday.GroupBy(x => x.HOUR).SelectMany(x => x).ToArray();
                             var len = occurrences.Count();
                             results = results.Union(positives.Where(p => p >= 1 && p <= len).Select(p => occurrences[p - 1]));
                             results = results.Union(negatives.Where(n => Math.Abs(n) >= 1 && Math.Abs(n) <= len).Select(n => occurrences[len + n]));
-                        } 
+                        }
                     }
                 }
             }
@@ -163,34 +158,33 @@ IEnumerable<int> positives, IEnumerable<int> negatives)
             return results.OrderBy(x => x);
         }
 
-        private static IEnumerable<DATE_TIME> LimitBySetPosWeekly(this IEnumerable<DATE_TIME> dates, RECUR rrule,
-IEnumerable<int> positives, IEnumerable<int> negatives)
+        private static IEnumerable<DATE_TIME> LimitBySetPosWeekly(this IEnumerable<DATE_TIME> dates, RECUR rrule, IEnumerable<int> positives, IEnumerable<int> negatives)
         {
             IEnumerable<DATE_TIME> results = new List<DATE_TIME>();
 
             var byyears = dates.GroupBy(x => x.FULLYEAR);
             var bymonths = byyears.SelectMany(x => x.GroupBy(m => m.MONTH));
+            //var f = bymonths.g
 
+            var bydays = bymonths.SelectMany(x => x.GroupBy(d => d.MDAY));
+
+            //limit BYSETPOS for BYMINUTE
             if (!rrule.BYSECOND.NullOrEmpty())
             {
-                var bydays = bymonths.SelectMany(x => x.GroupBy(d => d.MDAY));
                 var byhours = bydays.SelectMany(x => x.GroupBy(h => h.HOUR));
                 var bymins = byhours.SelectMany(byhour => byhour.GroupBy(x => x.MINUTE));
                 foreach (var bymin in bymins)
                 {
-                    var occurrences = bymin.GroupBy(x => x.SECOND).SelectMany(x => x).ToArray();
-                    var len = occurrences.Count();
+                    var occurrences = bymin.GroupBy(x => x.SECOND).SelectMany(x => x).ToArray(); var len = occurrences.Count();
                     results = results.Union(positives.Where(p => p >= 1 && p <= len).Select(p => occurrences[p - 1]));
                     results = results.Union(negatives.Where(n => Math.Abs(n) >= 1 && Math.Abs(n) <= len).Select(n => occurrences[len + n]));
                 }
             }
-            else //empty BYSECOND; check BYMINUTE
+            else //empty BYSECOND; check BYMINUTE; limit BYSETPOS for BYHOUR
             {
                 if (!rrule.BYMINUTE.NullOrEmpty())
                 {
-                    var bydays = bymonths.SelectMany(x => x.GroupBy(d => d.MDAY));
                     var byhours = bydays.SelectMany(x => x.GroupBy(h => h.HOUR));
-
                     foreach (var byhour in byhours)
                     {
                         var occurrences = byhour.GroupBy(x => x.MINUTE).SelectMany(x => x).ToArray();
@@ -199,11 +193,10 @@ IEnumerable<int> positives, IEnumerable<int> negatives)
                         results = results.Union(negatives.Where(n => Math.Abs(n) >= 1 && Math.Abs(n) <= len).Select(n => occurrences[len + n]));
                     }
                 }
-                else //empty BYMINUTE: check BYHOUR
+                else //empty BYMINUTE: check BYHOUR; limit BYSETPOS for BYDAY
                 {
                     if (!rrule.BYHOUR.NullOrEmpty())
                     {
-                        var bydays = bymonths.SelectMany(x => x.GroupBy(d => d.MDAY));
                         foreach (var byday in bydays)
                         {
                             var occurrences = byday.GroupBy(x => x.HOUR).SelectMany(x => x).ToArray();
@@ -212,13 +205,12 @@ IEnumerable<int> positives, IEnumerable<int> negatives)
                             results = results.Union(negatives.Where(n => Math.Abs(n) >= 1 && Math.Abs(n) <= len).Select(n => occurrences[len + n]));
                         }
                     }
-                    else //empty BYHOUR; check BYDAY
+                    else //empty BYHOUR; check BYDAY; ; limit BYSETPOS for BYWEEK
                     {
-                        if(!rrule.BYDAY.NullOrEmpty())
+                        if (!rrule.BYDAY.NullOrEmpty())
                         {
-                            foreach(var m in bymonths)
+                            foreach (var m in bymonths)
                             {
-
                             }
                         }
                     }
@@ -227,23 +219,21 @@ IEnumerable<int> positives, IEnumerable<int> negatives)
             return results.OrderBy(x => x);
         }
 
-        private static IEnumerable<DATE_TIME> LimitBySetPosMonthly(this IEnumerable<DATE_TIME> dates, RECUR rrule,
-IEnumerable<int> positives, IEnumerable<int> negatives)
+        private static IEnumerable<DATE_TIME> LimitBySetPosMonthly(this IEnumerable<DATE_TIME> dates, RECUR rrule, IEnumerable<int> positives, IEnumerable<int> negatives)
         {
             IEnumerable<DATE_TIME> results = new List<DATE_TIME>();
 
             return results.OrderBy(x => x);
         }
 
-        private static IEnumerable<DATE_TIME> LimitBySetPosYearly(this IEnumerable<DATE_TIME> dates, RECUR rrule,
-IEnumerable<int> positives, IEnumerable<int> negatives)
+        private static IEnumerable<DATE_TIME> LimitBySetPosYearly(this IEnumerable<DATE_TIME> dates, RECUR rrule, IEnumerable<int> positives, IEnumerable<int> negatives)
         {
             IEnumerable<DATE_TIME> results = new List<DATE_TIME>();
 
             return results.OrderBy(x => x);
         }
 
-        #endregion
+        #endregion Limit BYSETPOS
 
         #region Limit BYXXX
 
@@ -278,7 +268,7 @@ IEnumerable<int> positives, IEnumerable<int> negatives)
             IEnumerable<DATE_TIME> results = new List<DATE_TIME>();
             if (!ranked.NullOrEmpty())
             {
-                results = results.Union(ranked.SelectMany(r => 
+                results = results.Union(ranked.SelectMany(r =>
                     dates.Where(x => x.ToDateTime().IsNthWeekdayOfMonth(r.Weekday.ToDayOfWeek(), r.OrdinalWeek))));
             }
 
@@ -304,7 +294,6 @@ IEnumerable<int> positives, IEnumerable<int> negatives)
                 results = results.Union(ranked.SelectMany(r =>
                     dates.Where(x => x.ToDateTime().IsNthWeekdayOfYear(r.Weekday.ToDayOfWeek(), r.OrdinalWeek))));
             }
-
 
             if (!unranked.NullOrEmpty())
             {
@@ -396,16 +385,16 @@ IEnumerable<int> positives, IEnumerable<int> negatives)
             return results.OrderBy(x => x);
         }
 
-        #endregion
+        #endregion Limit BYXXX
 
         #region Expand BYXXX
-        
+
         public static IEnumerable<DATE_TIME> ExpandBySecond(this IEnumerable<DATE_TIME> dates, RECUR rrule)
         {
             if (rrule.BYSECOND.NullOrEmpty()) return dates;
-            dates = dates.Union(dates.SelectMany(date => rrule.BYSECOND.Select(x => 
+            dates = dates.Union(dates.SelectMany(date => rrule.BYSECOND.Select(x =>
                 new DATE_TIME(date.FULLYEAR, date.MONTH, date.MDAY, date.HOUR, date.MINUTE, x, date.Type, date.TimeZoneId))));
-            
+
             return dates.LimitBySecond(rrule);
         }
 
@@ -427,14 +416,14 @@ IEnumerable<int> positives, IEnumerable<int> negatives)
             return dates.LimitByHour(rrule);
         }
 
-        public static  IEnumerable<DATE_TIME> ExpandByDayWeekly(this IEnumerable<DATE_TIME> dates, RECUR rrule)
+        public static IEnumerable<DATE_TIME> ExpandByDayWeekly(this IEnumerable<DATE_TIME> dates, RECUR rrule)
         {
             if (rrule.BYDAY.NullOrEmpty()) return dates;
 
-            dates = dates.Union(dates.SelectMany(date => rrule.BYDAY.SelectMany(x => 
+            dates = dates.Union(dates.SelectMany(date => rrule.BYDAY.SelectMany(x =>
             {
                 var d = date.ToDateTime();
-                return  x.Weekday.ToDayOfWeek().GetSimilarDatesInRange(d, d.AddDays(7)).ToDATE_TIMEs(date.TimeZoneId);
+                return x.Weekday.ToDayOfWeek().GetSimilarDatesInRange(d, d.AddDays(7)).ToDATE_TIMEs(date.TimeZoneId);
             })));
 
             return dates.LimitByDay(rrule);
@@ -456,7 +445,6 @@ IEnumerable<int> positives, IEnumerable<int> negatives)
             if (!unranked.NullOrEmpty())
             {
                 dates = dates.Union(dates.SelectMany(date => unranked.SelectMany(u => u.Weekday.ToDayOfWeek().GetSimilarDatesOfMonth((int)date.MONTH, (int)date.FULLYEAR).ToDATE_TIMEs(date.TimeZoneId)).ToList()));
-
             }
 
             return dates.LimitByDayMonthly(rrule);
@@ -493,16 +481,16 @@ IEnumerable<int> positives, IEnumerable<int> negatives)
             if (!positives.NullOrEmpty())
             {
                 dates = dates.Union(dates.SelectMany(date => positives.Select(x =>
-                    new DATE_TIME(date.FULLYEAR, date.MONTH, (uint)x, date.HOUR, date.MINUTE, date.SECOND, date.Type, date.TimeZoneId)))); 
+                    new DATE_TIME(date.FULLYEAR, date.MONTH, (uint)x, date.HOUR, date.MINUTE, date.SECOND, date.Type, date.TimeZoneId))));
             }
 
             if (!negatives.NullOrEmpty())
             {
                 dates = dates.Union(dates.SelectMany(date => negatives.Select(x =>
                 {
-                    var day =  DateTime.DaysInMonth((int)date.FULLYEAR, (int)date.MONTH) + 1 + x;
+                    var day = DateTime.DaysInMonth((int)date.FULLYEAR, (int)date.MONTH) + 1 + x;
                     return new DATE_TIME(date.FULLYEAR, date.MONTH, (uint)day, date.HOUR, date.MINUTE, date.SECOND, date.Type, date.TimeZoneId);
-                }))); 
+                })));
             }
 
             return dates.LimitByMonthDay(rrule);
@@ -528,13 +516,12 @@ IEnumerable<int> positives, IEnumerable<int> negatives)
 
             return dates.LimitByYearDay(rrule);
         }
-        
+
         public static IEnumerable<DATE_TIME> ExpandByWeekNo(this IEnumerable<DATE_TIME> dates, RECUR rrule)
-        { 
+        {
             if (rrule.BYWEEKNO.NullOrEmpty()) return dates;
             var positives = rrule.BYWEEKNO.Where(x => x > 0);
             var negatives = rrule.BYWEEKNO.Where(x => x < 0);
-
 
             if (!positives.NullOrEmpty())
             {
@@ -560,9 +547,6 @@ IEnumerable<int> positives, IEnumerable<int> negatives)
             return dates.LimitByMonth(rrule);
         }
 
-        #endregion
-
-
-
+        #endregion Expand BYXXX
     }
 }

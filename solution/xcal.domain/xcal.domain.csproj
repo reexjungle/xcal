@@ -99,6 +99,7 @@
     <Compile Include="models\values.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="domain.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

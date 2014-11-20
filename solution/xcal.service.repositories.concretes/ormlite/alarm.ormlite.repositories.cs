@@ -1,24 +1,23 @@
-﻿using System;
+﻿using reexmonkey.foundation.essentials.concretes;
+using reexmonkey.foundation.essentials.contracts;
+using reexmonkey.infrastructure.io.concretes;
+using reexmonkey.infrastructure.operations.contracts;
+using reexmonkey.technical.data.concretes.extensions.ormlite;
+using reexmonkey.xcal.domain.models;
+using reexmonkey.xcal.service.repositories.concretes.relations;
+using reexmonkey.xcal.service.repositories.contracts;
+using ServiceStack.OrmLite;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Collections.Generic;
-using ServiceStack.OrmLite;
-using reexmonkey.technical.data.contracts;
-using reexmonkey.technical.data.concretes.extensions.ormlite;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.crosscut.operations.concretes;
-using reexmonkey.infrastructure.io.concretes;
-using reexmonkey.xcal.domain.models;
-using reexmonkey.xcal.service.repositories.contracts;
-using reexmonkey.xcal.service.repositories.concretes.relations;
-using reexmonkey.infrastructure.operations.concretes;
-using reexmonkey.infrastructure.operations.contracts;
-using System.Security;
 
 namespace reexmonkey.xcal.service.repositories.concretes.ormlite
 {
+    /// <summary>
+    /// ORMLite repository for Audio Alarams
+    /// </summary>
     public class AudioAlarmOrmLiteRepository : IAudioAlarmOrmLiteRepository, IDisposable
     {
         private IDbConnection conn = null;
@@ -30,6 +29,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             get { return (this.conn) ?? (this.conn = factory.OpenDbConnection()); }
         }
 
+        /// <summary>
+        /// Gets or sets the connection factory of ORMLite datasources
+        /// </summary>
+        /// <exception cref="System.ArgumentNullException">Null factory</exception>
         public IDbConnectionFactory DbConnectionFactory
         {
             get { return this.factory; }
@@ -39,7 +42,11 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 this.factory = value;
             }
         }
-        
+
+        /// <summary>
+        /// Gets the provider of identifiers
+        /// </summary>
+        /// <exception cref="System.ArgumentNullException">KeyGenerator</exception>
         public IKeyGenerator<string> KeyGenerator
         {
             get { return this.keygen; }
@@ -49,14 +56,30 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 this.keygen = value;
             }
         }
-        
-        public AudioAlarmOrmLiteRepository() { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AudioAlarmOrmLiteRepository"/> class.
+        /// </summary>
+        public AudioAlarmOrmLiteRepository()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AudioAlarmOrmLiteRepository"/> class.
+        /// </summary>
+        /// <param name="factory">The factory.</param>
         public AudioAlarmOrmLiteRepository(IDbConnectionFactory factory)
         {
             this.DbConnectionFactory = factory;
         }
 
+        /// <summary>
+        /// Finds an entity in the repository based on a unique identifier
+        /// </summary>
+        /// <param name="key">Type of unique identifier for retrieval of entity from repository</param>
+        /// <returns>
+        /// The found entity from the repository
+        /// </returns>
         public AUDIO_ALARM Find(string key)
         {
             using (var db = this.factory.OpenDbConnection())
@@ -68,11 +91,20 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 }
                 catch (ArgumentNullException) { throw; }
                 catch (InvalidOperationException) { throw; }
-                catch (Exception) { throw; } 
+                catch (Exception) { throw; }
             }
         }
 
-        public IEnumerable<AUDIO_ALARM> FindAll(IEnumerable<string> keys,  int? skip = null, int? take = null)
+        /// <summary>
+        /// Finds entities in the repository based on unique identifiers
+        /// </summary>
+        /// <param name="keys">Unique identifiers for retrieving the entities</param>
+        /// <param name="skip">The the number of rows to skip</param>
+        /// <param name="take">The nummber of result rows to retrieve</param>
+        /// <returns>
+        /// Found entities from the repository
+        /// </returns>
+        public IEnumerable<AUDIO_ALARM> FindAll(IEnumerable<string> keys, int? skip = null, int? take = null)
         {
             try
             {
@@ -81,9 +113,15 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; } 
+            catch (Exception) { throw; }
         }
 
+        /// <summary>
+        /// Gets all entities from the repository
+        /// </summary>
+        /// <param name="skip">The the number of rows to skip</param>
+        /// <param name="take">The nummber of result rows to retrieve</param>
+        /// <returns></returns>
         public IEnumerable<AUDIO_ALARM> Get(int? skip = null, int? take = null)
         {
             try
@@ -92,9 +130,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
             }
             catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; } 
+            catch (Exception) { throw; }
         }
 
+        /// <summary>
+        /// Inserts a new entity or updates an existing one in the repository
+        /// </summary>
+        /// <param name="entity">The entity to save</param>
         public void Save(AUDIO_ALARM entity)
         {
             var attachbin = entity.AttachmentBinary;
@@ -127,13 +169,16 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     var orattachuris = db.Select<REL_AALARMS_ATTACHBINS>(q => q.AlarmId == entity.Id);
                     db.SynchronizeAll(rattachuri.ToSingleton(), orattachuris);
                 }
-
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Erases an entity from the repository based on a unique identifier
+        /// </summary>
+        /// <param name="key">The unique identifier of the entity</param>
         public void Erase(string key)
         {
             try
@@ -141,9 +186,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 db.Delete<AUDIO_ALARM>(q => q.Id == key);
             }
             catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; } 
+            catch (Exception) { throw; }
         }
 
+        /// <summary>
+        /// Inserts new entities or updates existing ones in the repository
+        /// </summary>
+        /// <param name="entities">The entities to save</param>
         public void SaveAll(IEnumerable<AUDIO_ALARM> entities)
         {
             var attachbins = entities.Where(x => x.AttachmentBinary != null).Select(x => x.AttachmentBinary);
@@ -178,13 +227,18 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     var orattachuris = db.Select<REL_AALARMS_ATTACHURIS>(q => Sql.In(q.AlarmId, keys));
                     db.SynchronizeAll(rattachuris, orattachuris);
                 }
-
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Patches fields of an entity in the repository
+        /// </summary>
+        /// <param name="source">The source containing patch details</param>
+        /// <param name="fields">Specfies which fields are used for the patching. The fields are specified in an anonymous variable</param>
+        /// <param name="keys">Filters the entities to patch by keys. No filter implies all entities are patched</param>
         public void Patch(AUDIO_ALARM source, Expression<Func<AUDIO_ALARM, object>> fields, IEnumerable<string> keys = null)
         {
             //1. Get fields slected for patching
@@ -198,7 +252,6 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 x.Duration,
                 x.Repeat
             };
-
 
             Expression<Func<AUDIO_ALARM, object>> relations = x => new
             {
@@ -222,7 +275,6 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 {
                     Expression<Func<AUDIO_ALARM, object>> attachbinexpr = y => y.AttachmentBinary;
                     Expression<Func<AUDIO_ALARM, object>> attachuriexpr = y => y.AttachmentUri;
-
 
                     if (selection.Contains(attachbinexpr.GetMemberName()))
                     {
@@ -259,9 +311,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                             db.SynchronizeAll(rattachuris, orattachuris);
                         }
                     }
-
                 }
-
 
                 //4. Update matching event primitives
                 if (!sprimitives.NullOrEmpty())
@@ -272,14 +322,16 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     if (!okeys.NullOrEmpty()) db.UpdateOnly<AUDIO_ALARM, object>(source, patchexpr, q => Sql.In(q.Id, okeys.ToArray()));
                     else db.UpdateOnly<AUDIO_ALARM, object>(source, patchexpr);
                 }
-
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
-
         }
 
+        /// <summary>
+        /// Erases entities from the repository based on unique identifiers
+        /// </summary>
+        /// <param name="keys">The unique identifier of the entity</param>
         public void EraseAll(IEnumerable<string> keys = null)
         {
             try
@@ -292,6 +344,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Checks if the repository contains an entity
+        /// </summary>
+        /// <param name="key">The unique identifier of the entity</param>
+        /// <returns>
+        /// True if the entity is found in the repository, otherwise false
+        /// </returns>
         public bool ContainsKey(string key)
         {
             try
@@ -303,6 +362,14 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Checks if the repository contains entities
+        /// </summary>
+        /// <param name="keys">The unique identifiers of the entities</param>
+        /// <param name="mode">How the search is performed. Optimistic if at least one entity found, Pessimistic if all entities are found</param>
+        /// <returns>
+        /// True if the entities are found, otherwise false
+        /// </returns>
         public bool ContainsKeys(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
         {
             try
@@ -317,6 +384,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Populates a sparse audio alarm entity with details from its consitutent entities
+        /// </summary>
+        /// <param name="dry">The audio alarm entity to be populated</param>
+        /// <returns>
+        /// The populated audio alarm entity
+        /// </returns>
         public AUDIO_ALARM Hydrate(AUDIO_ALARM dry)
         {
             var full = dry;
@@ -336,7 +410,6 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                         r => r.AlarmId,
                         a => a.Id == okey);
                     if (!attachuris.NullOrEmpty()) full.AttachmentUri = attachuris.FirstOrDefault();
-
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -345,6 +418,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             return full ?? dry;
         }
 
+        /// <summary>
+        /// Populates audio alarm entities with details from respective constituent entities
+        /// </summary>
+        /// <param name="dry">The sparse audio alarm entities to be populated</param>
+        /// <returns>
+        /// Populated audio alarm entities
+        /// </returns>
         public IEnumerable<AUDIO_ALARM> HydrateAll(IEnumerable<AUDIO_ALARM> dry)
         {
             List<AUDIO_ALARM> full = null;
@@ -361,20 +441,19 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     var rattachbins = db.Select<REL_AALARMS_ATTACHBINS>(q => Sql.In(q.AlarmId, okeys));
                     var rattachuris = db.Select<REL_AALARMS_ATTACHURIS>(q => Sql.In(q.AlarmId, okeys));
 
-                    #endregion
+                    #endregion 1. retrieve relationships
 
                     #region 2. retrieve secondary entities
 
                     var attachbins = (!rattachbins.Empty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToList())) : null;
                     var attachuris = (!rattachuris.Empty()) ? db.Select<ATTACH_URI>(q => Sql.In(q.Id, rattachuris.Select(r => r.AttachmentId).ToList())) : null;
 
-                    #endregion
+                    #endregion 2. retrieve secondary entities
 
                     #region 3. Use Linq to stitch secondary entities to primary entities
 
                     full.ForEach(x =>
                     {
-
                         if (!attachbins.NullOrEmpty())
                         {
                             var xattachbins = from y in attachbins
@@ -383,7 +462,6 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                               where a.Id == x.Id
                                               select y;
                             if (!xattachbins.NullOrEmpty()) x.AttachmentBinary = xattachbins.FirstOrDefault();
-
                         }
 
                         if (!attachuris.NullOrEmpty())
@@ -395,12 +473,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                               select y;
                             if (!xattachuris.NullOrEmpty()) x.AttachmentUri = xattachuris.FirstOrDefault();
                         }
-
                     });
 
-                    #endregion
+                    #endregion 3. Use Linq to stitch secondary entities to primary entities
                 }
-
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
@@ -409,6 +485,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             return full ?? dry;
         }
 
+        /// <summary>
+        /// Depopulates aggregate entities from event
+        /// </summary>
+        /// <param name="full">The audio alarm entity to depopulate</param>
+        /// <returns>
+        /// Depopulated event
+        /// </returns>
         public AUDIO_ALARM Dehydrate(AUDIO_ALARM full)
         {
             try
@@ -419,9 +502,16 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }                   
+            catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Depopulates aggregate entities from respective events
+        /// </summary>
+        /// <param name="full">The audio alarm entities to depopulate</param>
+        /// <returns>
+        /// Depopulated events
+        /// </returns>
         public IEnumerable<AUDIO_ALARM> Dehydrate(IEnumerable<AUDIO_ALARM> full)
         {
             try
@@ -432,18 +522,23 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             }
             catch (ArgumentNullException) { throw; }
             catch (OperationCanceledException) { throw; }
-            catch (AggregateException) { throw; } 
+            catch (AggregateException) { throw; }
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             if (this.conn != null) this.conn.Dispose();
         }
     }
 
+    /// <summary>
+    /// ORMLite repository for Display Alarams
+    /// </summary>
     public class DisplayAlarmOrmLiteRepository : IDisplayAlarmOrmLiteRepository, IDisposable
     {
-
         private IDbConnectionFactory factory = null;
         private int? take = null;
         private IDbConnection conn = null;
@@ -453,6 +548,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             get { return (this.conn) ?? (this.conn = factory.OpenDbConnection()); }
         }
 
+        /// <summary>
+        /// Gets or sets the connection factory of ORMLite datasources
+        /// </summary>
+        /// <exception cref="System.ArgumentNullException">DbConnectionFactory</exception>
         public IDbConnectionFactory DbConnectionFactory
         {
             get { return this.factory; }
@@ -463,9 +562,19 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             }
         }
 
+        /// <summary>
+        /// Gets or sets the provider of identifiers
+        /// </summary>
         public IKeyGenerator<string> KeyGenerator { get; set; }
 
-
+        /// <summary>
+        /// Gets or sets the nummber of result rows to retrieve</param>
+        /// <returns>
+        /// </summary>
+        /// <value>
+        /// The number of results
+        /// </value>
+        /// <exception cref="System.ArgumentNullException">Take</exception>
         public int? Take
         {
             get { return this.take; }
@@ -476,14 +585,31 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             }
         }
 
-        public DisplayAlarmOrmLiteRepository() { }
-        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DisplayAlarmOrmLiteRepository"/> class.
+        /// </summary>
+        public DisplayAlarmOrmLiteRepository()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DisplayAlarmOrmLiteRepository"/> class.
+        /// </summary>
+        /// <param name="factory">The database connection factory.</param>
+        /// <param name="take">The nummber of result rows to retrieve</param>
         public DisplayAlarmOrmLiteRepository(IDbConnectionFactory factory, int? take)
         {
             this.DbConnectionFactory = factory;
             this.Take = take;
         }
 
+        /// <summary>
+        /// Finds an entity in the repository based on a unique identifier
+        /// </summary>
+        /// <param name="key">Type of unique identifier for retrieval of entity from repository</param>
+        /// <returns>
+        /// The found entity from the repository
+        /// </returns>
         public DISPLAY_ALARM Find(string key)
         {
             try
@@ -492,9 +618,18 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; } 
+            catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Finds entities in the repository based on unique identifiers
+        /// </summary>
+        /// <param name="keys">Unique identifiers for retrieving the entities</param>
+        /// <param name="skip">The the number of rows to skip</param>
+        /// <param name="take">The nummber of result rows to retrieve</param>
+        /// <returns>
+        /// Found entities from the repository
+        /// </returns>
         public IEnumerable<DISPLAY_ALARM> FindAll(IEnumerable<string> keys, int? skip = null, int? take = null)
         {
             try
@@ -506,6 +641,12 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Gets all entities from the repository
+        /// </summary>
+        /// <param name="skip">The the number of rows to skip</param>
+        /// <param name="take">The nummber of result rows to retrieve</param>
+        /// <returns></returns>
         public IEnumerable<DISPLAY_ALARM> Get(int? skip = null, int? take = null)
         {
             try
@@ -516,6 +657,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Inserts a new entity or updates an existing one in the repository
+        /// </summary>
+        /// <param name="entity">The entity to save</param>
         public void Save(DISPLAY_ALARM entity)
         {
             try
@@ -527,6 +672,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Inserts new entities or updates existing ones in the repository
+        /// </summary>
+        /// <param name="entities">The entities to save</param>
         public void SaveAll(IEnumerable<DISPLAY_ALARM> entities)
         {
             try
@@ -538,6 +687,12 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Patches fields of an entity in the repository
+        /// </summary>
+        /// <param name="source">The source containing patch details</param>
+        /// <param name="fields">Specfies which fields are used for the patching. The fields are specified in an anonymous variable</param>
+        /// <param name="keys">Filters the entities to patch by keys. No filter implies all entities are patched</param>
         public void Patch(DISPLAY_ALARM source, Expression<Func<DISPLAY_ALARM, object>> fields, IEnumerable<string> keys = null)
         {
             //1. Get fields slected for patching
@@ -576,6 +731,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Erases an entity from the repository based on a unique identifier
+        /// </summary>
+        /// <param name="key">The unique identifier of the entity</param>
         public void Erase(string key)
         {
             try
@@ -586,6 +745,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Erases entities from the repository based on unique identifiers
+        /// </summary>
+        /// <param name="keys">The unique identifier of the entity</param>
         public void EraseAll(IEnumerable<string> keys = null)
         {
             try
@@ -597,6 +760,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Checks if the repository contains an entity
+        /// </summary>
+        /// <param name="key">The unique identifier of the entity</param>
+        /// <returns>
+        /// True if the entity is found in the repository, otherwise false
+        /// </returns>
         public bool ContainsKey(string key)
         {
             try
@@ -607,6 +777,14 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Checks if the repository contains entities
+        /// </summary>
+        /// <param name="keys">The unique identifiers of the entities</param>
+        /// <param name="mode">How the search is performed. Optimistic if at least one entity found, Pessimistic if all entities are found</param>
+        /// <returns>
+        /// True if the entities are found, otherwise false
+        /// </returns>
         public bool ContainsKeys(IEnumerable<string> keys, ExpectationMode mode = ExpectationMode.optimistic)
         {
             try
@@ -615,21 +793,22 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 if (mode == ExpectationMode.pessimistic || mode == ExpectationMode.unknown)
                     return db.Count<DISPLAY_ALARM>(q => Sql.In(q.Id, dkeys)) == dkeys.Count();
                 else return db.Count<DISPLAY_ALARM>(q => Sql.In(q.Id, dkeys)) != 0;
-
             }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             if (this.conn != null) this.conn.Dispose();
         }
     }
 
-    public class EmailAlarmOrmLiteRepository: IEmailAlarmOrmLiteRepository, IDisposable
+    public class EmailAlarmOrmLiteRepository : IEmailAlarmOrmLiteRepository, IDisposable
     {
-
         private IDbConnection conn = null;
 
         private IDbConnection db
@@ -638,21 +817,23 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
         }
 
         private IDbConnectionFactory factory = null;
-        
+
         public IDbConnectionFactory DbConnectionFactory
         {
             get { return this.factory; }
-            set 
+            set
             {
                 if (value == null) throw new ArgumentNullException("DbConnectionFactory");
-                this.factory = value; 
+                this.factory = value;
             }
         }
-        
+
         public IKeyGenerator<string> KeyGenerator { get; set; }
-        
-        public EmailAlarmOrmLiteRepository() { }
-        
+
+        public EmailAlarmOrmLiteRepository()
+        {
+        }
+
         public EmailAlarmOrmLiteRepository(IDbConnectionFactory factory)
         {
             this.DbConnectionFactory = factory;
@@ -683,14 +864,13 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                         r => r.AlarmId,
                         a => a.Id == dry.Id);
                     if (!attachuris.NullOrEmpty()) full.AttachmentUris.AddRangeComplement(attachuris);
-
                 }
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
 
-            return full?? dry;
+            return full ?? dry;
         }
 
         public IEnumerable<EMAIL_ALARM> HydrateAll(IEnumerable<EMAIL_ALARM> dry)
@@ -700,7 +880,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 var keys = dry.Select(q => q.Id).ToArray();
                 var full = db.Select<EMAIL_ALARM>(q => Sql.In(q.Id, keys));
                 //var full = dry.ToList();
-               // var okeys = db.SelectParam<VEVENT, string>(q => q.Id, p => Sql.In(p.Id, keys));
+                // var okeys = db.SelectParam<VEVENT, string>(q => q.Id, p => Sql.In(p.Id, keys));
 
                 //1. retrieve relationships
                 if (!full.NullOrEmpty())
@@ -724,7 +904,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                               join a in full on r.AlarmId equals a.Id
                                               where a.Id == x.Id
                                               select y;
-                            if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.AddRangeComplement(xattachbins); 
+                            if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.AddRangeComplement(xattachbins);
                         }
 
                         if (!rattachuris.NullOrEmpty())
@@ -734,8 +914,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                               join a in full on r.AlarmId equals a.Id
                                               where a.Id == x.Id
                                               select y;
-                        if (!xattachuris.NullOrEmpty()) x.AttachmentUris.AddRangeComplement(xattachuris);
-                            
+                            if (!xattachuris.NullOrEmpty()) x.AttachmentUris.AddRangeComplement(xattachuris);
                         }
 
                         if (!rattendees.NullOrEmpty())
@@ -746,21 +925,18 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                                              where f.Id == x.Id
                                              select y;
                             if (!xattendees.NullOrEmpty()) x.Attendees.AddRangeComplement(xattendees);
-                            
                         }
                     });
                 }
 
                 return full ?? dry;
-
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
-
         }
 
-        public EMAIL_ALARM Find(string key )
+        public EMAIL_ALARM Find(string key)
         {
             try
             {
@@ -830,7 +1006,6 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     var orattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray()));
                     db.SynchronizeAll(rattachuris, orattachuris);
                 }
-
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
@@ -865,21 +1040,21 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 {
                     db.SaveAll(attendees.Distinct());
                     var rattendees = entities.Where(x => !x.Attendees.NullOrEmpty())
-                        .SelectMany(a => a.Attendees.Select(x => new REL_EALARMS_ATTENDEES 
+                        .SelectMany(a => a.Attendees.Select(x => new REL_EALARMS_ATTENDEES
                         {
                             Id = this.KeyGenerator.GetNextKey(),
                             AlarmId = a.Id,
                             AttendeeId = x.Id
                         }));
                     var orattendees = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, keys));
-                   db.SynchronizeAll(rattendees, orattendees);
+                    db.SynchronizeAll(rattendees, orattendees);
                 }
 
                 if (!attachbins.NullOrEmpty())
                 {
                     db.SaveAll(attachbins.Distinct());
                     var rattachbins = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty())
-                        .SelectMany(a => a.AttachmentBinaries.Select(x => new REL_EALARMS_ATTACHBINS 
+                        .SelectMany(a => a.AttachmentBinaries.Select(x => new REL_EALARMS_ATTACHBINS
                         {
                             Id = this.KeyGenerator.GetNextKey(),
                             AlarmId = a.Id,
@@ -893,7 +1068,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 {
                     db.SaveAll(attachuris.Distinct());
                     var rattachuris = entities.Where(x => !x.AttachmentUris.NullOrEmpty())
-                        .SelectMany(a => a.AttachmentUris.Select(x => new REL_EALARMS_ATTACHURIS 
+                        .SelectMany(a => a.AttachmentUris.Select(x => new REL_EALARMS_ATTACHURIS
                         {
                             Id = this.KeyGenerator.GetNextKey(),
                             AlarmId = a.Id,
@@ -902,12 +1077,10 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     var orattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, keys));
                     db.SynchronizeAll(rattachuris, orattachuris);
                 }
-
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
-
         }
 
         public void EraseAll(IEnumerable<string> keys)
@@ -918,7 +1091,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
-            catch (Exception) { throw; } 
+            catch (Exception) { throw; }
         }
 
         public void EraseAll()
@@ -929,7 +1102,7 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             }
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
-            catch (Exception) { throw; } 
+            catch (Exception) { throw; }
         }
 
         public void Patch(EMAIL_ALARM source, Expression<Func<EMAIL_ALARM, object>> fields, IEnumerable<string> keys = null)
@@ -947,7 +1120,6 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                 x.Description,
                 x.Summary
             };
-
 
             //3.Get list of all related event details (relation)
             Expression<Func<EMAIL_ALARM, object>> relations = x => new
@@ -1042,10 +1214,8 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
                     catch (InvalidOperationException) { throw; }
                     catch (ApplicationException) { throw; }
                     catch (Exception) { throw; }
-                    
                 }
             }
-
         }
 
         public bool ContainsKey(string key)
@@ -1102,5 +1272,4 @@ namespace reexmonkey.xcal.service.repositories.concretes.ormlite
             if (this.conn != null) this.conn.Dispose();
         }
     }
-
 }

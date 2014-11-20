@@ -713,12 +713,6 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 BYSECOND =  new List<uint>{0, 15, 30, 45 },
             };
 
-            //var Rx = x.GenerateRecurrences();
-            //Assert.AreEqual(Rx.Count, 4);
-            //Assert.AreEqual(Rx.First().Start, new DATE_TIME(2014, 1, 02, 08, 30, 15, TimeType.Utc));
-            //Assert.AreEqual(Rx.ElementAt(2).Start, new DATE_TIME(2014, 1, 02, 08, 30, 45, TimeType.Utc));
-            //Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 1, 02, 08, 31, 00, TimeType.Utc));
-
             x.RecurrenceRule.BYSETPOS = new List<int> {1, -1};
             var Rx = x.GenerateRecurrences();
             Assert.AreEqual(Rx.Count, 2);
