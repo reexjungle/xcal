@@ -121,7 +121,7 @@ After a successful build, it is time to enjoy the highly anticipated moment i.e.
 3. Right-click on the project again and choose **Properties**
 4. In the **Properties** dialog, go to **Settings** and check the username and password of the *mysql_server* setting.
 
-##### MySQL Configzration
+##### MySQL Configuration
 1. Start up MySQL Workbench  as **root** user (if not yet started).
 2. Choose the server instance **Local Instance MySQLxx**
 3. Under the **Management** section click on **Users and Privileges**
