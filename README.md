@@ -4,24 +4,25 @@ The xCal project is an **open-source** project that basically does 2 things:
 
 1. Implements the [Internet Calendaring and Scheduling Core Object Specification (RFC 5545)](http://tools.ietf.org/html/rfc5545) such that calendaring and scheduling information (events, to-dos, journals and free/busy) can be represented and exchanged in the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) data format independently of calendar service or protocol.
 
-2. Develops a sofware service library to facilitate the setup and hosting of [REST](http://en.wikipedia.org/wiki/Representational_state_transfer)-ful calendar services, in which operations to access and edit distributed calendar data are exposed by means of a calendar API.
+2. Develops a sofware service library to facilitate the setup and hosting of [REST](http://en.wikipedia.org/wiki/Representational_state_transfer)-ful calendar services, in which operations to access and edit distributed calendar data are exposed by means of an [API](http://en.wikipedia.org/wiki/Application_programming_interface).
 
 Why xCal?
 =========
-First of all it is free - yes **free** as in *free air* and not as in *free beer* ditto *with no strings attached*. 
+First of all, xCal is **free** - yes  *'free' as in 'free air' and not 'free' as in 'free beer'*. 
 
-Secondly, it allows you **to host and maintain your calendar data on your own server** - that is, it respects your privacy by giving you total control over your data and thus eliminates the risk of sharing your data with unkown third parties.
+Secondly, xCal allows you **to host and maintain your calendar data on your own server** - that is, you have total control over your calendar information and thus in no way is your private data shared with third parties.
 
-Thirdly, xCal also supports (in addition to iCalendar) various calendar data representations: 
+Thirdly, you shall enjoy distributing calendar information through the multiple data formats xCal currently supports: 
+* [iCalendar/vCalendar](http://en.wikipedia.org/wiki/ICalendar) 
 * [CSV](http://en.wikipedia.org/wiki/Comma-separated_values)
 * [MessagePack](http://msgpack.org/)
 * [JSON](http://en.wikipedia.org/wiki/JSON)
 * [JSV](http://mono.servicestack.net/docs/text-serializers/jsv-format) 
 * [XML](http://en.wikipedia.org/wiki/XML)
 
-Fourthly, as a developer, you do not need to *reinvent the wheel* when tasked with incorporating a time-based system (e.g. reservation/booking systems) in your applications. xCal takes this burden off your shoulders by reducing the overhead to simple calls from your client application (though the API) to the calendar web server, thereby allowing you to concentrate on the goals of your application.  
+Fourthly, xCal aids you not to *reinvent the wheel*. Instead of wasting time in creating your own version of a custom calendaring and scheduling system for you. xCal provides at firsthand standardized time-planning features you require, as well as freeing up the potential development time, so that you can concentrate on other important tasks.
 
-Finally since xCal is open-source, you gain the awesome [benefits][1] of using open source software, which include low-cost (*zero-cost in this case*), quality improvement through continuous community input, business agility and mitigation of business risks. 
+Finally, you gain the awesome [benefits][1] which xCal as an open software provides. These include low costs, quality improvement through continuous community input, business agility and mitigation of business risks. 
 
 Table of Contents
 =================
@@ -45,7 +46,7 @@ To get started on the xCal, you might want to choose one of the following option
 
 ### Contents of Download Package
 
-The download package contains source codes and versioning files of xCal. It is also worth mentioning here that xCal is a .NET project and thus source files are logically associated to respective project files (\*.csproj), which in turn are linked to a single solution file (\*.sln) as illustrated below: 
+The download package contains source codes and project files of xCal. It is also worth mentioning here that xCal is a .NET project and thus source files are logically associated to respective project files (\*.csproj), which in turn are linked to a single solution file (\*.sln) as illustrated below: 
 
 ```
 solution/
@@ -87,36 +88,48 @@ solution/
 
 xCal is written entirely in C# - therefore it is recommended to use a specialized IDE such as [Microsoft Visual Studio][5] whose editor, debugger and compiler features facilitate rapid application development. As a matter of fact, Microsoft now  offers [Visual Studio Community 2013][6] at no cost to an unlimited number of users developing open source projects. In any case, if Visual Studio does not suit your tastes, please feel free to use other third-party tools. 
 
-*For the remainder of this Get Started section, it would be assumed for the sake of simplicity, that you are using visual studio as the main development tool.*
+*For the remainder of this Get Started section and for the sake of simplicity, it would be assumed you use Visual Studio 2013 for software development.*
 
 ### Setting up xCal
-Many would agree that the setup process of a software project should be rendered less painful as possible. This often implies minimal configuration and non-complex set up procedures. As such, xCal can be set up in more than one way.
+Many would agree that the setup process of a software project should be rendered as less painful as possible. This often implies minimal configuration and non-complex set up procedures. Consequently, setting up xCal has been simplified to a **one-click** process.
 
 ##### Setup from downloaded zipped source file
 1. Extract source code to desired location
 2. Open the *solution* folder and search for the \*.sln file
-3. Double-click the file and Visual Studio loads the entire project tree.
+3. Double-click the file -> Visual Studio starts up and loads the entire sloution.
 
 
 ##### Setup through cloning in GitHub desktop application 
 1. Open locally-installed instance of Github desktop application.
 2. Chose to clone source and select local storage location.
 3. Open the *solution* folder and search for the \*.sln file.
-4. Double-click the file and Visual Studio loads the entire project tree.
+4. Double-click the file -> Visual Studio starts up and loads the entire solution.
 
 ### Building xCal
+Building xCal is also a straightforward process - you do not have to worry about the dependencies because these are automatically resolved during build process. However, you may need a running internet connection on the first build, in order to enable Visual Studio download the necessary [NuGet](https://www.nuget.org/) Packages. 
+
+To build xCal, please do perform the following steps:
 1. Select the root of the Solution Explorer Tree
 2. Right-click and choose *Rebuild Solution* from context menu
 
-##### *Notes*
-* You need a running internet connection on first build for Visual Studio to automatically download [NuGet](https://www.nuget.org/) Packages for dependencies.
-
 ### Running xCal
-1. Select the *xcal.application.server.web.local* as start project.
-2. Run the project -> voila! xCal runs!
+After a successful build, it is time to enjoy the highly anticipated moment i.e. seeing xCal run! Well, a few more things need to be done before reaching this desired stage. This involves installing the necessary backend servers (if not yet on the host computer) and configuring them. Depending on the selected application server (there are 4 in the download package), you have the choice of installing a MySQL server (relational database) or a Redis server (a NoSQL datastore). it is recommended for beginners to choose the local application server (*xcal.application.server.web.local*), whose default data backend is MySQL server and perform the following steps (assuming you have opened xCal in Visual Studio).
 
-##### *Notes*
-* All dependencies should be correctly-configured for xCal to run successfully (More on [Dependencies](https://github.com/reexmonkey/xcal/#dependencies))
+##### Visual Studio Configuration
+1. Select the project **xcal.application.server.web.local** under the logical application folder.
+2. Right-click on the project and choose **Set as Startup Project**
+3. Right-click on the project again and choose **Properties**
+4. In the **Properties** dialog, go to **Settings** and check the username and password of the *mysql_server* setting.
+
+##### MySQL Configzration
+1. Start up MySQL Workbench  as **root** user (if not yet started).
+2. Choose the server instance **Local Instance MySQLxx**
+3. Under the **Management** section click on **Users and Privileges**
+4. Add a new user account **local** and use the same username and password obtained from Step 4. of the Visual Studio configuration.
+5. In the **Administrative Roles** tab check that all **Roles**, as well as **Global Privileges** are ticked.
+6. Apply changes.
+
+Go back to Visual Studio and trigger the **Run** button -> voila! xCal is up and running :)
 
 ### Deploying xCal
 
