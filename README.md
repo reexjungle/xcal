@@ -20,7 +20,7 @@ Thirdly, you shall enjoy distributing calendar information through the multiple 
 * [JSV](http://mono.servicestack.net/docs/text-serializers/jsv-format) 
 * [XML](http://en.wikipedia.org/wiki/XML)
 
-Fourthly, xCal aids you not to *reinvent the wheel*. Instead of creating your own custom calendaring and scheduling system, xCal readily provides you an implementation of the internet standard (RFC 5545), as well as frees up the potential development time you could have wasted, so that you can concentrate on other important tasks at hand.
+Fourthly, xCal aids you not to *reinvent the wheel*. Instead of creating your own custom calendaring and scheduling system, it readily provides you an implementation of the internet standard (RFC 5545) and frees up the potential development time you could have wasted, so that you can concentrate on other important tasks at hand.
 
 Finally, you gain the awesome [benefits][1] which xCal as an open software provides. These include low costs, quality improvement through continuous community input, business agility and mitigation of business risks. 
 
