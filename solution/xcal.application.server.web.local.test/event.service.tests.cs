@@ -537,55 +537,6 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
         }
 
-        [TestMethod]
-        public void CheckRecurrenceRuleForDifferentTimeTypes()
-        {
-            var events = this.GenerateNEvents(3).ToArray();
-            var x = events[0];
-            x.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0, TimeType.LocalAndTimeZone, new TZID("America", "New_York"));
-            x.End = new DATE_TIME(2014, 9, 1, 11, 30, 0, TimeType.LocalAndTimeZone, new TZID("America", "New_York"));
-            x.RecurrenceRule = new RECUR
-            {
-                FREQ = FREQ.DAILY,
-                INTERVAL = 1,
-            };
-
-            var Rx = x.GenerateRecurrences();
-            Assert.AreEqual(Rx.First().Start.Type, TimeType.LocalAndTimeZone);
-            Assert.AreEqual(Rx.First().End.Type, TimeType.LocalAndTimeZone);
-            Assert.AreEqual(Rx.First().End.TimeZoneId, new TZID("America", "New_York"));
-
-
-            var y = events[1];
-            y.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0, TimeType.Local);
-            y.End = new DATE_TIME(2014, 9, 1, 11, 30, 0, TimeType.Local);
-            y.RecurrenceRule = new RECUR
-            {
-                FREQ = FREQ.DAILY,
-                UNTIL = new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeType.Utc)
-            };
-
-            var Ry = y.GenerateRecurrences();
-            Assert.AreEqual(Ry.First().Start.Type, TimeType.Local);
-            Assert.AreEqual(Ry.First().End.Type, TimeType.Local);
-            Assert.AreEqual(Ry.First().End.TimeZoneId, null);
-
-            var z = events[2];
-            z.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0, TimeType.Utc);
-            z.End = new DATE_TIME(2014, 9, 1, 11, 30, 0, TimeType.Utc);
-            z.RecurrenceRule = new RECUR
-            {
-                FREQ = FREQ.DAILY,
-                COUNT = 29,
-                INTERVAL = 1
-            };
-
-            var Rz = z.GenerateRecurrences();
-            Assert.AreEqual(Rz.First().Start.Type, TimeType.Utc);
-            Assert.AreEqual(Rz.First().End.Type, TimeType.Utc);
-            Assert.AreEqual(Rz.First().End.TimeZoneId, null);
-
-        } 
         #endregion
 
         

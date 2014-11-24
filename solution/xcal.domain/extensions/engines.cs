@@ -607,12 +607,16 @@ namespace reexmonkey.xcal.domain.extensions
             if (!ranked.NullOrEmpty())
             {
                 dates = dates.Union(dates.SelectMany(date => ranked.Select(r =>
-                    r.Weekday.ToDayOfWeek().GetNthDateOfMonth(r.OrdinalWeek, (int)date.MONTH, (int)date.FULLYEAR)).ToDATE_TIMEs(date.TimeZoneId)));
+                    r.Weekday.ToDayOfWeek()
+                    .GetNthDateOfMonth(r.OrdinalWeek, (int)date.FULLYEAR, (int)date.MONTH, (int)date.HOUR, (int)date.MINUTE, (int)date.SECOND))
+                    .ToDATE_TIMEs(date.TimeZoneId)));
             }
 
             if (!unranked.NullOrEmpty())
             {
-                dates = dates.Union(dates.SelectMany(date => unranked.SelectMany(u => u.Weekday.ToDayOfWeek().GetSimilarDatesOfMonth((int)date.MONTH, (int)date.FULLYEAR).ToDATE_TIMEs(date.TimeZoneId)).ToList()));
+                dates = dates.Union(dates.SelectMany(date => unranked.SelectMany(u => 
+                    u.Weekday.ToDayOfWeek()
+                    .GetSimilarDatesOfMonth((int)date.FULLYEAR, (int)date.MONTH, (int)date.HOUR, (int)date.MINUTE, (int)date.SECOND).ToDATE_TIMEs(date.TimeZoneId)).ToList()));
             }
 
             return dates.LimitByDayMonthly(rrule);
@@ -644,8 +648,8 @@ namespace reexmonkey.xcal.domain.extensions
         public static IEnumerable<DATE_TIME> ExpandByMonthDay(this IEnumerable<DATE_TIME> dates, RECUR rrule)
         {
             if (rrule.BYMONTHDAY.NullOrEmpty()) return dates;
-            var positives = rrule.BYYEARDAY.Where(x => x > 0);
-            var negatives = rrule.BYYEARDAY.Where(x => x < 0);
+            var positives = rrule.BYMONTHDAY.Where(x => x > 0);
+            var negatives = rrule.BYMONTHDAY.Where(x => x < 0);
             if (!positives.NullOrEmpty())
             {
                 dates = dates.Union(dates.SelectMany(date => positives.Select(x =>
@@ -666,7 +670,7 @@ namespace reexmonkey.xcal.domain.extensions
 
         public static IEnumerable<DATE_TIME> ExpandByYearDay(this IEnumerable<DATE_TIME> dates, RECUR rrule)
         {
-            if (rrule.BYMONTHDAY.NullOrEmpty()) return dates;
+            if (rrule.BYYEARDAY.NullOrEmpty()) return dates;
             var positives = rrule.BYYEARDAY.Where(x => x > 0);
             var negatives = rrule.BYYEARDAY.Where(x => x < 0);
 

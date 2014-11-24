@@ -639,7 +639,7 @@ namespace reexmonkey.xcal.domain.models
         /// </returns>
         public static DATE_TIME operator +(DATE_TIME start, DURATION duration)
         {
-            return (start.ToDateTime().Add(duration.ToTimeSpan())).ToDATE_TIME();
+            return (start.ToDateTime().Add(duration.ToTimeSpan())).ToDATE_TIME(start.TimeZoneId);
         }
 
         /// <summary>

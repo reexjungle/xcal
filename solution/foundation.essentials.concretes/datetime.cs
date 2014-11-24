@@ -232,18 +232,18 @@ namespace reexmonkey.foundation.essentials.concretes
             else return (sylvester.Day - date.Day) / 7 * weeks == (Math.Abs(N) - 1) && date.DayOfWeek == weekday;
         }
 
-        public static DateTime GetNthDateOfMonth(this DayOfWeek weekday, int N, int month, int year)
+        public static DateTime GetNthDateOfMonth(this DayOfWeek weekday, int N, int year, int month, int hour = 0, int minute = 0, int second = 0)
         {
             if (N > 0)
             {
-                var date = new DateTime(year, month, 1);
+                var date = new DateTime(year, month, 1, hour, minute, second);
                 var d = 7 * (N - 1) + 1;
                 while (date.DayOfWeek < weekday) date = date.AddDays(d++);
                 return date;
             }
             else if (N < 0)
             {
-                var date = new DateTime(year, month, 1).AddMonths(1).AddDays(-1); //get last day of month
+                var date = new DateTime(year, month, 1, hour, minute, second).AddMonths(1).AddDays(-1); //get last day of month
                 var d = date.Day - (7 * (Math.Abs(N) - 1));
                 while (date.DayOfWeek > weekday) date = date.AddDays(d--);
                 return date;
@@ -273,9 +273,9 @@ namespace reexmonkey.foundation.essentials.concretes
             else throw new ArgumentException("Zero values of N not allowed");
         }
 
-        public static IEnumerable<DateTime> GetSimilarDatesOfMonth(this DayOfWeek weekday, int month, int year)
+        public static IEnumerable<DateTime> GetSimilarDatesOfMonth(this DayOfWeek weekday, int year, int month, int hour = 0, int minute = 0, int second = 0)
         {
-            var first = new DateTime(year, month, 1);
+            var first = new DateTime(year, month, 1, hour, minute, second);
             return weekday.GetSimilarDatesInRange(first, first.AddMonths(1).AddDays(-1));
         }
 
