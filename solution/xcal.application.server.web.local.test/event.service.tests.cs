@@ -412,7 +412,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                     DateTime = new DATE_TIME(DateTime.Now.AddDays(1)),
                     Duration = new DURATION(0, 0, 0, 5),
                     Related = RELATED.START,
-                    Format = ValueFormat.DATE_TIME
+                    ValueType = VALUE.DATE_TIME
                 },
                 AttachmentUri = new ATTACH_URI
                 {
@@ -444,7 +444,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                     DateTime = new DATE_TIME(DateTime.Now.AddDays(1)),
                     Duration = new DURATION(0, 0, 0, 5),
                     Related = RELATED.START,
-                    Format = ValueFormat.DATE_TIME
+                    ValueType = VALUE.DATE_TIME
                 },
                 AttachmentBinaries = new List<ATTACH_BINARY>
                 {

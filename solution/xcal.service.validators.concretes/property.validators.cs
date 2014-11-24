@@ -114,7 +114,7 @@ namespace reexmonkey.xcal.service.validators.concretes
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.DateTimes).Must((x,y) => !y.NullOrEmpty());
             RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null);
-            RuleFor(x => x.Format).Must((x, y) => x.Format == ValueFormat.DATE_TIME || x.Format == ValueFormat.DATE);
+            RuleFor(x => x.ValueType).Must((x, y) => x.ValueType == VALUE.DATE_TIME || x.ValueType == VALUE.DATE);
         }
     }
 
@@ -126,7 +126,7 @@ namespace reexmonkey.xcal.service.validators.concretes
             RuleFor(x => x.DateTimes).SetCollectionValidator(new DateTimeValidator()).When(x => !x.DateTimes.NullOrEmpty());
             RuleFor(x => x.Periods).SetCollectionValidator(new PeriodValidator()).When(x => !x.Periods.NullOrEmpty());
             RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null);
-            RuleFor(x => x.Format).Must((x, y) => x.Format == ValueFormat.DATE_TIME || x.Format == ValueFormat.DATE);
+            RuleFor(x => x.ValueType).Must((x, y) => x.ValueType == VALUE.DATE_TIME || x.ValueType == VALUE.DATE);
         }
     }
 
@@ -135,9 +135,9 @@ namespace reexmonkey.xcal.service.validators.concretes
         public PriorityValidator()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Value).InclusiveBetween(0,9).When(x => x.Format == PriorityFormat.Integral);
-            RuleFor(x => x.Level).NotEqual(PRIORITYLEVEL.UNKNOWN).When(x => x.Format == PriorityFormat.Level);
-            RuleFor(x => x.Schema).NotEqual(PRIORITYSCHEMA.UNKNOWN).When(x => x.Format == PriorityFormat.Schema);
+            RuleFor(x => x.Value).InclusiveBetween(0,9).When(x => x.Format == PriorityType.Integral);
+            RuleFor(x => x.Level).NotEqual(PRIORITYLEVEL.UNKNOWN).When(x => x.Format == PriorityType.Level);
+            RuleFor(x => x.Schema).NotEqual(PRIORITYSCHEMA.UNKNOWN).When(x => x.Format == PriorityType.Schema);
 
         }
     }
@@ -199,7 +199,7 @@ namespace reexmonkey.xcal.service.validators.concretes
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Duration).SetValidator(new DurationValidator()).When(x => x.Duration != null);
             RuleFor(x => x.DateTime).SetValidator(new DateTimeValidator()).When(x => x.DateTime != null);
-            RuleFor(x => x.Format).NotEqual(ValueFormat.UNKNOWN);
+            RuleFor(x => x.ValueType).NotEqual(VALUE.UNKNOWN);
         }
     }
 

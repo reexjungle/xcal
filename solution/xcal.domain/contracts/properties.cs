@@ -78,7 +78,7 @@ namespace reexmonkey.xcal.domain.contracts
     public interface IPRIORITY: IPROPERTY
     {
         int Value { get; }
-        PriorityFormat Format { get; }
+        PriorityType Format { get; }
         PRIORITYLEVEL Level { get;}
         PRIORITYSCHEMA Schema { get; }
     }
@@ -155,7 +155,7 @@ namespace reexmonkey.xcal.domain.contracts
     {
         List<DATE_TIME> DateTimes { get; set; }
         TZID TimeZoneId { get; set; }
-        ValueFormat Format { get; set; }
+        VALUE ValueType { get; set; }
     }
 
     public interface IRDATE : IPROPERTY
@@ -163,7 +163,7 @@ namespace reexmonkey.xcal.domain.contracts
         List<DATE_TIME> DateTimes { get; set; }
         List<PERIOD> Periods { get; set; }
         TZID TimeZoneId { get; set; }
-        ValueFormat Format { get; set; }
+        VALUE ValueType { get; set; }
     }
 
     #endregion
@@ -181,7 +181,7 @@ namespace reexmonkey.xcal.domain.contracts
         DATE_TIME DateTime {get; set;}
 
         //Selector
-        ValueFormat Format { get; set; }
+        VALUE ValueType { get; set; }
 
     }
 
@@ -195,7 +195,7 @@ namespace reexmonkey.xcal.domain.contracts
         string Name { get; set; }
         List<IPARAMETER> Parameters { get; set; }
         TValue Value { get; set; }   
-        ValueFormat Format {get; set; }
+        VALUE ValueType {get; set; }
     }
 
     public interface IMISC_PROPERTY : IMISC_PROPERTY<object> { }

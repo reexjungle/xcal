@@ -733,7 +733,7 @@ namespace reexmonkey.xcal.domain.models
         private readonly int value;
         private readonly PRIORITYLEVEL level;
         private readonly PRIORITYSCHEMA schema;
-        private readonly PriorityFormat format;
+        private readonly PriorityType format;
    
         private int LevelToValue(PRIORITYLEVEL level)
         {
@@ -827,7 +827,7 @@ namespace reexmonkey.xcal.domain.models
             return value;
         }
 
-        public PriorityFormat Format 
+        public PriorityType Format 
         {
             get { return this.format; }
         }
@@ -857,7 +857,7 @@ namespace reexmonkey.xcal.domain.models
 
         public PRIORITY(int value)
         {
-            this.format = PriorityFormat.Integral;
+            this.format = PriorityType.Integral;
             this.value = value;
             this.schema = PRIORITYSCHEMA.UNKNOWN;
             this.level = PRIORITYLEVEL.UNKNOWN;
@@ -867,7 +867,7 @@ namespace reexmonkey.xcal.domain.models
 
         public PRIORITY(PRIORITYLEVEL level)
         {
-            this.format = PriorityFormat.Level;
+            this.format = PriorityType.Level;
             this.value = 0;
             this.schema = PRIORITYSCHEMA.UNKNOWN;
             this.level = level;
@@ -877,7 +877,7 @@ namespace reexmonkey.xcal.domain.models
 
         public PRIORITY(PRIORITYSCHEMA schema)
         {
-            this.format = PriorityFormat.Schema;
+            this.format = PriorityType.Schema;
             this.value = 0;
             this.schema = schema;
             this.level = PRIORITYLEVEL.UNKNOWN;
@@ -887,7 +887,7 @@ namespace reexmonkey.xcal.domain.models
 
         public PRIORITY(string value)
         {
-            this.format = PriorityFormat.Integral;
+            this.format = PriorityType.Integral;
             this.value = 0;
             this.schema = PRIORITYSCHEMA.UNKNOWN;
             this.level = PRIORITYLEVEL.UNKNOWN;
@@ -907,8 +907,8 @@ namespace reexmonkey.xcal.domain.models
 
         public override string ToString()
         {
-            if (this.Format == PriorityFormat.Integral) return string.Format("PRIORITY:{0}", this.value);
-            else if(this.Format == PriorityFormat.Level) return string.Format("PRIORITY:{0}", this.LevelToValue(this.level));
+            if (this.Format == PriorityType.Integral) return string.Format("PRIORITY:{0}", this.value);
+            else if(this.Format == PriorityType.Level) return string.Format("PRIORITY:{0}", this.LevelToValue(this.level));
             else return string.Format("PRIORITY:{0}", this.SchemaToValue(this.schema));
         }
 
@@ -1678,13 +1678,13 @@ namespace reexmonkey.xcal.domain.models
         /// Format of the Exception Date
         /// </summary>
         [DataMember]
-        public ValueFormat Format { get; set; }
+        public VALUE ValueType { get; set; }
 
         public EXDATE()
         {
             this.DateTimes = new List<DATE_TIME>();
             this.TimeZoneId = null;
-            this.Format = ValueFormat.UNKNOWN;
+            this.ValueType = VALUE.UNKNOWN;
         }
 
         /// <summary>
@@ -1692,11 +1692,11 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         /// <param name="values">Set of Dates of Recurrence Exceptions</param>
         /// <param name="tzid"></param>
-        public EXDATE(List<DATE_TIME> values, TZID tzid, ValueFormat format = ValueFormat.UNKNOWN)
+        public EXDATE(List<DATE_TIME> values, TZID tzid, VALUE value_type = VALUE.UNKNOWN)
         {
             this.DateTimes = values;
             this.TimeZoneId = tzid;
-            this.Format = format;
+            this.ValueType = value_type;
         }
 
         /// <summary>
@@ -1707,7 +1707,7 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("EXDATE");
-            if (this.Format != ValueFormat.UNKNOWN) sb.AppendFormat(";VALUE={1}", this.Format);
+            if (this.ValueType != VALUE.UNKNOWN) sb.AppendFormat(";VALUE={1}", this.ValueType);
             else if (this.tzid != null) sb.AppendFormat(";{0}", this.tzid);
             sb.Append(":"); var last = this.DateTimes.Last();
             foreach (var datetime in this.DateTimes)
@@ -1808,14 +1808,14 @@ namespace reexmonkey.xcal.domain.models
         /// Mode of the recurrence: events, to-dos, journal entries or time-zone definitions
         /// </summary>
         [DataMember]
-        public ValueFormat Format { get; set; }
+        public VALUE ValueType { get; set; }
 
         public RDATE()
         {
             this.DateTimes = new List<DATE_TIME>();
             this.TimeZoneId = null;
             this.Periods = new List<PERIOD>();
-            this.Format =  ValueFormat.UNKNOWN;
+            this.ValueType =  VALUE.UNKNOWN;
         }
 
         /// <summary>
@@ -1823,12 +1823,12 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         /// <param name="values">List of DATE-TIME values for recurring events, to-dos, journal entries or time-zone definitions</param>
         /// <param name="tzid">ID of the current Time Zone</param>
-        public RDATE(List<DATE_TIME> values, TZID tzid = null, ValueFormat format = ValueFormat.UNKNOWN)
+        public RDATE(List<DATE_TIME> values, TZID tzid = null, VALUE value_type = VALUE.UNKNOWN)
         {
             this.DateTimes = values;
             this.TimeZoneId = tzid;
             this.Periods = new List<PERIOD>();
-            this.Format = format;
+            this.ValueType = value_type;
 
         }
 
@@ -1837,12 +1837,12 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         /// <param name="periods">List of Periods between recurring events, to-dos, journal entries or time-zone definitions</param>
         /// <param name="tzid">ID of the current Time Zone</param>
-        public RDATE(List<PERIOD> periods, TZID tzid = null, ValueFormat format = ValueFormat.UNKNOWN)
+        public RDATE(List<PERIOD> periods, TZID tzid = null, VALUE value_type = VALUE.UNKNOWN)
         {
             this.DateTimes = new List<DATE_TIME>();
             this.Periods = periods;
             this.TimeZoneId = tzid;
-            this.Format = format;
+            this.ValueType = value_type;
         }
 
         /// <summary>
@@ -1853,7 +1853,7 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("RDATE");
-            if (this.Format != ValueFormat.UNKNOWN) sb.AppendFormat(";VALUE={0}", this.Format);
+            if (this.ValueType != VALUE.UNKNOWN) sb.AppendFormat(";VALUE={0}", this.ValueType);
             else if (this.TimeZoneId != null) sb.AppendFormat(";{0}", this.TimeZoneId);
             sb.AppendFormat(":");
             if (!this.datetimes.NullOrEmpty())
@@ -1917,7 +1917,7 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public class TRIGGER : ITRIGGER, IEquatable<TRIGGER>, IContainsKey<string>
     {
-        private TriggerFormat tformat;
+        private TriggerType type;
 
         /// <summary>
         /// ID of the trigger
@@ -1941,26 +1941,26 @@ namespace reexmonkey.xcal.domain.models
         /// Action value mode, for example "AUDIO", "DISPLAY", "EMAIL"
         /// </summary>
         [DataMember]
-        public ValueFormat Format { get; set; }
+        public VALUE ValueType { get; set; }
 
         [DataMember]
         public RELATED Related { get; set; }
 
         public TRIGGER() { }
 
-        public TRIGGER(DURATION duration, RELATED related = RELATED.UNKNOWN, ValueFormat vformat = ValueFormat.UNKNOWN)
+        public TRIGGER(DURATION duration, RELATED related = RELATED.UNKNOWN, VALUE value_type = VALUE.UNKNOWN)
         {
             this.Duration = duration;
             this.Related = related;
-            this.Format = vformat;
-            this.tformat = TriggerFormat.Related;
+            this.ValueType = value_type;
+            this.type = TriggerType.Related;
         }
 
-        public TRIGGER(DATE_TIME datetime, ValueFormat vformat = ValueFormat.UNKNOWN)
+        public TRIGGER(DATE_TIME datetime, VALUE vformat = VALUE.UNKNOWN)
         {
-            this.Format = vformat;
+            this.ValueType = vformat;
             this.DateTime = default(DATE_TIME);
-            this.tformat = TriggerFormat.Absolute;
+            this.type = TriggerType.Absolute;
         }
 
         /// <summary>
@@ -1971,15 +1971,15 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.AppendFormat("TRIGGER");
-            if(this.tformat == TriggerFormat.Related)
+            if(this.type == TriggerType.Related)
             {
-                if (this.Format == ValueFormat.DURATION) sb.AppendFormat(";VALUE={0}", this.Format);
+                if (this.ValueType == VALUE.DURATION) sb.AppendFormat(";VALUE={0}", this.ValueType);
                 else if (this.Related != default(RELATED)) sb.AppendFormat(";RELATED={0}", this.Related);
                 sb.AppendFormat(":{0}", this.Duration);
             }
             else
             {
-                if (this.Format == ValueFormat.DATE_TIME) sb.AppendFormat(";VALUE={0}", this.Format);
+                if (this.ValueType == VALUE.DATE_TIME) sb.AppendFormat(";VALUE={0}", this.ValueType);
                 sb.AppendFormat(":{0}", this.DateTime);
             }
             return sb.ToString();
@@ -2052,7 +2052,7 @@ namespace reexmonkey.xcal.domain.models
         public List<IPARAMETER> Parameters { get; set; }
 
         [DataMember]
-        public ValueFormat Format { get; set; }
+        public VALUE ValueType { get; set; }
 
         public MISC_PROPERTY()
         {
@@ -2079,8 +2079,8 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             sb.Append(this.Name);
             foreach (var parameter in this.Parameters) sb.AppendFormat(";{0}", parameter);
-            if(this.Format == ValueFormat.UNKNOWN) sb.AppendFormat(":{0}", this.Value);
-            else sb.AppendFormat("VALUE={0}:{1}", this.Format, this.Value);
+            if(this.ValueType == VALUE.UNKNOWN) sb.AppendFormat(":{0}", this.Value);
+            else sb.AppendFormat("VALUE={0}:{1}", this.ValueType, this.Value);
             return sb.ToString();
         }
 

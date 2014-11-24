@@ -14,7 +14,7 @@ namespace reexmonkey.xcal.domain.models
 {
 
     /// <summary>
-    /// Specifes a contract for the VEVENT component of the iCalendar Core Object
+    /// Specifes the VEVENT component of the iCalendar Core Object
     /// </summary>
     [DataContract]
     public class VEVENT : IEVENT, IEquatable<VEVENT>, IComparable<VEVENT>, IContainsKey<string>
