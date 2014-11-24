@@ -340,14 +340,14 @@ namespace reexmonkey.xcal.domain.models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct.
+        /// Initializes a new instance of <see cref="DATE_TIME"/> struct.
         /// </summary>
-        /// <param name="fullyear">The fullyear of the <see cref="DATE_TIME"/> type.</param>
-        /// <param name="month">The month of the <see cref="DATE_TIME"/> type.</param>
-        /// <param name="mday">The month day of the <see cref="DATE_TIME"/> type.</param>
-        /// <param name="hour">The hour of the <see cref="DATE_TIME"/> type.</param>
-        /// <param name="minute">The minute of the <see cref="DATE_TIME"/> type.</param>
-        /// <param name="second">The second of the <see cref="DATE_TIME"/> type.</param>
+        /// <param name="fullyear">The 4-digit date time.</param>
+        /// <param name="month">The month of the date time.</param>
+        /// <param name="mday">The day of the date time.</param>
+        /// <param name="hour">The hour of the date time.</param>
+        /// <param name="minute">The minute of the date time.</param>
+        /// <param name="second">The second of the date time.</param>
         /// <param name="time_type">The time format of the <see cref="DATE_TIME"/> type.</param>
         /// <param name="tzid">The time zone identifer of the <see cref="DATE_TIME"/> type.</param>
         public DATE_TIME(uint fullyear, uint month, uint mday, uint hour, uint minute, uint second,
@@ -364,10 +364,10 @@ namespace reexmonkey.xcal.domain.models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct from a <see cref="datetime"/> struct.
+        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct from a <see cref="datetime"/> instance.
         /// </summary>
         /// <param name="datetime">The <see cref="datetime"/> struct.</param>
-        /// <param name="tzinfo">The time zone identifer of the <see cref="DATE_TIME"/> type.</param>
+        /// <param name="tzinfo">The time zone identifer (<see cref="TimeZoneInfo"/> ) of the <see cref="DATE_TIME"/> type.</param>
         public DATE_TIME(DateTime datetime, TimeZoneInfo tzinfo = null)
         {
             this.fullyear = (uint)datetime.Year;
@@ -388,10 +388,10 @@ namespace reexmonkey.xcal.domain.models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct from a <see cref="datetime"/> struct.
+        /// Initializes a new instance of the <see cref="DATE_TIME"/> from a <see cref="datetime"/> instance.
         /// </summary>
         /// <param name="datetime">The <see cref="datetime"/> struct.</param>
-        /// <param name="tzid">The time zone identifer of the <see cref="DATE_TIME"/> type.</param>
+        /// <param name="tzid">The time zone identifer (<see cref="TZID"/> ) of the <see cref="DATE_TIME"/> instance.</param>
         public DATE_TIME(DateTime datetime, TZID tzid)
         {
             this.fullyear = (uint)datetime.Year;
@@ -411,6 +411,10 @@ namespace reexmonkey.xcal.domain.models
             if (datetime.Kind == DateTimeKind.Utc) this.time_type = TimeType.Utc;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct from a <see cref="DateTimeOffset"/> instance.
+        /// </summary>
+        /// <param name="datetime">The <see cref="DateTimeOffset"/> struct</param>
         public DATE_TIME(DateTimeOffset datetime)
         {
             this.fullyear = (uint)datetime.Year;
@@ -423,6 +427,12 @@ namespace reexmonkey.xcal.domain.models
             this.tzid = null;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct from a <see cref="DATE"/> instance.
+        /// </summary>
+        /// <param name="date">The source <see cref="DATE_TIME"/> struct.</param>
+        /// <param name="tzid">The time zone identifer (<see cref="TZID"/> ).</param>
+        /// <exception cref="System.ArgumentNullException">date</exception>
         public DATE_TIME(DATE date, TZID tzid = null)
         {
             if (date == null) throw new ArgumentNullException("date");
@@ -438,6 +448,11 @@ namespace reexmonkey.xcal.domain.models
             this.time_type = TimeType.Unknown;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct from a <see cref="TIME"/> instance.
+        /// </summary>
+        /// <param name="time">The source <see cref="TIME"/> struct.</param>
+        /// <exception cref="System.ArgumentNullException">time</exception>
         public DATE_TIME(TIME time)
         {
             if (time == null) throw new ArgumentNullException("time");
@@ -453,6 +468,10 @@ namespace reexmonkey.xcal.domain.models
             this.time_type = TimeType.Unknown;
         }
 
+        /// <summary>
+        /// Deserializes a new instance of the <see cref="DATE_TIME"/> struct from string.
+        /// </summary>
+        /// <param name="value">The string containing serialized ínformation about the <see cref="DATE_TIME"/> struct.</param>
         public DATE_TIME(string value)
         {
             this.fullyear = 1u;
@@ -491,6 +510,10 @@ namespace reexmonkey.xcal.domain.models
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct from an implementation of the <see cref="IDATE_TIME"/> interface.
+        /// </summary>
+        /// <param name="datetime">The <see cref="IDATE_TIME"/> interface.</param>
         public DATE_TIME(IDATE_TIME datetime)
         {
             this.fullyear = datetime.FULLYEAR;
@@ -503,6 +526,12 @@ namespace reexmonkey.xcal.domain.models
             this.tzid = datetime.TimeZoneId;
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             if (this.time_type == TimeType.Local) return string.Format("{0:D4}{1:D2}{2:D2}T{3:D2}{4:D2}{5:D2}", this.fullyear, this.month, this.mday, this.hour, this.minute, this.second);
@@ -514,6 +543,13 @@ namespace reexmonkey.xcal.domain.models
                 return string.Format("{0:D4}{1:D2}{2:D2}T{3:D2}{4:D2}{5:D2}", this.fullyear, this.month, this.mday, this.hour, this.minute, this.second);
         }
 
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
         public bool Equals(DATE_TIME other)
         {
             if (other == null) return false;
@@ -521,12 +557,25 @@ namespace reexmonkey.xcal.domain.models
                 (this.hour == other.HOUR) && (this.minute == other.MINUTE) && (this.second == other.SECOND);
         }
 
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals((DATE_TIME)obj);
         }
 
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+        /// </returns>
         public override int GetHashCode()
         {
             return
@@ -538,6 +587,13 @@ namespace reexmonkey.xcal.domain.models
                 this.second.GetHashCode();
         }
 
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
+        /// </returns>
         public int CompareTo(DATE_TIME other)
         {
             if (other == null) return -2; //undefined
@@ -573,11 +629,27 @@ namespace reexmonkey.xcal.domain.models
 
         #region overloaded operators
 
+        /// <summary>
+        /// Adds a specified time duration to a specified date and time, yielding a new <see cref="DATE_TIME"/>.
+        /// </summary>
+        /// <param name="start">The <see cref="DATE_TIME"/> value to add to.</param>
+        /// <param name="duration">The time duration to add.</param>
+        /// <returns>
+        /// The sum of the <see cref="start"/> and <see cref="duration"/>.
+        /// </returns>
         public static DATE_TIME operator +(DATE_TIME start, DURATION duration)
         {
             return (start.ToDateTime().Add(duration.ToTimeSpan())).ToDATE_TIME();
         }
 
+        /// <summary>
+        /// Substracts a specified time duration from a specified date and time, yielding a new <see cref="DATE_TIME"/>.
+        /// </summary>
+        /// <param name="end">The <see cref="DATE_TIME"/> value to substract from.</param>
+        /// <param name="duration">The time duration to substract.</param>
+        /// <returns>
+        /// The value of the <see cref="DATE_TIME"/> object minus the <see cref="duration"/>.
+        /// </returns>
         public static DATE_TIME operator -(DATE_TIME end, DURATION duration)
         {
             return (end.ToDateTime().Subtract(duration.ToTimeSpan())).ToDATE_TIME(end.TimeZoneId);

@@ -1,16 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using reexmonkey.infrastructure.operations.concretes;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace reexmonkey.xcal.application.server.web.dev.test
 {
-    /// <summary>
-    /// Summary description for @event
-    /// </summary>
     [TestClass]
     public class EventUnitTests
     {
@@ -41,15 +38,12 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                     Status = STATUS.CONFIRMED,
                     Transparency = TRANSP.TRANSPARENT,
                     Classification = CLASS.PUBLIC,
-
                 };
 
                 events.Add(ev);
             }
             return events;
-
         }
-
 
         #region Event Recurrence Tests
 
@@ -70,7 +64,6 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             var Rx = x.GenerateRecurrences();
             Assert.AreEqual(Rx.Count, 29);
             Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeType.Utc));
-
 
             //check bymonth filter
             x.Start = new DATE_TIME(2014, 1, 1, 9, 0, 0, TimeType.Utc);
@@ -123,7 +116,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 FREQ = FREQ.SECONDLY,
                 INTERVAL = 24 * 60 * 60,
                 UNTIL = new DATE_TIME(2014, 11, 30, 23, 59, 59, TimeType.Utc),
-                BYDAY = new List<WEEKDAYNUM> 
+                BYDAY = new List<WEEKDAYNUM>
                 {
                     new WEEKDAYNUM(WEEKDAY.MO),
                     new WEEKDAYNUM(WEEKDAY.TU),
@@ -155,7 +148,6 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             Assert.AreEqual(Rx.Count(), 6);
             Assert.AreEqual(Rx.ElementAt(1).Start, new DATE_TIME(2014, 12, 01, 9, 20, 30, TimeType.Utc));
             Assert.AreEqual(Rx.ElementAt(3).Start, new DATE_TIME(2014, 12, 01, 10, 15, 30, TimeType.Utc));
-
         }
 
         [TestMethod]
@@ -180,8 +172,6 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             Assert.AreEqual(Rx.Count, 2);
             Assert.AreEqual(Rx.First().Start, new DATE_TIME(2014, 1, 02, 08, 30, 15, TimeType.Utc));
             Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 1, 02, 08, 31, 00, TimeType.Utc));
-
-
         }
 
         [TestMethod]
@@ -212,7 +202,6 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             var x = events[0];
             x.Start = new DATE_TIME(2014, 1, 1, 9, 0, 0, TimeType.Utc);
             x.End = new DATE_TIME(2014, 1, 1, 11, 30, 0, TimeType.Utc);
-
             //check byday filter
             x.RecurrenceRule = new RECUR
             {
@@ -225,13 +214,42 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             };
 
             var Rx = x.GenerateRecurrences();
-
         }
 
         [TestMethod]
         public void CheckWeeklyRecurrenceRule()
         {
+            var events = this.GenerateNEvents(1).ToArray();
+            var x = events[0];
+            x.Start = new DATE_TIME(2014, 12, 1, 10, 0, 0, TimeType.Utc);
+            x.End = new DATE_TIME(2014, 12, 1, 15, 30, 0, TimeType.Utc);
+            x.ExceptionDates = new List<EXDATE> 
+            {
+                new EXDATE{ DateTimes = new List<DATE_TIME> 
+                { 
+                    new DATE_TIME(2014,12,24, 10,0,0, TimeType.Utc),
+                    new DATE_TIME(2014,12,25, 10,0,0, TimeType.Utc),
+                    new DATE_TIME(2014,12,26, 10,0,0, TimeType.Utc),
+                    new DATE_TIME(2014,12,31, 10,0,0, TimeType.Utc),
+                } }
+            };
 
+            //check byday filter
+            x.RecurrenceRule = new RECUR
+            {
+                FREQ = FREQ.WEEKLY,
+                INTERVAL = 1,
+                UNTIL = new DATE_TIME(2014, 12, 31, 9, 45, 0, TimeType.Utc),
+                BYDAY = new List<WEEKDAYNUM>
+                { 
+                  new WEEKDAYNUM (WEEKDAY.MO),
+                  new WEEKDAYNUM (WEEKDAY.TU),
+                  new WEEKDAYNUM (WEEKDAY.FR)
+                },
+                BYSETPOS = new List<int> {2, -1}
+            };
+
+            var Rx = x.GenerateRecurrences();
         }
 
         [TestMethod]
@@ -248,21 +266,19 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 FREQ = FREQ.MONTHLY,
                 INTERVAL = 1,
                 UNTIL = new DATE_TIME(2014, 12, 31, 23, 59, 59, TimeType.Utc),
-                BYDAY = new List<WEEKDAYNUM> 
-                { 
-                    new WEEKDAYNUM(WEEKDAY.MO), 
-                    new WEEKDAYNUM(WEEKDAY.TU), 
-                    new WEEKDAYNUM(WEEKDAY.WE), 
-                    new WEEKDAYNUM(WEEKDAY.TH), 
-                    new WEEKDAYNUM(WEEKDAY.FR), 
+                BYDAY = new List<WEEKDAYNUM>
+                {
+                    new WEEKDAYNUM(WEEKDAY.MO),
+                    new WEEKDAYNUM(WEEKDAY.TU),
+                    new WEEKDAYNUM(WEEKDAY.WE),
+                    new WEEKDAYNUM(WEEKDAY.TH),
+                    new WEEKDAYNUM(WEEKDAY.FR),
                 },
                 BYSETPOS = new List<int> { -1 }
             };
 
             var Rx = x.GenerateRecurrences();
-            //Assert.AreEqual(Rx.Count(), 24);
-            //Assert.AreEqual(Rx.First().Start, new DATE_TIME(2014, 01, 6, 9, 0, 0, TimeType.Utc));
-            //Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 12, 29, 9, 0, 0, TimeType.Utc));
+
         }
 
         [TestMethod]
@@ -277,6 +293,6 @@ namespace reexmonkey.xcal.application.server.web.dev.test
 
         }
 
-        #endregion
+        #endregion Event Recurrence Tests
     }
 }

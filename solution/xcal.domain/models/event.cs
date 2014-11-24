@@ -483,7 +483,7 @@ namespace reexmonkey.xcal.domain.models
 
             if(!this.ExceptionDates.NullOrEmpty())
             {
-                var exdates = this.ExceptionDates.Where(x => x.DateTimes.NullOrEmpty()).SelectMany(x => x.DateTimes);
+                var exdates = this.ExceptionDates.Where(x => !x.DateTimes.NullOrEmpty()).SelectMany(x => x.DateTimes);
                 if (!exdates.NullOrEmpty()) dates = dates.Except(exdates).ToList();
             }
 
