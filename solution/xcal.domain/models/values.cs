@@ -36,7 +36,7 @@ namespace reexmonkey.xcal.domain.models
                 if (!string.IsNullOrEmpty(this.Value))
                 {
                     if (this.encoding == ENCODING.BASE64) this.Value = this.Value.EncodeToBase64();
-                    else this.Value = this.Value.EncodeToUtf8();
+                    else this.Value = this.Value.EncodeToUtf8String();
                 };
             }
         }

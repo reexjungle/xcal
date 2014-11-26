@@ -1,17 +1,16 @@
-﻿using System;
+﻿using reexmonkey.foundation.essentials.concretes;
+using reexmonkey.foundation.essentials.contracts;
+using reexmonkey.xcal.domain.contracts;
+using ServiceStack.DataAnnotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Runtime.Serialization;
-using ServiceStack.DataAnnotations;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.xcal.domain.contracts;
 
 namespace reexmonkey.xcal.domain.models
 {
-
     #region Descriptive Properties
 
     /// <summary>
@@ -37,7 +36,6 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         [DataMember]
         public FMTTYPE FormatType { get; set; }
-
 
         /// <summary>
         /// Default constructor
@@ -141,7 +139,9 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public ATTACH_URI() { }
+        public ATTACH_URI()
+        {
+        }
 
         public ATTACH_URI(IATTACH<URI> attachment)
         {
@@ -150,7 +150,7 @@ namespace reexmonkey.xcal.domain.models
         }
 
         /// <summary>
-        /// Constructor on the base of CONTENT of the Attachment and it's TYPE 
+        /// Constructor on the base of CONTENT of the Attachment and it's TYPE
         /// </summary>
         /// <param name="content">URI of the attached content</param>
         /// <param name="format">The format type of the attachmen</param>
@@ -218,7 +218,6 @@ namespace reexmonkey.xcal.domain.models
             if (a == null || b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
-
     }
 
     /// <summary>
@@ -430,13 +429,24 @@ namespace reexmonkey.xcal.domain.models
         }
     }
 
-
     [DataContract]
-    public class DESCRIPTION: TEXTUAL
+    public class DESCRIPTION : TEXTUAL
     {
-        public DESCRIPTION() : base() { }
-        public DESCRIPTION(string text) : base(text) { }
-        public DESCRIPTION(string text, URI altrep, LANGUAGE language = null): base(text, altrep, language) { }
+        public DESCRIPTION()
+            : base()
+        {
+        }
+
+        public DESCRIPTION(string text)
+            : base(text)
+        {
+        }
+
+        public DESCRIPTION(string text, URI altrep, LANGUAGE language = null)
+            : base(text, altrep, language)
+        {
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder("DESCRIPTION");
@@ -450,9 +460,21 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public class COMMENT : TEXTUAL
     {
-        public COMMENT() : base() { }
-        public COMMENT(string text) : base(text) { }
-        public COMMENT(string text, URI altrep, LANGUAGE language = null) : base(text, altrep, language) { }
+        public COMMENT()
+            : base()
+        {
+        }
+
+        public COMMENT(string text)
+            : base(text)
+        {
+        }
+
+        public COMMENT(string text, URI altrep, LANGUAGE language = null)
+            : base(text, altrep, language)
+        {
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder("COMMENT");
@@ -466,9 +488,21 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public class CONTACT : TEXTUAL
     {
-        public CONTACT() : base() { }
-        public CONTACT(string text) : base(text) { }
-        public CONTACT(string text, URI altrep, LANGUAGE language = null) : base(text, altrep, language) { }
+        public CONTACT()
+            : base()
+        {
+        }
+
+        public CONTACT(string text)
+            : base(text)
+        {
+        }
+
+        public CONTACT(string text, URI altrep, LANGUAGE language = null)
+            : base(text, altrep, language)
+        {
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder("CONTACT");
@@ -482,9 +516,21 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public class SUMMARY : TEXTUAL
     {
-        public SUMMARY() : base() { }
-        public SUMMARY(string text) : base(text) { }
-        public SUMMARY(string text, URI altrep, LANGUAGE language = null) : base(text, altrep, language) { }
+        public SUMMARY()
+            : base()
+        {
+        }
+
+        public SUMMARY(string text)
+            : base(text)
+        {
+        }
+
+        public SUMMARY(string text, URI altrep, LANGUAGE language = null)
+            : base(text, altrep, language)
+        {
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder("SUMMARY");
@@ -498,9 +544,21 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public class LOCATION : TEXTUAL
     {
-        public LOCATION() : base() { }
-        public LOCATION(string text) : base(text) { }
-        public LOCATION(string text, URI altrep, LANGUAGE language = null) : base(text, altrep, language) { }
+        public LOCATION()
+            : base()
+        {
+        }
+
+        public LOCATION(string text)
+            : base(text)
+        {
+        }
+
+        public LOCATION(string text, URI altrep, LANGUAGE language = null)
+            : base(text, altrep, language)
+        {
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder("LOCATION");
@@ -523,9 +581,9 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// Longitude of the Geographical Position
         /// </summary>
-        public float Longitude 
-        { 
-            get {return this.longitude;}
+        public float Longitude
+        {
+            get { return this.longitude; }
         }
 
         /// <summary>
@@ -723,22 +781,20 @@ namespace reexmonkey.xcal.domain.models
             if (a == null || b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
-
     }
 
     [DataContract]
-    public struct PRIORITY: IPRIORITY, IEquatable<PRIORITY>, IComparable<PRIORITY>
+    public struct PRIORITY : IPRIORITY, IEquatable<PRIORITY>, IComparable<PRIORITY>
     {
-         
         private readonly int value;
         private readonly PRIORITYLEVEL level;
         private readonly PRIORITYSCHEMA schema;
         private readonly PriorityType format;
-   
+
         private int LevelToValue(PRIORITYLEVEL level)
         {
             var val = 0;
-            switch(level)
+            switch (level)
             {
                 case PRIORITYLEVEL.UNKNOWN: val = 0; break;
                 case PRIORITYLEVEL.LOW: val = 9; break;
@@ -778,7 +834,7 @@ namespace reexmonkey.xcal.domain.models
         private PRIORITYSCHEMA ValueToSchema(int value)
         {
             var schema = PRIORITYSCHEMA.UNKNOWN;
-            switch(value)
+            switch (value)
             {
                 case 1: schema = PRIORITYSCHEMA.A1; break;
                 case 2: schema = PRIORITYSCHEMA.A2; break;
@@ -796,10 +852,10 @@ namespace reexmonkey.xcal.domain.models
 
         private PRIORITYLEVEL SchemaToLevel(PRIORITYSCHEMA schema)
         {
-            var val =  PRIORITYLEVEL.UNKNOWN;
+            var val = PRIORITYLEVEL.UNKNOWN;
             switch (schema)
             {
-                case PRIORITYSCHEMA.UNKNOWN: val =  PRIORITYLEVEL.UNKNOWN; break;
+                case PRIORITYSCHEMA.UNKNOWN: val = PRIORITYLEVEL.UNKNOWN; break;
                 case PRIORITYSCHEMA.C3: val = PRIORITYLEVEL.LOW; break;
                 case PRIORITYSCHEMA.C2: val = PRIORITYLEVEL.LOW; break;
                 case PRIORITYSCHEMA.C1: val = PRIORITYLEVEL.LOW; break;
@@ -818,7 +874,7 @@ namespace reexmonkey.xcal.domain.models
             var value = PRIORITYSCHEMA.UNKNOWN;
             switch (schema)
             {
-                case PRIORITYLEVEL.LOW: value =  PRIORITYSCHEMA.C3; break;
+                case PRIORITYLEVEL.LOW: value = PRIORITYSCHEMA.C3; break;
                 case PRIORITYLEVEL.MEDIUM: value = PRIORITYSCHEMA.B2; break;
                 case PRIORITYLEVEL.HIGH: value = PRIORITYSCHEMA.A1; break;
                 case PRIORITYLEVEL.UNKNOWN: value = PRIORITYSCHEMA.UNKNOWN; break;
@@ -827,17 +883,17 @@ namespace reexmonkey.xcal.domain.models
             return value;
         }
 
-        public PriorityType Format 
+        public PriorityType Format
         {
             get { return this.format; }
         }
 
-        public int Value 
+        public int Value
         {
             get { return this.value; }
         }
 
-        public PRIORITYLEVEL Level 
+        public PRIORITYLEVEL Level
         {
             get { return this.level; }
         }
@@ -908,7 +964,7 @@ namespace reexmonkey.xcal.domain.models
         public override string ToString()
         {
             if (this.Format == PriorityType.Integral) return string.Format("PRIORITY:{0}", this.value);
-            else if(this.Format == PriorityType.Level) return string.Format("PRIORITY:{0}", this.LevelToValue(this.level));
+            else if (this.Format == PriorityType.Level) return string.Format("PRIORITY:{0}", this.LevelToValue(this.level));
             else return string.Format("PRIORITY:{0}", this.SchemaToValue(this.schema));
         }
 
@@ -957,8 +1013,7 @@ namespace reexmonkey.xcal.domain.models
         }
     }
 
-
-    #endregion
+    #endregion Descriptive Properties
 
     #region Date and Time Component Properties
 
@@ -972,7 +1027,7 @@ namespace reexmonkey.xcal.domain.models
         /// ID of a free od busy time interval
         /// </summary>
         [DataMember]
-        public string Id{ get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Defines, whether the time interval is FREE or BUSY
@@ -987,10 +1042,8 @@ namespace reexmonkey.xcal.domain.models
         [Ignore]
         public List<PERIOD> Periods { get; set; }
 
-
         public FREEBUSY_INFO()
         {
-
         }
 
         /// <summary>
@@ -1021,14 +1074,13 @@ namespace reexmonkey.xcal.domain.models
                 {
                     if (period != last) sb.AppendFormat("{0}, ", period);
                     else sb.AppendFormat("{0}", period);
-                } 
+                }
             }
             return sb.ToString();
         }
-
     }
 
-    #endregion
+    #endregion Date and Time Component Properties
 
     #region Time-zone Properties
 
@@ -1045,26 +1097,28 @@ namespace reexmonkey.xcal.domain.models
         /// Language, inherent for this time zone
         /// </summary>
         [DataMember]
-        public LANGUAGE Language 
+        public LANGUAGE Language
         {
             get { return this.language; }
-            set { this.language = value; } 
+            set { this.language = value; }
         }
 
         /// <summary>
         /// Text, containing the Name of the Time-Zone
         /// </summary>
         [DataMember]
-        public string Text 
+        public string Text
         {
             get { return this.text; }
-            set 
+            set
             {
-                this.text = value; 
-            } 
+                this.text = value;
+            }
         }
 
-        public TZNAME() { }
+        public TZNAME()
+        {
+        }
 
         /// <summary>
         /// Constructor, based on the Name of the Time Zone
@@ -1096,9 +1150,9 @@ namespace reexmonkey.xcal.domain.models
 
         public override int GetHashCode()
         {
-           return (this.language == null)? 
-                this.text.GetHashCode():
-                this.text.GetHashCode() ^ this.language.GetHashCode();
+            return (this.language == null) ?
+                 this.text.GetHashCode() :
+                 this.text.GetHashCode() ^ this.language.GetHashCode();
         }
 
         public int CompareTo(TZNAME other)
@@ -1142,10 +1196,9 @@ namespace reexmonkey.xcal.domain.models
             sb.AppendFormat(":{0}", this.text);
             return sb.ToString();
         }
-
     }
 
-    #endregion
+    #endregion Time-zone Properties
 
     #region Relationship Component Properties
 
@@ -1155,7 +1208,6 @@ namespace reexmonkey.xcal.domain.models
     [DataContract]
     public class ATTENDEE : IATTENDEE, IEquatable<ATTENDEE>, IContainsKey<string>
     {
-
         /// <summary>
         /// ID of the current Attendee
         /// </summary>
@@ -1172,13 +1224,13 @@ namespace reexmonkey.xcal.domain.models
         /// Calendar User Type of the Attendee
         /// </summary>
         [DataMember]
-        public CUTYPE CalendarUserType { get    ; set; }
+        public CUTYPE CalendarUserType { get; set; }
 
         /// <summary>
         /// Membership of the Attendee
         /// </summary>
         [DataMember]
-        public MEMBER Member {get; set;}
+        public MEMBER Member { get; set; }
 
         /// <summary>
         /// Participation Role of the Attendee
@@ -1237,7 +1289,7 @@ namespace reexmonkey.xcal.domain.models
         public ATTENDEE()
         {
             this.Address = null;
-            this.CalendarUserType =  CUTYPE.UNKNOWN;
+            this.CalendarUserType = CUTYPE.UNKNOWN;
             this.Member = null;
             this.Role = ROLE.UNKNOWN;
             this.Participation = PARTSTAT.UNKNOWN;
@@ -1246,7 +1298,7 @@ namespace reexmonkey.xcal.domain.models
             this.Delegator = null;
             this.SentBy = null;
             this.CN = null;
-            this.Directory = null; 
+            this.Directory = null;
         }
 
         /// <summary>
@@ -1277,9 +1329,8 @@ namespace reexmonkey.xcal.domain.models
             this.Delegator = delegator;
             this.SentBy = sentby;
             this.CN = cname;
-            this.Directory = dir; 
+            this.Directory = dir;
         }
-
 
         /// <summary>
         /// Overloaded To String Method
@@ -1289,15 +1340,15 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("ATTENDEE");
-            if (this.CalendarUserType != CUTYPE.UNKNOWN ) sb.AppendFormat(";CUTYPE={0}", this.CalendarUserType); 
+            if (this.CalendarUserType != CUTYPE.UNKNOWN) sb.AppendFormat(";CUTYPE={0}", this.CalendarUserType);
             if (this.Role != ROLE.UNKNOWN) sb.AppendFormat(";{0}", this.Role);
             if (this.Rsvp != BOOLEAN.UNKNOWN) sb.AppendFormat(";{0}", this.Rsvp);
             if (this.Member != null) sb.AppendFormat(";{0}", this.Member);
             if (this.Delegatee != null) sb.AppendFormat(";DELEGATED-TO={0}", this.Delegatee);
             if (this.Delegator != null) sb.AppendFormat(";DELEGATED-FROM={0}", this.Delegator);
-            if (this.SentBy != null ) sb.AppendFormat("SENT-BY=\"mailto:{0}\"", this.SentBy);
+            if (this.SentBy != null) sb.AppendFormat("SENT-BY=\"mailto:{0}\"", this.SentBy);
             if (!string.IsNullOrEmpty(this.CN)) sb.AppendFormat(";CN={0}", this.CN);
-            if (this.Directory != null) sb.AppendFormat(";DIR={0}", this.Directory);            
+            if (this.Directory != null) sb.AppendFormat(";DIR={0}", this.Directory);
             if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
             sb.AppendFormat(":mailto:{0}", this.Address);
             return sb.ToString();
@@ -1311,9 +1362,8 @@ namespace reexmonkey.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType())  return false;
+            if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as ATTENDEE);
-            
         }
 
         public override int GetHashCode()
@@ -1332,7 +1382,6 @@ namespace reexmonkey.xcal.domain.models
             if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
-       
     }
 
     /// <summary>
@@ -1376,13 +1425,13 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         [DataMember]
         public LANGUAGE Language { get; set; }
-             
+
         public ORGANIZER()
         {
             this.Address = null;
             this.SentBy = null;
             this.CN = string.Empty;
-            this.Directory = null; 
+            this.Directory = null;
         }
 
         public ORGANIZER(IORGANIZER organizer, string id = null)
@@ -1455,7 +1504,7 @@ namespace reexmonkey.xcal.domain.models
     /// </summary>
     [DataContract]
     public class RECURRENCE_ID : IRECURRENCE_ID, IEquatable<RECURRENCE_ID>, IContainsKey<string>
-    {        
+    {
         /// <summary>
         /// Original date time: settable only once
         /// </summary>
@@ -1464,18 +1513,18 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// ID of the Recurrence
         /// </summary>
-        [DataMember]       
-        public string Id{ get; set; }
+        [DataMember]
+        public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the Time when the original recurrence instance would occur
         /// </summary>
         [DataMember]
-        public DATE_TIME Value 
+        public DATE_TIME Value
         {
             get { return value; }
-            set 
-            { 
+            set
+            {
                 this.value = value;
                 this.TimeZoneId = value.TimeZoneId;
             }
@@ -1497,11 +1546,11 @@ namespace reexmonkey.xcal.domain.models
         {
             this.Value = default(DATE_TIME);
             this.TimeZoneId = null;
-            this.Range =  RANGE.UNKNOWN;
+            this.Range = RANGE.UNKNOWN;
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="value"> Gets or sets the Time when the original recurrence instance would occur</param>
         /// <param name="tzid">ID of the  current Time Zone</param>
@@ -1553,9 +1602,7 @@ namespace reexmonkey.xcal.domain.models
             if (a == null || b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
-
     }
-
 
     /// <summary>
     /// Represents the relationship or reference between one calendar component and another
@@ -1566,7 +1613,7 @@ namespace reexmonkey.xcal.domain.models
         /// <summary>
         /// ID of the Relationship or Reference between one calendar component and another
         /// </summary>
-        public string Id{ get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Description of the relationship or reference to another Calendar component
@@ -1598,7 +1645,7 @@ namespace reexmonkey.xcal.domain.models
         }
 
         /// <summary>
-        /// Overloaded ToString Method  
+        /// Overloaded ToString Method
         /// </summary>
         /// <returns>String Representation of the Related_To property in form of "RELATED-TO;Relationship:Text"</returns>
         public override string ToString()
@@ -1639,11 +1686,9 @@ namespace reexmonkey.xcal.domain.models
             if (a == null || b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
-
     }
 
-
-    #endregion
+    #endregion Relationship Component Properties
 
     #region Recurrence Component properties
 
@@ -1659,7 +1704,7 @@ namespace reexmonkey.xcal.domain.models
         ///  ID of the Date-Time Exception
         /// </summary>
         [DataMember]
-        public string Id{ get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Set of Dates of exceptions in a Recurrence
@@ -1667,11 +1712,10 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public List<DATE_TIME> DateTimes { get; set; }
 
-        public TZID TimeZoneId 
+        public TZID TimeZoneId
         {
             get { return this.tzid; }
-            set { this.tzid = value; } 
-        
+            set { this.tzid = value; }
         }
 
         /// <summary>
@@ -1746,8 +1790,6 @@ namespace reexmonkey.xcal.domain.models
             if (a == null || b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
-
-
     }
 
     /// <summary>
@@ -1764,13 +1806,13 @@ namespace reexmonkey.xcal.domain.models
         /// ID of the list of DATE-TIME values for recurring events, to-dos, journal entries or time-zone definitions
         /// </summary>
         [DataMember]
-        public string Id{ get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// List of DATE-TIME values for recurring events, to-dos, journal entries or time-zone definitions
         /// </summary>
         [DataMember]
-        public List<DATE_TIME> DateTimes 
+        public List<DATE_TIME> DateTimes
         {
             get { return this.datetimes; }
             set
@@ -1784,13 +1826,13 @@ namespace reexmonkey.xcal.domain.models
         /// List of Periods between recurring events, to-dos, journal entries or time-zone definitions
         /// </summary>
         [DataMember]
-        public List<PERIOD> Periods 
+        public List<PERIOD> Periods
         {
-            get { return this.periods; } 
+            get { return this.periods; }
             set
             {
                 //if (!this.datetimes.NullOrEmpty() && !value.NullOrEmpty()) throw new ArgumentException("Date times and periods are mutually exclusive");
-                this.periods = value;               
+                this.periods = value;
             }
         }
 
@@ -1798,10 +1840,10 @@ namespace reexmonkey.xcal.domain.models
         /// ID of the current time zone
         /// </summary>
         [DataMember]
-        public TZID TimeZoneId 
+        public TZID TimeZoneId
         {
-            get { return this.tzid;}
-            set { this.tzid = (TZID) value; } 
+            get { return this.tzid; }
+            set { this.tzid = (TZID)value; }
         }
 
         /// <summary>
@@ -1815,7 +1857,7 @@ namespace reexmonkey.xcal.domain.models
             this.DateTimes = new List<DATE_TIME>();
             this.TimeZoneId = null;
             this.Periods = new List<PERIOD>();
-            this.ValueType =  VALUE.UNKNOWN;
+            this.ValueType = VALUE.UNKNOWN;
         }
 
         /// <summary>
@@ -1829,7 +1871,6 @@ namespace reexmonkey.xcal.domain.models
             this.TimeZoneId = tzid;
             this.Periods = new List<PERIOD>();
             this.ValueType = value_type;
-
         }
 
         /// <summary>
@@ -1863,7 +1904,7 @@ namespace reexmonkey.xcal.domain.models
                 {
                     if (datetime != last) sb.AppendFormat("{0}, ", datetime);
                     else sb.AppendFormat("{0}", datetime);
-                }            
+                }
             }
             else if (!this.periods.NullOrEmpty())
             {
@@ -1872,7 +1913,7 @@ namespace reexmonkey.xcal.domain.models
                 {
                     if (period != last) sb.AppendFormat("{0}, ", period);
                     else sb.AppendFormat("{0}", period);
-                }              
+                }
             }
             return sb.ToString();
         }
@@ -1907,7 +1948,7 @@ namespace reexmonkey.xcal.domain.models
         }
     }
 
-    #endregion
+    #endregion Recurrence Component properties
 
     #region Alarm Component Properties
 
@@ -1923,7 +1964,7 @@ namespace reexmonkey.xcal.domain.models
         /// ID of the trigger
         /// </summary>
         [DataMember]
-        public string Id{ get; set; }      
+        public string Id { get; set; }
 
         /// <summary>
         /// Duration between two alarm actions
@@ -1935,7 +1976,7 @@ namespace reexmonkey.xcal.domain.models
         /// Date-Time, when the Alarm action must be invoked
         /// </summary>
         [DataMember]
-        public DATE_TIME DateTime { get; set;}
+        public DATE_TIME DateTime { get; set; }
 
         /// <summary>
         /// Action value mode, for example "AUDIO", "DISPLAY", "EMAIL"
@@ -1946,7 +1987,9 @@ namespace reexmonkey.xcal.domain.models
         [DataMember]
         public RELATED Related { get; set; }
 
-        public TRIGGER() { }
+        public TRIGGER()
+        {
+        }
 
         public TRIGGER(DURATION duration, RELATED related = RELATED.UNKNOWN, VALUE value_type = VALUE.UNKNOWN)
         {
@@ -1971,7 +2014,7 @@ namespace reexmonkey.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.AppendFormat("TRIGGER");
-            if(this.type == TriggerType.Related)
+            if (this.type == TriggerType.Related)
             {
                 if (this.ValueType == VALUE.DURATION) sb.AppendFormat(";VALUE={0}", this.ValueType);
                 else if (this.Related != default(RELATED)) sb.AppendFormat(";RELATED={0}", this.Related);
@@ -2013,11 +2056,9 @@ namespace reexmonkey.xcal.domain.models
             if (a == null || b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
-
-
     }
 
-    #endregion
+    #endregion Alarm Component Properties
 
     #region Miscellaneous Component Properties
 
@@ -2036,7 +2077,7 @@ namespace reexmonkey.xcal.domain.models
     public abstract class MISC_PROPERTY<TValue> : IMISC_PROPERTY<TValue>
     {
         [DataMember]
-        public string Name {get; set;}
+        public string Name { get; set; }
 
         /// <summary>
         /// The value assigned to the IANA-Property
@@ -2056,7 +2097,6 @@ namespace reexmonkey.xcal.domain.models
 
         public MISC_PROPERTY()
         {
-
         }
 
         /// <summary>
@@ -2066,7 +2106,7 @@ namespace reexmonkey.xcal.domain.models
         public MISC_PROPERTY(string name, TValue value, List<IPARAMETER> parameters)
         {
             this.Name = name;
-            this.Value = value;            
+            this.Value = value;
             this.Parameters = parameters;
         }
 
@@ -2079,34 +2119,42 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             sb.Append(this.Name);
             foreach (var parameter in this.Parameters) sb.AppendFormat(";{0}", parameter);
-            if(this.ValueType == VALUE.UNKNOWN) sb.AppendFormat(":{0}", this.Value);
+            if (this.ValueType == VALUE.UNKNOWN) sb.AppendFormat(":{0}", this.Value);
             else sb.AppendFormat("VALUE={0}:{1}", this.ValueType, this.Value);
             return sb.ToString();
         }
-
     }
 
     [DataContract]
-    public class IANA_PROPERTY: MISC_PROPERTY<object>
+    public class IANA_PROPERTY : MISC_PROPERTY<object>
     {
-        public IANA_PROPERTY() : base() { }
+        public IANA_PROPERTY()
+            : base()
+        {
+        }
 
-        public IANA_PROPERTY(string name, object value, List<IPARAMETER> parameters): base(name, value, parameters) { }
+        public IANA_PROPERTY(string name, object value, List<IPARAMETER> parameters)
+            : base(name, value, parameters)
+        {
+        }
     }
 
     [DataContract]
     public class X_PROPERTY : MISC_PROPERTY<object>
     {
-        public X_PROPERTY() : base() { }
+        public X_PROPERTY()
+            : base()
+        {
+        }
 
-        public X_PROPERTY(string name, object value, List<IPARAMETER> parameters) : base(name, value, parameters) { }
-
-
+        public X_PROPERTY(string name, object value, List<IPARAMETER> parameters)
+            : base(name, value, parameters)
+        {
+        }
     }
 
-
     [DataContract]
-    public struct STATCODE: ISTATCODE, IEquatable<STATCODE>,IComparable<STATCODE>
+    public struct STATCODE : ISTATCODE, IEquatable<STATCODE>, IComparable<STATCODE>
     {
         private uint l1, l2, l3;
 
@@ -2148,7 +2196,7 @@ namespace reexmonkey.xcal.domain.models
                 l3 = value;
             }
         }
-    
+
         public STATCODE(uint l1, uint l2 = 0, uint l3 = 0)
         {
             this.l1 = l1;
@@ -2169,20 +2217,20 @@ namespace reexmonkey.xcal.domain.models
 
         public override int GetHashCode()
         {
-            return this.l1.GetHashCode() ^this.l2.GetHashCode() ^this.l3.GetHashCode();
+            return this.l1.GetHashCode() ^ this.l2.GetHashCode() ^ this.l3.GetHashCode();
         }
 
         public int CompareTo(STATCODE other)
         {
-            return this.l1.CompareTo(other.L1) + 
-                this.l2.CompareTo(other.L2) + 
+            return this.l1.CompareTo(other.L1) +
+                this.l2.CompareTo(other.L2) +
                 this.l3.CompareTo(other.L3);
         }
 
         public override string ToString()
         {
-            return (this.l3 != 0)?
-                string.Format("{0:D1}.{1:D1}.{2:D1}", this.l1, this.l2, this.l3):
+            return (this.l3 != 0) ?
+                string.Format("{0:D1}.{1:D1}.{2:D1}", this.l1, this.l2, this.l3) :
                 string.Format("{0:D1}.{1:D1}", this.l1, this.l2);
         }
 
@@ -2207,7 +2255,6 @@ namespace reexmonkey.xcal.domain.models
         {
             return a.CompareTo(b) > 0;
         }
-
     }
 
     /// <summary>
@@ -2220,7 +2267,7 @@ namespace reexmonkey.xcal.domain.models
         /// ID of the status code
         /// </summary>
         [DataMember]
-        public string Id{ get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Status code returned for a scheduling request
@@ -2245,7 +2292,7 @@ namespace reexmonkey.xcal.domain.models
         /// </summary>
         [DataMember]
         public LANGUAGE Language { get; set; }
-        
+
         public REQUEST_STATUS()
         {
             this.Code = null;
@@ -2312,9 +2359,7 @@ namespace reexmonkey.xcal.domain.models
             if (a == null || b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
-
     }
 
-    #endregion
-
+    #endregion Miscellaneous Component Properties
 }

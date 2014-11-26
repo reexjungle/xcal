@@ -17,7 +17,7 @@ namespace reexmonkey.infrastructure.io.concretes
         /// <param name="value">The object of a specified generic type parameter</param>
         /// <returns></returns>
         public static TValue Clone<TValue>(this TValue value)
-            where TValue: new()
+            where TValue: ISerializable, new()
         {
             if (value == null) throw new ArgumentNullException("value");
 

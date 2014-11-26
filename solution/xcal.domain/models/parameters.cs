@@ -1,12 +1,11 @@
-﻿using System;
+﻿using reexmonkey.foundation.essentials.concretes;
+using reexmonkey.xcal.domain.contracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Text.RegularExpressions;
-using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.xcal.domain.contracts;
-
 
 namespace reexmonkey.xcal.domain.models
 {
@@ -34,7 +33,6 @@ namespace reexmonkey.xcal.domain.models
 
         public TZID(string value)
         {
-
         }
 
         public TZID(string prefix, string suffix, bool unique = false)
@@ -99,7 +97,6 @@ namespace reexmonkey.xcal.domain.models
             if ((object)a == null || (object)b == null) return false;
             return a.CompareTo(b) > 0;
         }
-
     }
 
     [DataContract]
@@ -136,7 +133,6 @@ namespace reexmonkey.xcal.domain.models
                     if (match.Groups["type"].Success) this.TypeName = match.Groups["type"].Value;
                     else if (match.Groups["subtype"].Success) this.SubTypeName = match.Groups["subtype"].Value;
                 }
-
             }
             catch (FormatException) { throw; }
             catch (ArgumentNullException) { throw; }
@@ -186,7 +182,6 @@ namespace reexmonkey.xcal.domain.models
             if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
-
     }
 
     [DataContract]
@@ -224,7 +219,6 @@ namespace reexmonkey.xcal.domain.models
                     if (match.Groups["tag"].Success) this.Tag = match.Groups["tag"].Value;
                     else if (match.Groups["subtag"].Success) this.SubTag = match.Groups["subtag"].Value;
                 }
-
             }
             catch (FormatException) { throw; }
             catch (ArgumentNullException) { throw; }
@@ -282,11 +276,10 @@ namespace reexmonkey.xcal.domain.models
             if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
-
     }
 
     [DataContract]
-    public class DELEGATE: IDELEGATE, IEquatable<DELEGATE>
+    public class DELEGATE : IDELEGATE, IEquatable<DELEGATE>
     {
         /// <summary>
         /// Gets or sets the calendar addresses of the participation delegators
@@ -345,7 +338,7 @@ namespace reexmonkey.xcal.domain.models
             foreach (var addr in this.Addresses)
             {
                 if (addr != this.Addresses.Last()) sb.AppendFormat("\"mailto:{0}\", ", addr);
-                else sb.AppendFormat("\"mailto:{0}\"", addr); 
+                else sb.AppendFormat("\"mailto:{0}\"", addr);
             }
             return sb.ToString();
         }
@@ -427,7 +420,6 @@ namespace reexmonkey.xcal.domain.models
                 }
                 var parts = val.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
                 this.Addresses = new List<URI>(parts.Select(p => new URI(p)));
-
             }
             catch (FormatException) { throw; }
             catch (ArgumentNullException) { throw; }
@@ -484,5 +476,4 @@ namespace reexmonkey.xcal.domain.models
             return !a.Equals(b);
         }
     }
-
 }

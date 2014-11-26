@@ -1,11 +1,11 @@
-﻿using System;
+﻿using reexmonkey.foundation.essentials.concretes;
+using reexmonkey.foundation.essentials.contracts;
+using reexmonkey.xcal.domain.contracts;
+using ServiceStack.DataAnnotations;
+using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Collections.Generic;
-using ServiceStack.DataAnnotations;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.xcal.domain.contracts;
 
 namespace reexmonkey.xcal.domain.models
 {
@@ -46,7 +46,7 @@ namespace reexmonkey.xcal.domain.models
         public CALSCALE Calscale { get; set; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         [DataMember]
         public METHOD Method { get; set; }
@@ -163,10 +163,7 @@ namespace reexmonkey.xcal.domain.models
             if (!this.IanaComponents.NullOrEmpty()) this.IanaComponents.ForEach(x => sb.Append(x.ToString()).AppendLine());
             if (!this.XComponents.NullOrEmpty()) this.XComponents.ForEach(x => sb.Append(x.ToString()).AppendLine());
             sb.Append("END:VCALENDAR");
-            return sb.ToString();
+            return sb.ToString().FoldLines(75, "\r\n");
         }
-
-
     }
-
 }

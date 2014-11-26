@@ -201,6 +201,29 @@ namespace reexmonkey.infrastructure.io.concretes
             return sb.ToString();
         }
 
+
+        public static IEnumerable<byte[]> SplitToLines(this byte[] bytes, int len)
+        {
+            List<byte[]> lines = null;
+            try
+            {
+                int offset = 0;
+                int count = bytes.Length / len;
+                int rem = bytes.Length % len;
+                lines = (rem == 0) ? new List<byte[]>(count) : new List<byte[]>(count + 1);
+                while (offset < bytes.Length)
+                {
+                    var buffer = new byte[len];
+                    Buffer.BlockCopy(bytes, offset, buffer, 0, len);
+                    lines.Add(buffer);
+                    offset += len;
+                }
+            }
+            catch (ArgumentNullException) { throw; }
+            catch (DivideByZeroException) { throw; }
+            catch (Exception) { throw; }
+            return lines;
+        }
     }
 
 }

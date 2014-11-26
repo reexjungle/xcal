@@ -1,13 +1,13 @@
-﻿using System;
-using System.Linq;
-using reexmonkey.xcal.domain.contracts;
+﻿using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.models;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace reexmonkey.xcal.domain.extensions
 {
     /// <summary>
-    /// Helper class that provides support functionality related to the ICalendar interface 
+    /// Helper class that provides support functionality related to the ICalendar interface
     /// </summary>
     public static class Translators
     {
@@ -21,7 +21,6 @@ namespace reexmonkey.xcal.domain.extensions
         /// <exception cref="ArgumentException"> Thrown when the string value cannot be converted to CalendarScale</exception>
         public static CALSCALE ToCALSCALE(this string value)
         {
-
             if (value.Equals("GREGORIAN", StringComparison.OrdinalIgnoreCase)) return CALSCALE.GREGORIAN;
             else if (value.Equals("CHINESE", StringComparison.OrdinalIgnoreCase)) return CALSCALE.CHINESE;
             else if (value.Equals("HEBREW", StringComparison.OrdinalIgnoreCase)) return CALSCALE.HEBREW;
@@ -166,7 +165,6 @@ namespace reexmonkey.xcal.domain.extensions
             else if (value.Equals("PARENT", StringComparison.OrdinalIgnoreCase)) return RELTYPE.PARENT;
             else if (value.Equals("SIBLING", StringComparison.OrdinalIgnoreCase)) return RELTYPE.SIBLING;
             return RELTYPE.UNKNOWN;
-
         }
 
         public static BOOLEAN ToBOOLEAN(this string value)
@@ -182,21 +180,21 @@ namespace reexmonkey.xcal.domain.extensions
             else return BOOLEAN.FALSE;
         }
 
-        #endregion
+        #endregion specialized enumeration translators for iCalendar
 
-        #region  specialized date-time translators
+        #region specialized date-time translators
 
         public static DATE_TIME ToDATE_TIME(this DateTime value, TimeZoneInfo tzinfo = null)
         {
-            if(tzinfo != null)
+            if (tzinfo != null)
             {
-                if(value.Kind == DateTimeKind.Utc) throw new ArgumentException();
+                if (value.Kind == DateTimeKind.Utc) throw new ArgumentException();
                 else return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.LocalAndTimeZone);
             }
             else
             {
-                if(value.Kind == DateTimeKind.Utc) return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.Utc);
-                else  return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.Local);
+                if (value.Kind == DateTimeKind.Utc) return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.Utc);
+                else return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.Local);
             }
         }
 
@@ -215,7 +213,8 @@ namespace reexmonkey.xcal.domain.extensions
             if (tzid != null)
             {
                 if (value.Kind == DateTimeKind.Utc) throw new ArgumentException("UTC Date Time not compatible with Local Time with Time Zone Id");
-                else return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.LocalAndTimeZone, tzid);            }
+                else return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.LocalAndTimeZone, tzid);
+            }
             else
             {
                 if (value.Kind == DateTimeKind.Utc) return new DATE_TIME((uint)value.Year, (uint)value.Month, (uint)value.Day, (uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.Utc);
@@ -223,8 +222,7 @@ namespace reexmonkey.xcal.domain.extensions
             }
         }
 
-
-        public static  DATE  ToDATE(this DateTime value)
+        public static DATE ToDATE(this DateTime value)
         {
             return new DATE((uint)value.Year, (uint)value.Month, (uint)value.Day);
         }
@@ -234,7 +232,7 @@ namespace reexmonkey.xcal.domain.extensions
             if (tzinfo != null)
             {
                 if (value.Kind == DateTimeKind.Utc) throw new ArgumentException();
-                else  return new TIME((uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.LocalAndTimeZone);
+                else return new TIME((uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.LocalAndTimeZone);
             }
             else
             {
@@ -277,7 +275,7 @@ namespace reexmonkey.xcal.domain.extensions
             }
         }
 
-        public static  TimeSpan ToTimeSpan(this DATE_TIME value)
+        public static TimeSpan ToTimeSpan(this DATE_TIME value)
         {
             if (value == default(DATE_TIME)) return new TimeSpan();
             return new TimeSpan((int)value.HOUR, (int)value.MINUTE, (int)value.SECOND);
@@ -305,17 +303,17 @@ namespace reexmonkey.xcal.domain.extensions
 
         public static TIME ToTIME(this TimeSpan span, TimeZoneInfo tzinfo = null, TimeType format = TimeType.Unknown)
         {
-           if (tzinfo != null)
-           {
-               if (format == TimeType.Utc) throw new ArgumentException();
-               else if (format == TimeType.LocalAndTimeZone) return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds, format, tzinfo.ToTZID());
-               else return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds);
-           }
-           else
-           {
-               if (format == TimeType.Utc) return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds, format);
-               else return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds);
-           }
+            if (tzinfo != null)
+            {
+                if (format == TimeType.Utc) throw new ArgumentException();
+                else if (format == TimeType.LocalAndTimeZone) return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds, format, tzinfo.ToTZID());
+                else return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds);
+            }
+            else
+            {
+                if (format == TimeType.Utc) return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds, format);
+                else return new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds);
+            }
         }
 
         public static TIME ToTIME(this TimeSpan span, TZID tzid, TimeType format = TimeType.Unknown)
@@ -340,7 +338,7 @@ namespace reexmonkey.xcal.domain.extensions
 
         public static DayOfWeek ToDayOfWeek(this WEEKDAY weekday)
         {
-            switch(weekday)
+            switch (weekday)
             {
                 case WEEKDAY.SU: return DayOfWeek.Sunday;
                 case WEEKDAY.MO: return DayOfWeek.Monday;
@@ -354,9 +352,9 @@ namespace reexmonkey.xcal.domain.extensions
             }
         }
 
-        public static WEEKDAY ToWEEKDAY (this DayOfWeek dayofweek)
+        public static WEEKDAY ToWEEKDAY(this DayOfWeek dayofweek)
         {
-            switch(dayofweek)
+            switch (dayofweek)
             {
                 case DayOfWeek.Sunday: return WEEKDAY.SU;
                 case DayOfWeek.Monday: return WEEKDAY.MO;
@@ -370,8 +368,6 @@ namespace reexmonkey.xcal.domain.extensions
             }
         }
 
-
-        #endregion
-
+        #endregion specialized date-time translators
     }
 }

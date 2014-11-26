@@ -7,6 +7,66 @@ namespace reexmonkey.infrastructure.operations.concretes
 {
     public static class EncodingExtensions
     {
+
+        public static byte[] EncodeToUtf8Bytes(this string unicode)
+        {
+            byte[] bytes = null;
+            try
+            {
+                var utf8 = new UTF8Encoding();
+                bytes = utf8.GetBytes(unicode);
+            }
+            catch (ArgumentNullException ) { throw; }
+            catch (EncoderFallbackException ) { throw; }
+            catch (Exception) { throw; }
+            return bytes;
+        }
+
+        public static string EncodeToUtf8String(this string unicode)
+        {
+            string encoded = null;
+            try
+            {
+                var utf8 = new UTF8Encoding();
+                var bytes = utf8.GetBytes(unicode);
+                encoded = utf8.GetString(bytes);
+            }
+            catch (ArgumentNullException ) { throw; }
+            catch (EncoderFallbackException ) { throw; }
+            return encoded;
+        }
+
+        /// <summary>
+        /// Converts plain text to its equivalent encoded ASCII raw binary.
+        /// </summary>
+        /// <param name="unicode">The unicode to be byte-encoded.</param>
+        /// <returns>The Base64-based binary value encoded from the plain text</returns>
+        /// <exception cref="ArgumentNullException">Throw when the plain text argument is null</exception>
+        /// <exception cref="EncoderFallbackException">Throw when encoding the plain text to Base64 fails</exception>
+        public static byte[] EncodeToAsciiBytes(this string unicode)
+        {
+            if (unicode == null) throw new ArgumentNullException();
+            try
+            {
+                return Encoding.ASCII.GetBytes(unicode);        
+            }
+            catch (ArgumentNullException) { throw; }
+            catch (EncoderFallbackException) { throw; }
+        }
+
+        public static string EncodeToAsciiString(this string unicode)
+        {
+            string encoded = null;
+            try
+            {
+                var bytes = Encoding.Default.GetBytes(unicode);
+                encoded = Encoding.ASCII.GetString(bytes);
+            }
+            catch (ArgumentNullException) { throw; }
+            catch (EncoderFallbackException) { throw; }
+            return encoded;
+        }
+
         /// <summary>
         /// Converts plain text to its equivalent encoded Base64 string
         /// </summary>
@@ -31,78 +91,6 @@ namespace reexmonkey.infrastructure.operations.concretes
                 throw new EncoderFallbackException(ex.ToString(), ex);
             }
             return base64;
-        }
-
-        public static string EncodeToUtf8(this string unicode)
-        {
-            string encoded = null;
-            try
-            {
-                var utf8 = new UTF8Encoding();
-                var bytes = utf8.GetBytes(unicode);
-                encoded = utf8.GetString(bytes);
-            }
-            catch (ArgumentNullException ) { throw; }
-            catch (EncoderFallbackException ) { throw; }
-            return encoded;
-        }
-
-        public static byte[] EncodeToUtf8Bytes(this string unicode)
-        {
-            byte[] bytes = null;
-            try
-            {
-                var utf8 = new UTF8Encoding();
-                bytes = utf8.GetBytes(unicode);
-            }
-            catch (ArgumentNullException ) { throw; }
-            catch (EncoderFallbackException ) { throw; }
-            catch (Exception) { throw; }
-            return bytes;
-        }
-
-        public static IEnumerable<byte[]> SplitToLines(this byte[] bytes, int len)
-        {
-            List<byte[]> lines = null;
-            try
-            {
-                int offset = 0;
-                int count = bytes.Length / len;
-                int rem = bytes.Length % len;
-                lines = (rem == 0) ? new List<byte[]>(count) : new List<byte[]>(count + 1);
-                while (offset < bytes.Length)
-                {
-                    var buffer = new byte[len];
-                    Buffer.BlockCopy(bytes, offset, buffer, 0, len);
-                    lines.Add(buffer);
-                    offset += len;
-                }
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (DivideByZeroException) { throw; }
-            catch (Exception) { throw; }
-            return lines;
-        }
-
-        /// <summary>
-        /// Converts plain text to its equivalent encoded Base64-based raw binary
-        /// </summary>
-        /// <param name="unicode">The unicode to be byte-encode</param>
-        /// <returns>The Base64-based binary value encoded from the plain text</returns>
-        /// <exception cref="ArgumentNullException">Throw when the plain text argument is null</exception>
-        /// <exception cref="EncoderFallbackException">Throw when encoding the plain text to Base64 fails</exception>
-        public static byte[] ToUnicodeBytes(this string unicode)
-        {
-            byte[] bytes = null;
-            if (unicode == null) throw new ArgumentNullException();
-            try
-            {
-                bytes = Encoding.Unicode.GetBytes(unicode);
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (EncoderFallbackException) { throw; }
-
-            return bytes;
         }
 
         /// <summary>

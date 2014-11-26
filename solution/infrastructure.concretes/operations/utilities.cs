@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Diagnostics;
 
@@ -240,24 +238,5 @@ namespace reexmonkey.infrastructure.operations.concretes
 
         #endregion
         
-        #region miscellaneous
-
-        /// <summary>
-        /// Extracts hexadecimal digits from a string
-        /// </summary>
-        /// <param name="source">The hexadecimal string from which the digits are extracted</param>
-        /// <returns>An array of extracted hexadecimal digits</returns>
-        public static char[] ExtractHexDigits(this string source)
-        {
-            var regex = new Regex("[abcdefABECDEF\\d]+", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
-            var extracted = from hex in source
-                            where regex.IsMatch(hex.ToString())
-                            select hex;
-
-            return extracted.ToArray();
-        }
-
-        #endregion
-
     }
 }
