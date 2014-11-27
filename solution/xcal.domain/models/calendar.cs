@@ -163,7 +163,7 @@ namespace reexmonkey.xcal.domain.models
             if (!this.IanaComponents.NullOrEmpty()) this.IanaComponents.ForEach(x => sb.Append(x.ToString()).AppendLine());
             if (!this.XComponents.NullOrEmpty()) this.XComponents.ForEach(x => sb.Append(x.ToString()).AppendLine());
             sb.Append("END:VCALENDAR");
-            return sb.ToString().FoldLines(75, "\r\n");
+            return sb.ToString().FoldLines(75, newline: "\r\n");
         }
     }
 }

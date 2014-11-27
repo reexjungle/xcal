@@ -452,7 +452,7 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder("DESCRIPTION");
             if (this.AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", this.AlternativeText);
             if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
-            sb.AppendFormat(":{0}", this.Text);
+            sb.AppendFormat(":{0}", this.Text.EscapeStrings());
             return sb.ToString();
         }
     }
@@ -480,7 +480,7 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder("COMMENT");
             if (this.AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", this.AlternativeText);
             if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
-            sb.AppendFormat(":{0}", this.Text);
+            sb.AppendFormat(":{0}", this.Text.EscapeStrings());
             return sb.ToString();
         }
     }
@@ -508,7 +508,7 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder("CONTACT");
             if (this.AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", this.AlternativeText);
             if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
-            sb.AppendFormat(":{0}", this.Text);
+            sb.AppendFormat(":{0}", this.Text.EscapeStrings());
             return sb.ToString();
         }
     }
@@ -536,7 +536,7 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder("SUMMARY");
             if (this.AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", this.AlternativeText);
             if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
-            sb.AppendFormat(":{0}", this.Text);
+            sb.AppendFormat(":{0}", this.Text.EscapeStrings());
             return sb.ToString();
         }
     }
@@ -564,7 +564,7 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder("LOCATION");
             if (this.AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", this.AlternativeText);
             if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
-            sb.AppendFormat(":{0}", this.Text);
+            sb.AppendFormat(":{0}", this.Text.EscapeStrings());
             return sb.ToString();
         }
     }
@@ -747,7 +747,7 @@ namespace reexmonkey.xcal.domain.models
             var last = this.Values.Last();
             foreach (var val in this.Values)
             {
-                if (val != last) sb.AppendFormat("{0}, ");
+                if (val != last) sb.AppendFormat("{0}, ", val);
                 else sb.Append(val);
             }
             return sb.ToString();
@@ -2326,7 +2326,7 @@ namespace reexmonkey.xcal.domain.models
             sb.Append("REQUEST-STATUS");
             if (this.Language != null) sb.AppendFormat(";{0}", this.Language);
             sb.AppendFormat(":{0}", this.Code);
-            sb.AppendFormat(";{0}", this.Description);
+            sb.AppendFormat(";{0}", this.Description.EscapeStrings());
             if (!string.IsNullOrEmpty(this.ExceptionData)) sb.AppendFormat(";{0}", this.ExceptionData);
             return sb.ToString();
         }
