@@ -13,7 +13,7 @@ First of all, xCal is **free** - yes  *'free' as in 'free air' and not 'free' as
 Secondly, xCal allows you **to host and maintain your calendar data on your own server** - that is, you have total control over your calendar information and thus in no way is your private data shared with third parties.
 
 Thirdly, you shall enjoy distributing calendar information through the multiple data formats xCal currently supports: 
-* [iCalendar/vCalendar](http://en.wikipedia.org/wiki/ICalendar) 
+* [iCalendar](http://en.wikipedia.org/wiki/ICalendar) 
 * [CSV](http://en.wikipedia.org/wiki/Comma-separated_values)
 * [MessagePack](http://msgpack.org/)
 * [JSON](http://en.wikipedia.org/wiki/JSON)
@@ -22,7 +22,7 @@ Thirdly, you shall enjoy distributing calendar information through the multiple 
 
 Fourthly, xCal aids you not to *reinvent the wheel*. Instead of creating your own custom calendaring and scheduling system, it readily provides you an implementation of the internet standard (RFC 5545) and frees up the potential development time you could have wasted, so that you can concentrate on other important tasks at hand.
 
-Finally, you gain the awesome [benefits][1] which xCal as an open software provides. These include low costs, quality improvement through continuous community input, business agility and mitigation of business risks. 
+Finally, you gain the awesome [benefits][1] of using xCal as an open software. These include low costs, quality improvement through continuous community input, business agility and mitigation of business risks. 
 
 Table of Contents
 =================
@@ -134,6 +134,7 @@ Go back to Visual Studio and trigger the **Run** button -> voila! xCal is up and
 ### Deploying xCal
 
 
+
 ###### For further information on the project, web service, its architecture, dependencies, code examples and more, please do not hesitate to visit the [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) 
 
 
@@ -160,7 +161,6 @@ Contact
 ========
 * https://github.com/reexmonkey
 * https://twitter.com/ngwanemk
-
 
 License
 =======
