@@ -201,6 +201,17 @@ namespace reexmonkey.infrastructure.io.concretes
             return sb.ToString();
         }
 
+        public static byte[] ReadBytes(System.IO.Stream stream)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (var ms = new System.IO.MemoryStream())
+            {
+                int read = 0;
+                while ((read = stream.Read(buffer, 0, buffer.Length)) > 0) ms.Write(buffer, 0, read);
+                return ms.ToArray();
+            }
+        }
+
 
         public static IEnumerable<byte[]> SplitToLines(this byte[] bytes, int len)
         {

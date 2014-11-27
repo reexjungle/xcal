@@ -103,24 +103,40 @@ namespace reexmonkey.foundation.essentials.concretes
         /// <returns>The string whose lines are folded</returns>
         public static string FoldLines(this string value, int max, string newline = "\r\n")
         {
-            var lines = value.Split(newline.ToSingleton(), System.StringSplitOptions.RemoveEmptyEntries);
-            var sb = new StringBuilder();
-            foreach (var line in lines)
+            var lines = value.Split(new string[]{newline}, System.StringSplitOptions.RemoveEmptyEntries);
+            using (var ms = new System.IO.MemoryStream(value.Length))
             {
-                var len = line.Length;
-                if (len <= max) sb.Append(line).Append(newline);
-                else
+                var crlf = Encoding.UTF8.GetBytes(newline); //CRLF
+                var crlfs = Encoding.UTF8.GetBytes(string.Format("{0} ", newline)); //CRLF and SPACE
+                foreach (var line in lines)
                 {
-                    var chars = line.ToArray();
-                    var blen = len / max;
-                    var rlen = len % max;
-                    var b = 0;
-                    while (b < blen) sb.Append(chars, (b++) * max, max).AppendFormat("{0} ", newline);
-                    if (rlen > 0) sb.Append(chars, blen * max, rlen).AppendFormat("{0}", newline);
+                    var bytes = Encoding.UTF8.GetBytes(line);
+                    var len = Encoding.UTF8.GetByteCount(line);
+                    if (len <= max)
+                    {
+                        ms.Write(bytes, 0, len);
+                        ms.Write(crlf, 0, crlf.Length); 
+                    }
+                    else
+                    {
+                        var blen = len / max; //calculate block length
+                        var rlen = len % max; //calculate remaining length
+                        var b = 0;
+                        while (b < blen)
+                        {
+                            ms.Write(bytes, (b++) * max, max);
+                            ms.Write(crlfs, 0, crlfs.Length); 
+                        }
+                        if (rlen > 0)
+                        {
+                            ms.Write(bytes, blen * max, rlen);
+                            ms.Write(crlf, 0, crlf.Length);
+                        }
+                    }
                 }
-            }
 
-            return sb.ToString();
+                return Encoding.UTF8.GetString(ms.ToArray());
+            }
         }
 
         public static string Replace(this string value, IEnumerable<Tuple<string, string>> pairs)
@@ -131,14 +147,13 @@ namespace reexmonkey.foundation.essentials.concretes
 
         public static string EscapeStrings(this string value)
         {
-            return value.Replace(new List<Tuple<string, string>> 
-            { 
+            return value.Replace(new List<Tuple<string, string>>
+            {
                 new Tuple<string, string>(@"\", "\\\\"),
                 new Tuple<string, string>(";",  @"\;"),
                 new Tuple<string, string>(",",  @"\,"),
                 new Tuple<string, string>("\r\n",  @"\n"),
             });
         }
-
     }
 }
