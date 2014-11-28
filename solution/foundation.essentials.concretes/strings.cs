@@ -111,7 +111,7 @@ namespace reexmonkey.foundation.essentials.concretes
                 foreach (var line in lines)
                 {
                     var bytes = Encoding.UTF8.GetBytes(line);
-                    var len = Encoding.UTF8.GetByteCount(line);
+                    var len = bytes.Length;
                     if (len <= max)
                     {
                         ms.Write(bytes, 0, len);
@@ -137,6 +137,11 @@ namespace reexmonkey.foundation.essentials.concretes
 
                 return Encoding.UTF8.GetString(ms.ToArray());
             }
+        }
+
+        public static string UnfoldLines(this string value, string newline = "\r\n")
+        {
+            return value.Replace(string.Format("{0} ", newline), string.Empty);
         }
 
         public static string Replace(this string value, IEnumerable<Tuple<string, string>> pairs)
