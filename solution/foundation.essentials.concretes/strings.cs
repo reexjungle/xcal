@@ -99,8 +99,8 @@ namespace reexmonkey.foundation.essentials.concretes
         /// </summary>
         /// <param name="value">The string, whose lines are folded.</param>
         /// <param name="max">The maximum limit allowed for each line of the string</param>
-        /// <param name="newline">The newline to delimit the line of the string.</param>
-        /// <returns>The string whose lines are folded</returns>
+        /// <param name="newline">The newline characters to delimit the line of the string.</param>
+        /// <returns>The string, whose lines are folded</returns>
         public static string FoldLines(this string value, int max, string newline = "\r\n")
         {
             var lines = value.Split(new string[]{newline}, System.StringSplitOptions.RemoveEmptyEntries);
@@ -139,17 +139,39 @@ namespace reexmonkey.foundation.essentials.concretes
             }
         }
 
+        /// <summary>
+        /// Unfolds the lines of a string, which have been delimited to a specified length.
+        /// </summary>
+        /// <param name="value">The string, whose lines are unfolded.</param>
+        /// <param name="newline">The newline characters, which were used to delimit the string to lines.</param>
+        /// <returns>The string, whose lines are unfolded.</returns>
         public static string UnfoldLines(this string value, string newline = "\r\n")
         {
             return value.Replace(string.Format("{0} ", newline), string.Empty);
         }
 
+        /// <summary>
+        /// Replaces the occurences of a first item of each tuple of strings in the current string instance with the second item of the tuple.
+        /// </summary>
+        /// <param name="value">The current string instance.</param>
+        /// <param name="pairs">A enumerable collection of string tuples.</param>
+        /// <returns>The string, in which specified substrings are replaced</returns>
         public static string Replace(this string value, IEnumerable<Tuple<string, string>> pairs)
         {
-            foreach (var pair in pairs) value = value.Replace(pair.Item1, pair.Item2);
-            return value;
+            try
+            {
+                foreach (var pair in pairs) value = value.Replace(pair.Item1, pair.Item2);
+                return value;
+            }
+            catch (ArgumentNullException) {  throw; }
+            catch (ArgumentException) {  throw; }
         }
 
+        /// <summary>
+        /// Escapes the strings.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
         public static string EscapeStrings(this string value)
         {
             return value.Replace(new List<Tuple<string, string>>

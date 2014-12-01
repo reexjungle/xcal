@@ -12,6 +12,10 @@ using System.Text.RegularExpressions;
 
 namespace reexmonkey.xcal.domain.models
 {
+    /// <summary>
+    /// Specifies the contract for identifying properties that contain a character encoding of inline binary data.
+    /// The character encoding is based on the Base64 encoding
+    /// </summary>
     [DataContract]
     public class BINARY : IBINARY, IEquatable<BINARY>
     {
@@ -35,24 +39,37 @@ namespace reexmonkey.xcal.domain.models
                 this.encoding = value;
                 if (!string.IsNullOrEmpty(this.Value))
                 {
-                    if (this.encoding == ENCODING.BASE64) this.Value = this.Value.EncodeToBase64();
-                    else this.Value = this.Value.EncodeToUtf8String();
+                    if (this.encoding == ENCODING.BASE64) this.Value = this.Value.ToBase64String();
+                    else this.Value = this.Value.ToUtf8String();
                 };
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BINARY"/> class.
+        /// </summary>
         public BINARY()
         {
             this.Value = string.Empty;
             this.Encoding = ENCODING.UNKNOWN;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BINARY"/> class.
+        /// </summary>
+        /// <param name="value">The serialized value of an instance of the <see cref="BINARY"/> class.</param>
+        /// <param name="encoding">The encoding used for this instance.</param>
         public BINARY(string value, ENCODING encoding)
         {
             this.Value = value;
             this.Encoding = encoding;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BINARY"/> class.
+        /// </summary>
+        /// <param name="binary">An instance implementing the <see cref="IBINARY"/> interface.</param>
+        /// <exception cref="System.ArgumentNullException">binary</exception>
         public BINARY(IBINARY binary)
         {
             if (binary == null) throw new ArgumentNullException("binary");
@@ -60,48 +77,94 @@ namespace reexmonkey.xcal.domain.models
             this.Encoding = binary.Encoding;
         }
 
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
         public bool Equals(BINARY other)
         {
             if (other == null) return false;
             return this.Encoding == other.Encoding && this.Value.Equals(other.Value, StringComparison.OrdinalIgnoreCase);
         }
 
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals((BINARY)obj);
         }
 
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
         public override int GetHashCode()
         {
             return this.Value.GetHashCode() ^ this.encoding.GetHashCode();
         }
 
+        /// <summary>
+        /// Implements the equality operator ==.
+        /// </summary>
+        /// <param name="x">The <see cref="BINARY"/> instance to compare equality</param>
+        /// <param name="y">The other <see cref="BINARY"/> instance used in teh equality comparison</param>
+        /// <returns>
+        /// True if the instances are equal, otherwise false.
+        /// </returns>
         public static bool operator ==(BINARY x, BINARY y)
         {
             if ((object)y == null) return object.Equals(x, y);
             return x.Equals(y);
         }
 
-        public static bool operator !=(BINARY a, BINARY b)
+        /// <summary>
+        /// Implements the inequality operator !=.
+        /// </summary>
+        /// <param name="x">The <see cref="BINARY"/> instance to compare inequality</param>
+        /// <param name="y">The other <see cref="BINARY"/> instance used in the inequality comparison</param>
+        /// <returns>
+        /// True if the instances are unequal, otherwise false.
+        /// </returns>
+        public static bool operator !=(BINARY x, BINARY y)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
-            return !(a.Equals(b));
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            return !(x.Equals(y));
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             return this.Value ?? string.Empty;
         }
     }
 
+    /// <summary>
+    /// Specifies the contract for identifying properties that contain a calendar date.
+    /// Format: [YYYYMMDD] where YYYY is 4-digit year, MM is 2-digit month and DD is 2-digit day
+    /// </summary>
     [DataContract]
     public struct DATE : IDATE, IEquatable<DATE>, IComparable<DATE>
     {
         private readonly uint fullyear, month, mday;
 
         /// <summary>
-        /// Gets the 4-digit representation of a full year e.g. 2013
+        /// Gets or sets the 4-digit representation of a full year e.g. 2013.
         /// </summary>
         public uint FULLYEAR
         {
@@ -109,7 +172,7 @@ namespace reexmonkey.xcal.domain.models
         }
 
         /// <summary>
-        /// Gets the 2-digit representation of a month
+        /// Gets the 2-digit representation of a month.
         /// </summary>
         public uint MONTH
         {
@@ -117,13 +180,19 @@ namespace reexmonkey.xcal.domain.models
         }
 
         /// <summary>
-        /// Gets the 2-digit representation of a month-day
+        /// Gets the 2-digit representation of a day of the month.
         /// </summary>
         public uint MDAY
         {
             get { return mday; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DATE"/> struct.
+        /// </summary>
+        /// <param name="fullyear">The 4-digit representation of a full year e.g. 2013.</param>
+        /// <param name="month">The 2-digit representation of a month.</param>
+        /// <param name="mday">The 2-digit representation of a day of the month.</param>
         public DATE(uint fullyear, uint month, uint mday)
         {
             this.fullyear = fullyear;
@@ -131,6 +200,10 @@ namespace reexmonkey.xcal.domain.models
             this.mday = mday;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DATE"/> struct from a <see cref="DATE_TIME"/> instance.
+        /// </summary>
+        /// <param name="datetime">The <see cref="DATE_TIME"/> instance.</param>
         public DATE(DATE_TIME datetime)
         {
             this.fullyear = datetime.FULLYEAR;
@@ -138,6 +211,10 @@ namespace reexmonkey.xcal.domain.models
             this.mday = datetime.MDAY;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DATE"/> struct from a <see cref="DateTime"/> instance.
+        /// </summary>
+        /// <param name="datetime">The <see cref="DateTime"/> instance.</param>
         public DATE(DateTime datetime)
         {
             this.fullyear = (uint)datetime.Year;
@@ -145,6 +222,10 @@ namespace reexmonkey.xcal.domain.models
             this.mday = (uint)datetime.Day;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DATE"/> struct from a string.
+        /// </summary>
+        /// <param name="value">The string containing serialized information about the <see cref="DATE"/> struct.</param>
         public DATE(string value)
         {
             this.fullyear = 1u;
@@ -162,6 +243,11 @@ namespace reexmonkey.xcal.domain.models
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DATE"/> struct from an instance implementing the <see cref="IDATE"/> interface.
+        /// </summary>
+        /// <param name="date">The instance implementing the <see cref="IDATE"/> interface</param>
+        /// <exception cref="System.ArgumentNullException">date</exception>
         public DATE(IDATE date)
         {
             if (date == null) throw new ArgumentNullException("date");
@@ -170,11 +256,24 @@ namespace reexmonkey.xcal.domain.models
             this.mday = date.MDAY;
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             return string.Format("{0:D4}{1:D2}{2:D2}", this.fullyear, this.month, this.mday);  //YYYYMMDD
         }
 
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
         public bool Equals(DATE other)
         {
             if (other == null) return false;
@@ -183,17 +282,37 @@ namespace reexmonkey.xcal.domain.models
                 (this.mday == other.MDAY);
         }
 
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals((DATE)obj);
         }
 
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
         public override int GetHashCode()
         {
             return this.fullyear.GetHashCode() ^ this.month.GetHashCode() ^ this.mday.GetHashCode();
         }
 
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
+        /// </returns>
         public int CompareTo(DATE other)
         {
             if (other == null) return -2; //undefined
@@ -212,52 +331,124 @@ namespace reexmonkey.xcal.domain.models
             }
         }
 
+        /// <summary>
+        /// Implements the equality operator ==.
+        /// </summary>
+        /// <param name="a">The instance to compare for equality</param>
+        /// <param name="b">The other instance to compare against this instance for equality.</param>
+        /// <returns>
+        /// True if both instances are equal, otherwise false
+        /// </returns>
         public static bool operator ==(DATE a, DATE b)
         {
             if ((object)a == null || (object)b == null) return object.Equals(a, b);
             return a.Equals(b);
         }
 
+        /// <summary>
+        /// Implements the inequality operator !=.
+        /// </summary>
+        /// <param name="a">The instance to compare for inequality</param>
+        /// <param name="b">The other instance to compare against this instance for inequality.</param>
+        /// <returns>
+        /// True if both instances are unequal, otherwise false
+        /// </returns>
         public static bool operator !=(DATE a, DATE b)
         {
             if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
 
+        /// <summary>
+        /// Implements the less-than operator &lt;.
+        /// </summary>
+        /// <param name="a">The instance to compare</param>
+        /// <param name="b">The other instance to compare against this instance.</param>
+        /// <returns>
+        /// True if this instance is less than the other, otherwise false.
+        /// </returns>
         public static bool operator <(DATE a, DATE b)
         {
             if ((object)a == null || (object)b == null) return false;
             return a.CompareTo(b) == -1;
         }
 
+        /// <summary>
+        /// Implements the less-than-or-equal-to operator &lt;=.
+        /// </summary>
+        /// <param name="a">The instance to compare</param>
+        /// <param name="b">The other instance to compare against this instance.</param>
+        /// <returns>
+        /// True if this instance is less than or equal to the other, otherwise false.
+        /// </returns>
         public static bool operator <=(DATE a, DATE b)
         {
             if ((object)a == null || (object)b == null) return false;
             return (a.CompareTo(b) == -1 || a.CompareTo(b) == 0);
         }
 
+        /// <summary>
+        /// Implements the greater-than operator &gt;.
+        /// </summary>
+        /// <param name="a">The instance to compare</param>
+        /// <param name="b">The other instance to compare against this instance.</param>
+        /// <returns>
+        /// True if this instance is greater than the other, otherwise false.
+        /// </returns>
         public static bool operator >(DATE a, DATE b)
         {
             if ((object)a == null || (object)b == null) return false;
             return a.CompareTo(b) == 1;
         }
 
+        /// <summary>
+        /// Implements the greater-than-or-equal-to operator &gt;=.
+        /// </summary>
+        /// <param name="a">The instance to compare</param>
+        /// <param name="b">The other instance to compare against this instance.</param>
+        /// <returns>
+        /// True if this instance is greater than the other, otherwise false.
+        /// </returns>
         public static bool operator >=(DATE a, DATE b)
         {
             if ((object)a == null || (object)b == null) return false;
             return (a.CompareTo(b) == 1 || a.CompareTo(b) == 0);
         }
 
+        /// <summary>
+        /// Implements the substraction operator - between two <see cref="DATE"/> instances.
+        /// </summary>
+        /// <param name="start">The <see cref="DATE"/> instance to substract from.</param>
+        /// <param name="end">The substracted <see cref="DATE"/> instance.</param>
+        /// <returns>
+        /// The result of the substraction.
+        /// </returns>
         public static DURATION operator -(DATE start, DATE end)
         {
             return new DURATION(end.ToDateTime() - start.ToDateTime());
         }
 
+        /// <summary>
+        /// Implements the addition operator +.
+        /// </summary>
+        /// <param name="start">The <see cref="DATE"/> instance to add to</param>
+        /// <param name="duration">The added <see cref="DURATION"/> instance.</param>
+        /// <returns>
+        /// A new <see cref="DATE"/> instance resulting from the addition.
+        /// </returns>
         public static DATE operator +(DATE start, DURATION duration)
         {
             return (start.ToDateTime().Add(duration.ToTimeSpan())).ToDATE();
         }
 
+        /// <summary>
+        /// Implements the substraction operator - between a <see cref="DATE"/> instance and a <see cref="DURATION"/> instance.
+        /// </summary>
+        /// <param name="end">The <see cref="DATE"/> instance to substract from.</param>
+        /// <param name="duration">The substracted <see cref="DURATION"/> instance.</param>
+        /// <returns>
+        /// A new <see cref="DATE"/> instance resulting from the substraction.
+        /// </returns>
         public static DATE operator -(DATE end, DURATION duration)
         {
             return (end.ToDateTime().Subtract(duration.ToTimeSpan())).ToDATE();

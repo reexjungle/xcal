@@ -8,7 +8,7 @@ namespace reexmonkey.infrastructure.operations.concretes
     public static class EncodingExtensions
     {
 
-        public static byte[] EncodeToUtf8Bytes(this string unicode)
+        public static byte[] ToUtf8Bytes(this string unicode)
         {
             byte[] bytes = null;
             try
@@ -22,14 +22,13 @@ namespace reexmonkey.infrastructure.operations.concretes
             return bytes;
         }
 
-        public static string EncodeToUtf8String(this string unicode)
+        public static string ToUtf8String(this string unicode)
         {
             string encoded = null;
             try
             {
-                var utf8 = new UTF8Encoding();
-                var bytes = utf8.GetBytes(unicode);
-                encoded = utf8.GetString(bytes);
+                var bytes = Encoding.UTF8.GetBytes(unicode);
+                encoded = Encoding.UTF8.GetString(bytes);
             }
             catch (ArgumentNullException ) { throw; }
             catch (EncoderFallbackException ) { throw; }
@@ -43,7 +42,7 @@ namespace reexmonkey.infrastructure.operations.concretes
         /// <returns>The Base64-based binary value encoded from the plain text</returns>
         /// <exception cref="ArgumentNullException">Throw when the plain text argument is null</exception>
         /// <exception cref="EncoderFallbackException">Throw when encoding the plain text to Base64 fails</exception>
-        public static byte[] EncodeToAsciiBytes(this string unicode)
+        public static byte[] ToAsciiBytes(this string unicode)
         {
             if (unicode == null) throw new ArgumentNullException();
             try
@@ -54,7 +53,7 @@ namespace reexmonkey.infrastructure.operations.concretes
             catch (EncoderFallbackException) { throw; }
         }
 
-        public static string EncodeToAsciiString(this string unicode)
+        public static string ToAsciiString(this string unicode)
         {
             string encoded = null;
             try
@@ -74,7 +73,7 @@ namespace reexmonkey.infrastructure.operations.concretes
         /// <returns>The Base64 string encoded from the plain text</returns>
         /// <exception cref="ArgumentNullException">Thrown when the plain text argument is null</exception>
         /// <exception cref="EncoderFallbackException">Throw when encoding the plain text to Base64 fails</exception>
-        public static string EncodeToBase64(this string unicode)
+        public static string ToBase64String(this string unicode)
         {
             string base64 = string.Empty;
             try
@@ -102,39 +101,38 @@ namespace reexmonkey.infrastructure.operations.concretes
         /// <exception cref="ArgumentException">Thrown when conversion from Base64 to raw binary data fails</exception>
         /// <exception cref="FormatException">Thrown when conversion from Base64 to raw binary data fails</exception>
         /// <exception cref="DecoderFallbackException">Thrown when decoding from raw binary data to plain text fails</exception>
-        public static string DecodeToUnicode(this string base64)
+        public static string ToUnicodeString(this string base64)
         {
-            string unicode = null;
             try
             {
                 var bytes = Convert.FromBase64String(base64);
-                unicode = Encoding.Unicode.GetString(bytes);
+                var unicode = Encoding.Unicode.GetString(bytes);
+                return unicode;
             }
             catch (ArgumentNullException) { throw; }
             catch (EncoderFallbackException) { throw; }
             catch (DecoderFallbackException) { throw; }
-            return unicode;
+
 
         }
 
         /// <summary>
-        /// Converts a Base64 string to its equivalent raw binary value.
+        /// Converts a Base64 string to its equivalent raw 8-bit unsigned integer array.
         /// </summary>
         /// <param name="base64">The base64 text (encoded) that is to be decoded</param>
         /// <returns>Raw binary data decoded from the Base64 text</returns>
         /// <exception cref="ArgumentNullException">Thrown when the plain text argument is null</exception>
         /// <exception cref="ArgumentException">Thrown when conversion from Base64 to raw binary data fails</exception>
         /// <exception cref="FormatException">Thrown when conversion from Base64 to raw binary data fails</exception>
-        public static IEnumerable<byte> DecodeToBytes(this string base64)
+        public static IEnumerable<byte> ToBytes(this string base64)
         {
-            IEnumerable<byte> bytes = null;
             try
             {
-                bytes = Convert.FromBase64String(base64);
+                return Convert.FromBase64String(base64);
             }
             catch (ArgumentNullException) { throw; }
             catch (FormatException) { throw; }
-            return bytes;
+            
 
         }
 

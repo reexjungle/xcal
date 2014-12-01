@@ -1341,9 +1341,10 @@ namespace reexmonkey.xcal.domain.models
             var sb = new StringBuilder();
             sb.Append("ATTENDEE");
             if (this.CalendarUserType != CUTYPE.UNKNOWN) sb.AppendFormat(";CUTYPE={0}", this.CalendarUserType);
-            if (this.Role != ROLE.UNKNOWN) sb.AppendFormat(";{0}", this.Role);
-            if (this.Rsvp != BOOLEAN.UNKNOWN) sb.AppendFormat(";{0}", this.Rsvp);
             if (this.Member != null) sb.AppendFormat(";{0}", this.Member);
+            if (this.Role != default(ROLE)) sb.AppendFormat(";ROLE={0}", this.Role);
+            if (this.Participation != default(PARTSTAT)) sb.AppendFormat(";PARTSTAT={0}", this.Participation);
+            if (this.Rsvp != BOOLEAN.UNKNOWN) sb.AppendFormat(";RSVP={0}", this.Rsvp);
             if (this.Delegatee != null) sb.AppendFormat(";DELEGATED-TO={0}", this.Delegatee);
             if (this.Delegator != null) sb.AppendFormat(";DELEGATED-FROM={0}", this.Delegator);
             if (this.SentBy != null) sb.AppendFormat("SENT-BY=\"mailto:{0}\"", this.SentBy);

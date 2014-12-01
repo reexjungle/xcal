@@ -170,7 +170,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 },
 
                 Summary = new SUMMARY("Test Meeting"),
-                Description = new DESCRIPTION("A meeting for coding gurus, nerds, geeks and quants who enjoy programming for others such that the world becomes a better place for all producers and consumers äöäöäöüpüöpßßßßßßßßßß äääääääääääääätrurtb tfääääääääääääääääääääääääöööööööööööööööööööög gfgfgfggfg"),
+                Description = new DESCRIPTION("A meeting for coding gurus, nerds, geeks and quants who enjoy programming for others such that the world becomes a better place for all producers and consumers préamble à la gare de nöel für ein wünderschönes Abend mit Bären außerdem#"),
                 Start = new DATE_TIME(new DateTime(2014, 6, 15, 16, 07, 01, 0, DateTimeKind.Utc)),
                 End = new DATE_TIME(new DateTime(2014, 6, 15, 18, 03, 08, 0, DateTimeKind.Utc)),
                 Status = STATUS.CONFIRMED,
@@ -233,7 +233,8 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             Assert.AreEqual(retrieved, minimal);
 
             var cal = this.client.Get(new FindCalendar { CalendarId = calendar.Id });
-            var tmp = cal.ToString();
+            //var tmp = cal.ToString();
+            //var tmp2 = tmp.UnfoldLines();
             
             minimal.Start = new DATE_TIME(new DateTime(2014, 6, 16, 10, 30, 0, 0, DateTimeKind.Utc));
             minimal.Duration = new DURATION(1, 5, 2, 30);

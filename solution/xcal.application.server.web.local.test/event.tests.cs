@@ -60,7 +60,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 INTERVAL = 1,
             };
 
-            var Rx = x.GenerateRecurrences();
+            var Rx = x.GenerateRecurrences<VEVENT>();
             Assert.AreEqual(Rx.First().Start.Type, TimeType.LocalAndTimeZone);
             Assert.AreEqual(Rx.First().End.Type, TimeType.LocalAndTimeZone);
             Assert.AreEqual(Rx.First().End.TimeZoneId, new TZID("America", "New_York"));
@@ -75,7 +75,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 UNTIL = new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeType.Utc)
             };
 
-            var Ry = y.GenerateRecurrences();
+            var Ry = y.GenerateRecurrences<VEVENT>();
             Assert.AreEqual(Ry.First().Start.Type, TimeType.Local);
             Assert.AreEqual(Ry.First().End.Type, TimeType.Local);
             Assert.AreEqual(Ry.First().End.TimeZoneId, null);
@@ -90,7 +90,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 INTERVAL = 1
             };
 
-            var Rz = z.GenerateRecurrences();
+            var Rz = z.GenerateRecurrences<VEVENT>();
             Assert.AreEqual(Rz.First().Start.Type, TimeType.Utc);
             Assert.AreEqual(Rz.First().End.Type, TimeType.Utc);
             Assert.AreEqual(Rz.First().End.TimeZoneId, null);
@@ -111,7 +111,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 UNTIL = new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeType.Utc)
             };
 
-            var Rx = x.GenerateRecurrences();
+            var Rx = x.GenerateRecurrences<VEVENT>();
             Assert.AreEqual(Rx.Count, 29);
             Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeType.Utc));
 
@@ -127,7 +127,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 BYMONTH = new List<uint> { 1, 3, 9, 7 }
             };
 
-            Rx = x.GenerateRecurrences();
+            Rx = x.GenerateRecurrences<VEVENT>();
             Assert.AreEqual(Rx.Count, 122);
             Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 09, 30, 9, 0, 0, TimeType.Utc));
 
@@ -140,7 +140,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 BYYEARDAY = new List<int> { -31, 36, 38, 40 }
             };
 
-            Rx = x.GenerateRecurrences();
+            Rx = x.GenerateRecurrences<VEVENT>();
             Assert.AreEqual(Rx.First().Start.MDAY, 5u);
             Assert.AreEqual(Rx.Last().Start.MONTH, 12u);
 
@@ -153,7 +153,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 BYMONTHDAY = new List<int> { 1, -1 }
             };
 
-            Rx = x.GenerateRecurrences();
+            Rx = x.GenerateRecurrences<VEVENT>();
             Assert.AreEqual(Rx.Count(), 23);
             Assert.AreEqual(Rx.First().Start, new DATE_TIME(2014, 1, 31, 9, 0, 0, TimeType.Utc));
             Assert.AreEqual(Rx.Last().End, new DATE_TIME(2014, 12, 31, 11, 30, 0, TimeType.Utc));
@@ -176,7 +176,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 }
             };
 
-            Rx = x.GenerateRecurrences();
+            Rx = x.GenerateRecurrences<VEVENT>();
             Assert.AreEqual(Rx.Count(), 20);
             Assert.AreEqual(Rx.First().Start, new DATE_TIME(2014, 11, 03, 10, 15, 0, TimeType.Utc));
             Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 11, 28, 10, 15, 0, TimeType.Utc));
@@ -194,7 +194,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 BYSECOND = new List<uint> { 30 }
             };
 
-            Rx = x.GenerateRecurrences();
+            Rx = x.GenerateRecurrences<VEVENT>();
             Assert.AreEqual(Rx.Count(), 6);
             Assert.AreEqual(Rx.ElementAt(1).Start, new DATE_TIME(2014, 12, 01, 9, 20, 30, TimeType.Utc));
             Assert.AreEqual(Rx.ElementAt(3).Start, new DATE_TIME(2014, 12, 01, 10, 15, 30, TimeType.Utc));
@@ -218,7 +218,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
             };
 
             x.RecurrenceRule.BYSETPOS = new List<int> { 1, -1 };
-            var Rx = x.GenerateRecurrences();
+            var Rx = x.GenerateRecurrences<VEVENT>();
             Assert.AreEqual(Rx.Count, 14);
             Assert.AreEqual(Rx.First().Start, new DATE_TIME(2014, 1, 02, 08, 30, 45, TimeType.Utc));
             Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 1, 02, 08, 45, 00, TimeType.Utc));
@@ -242,7 +242,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 BYSETPOS = new List<int> { 1, -1 }
             };
 
-            var Rx = x.GenerateRecurrences();
+            var Rx = x.GenerateRecurrences<VEVENT>();
             Assert.AreEqual(Rx.Count, 6);
             Assert.AreEqual(Rx.First().Start, new DATE_TIME(2014, 1, 1, 9, 5, 0, TimeType.Utc));
             Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 1, 1, 11, 25, 0, TimeType.Utc));
@@ -267,7 +267,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 BYSETPOS = new List<int> { 2, -2 }
             };
 
-            var Rx = x.GenerateRecurrences();
+            var Rx = x.GenerateRecurrences<VEVENT>();
             Assert.AreEqual(Rx.Count, 10);
             Assert.AreEqual(Rx.First().Start, new DATE_TIME(2014, 06, 15, 09, 10, 0, TimeType.Utc));
             Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 06, 15, 21, 20, 0, TimeType.Utc));
@@ -306,7 +306,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 BYSETPOS = new List<int> { 2, -1 }
             };
 
-            var Rx = x.GenerateRecurrences();
+            var Rx = x.GenerateRecurrences<VEVENT>();
             Assert.AreEqual(Rx.Count, 2);
             Assert.AreEqual(Rx.First().Start, new DATE_TIME(2014, 12, 02, 10, 00, 0, TimeType.Utc));
             Assert.AreEqual(Rx.Last().Start, new DATE_TIME(2014, 12, 30, 10, 00, 0, TimeType.Utc));
@@ -337,7 +337,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 BYSETPOS = new List<int> { -1 }
             };
 
-            var Rx = x.GenerateRecurrences();
+            var Rx = x.GenerateRecurrences<VEVENT>();
             Assert.AreEqual(Rx.Count, 12);
             Assert.AreEqual(Rx.ElementAt(7).Start, new DATE_TIME(2014, 08, 29, 09, 00, 0, TimeType.Utc));
         }
@@ -369,7 +369,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 BYSETPOS = new List<int> { -1 }
             };
 
-            var Rx = x.GenerateRecurrences();
+            var Rx = x.GenerateRecurrences<VEVENT>();
             Assert.AreEqual(Rx.Count, 6);
             Assert.AreEqual(Rx.ElementAt(0).Start, new DATE_TIME(2014, 03, 25, 07, 00, 0, TimeType.Utc));
             Assert.AreEqual(Rx.ElementAt(1).Start, new DATE_TIME(2014, 09, 25, 07, 00, 0, TimeType.Utc));

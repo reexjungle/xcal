@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using reexmonkey.xcal.domain.models;
 
 namespace reexmonkey.xcal.domain.contracts
@@ -80,7 +81,7 @@ namespace reexmonkey.xcal.domain.contracts
 
         Dictionary<string, X_PROPERTY> XProperties { get; set; }
 
-        List<IEVENT> GenerateRecurrences();
+        List<TEVENT> GenerateRecurrences<TEVENT>() where TEVENT : class, IEVENT, new();
     }
 
 

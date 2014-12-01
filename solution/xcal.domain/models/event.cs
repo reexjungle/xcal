@@ -7,6 +7,7 @@ using ServiceStack.DataAnnotations;
 using reexmonkey.foundation.essentials.contracts;
 using reexmonkey.foundation.essentials.concretes;
 using reexmonkey.infrastructure.io.concretes;
+using reexmonkey.infrastructure.operations.concretes;
 using reexmonkey.xcal.domain.contracts;
 using reexmonkey.xcal.domain.extensions;
 
@@ -466,43 +467,43 @@ namespace reexmonkey.xcal.domain.models
             }
 
             sb.Append("END:VEVENT");
-            return sb.ToString();
+            return sb.ToString().ToUtf8String();
         }
 
-        public List<IEVENT> GenerateRecurrences()
+        public List<TEVENT> GenerateRecurrences<TEVENT>() where TEVENT : class, IEVENT, new()
         {
-            var recurs = new List<IEVENT>();
+            var recurs = new List<TEVENT>();
             var dates = this.Start.GenerateRecurrences(this.RecurrenceRule);
-            if(!this.RecurrenceDates.NullOrEmpty())
+            if (!this.RecurrenceDates.NullOrEmpty())
             {
                 var rdates = this.RecurrenceDates.Where(x => !x.DateTimes.NullOrEmpty()).SelectMany(x => x.DateTimes);
                 var rperiods = this.RecurrenceDates.Where(x => !x.Periods.NullOrEmpty()).SelectMany(x => x.Periods);
-                if(!rdates.NullOrEmpty()) dates.AddRange(rdates);
-                if(!rperiods.NullOrEmpty()) dates.AddRange(rperiods.Select(x => x.Start));
+                if (!rdates.NullOrEmpty()) dates.AddRange(rdates);
+                if (!rperiods.NullOrEmpty()) dates.AddRange(rperiods.Select(x => x.Start));
             }
 
-            if(!this.ExceptionDates.NullOrEmpty())
+            if (!this.ExceptionDates.NullOrEmpty())
             {
                 var exdates = this.ExceptionDates.Where(x => !x.DateTimes.NullOrEmpty()).SelectMany(x => x.DateTimes);
                 if (!exdates.NullOrEmpty()) dates = dates.Except(exdates).ToList();
             }
 
             var count = 0;
-            foreach(var recurrence in dates)
+            foreach (var recurrence in dates)
             {
                 var instance = new VEVENT();
                 instance.Id = string.Format("{0}-{1}", this.Id, ++count);
                 instance.Start = recurrence;
                 instance.End = recurrence + this.Duration;
                 instance.RecurrenceRule = null;
-                instance.RecurrenceId = new RECURRENCE_ID 
-                { 
+                instance.RecurrenceId = new RECURRENCE_ID
+                {
                     Id = instance.Id,
                     Range = RANGE.THISANDFUTURE,
                     TimeZoneId = recurrence.TimeZoneId,
                     Value = instance.Start
                 };
-                recurs.Add(instance);
+                recurs.Add(instance as TEVENT);
             }
 
             return recurs;
