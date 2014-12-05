@@ -1,6 +1,6 @@
 What is xCal?
 ============
-The xCal project is an **open-source** project that basically does 2 things:
+The xCal project is an **open source** project that basically does 2 things:
 
 1. Implements the [Internet Calendaring and Scheduling Core Object Specification (RFC 5545)](http://tools.ietf.org/html/rfc5545) such that calendaring and scheduling information (events, to-dos, journals and free/busy) can be represented and exchanged in the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) data format independently of calendar service or protocol.
 
