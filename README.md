@@ -93,13 +93,13 @@ xCal is written entirely in C# - therefore it is recommended to use a specialize
 ### Setting up xCal
 Many would agree that the setup process of a software project should be rendered as less painful as possible. This often implies minimal configuration and non-complex set up procedures. Consequently, setting up xCal has been simplified to a **one-click** process.
 
-##### Setup from downloaded zipped source file
+#### Setup from downloaded zipped source file
 1. Extract source code to desired location
 2. Open the *solution* folder and search for the \*.sln file
 3. Double-click the file -> Visual Studio starts up and loads the entire sloution.
 
 
-##### Setup through cloning in GitHub desktop application 
+#### Setup through cloning in GitHub desktop application 
 1. Open locally-installed instance of Github desktop application.
 2. Chose to clone source and select local storage location.
 3. Open the *solution* folder and search for the \*.sln file.
@@ -119,13 +119,13 @@ After a successful build, it is time to enjoy the highly anticipated moment i.e.
 It is highly recommended for beginners to start with the local application server (*xcal.application.server.web.local*),which been configured for testing on the local computer. The default data backend of this server is MySQL, although the user can change it to Redis through a switch in the project properties. 
 
 Assuming you are a newbie and xCal is opened in Visual Studio, please perform the following steps:
-##### Visual Studio Configuration
+#### Visual Studio Configuration
 1. Select the project **xcal.application.server.web.local** under the logical application folder.
 2. Right-click on the project and choose **Set as Startup Project**
 3. Right-click on the project again and choose **Properties**
 4. In the **Properties** dialog, go to **Settings** and check the username and password of the *mysql_server* setting.
 
-##### MySQL Configuration
+#### MySQL Configuration
 1. Start up MySQL Workbench  as **root** user (if not yet started).
 2. Choose the server instance **Local Instance MySQLxx**
 3. Under the **Management** section click on **Users and Privileges**
@@ -133,7 +133,7 @@ Assuming you are a newbie and xCal is opened in Visual Studio, please perform th
 5. In the **Administrative Roles** tab check that all **Roles**, as well as **Global Privileges** are ticked.
 6. Apply changes.
 
-##### ..and finally...
+#### ..and finally...
 1. Go back to Visual Studio
 2. Trigger the **Run** button (or press **F5**) -> *voila!* xCal is up and running :)
 
