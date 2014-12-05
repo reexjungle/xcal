@@ -22,7 +22,7 @@ Thirdly, you shall enjoy distributing calendar information through the multiple 
 
 Fourthly, xCal aids you not to *reinvent the wheel*. Instead of creating your own custom calendaring and scheduling system, it readily provides you an implementation of the internet standard (RFC 5545) and frees up the potential development time you could have wasted, so that you can concentrate on other important tasks at hand.
 
-Finally, you gain the awesome [benefits][1] of using xCal as an open software. These include low costs, quality improvement through continuous community input, business agility and mitigation of business risks. 
+Finally, you gain the awesome [benefits][1] of using xCal as an open source software. These include low costs, quality improvement through continuous community input, business agility and mitigation of business risks. 
 
 Table of Contents
 =================
