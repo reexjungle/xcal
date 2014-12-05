@@ -133,7 +133,7 @@ Assuming you are a newbie and xCal is opened in Visual Studio, please perform th
 5. In the **Administrative Roles** tab check that all **Roles**, as well as **Global Privileges** are ticked.
 6. Apply changes.
 
-##### Run
+##### ..and finally...
 1. Go back to Visual Studio
 2. Trigger the **Run** button (or press **F5**) -> *voila!* xCal is up and running :)
 
