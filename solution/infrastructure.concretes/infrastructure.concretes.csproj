@@ -7,7 +7,7 @@
     <ProjectGuid>{9B9036F7-C547-43D3-B1EC-BB0C5965DC12}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>infrastructure.concretes</RootNamespace>
+    <RootNamespace>reexmonkey.infrastructure.concretes</RootNamespace>
     <AssemblyName>infrastructure.concretes</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="build\semantic.attribute.cs" />
+    <Compile Include="build\semantic.cs" />
     <Compile Include="io\codedom.cs" />
     <Compile Include="operations\comparer.cs" />
     <Compile Include="io\copy.cs" />
@@ -51,6 +53,11 @@
     <Compile Include="operations\search.cs" />
     <Compile Include="operations\utilities.cs" />
     <Compile Include="io\xml.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\foundation.essentials.contracts\foundation.essentials.contracts.csproj">
@@ -61,6 +68,12 @@
       <Project>{82ed5f70-e1d9-456e-8686-c59306312726}</Project>
       <Name>infrastructure.contracts</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
