@@ -112,9 +112,12 @@ To build xCal, please do perform the following steps:
 1. Select the root of the Solution Explorer Tree
 2. Right-click and choose *Rebuild Solution* from context menu
 
-### Running xCal
-After a successful build, it is time to enjoy the highly anticipated moment i.e. seeing xCal run! Well, a few more things need to be done before reaching this desired stage. This involves installing the necessary backend servers (if not yet on the host computer) and configuring them. Depending on the selected application server (there are 4 in the download package), you have the choice of installing a MySQL server (relational database) or a Redis server (a NoSQL datastore). it is recommended for beginners to choose the local application server (*xcal.application.server.web.local*), whose default data backend is MySQL server and perform the following steps (assuming you have opened xCal in Visual Studio).
+### Executing xCal
+After a successful build, it is time to enjoy the highly anticipated moment i.e. seeing xCal run! Nevertheless, a few more steps need to be performed before the final goal is achieved. This involves installing the necessary backend servers (if not yet installed on the host computer) and configuring them. Depending on the selected application server (*in fact, four preconfigured application servers are available in the download package*), you have the choice of installing a MySQL (relational database) or a Redis (a NoSQL datastore) backend server. 
 
+It is highly recommended for beginners to start with the local application server (*xcal.application.server.web.local*),which been configured for testing on the local computer. The default data backend of this server is MySQL, although the user can change it to Redis through a switch in the project properties. 
+
+Assuming you are a newbie and xCal is opened in Visual Studio, please perform the following steps:
 ##### Visual Studio Configuration
 1. Select the project **xcal.application.server.web.local** under the logical application folder.
 2. Right-click on the project and choose **Set as Startup Project**
@@ -129,7 +132,9 @@ After a successful build, it is time to enjoy the highly anticipated moment i.e.
 5. In the **Administrative Roles** tab check that all **Roles**, as well as **Global Privileges** are ticked.
 6. Apply changes.
 
-Go back to Visual Studio and trigger the **Run** button -> voila! xCal is up and running :)
+##### Run
+1. Go back to Visual Studio
+2. Trigger the **Run** button (or press **F5**) -> *voila!* xCal is up and running :)
 
 ### Deploying xCal
 
