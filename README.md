@@ -109,8 +109,9 @@ Many would agree that the setup process of a software project should be rendered
 Building xCal is also a straightforward process - you do not have to worry about the dependencies because these are automatically resolved during build process. However, you may need a running internet connection on the first build, in order to enable Visual Studio download the necessary [NuGet](https://www.nuget.org/) Packages. 
 
 To build xCal, please do perform the following steps:
-1. Select the root of the Solution Explorer Tree
-2. Right-click and choose *Rebuild Solution* from context menu
+
+1. Select the root of the Solution Explorer Tree.
+2. Right-click and choose *Rebuild Solution* from context menu.
 
 ### Executing xCal
 After a successful build, it is time to enjoy the highly anticipated moment i.e. seeing xCal run! Nevertheless, a few more steps need to be performed before the final goal is achieved. This involves installing the necessary backend servers (if not yet installed on the host computer) and configuring them. Depending on the selected application server (*in fact, four preconfigured application servers are available in the download package*), you have the choice of installing a MySQL (relational database) or a Redis (a NoSQL datastore) backend server. 
