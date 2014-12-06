@@ -59,23 +59,5 @@ namespace reexmonkey.infrastructure.concretes.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid semantic version!.
-        /// </summary>
-        internal static string InvalidSemanticVersion {
-            get {
-                return ResourceManager.GetString("InvalidSemanticVersion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Object is not a SemanticVersion type!.
-        /// </summary>
-        internal static string ObjectIsNotASemanticVersion {
-            get {
-                return ResourceManager.GetString("ObjectIsNotASemanticVersion", resourceCulture);
-            }
-        }
     }
 }
