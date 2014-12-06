@@ -40,8 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="build\semantic.attribute.cs" />
-    <Compile Include="build\semantic.cs" />
     <Compile Include="io\codedom.cs" />
     <Compile Include="operations\comparer.cs" />
     <Compile Include="io\copy.cs" />
