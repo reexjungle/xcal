@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("xcal.application.server.web.dev.test")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Unit test suite for local iCalendar application web server")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("reexmonkey")]
 [assembly: AssemblyProduct("xcal.application.server.web.dev.test")]
 [assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane")]
 [assembly: AssemblyTrademark("")]

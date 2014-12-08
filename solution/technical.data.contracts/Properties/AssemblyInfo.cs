@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("infrastructure.ormlite.extensions")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("High level data service interfaces")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("reexmonkey")]
 [assembly: AssemblyProduct("reexmonkey.infrastructure.ormlite.extensions")]
-[assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane")]
+[assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane and contributors")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

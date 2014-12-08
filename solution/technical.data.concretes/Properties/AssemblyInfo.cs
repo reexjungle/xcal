@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("infrastructure.redis.extensions")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("High level data service implementations")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("reexmonkey")]
 [assembly: AssemblyProduct("infrastructure.redis.extensions")]
 [assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane")]
 [assembly: AssemblyTrademark("")]

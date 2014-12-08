@@ -11,6 +11,9 @@ using reexmonkey.xcal.domain.models;
 
 namespace reexmonkey.xcal.service.plugins.formats.concretes
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class iCalendarFormat: IPlugin
     {
         private const string mime_type = "text/calendar";
@@ -28,6 +31,12 @@ namespace reexmonkey.xcal.service.plugins.formats.concretes
                 });
         }
 
+        /// <summary>
+        /// Serializes to stream.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="dto">The dto.</param>
+        /// <param name="stream">The stream.</param>
         public static void SerializeToStream(IRequestContext context, object dto, Stream stream)
         {
             using (var sw = new StreamWriter(stream))

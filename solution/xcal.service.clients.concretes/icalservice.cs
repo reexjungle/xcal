@@ -37,11 +37,13 @@ namespace xcal.service.clients.concretes
 
         public override T DeserializeFromStream<T>(Stream stream)
         {
+            //TODO: Deserialize iCalendar content from stream
             throw new NotImplementedException();
         }
 
         public override void SerializeToStream(IRequestContext requestContext, object request, Stream stream)
         {
+            //Todo: Serialize iCalendar content to stream
             throw new NotImplementedException();
         }
 

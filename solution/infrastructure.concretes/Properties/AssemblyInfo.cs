@@ -6,9 +6,13 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("infrastructure.concretes")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyDescription("Reusable domain-specific service implementations")]
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
+[assembly: AssemblyConfiguration("Release")]
+#endif
+[assembly: AssemblyCompany("reexmonkey")]
 [assembly: AssemblyProduct("infrastructure.concretes")]
 [assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane and contributors")]
 [assembly: AssemblyTrademark("")]
