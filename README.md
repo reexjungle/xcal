@@ -47,7 +47,7 @@ To get started on the xCal, you might want to choose one of the following option
 5. Install *core* xCal service interface binaries via the Project Mangager Console in Visual studio e.g.
 
 ```
-PM > PM> Install-Package xcal.service.interfaces.concretes -Pre
+PM> Install-Package xcal.service.interfaces.concretes -Pre
 ```
 *Note: The core xCal service interface binaries are not standalone binaries, they must be referenced by application servers (web servers, windows services, background daemons, etc) using the [Service Stack V3 Web Services Framework](https://github.com/ServiceStackV3/ServiceStackV3/wiki).*
 
