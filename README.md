@@ -20,7 +20,7 @@ Thirdly, you shall enjoy distributing calendar information through the multiple 
 * [JSV](http://mono.servicestack.net/docs/text-serializers/jsv-format) 
 * [XML](http://en.wikipedia.org/wiki/XML)
 
-Fourthly, xCal aids you not to *reinvent the wheel*. Instead of creating your own custom calendaring and scheduling system, it readily provides you an implementation of the internet standard (RFC 5545) and frees up the potential development time you could have wasted, so that you can concentrate on other important tasks at hand.
+Fourthly, xCal discourages you from *reinventing the wheel*. Instead of creating your own custom calendaring and scheduling system, it offers you a firsthand implementation of the internet standard (RFC 5545) thus freeing up the potential development time you could have wasted; rather you gain time and resources in order to concentrate on important tasks at hand.
 
 Finally, you gain the awesome [benefits][1] of using xCal as an open source software. These include low costs, quality improvement through continuous community input, business agility and mitigation of business risks. 
 
@@ -29,11 +29,10 @@ Table of Contents
 1. [Get Started](https://github.com/reexmonkey/xcal/#get-started)
 2. [Dependencies](https://github.com/reexmonkey/xcal/#dependencies)
 3. [Contributing](https://github.com/reexmonkey/xcal/#contributing)
-4. [Community](https://github.com/reexmonkey/xcal/#community)
-5. [Documentation](https://github.com/reexmonkey/xcal/#documentation)
-6. [Versioning](https://github.com/reexmonkey/xcal/#versioning)
-7. [Contact](https://github.com/reexmonkey/xcal/#contact)
-8. [License](https://github.com/reexmonkey/xcal/#license)
+4. [Documentation](https://github.com/reexmonkey/xcal/#documentation)
+5. [Versioning](https://github.com/reexmonkey/xcal/#versioning)
+6. [Community](https://github.com/reexmonkey/xcal/#community)
+7. [License](https://github.com/reexmonkey/xcal/#license)
 
 
 Get Started 
@@ -43,6 +42,14 @@ To get started on the xCal, you might want to choose one of the following option
 1. Preview a [demo][2] of xCal web serivices. 
 2. Download the master repository [ZIP][3] file from GitHub.
 3. [Clone][4] the master repository on desktop using the Github application. 
+4. Download core xCal service interface binaries (i.e. libraries and dependencies of *xcal.service.interfaces.concretes*) as Nuget packages from the [Nuget Gallery](https://www.nuget.org/packages/xcal.service.interfaces.concretes/) 
+5. Install core xCal service interface binaries via the Project Mangager Console in Visual studio e.g.
+
+```
+PM> Install-Package xcal.service.interfaces.concretes -Pre
+```
+###### Note: xCal service interface binaries are not standalone binaries; they should be referenced by application servers e.g. web servers, windows services using the [Service Stack V3 Web Services Framework](https://github.com/ServiceStackV3/ServiceStackV3/wiki).
+
 
 ### Contents of Download Package
 
@@ -114,9 +121,9 @@ To build xCal, please do perform the following steps:
 2. Right-click and choose *Rebuild Solution* from context menu.
 
 ### Executing xCal
-After a successful build, it is time to enjoy the highly anticipated moment i.e. seeing xCal run! Nevertheless, a few more steps need to be performed before the final goal is achieved. This involves installing the necessary backend servers (if not yet installed on the host computer) and configuring them. Depending on the selected application server (*in fact, four preconfigured application servers are available in the download package*), you have the choice of installing a MySQL (relational database) or a Redis (a NoSQL datastore) backend server. 
+It is now time to see xCal run... although a few more steps are required before this final goal is achieved. These involve the installation and configuration of necessary backend servers (if not yet installed on the host computer). Depending on the selected application server from the download package, you have the choice of using a MySQL (relational database) or a Redis (one of the fastest NoSQL datastore) as the backend server. 
 
-It is highly recommended for beginners to start with the local application server (*xcal.application.server.web.local*),which been configured for testing on the local computer. The default data backend of this server is MySQL, although the user can change it to Redis through a switch in the project properties. 
+It is highly recommended for beginners to start with the local application server (*xcal.application.server.web.local*), which been configured for testing on a local machine. The default data backend of this server is MySQL, even though the user can alternatively use a Redis backend through a provided switch in the project settings. 
 
 Assuming you are a newbie and xCal is opened in Visual Studio, please perform the following steps:
 #### Visual Studio Configuration
@@ -138,35 +145,34 @@ Assuming you are a newbie and xCal is opened in Visual Studio, please perform th
 2. Trigger the **Run** button (or press **F5**) -> *voila!* xCal is up and running :)
 
 ### Deploying xCal
-
-
-
-###### For further information on the project, web service, its architecture, dependencies, code examples and more, please do not hesitate to visit the [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) 
-
+If you downloaded the xCal source and setup the projects using Visual Studio, then deplyoment of the binaries should be simple with Visual Studio's **Publish** option. Of course, if you prefer to deploy xCal through other means, it is up to you to decide on the third-party deployment tools you would like to employ ;)
 
 Dependencies
 ============
 
+
+
 Contributing
 ============
+We are very happy that you are interested in contributing to xCal. [Contributing to the repository on GitHub](https://guides.github.com/activities/contributing-to-open-source/) is quite easy; fork the repository, make changes and send a pull request on Github.
 
-
-Community
-==========
-
+However before any contributing code is reviewed, the contributor needs to approve the [xCal Individual Contributor Assignment Agreement](http://goo.gl/forms/hvyoqegA6s).
 
 Documentation
 =============
 
 
+###### For further information on the project, web service, its architecture, dependencies, code examples and more, please do not hesitate to visit the [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) 
+
 Versioning
 ==========
 For better release management and backward commpability, the assemblies of xCal are maintained under the [Semantic Versioning](http://semver.org/) guidelines. Moreover, the branching of the source code follows the *Development and Release Isolation Strategy* of the [Version Control Guide](http://vsarbranchingguide.codeplex.com/releases) proposed by Microsoft Visual Studio ALM Rangers.
 
-Contact
-========
-* https://github.com/reexmonkey
-* https://twitter.com/ngwanemk
+Community
+==========
+xCal is created by [Emmanuel Ngwane](https://github.com/reexmonkey) and maintained by the [core team](https://github.com/orgs/reexjungle/people) with the support and involvement of the community.
+
+
 
 License
 =======
