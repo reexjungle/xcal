@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ServiceStack.Redis;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.foundation.essentials.concretes;
+using reexjungle.foundation.essentials.contracts;
+using reexjungle.foundation.essentials.concretes;
 
-namespace reexmonkey.technical.data.concretes.extensions.redis
+namespace reexjungle.technical.data.concretes.extensions.redis
 {
     public static class RedisExtensions
     {

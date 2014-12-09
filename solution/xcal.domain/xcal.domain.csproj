@@ -8,7 +8,7 @@
     <ProjectGuid>{5B708E08-1F69-4FDE-9D99-AFA3784A49D7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.xcal.domain</RootNamespace>
+    <RootNamespace>reexjungle.xcal.domain</RootNamespace>
     <AssemblyName>xcal.domain</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

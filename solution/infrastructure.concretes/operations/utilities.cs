@@ -5,7 +5,7 @@ using System.Text;
 using System.Reflection;
 using System.Diagnostics;
 
-namespace reexmonkey.infrastructure.operations.concretes
+namespace reexjungle.infrastructure.operations.concretes
 {
     public enum StorageType
     { 

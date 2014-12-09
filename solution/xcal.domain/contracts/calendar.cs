@@ -1,11 +1,11 @@
-﻿using reexmonkey.xcal.domain.contracts;
+﻿using reexjungle.xcal.domain.contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace reexmonkey.xcal.domain.models
+namespace reexjungle.xcal.domain.models
 {
     /// <summary>
     /// Specifies a contract for the iCalendar Core Object and Scheduling

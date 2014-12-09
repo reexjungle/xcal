@@ -8,7 +8,7 @@
     <ProjectGuid>{7496B2C6-BD7E-44A9-9C33-02CD399F0DE0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.xcal.service.plugins.formats.concretes</RootNamespace>
+    <RootNamespace>reexjungle.xcal.service.plugins.formats.concretes</RootNamespace>
     <AssemblyName>xcal.service.plugins.formats.concretes</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

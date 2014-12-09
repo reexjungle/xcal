@@ -8,7 +8,7 @@
     <ProjectGuid>{3346DB20-5077-4FC8-93EE-E4A590BCC1D0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.technical.data.contracts</RootNamespace>
+    <RootNamespace>reexjungle.technical.data.contracts</RootNamespace>
     <AssemblyName>technical.data.contracts</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

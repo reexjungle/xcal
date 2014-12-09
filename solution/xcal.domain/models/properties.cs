@@ -1,6 +1,6 @@
-﻿using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.xcal.domain.contracts;
+﻿using reexjungle.foundation.essentials.concretes;
+using reexjungle.foundation.essentials.contracts;
+using reexjungle.xcal.domain.contracts;
 using ServiceStack.DataAnnotations;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace reexmonkey.xcal.domain.models
+namespace reexjungle.xcal.domain.models
 {
     #region Descriptive Properties
 

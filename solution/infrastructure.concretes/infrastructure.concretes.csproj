@@ -7,7 +7,7 @@
     <ProjectGuid>{9B9036F7-C547-43D3-B1EC-BB0C5965DC12}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.infrastructure.concretes</RootNamespace>
+    <RootNamespace>reexjungle.infrastructure.concretes</RootNamespace>
     <AssemblyName>infrastructure.concretes</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -3,16 +3,16 @@ using System.Linq;
 using System.Collections.Generic;
 using ServiceStack.Logging;
 using ServiceStack.ServiceInterface;
-using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.infrastructure.io.concretes;
-using reexmonkey.xcal.domain.contracts;
-using reexmonkey.xcal.domain.models;
-using reexmonkey.xcal.domain.operations;
-using reexmonkey.xcal.service.repositories.contracts;
-using reexmonkey.xcal.service.interfaces.contracts.live;
-using reexmonkey.foundation.essentials.contracts;
+using reexjungle.foundation.essentials.concretes;
+using reexjungle.infrastructure.io.concretes;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.models;
+using reexjungle.xcal.domain.operations;
+using reexjungle.xcal.service.repositories.contracts;
+using reexjungle.xcal.service.interfaces.contracts.live;
+using reexjungle.foundation.essentials.contracts;
 
-namespace reexmonkey.xcal.service.interfaces.concretes.live
+namespace reexjungle.xcal.service.interfaces.concretes.live
 {
     public class EventService: Service, IEventService
     {

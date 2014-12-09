@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Security.AccessControl;
 
-namespace reexmonkey.crosscut.security.extensions.concretes
+namespace reexjungle.crosscut.security.extensions.concretes
 {
     /// <summary>
     /// Helper class that provides common security-related extended features

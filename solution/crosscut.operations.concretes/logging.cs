@@ -1,8 +1,8 @@
 ﻿using ServiceStack.DataAnnotations;
 using ServiceStack.OrmLite.MySql.DataAnnotations;
-using reexmonkey.crosscut.operations.contracts;
+using reexjungle.crosscut.operations.contracts;
 
-namespace reexmonkey.crosscut.operations.concretes
+namespace reexjungle.crosscut.operations.concretes
 {
     [Alias("nlogtable")]
     public class NlogTable : ILogTable

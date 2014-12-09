@@ -8,7 +8,7 @@
     <ProjectGuid>{0188BE5C-BAFA-4FAC-B068-11DCF7CD918E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.foundation.essentials.contracts</RootNamespace>
+    <RootNamespace>reexjungle.foundation.essentials.contracts</RootNamespace>
     <AssemblyName>foundation.essentials.contracts</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

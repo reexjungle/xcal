@@ -7,10 +7,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using ServiceStack.OrmLite;
 using ServiceStack.Common.Utils;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.foundation.essentials.concretes;
+using reexjungle.foundation.essentials.contracts;
+using reexjungle.foundation.essentials.concretes;
 
-namespace reexmonkey.technical.data.concretes.extensions.ormlite
+namespace reexjungle.technical.data.concretes.extensions.ormlite
 {
     #region helper enumerations
 

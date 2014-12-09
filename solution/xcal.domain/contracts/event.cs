@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using reexmonkey.xcal.domain.models;
+using reexjungle.xcal.domain.models;
 
-namespace reexmonkey.xcal.domain.contracts
+namespace reexjungle.xcal.domain.contracts
 {
     /// <summary>
     /// Specifes a contract for the VEVENT component of the iCalendar Core Object

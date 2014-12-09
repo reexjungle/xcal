@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace reexmonkey.foundation.essentials.contracts
+namespace reexjungle.foundation.essentials.contracts
 {
 
     /// <summary>

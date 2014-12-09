@@ -3,15 +3,15 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ServiceStack.ServiceClient.Web;
-using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.infrastructure.operations.concretes;
-using reexmonkey.infrastructure.operations.contracts;
-using reexmonkey.xcal.domain.contracts;
-using reexmonkey.xcal.domain.models;
-using reexmonkey.xcal.domain.operations;
+using reexjungle.foundation.essentials.concretes;
+using reexjungle.infrastructure.operations.concretes;
+using reexjungle.infrastructure.operations.contracts;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.models;
+using reexjungle.xcal.domain.operations;
 
 
-namespace reexmonkey.xcal.application.server.web.dev.test
+namespace reexjungle.xcal.application.server.web.dev.test
 {
     [TestClass]
     public class EventServiceUnitTests
@@ -67,7 +67,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                     {
                         Id = new GuidKeyGenerator().GetNextKey(),
                         CN = string.Format("Reex Monkey {0}", i + 1),
-                        Address = new URI(string.Format("reexmonkey{0}@jungle.com", i + 1)),
+                        Address = new URI(string.Format("reexjungle{0}@jungle.com", i + 1)),
                         Language = new LANGUAGE("en")
                     },
                     Location = new LOCATION
@@ -160,7 +160,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                 {
                     Id = new GuidKeyGenerator().GetNextKey(),
                     CN = "King Reexmonkey",
-                    Address = new URI("king.reexmonkey@jungle.com"),
+                    Address = new URI("king.reexjungle@jungle.com"),
                     Language = new LANGUAGE("en")
                 },
                 Location = new LOCATION
@@ -182,7 +182,7 @@ namespace reexmonkey.xcal.application.server.web.dev.test
                     new ATTENDEE 
                     { 
                         Id = uidkeygen.GetNextKey(),
-                        Address = new URI("king.reexmonkey@jungle.com"),
+                        Address = new URI("king.reexjungle@jungle.com"),
                         CN = "King Reexmonkey",
                         Participation = PARTSTAT.ACCEPTED,
                         Role = ROLE.CHAIR,

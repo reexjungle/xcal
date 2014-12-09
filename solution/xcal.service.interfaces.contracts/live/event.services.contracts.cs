@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ServiceStack.Logging;
-using reexmonkey.xcal.service.repositories.contracts;
-using reexmonkey.xcal.domain.contracts;
-using reexmonkey.xcal.domain.models;
-using reexmonkey.xcal.domain.operations;
+using reexjungle.xcal.service.repositories.contracts;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.models;
+using reexjungle.xcal.domain.operations;
 
 
-namespace reexmonkey.xcal.service.interfaces.contracts.live
+namespace reexjungle.xcal.service.interfaces.contracts.live
 {
     public interface IEventService
     {

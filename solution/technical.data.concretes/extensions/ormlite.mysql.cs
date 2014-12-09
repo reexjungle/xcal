@@ -5,7 +5,7 @@ using System.Text;
 using System.Data;
 using ServiceStack.OrmLite;
 
-namespace reexmonkey.technical.data.concretes.extensions.ormlite.mysql
+namespace reexjungle.technical.data.concretes.extensions.ormlite.mysql
 {
     public static class MySqlOrmLiteExtensions
     {

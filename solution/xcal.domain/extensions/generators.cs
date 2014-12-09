@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.xcal.domain.contracts;
-using reexmonkey.xcal.domain.models;
+using reexjungle.foundation.essentials.contracts;
+using reexjungle.foundation.essentials.concretes;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.models;
 
-namespace reexmonkey.xcal.domain.extensions
+namespace reexjungle.xcal.domain.extensions
 {
 
     public static class Generators

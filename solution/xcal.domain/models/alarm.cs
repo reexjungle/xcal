@@ -3,11 +3,11 @@ using System.Text;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
 using ServiceStack.DataAnnotations;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.xcal.domain.contracts;
+using reexjungle.foundation.essentials.contracts;
+using reexjungle.foundation.essentials.concretes;
+using reexjungle.xcal.domain.contracts;
 
-namespace reexmonkey.xcal.domain.models
+namespace reexjungle.xcal.domain.models
 {
         
     [DataContract]

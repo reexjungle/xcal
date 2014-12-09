@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace reexmonkey.foundation.essentials.concretes
+namespace reexjungle.foundation.essentials.concretes
 {
     public static class DateTimeExtensions
     {

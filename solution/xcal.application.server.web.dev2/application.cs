@@ -12,23 +12,23 @@ using ServiceStack.Logging.Elmah;
 using ServiceStack.ServiceInterface.Validation;
 using ServiceStack.Plugins.MsgPack;
 using ServiceStack.ServiceInterface.Cors;
-using reexmonkey.xcal.domain.models;
-using reexmonkey.xcal.service.validators.concretes;
-using reexmonkey.xcal.service.interfaces.concretes.live;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.crosscut.operations.concretes;
-using reexmonkey.xcal.service.repositories.contracts;
-using reexmonkey.xcal.service.repositories.concretes.ormlite;
-using reexmonkey.xcal.service.repositories.concretes.redis;
-using reexmonkey.xcal.service.repositories.concretes.relations;
-using reexmonkey.technical.data.concretes.extensions.ormlite.mysql;
-using reexmonkey.infrastructure.operations.concretes;
-using reexmonkey.infrastructure.operations.contracts;
-using reexmonkey.xcal.service.plugins.formats.concretes;
+using reexjungle.xcal.domain.models;
+using reexjungle.xcal.service.validators.concretes;
+using reexjungle.xcal.service.interfaces.concretes.live;
+using reexjungle.foundation.essentials.contracts;
+using reexjungle.foundation.essentials.concretes;
+using reexjungle.crosscut.operations.concretes;
+using reexjungle.xcal.service.repositories.contracts;
+using reexjungle.xcal.service.repositories.concretes.ormlite;
+using reexjungle.xcal.service.repositories.concretes.redis;
+using reexjungle.xcal.service.repositories.concretes.relations;
+using reexjungle.technical.data.concretes.extensions.ormlite.mysql;
+using reexjungle.infrastructure.operations.concretes;
+using reexjungle.infrastructure.operations.contracts;
+using reexjungle.xcal.service.plugins.formats.concretes;
 
 
-namespace reexmonkey.xcal.application.server.web.dev2
+namespace reexjungle.xcal.application.server.web.dev2
 {
     public class ApplicationHost : AppHostBase
     {

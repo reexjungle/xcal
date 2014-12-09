@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("infrastructure.redis.extensions")]
 [assembly: AssemblyDescription("High level data service implementations")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("reexmonkey")]
+[assembly: AssemblyCompany("reexjungle")]
 [assembly: AssemblyProduct("infrastructure.redis.extensions")]
 [assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane")]
 [assembly: AssemblyTrademark("")]

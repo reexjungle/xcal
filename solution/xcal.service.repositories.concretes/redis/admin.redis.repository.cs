@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ServiceStack.Redis;
-using reexmonkey.xcal.service.repositories.contracts;
-using reexmonkey.infrastructure.operations.contracts;
+using reexjungle.xcal.service.repositories.contracts;
+using reexjungle.infrastructure.operations.contracts;
 
 
 
-namespace reexmonkey.xcal.service.repositories.concretes.redis
+namespace reexjungle.xcal.service.repositories.concretes.redis
 {
     public class AdminRedisRepository : IAdminRedisRepository
     {

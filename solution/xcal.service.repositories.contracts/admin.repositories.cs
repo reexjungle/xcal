@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using ServiceStack.OrmLite;
 using ServiceStack.Redis;
-using reexmonkey.xcal.domain.models;
-using reexmonkey.technical.data.contracts;
-using reexmonkey.infrastructure.operations.contracts;
+using reexjungle.xcal.domain.models;
+using reexjungle.technical.data.contracts;
+using reexjungle.infrastructure.operations.contracts;
 
-namespace reexmonkey.xcal.service.repositories.contracts
+namespace reexjungle.xcal.service.repositories.contracts
 {
     public interface IAdminRepository: IRepository
     {

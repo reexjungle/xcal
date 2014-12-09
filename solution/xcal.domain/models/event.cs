@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 using ServiceStack.DataAnnotations;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.infrastructure.io.concretes;
-using reexmonkey.infrastructure.operations.concretes;
-using reexmonkey.xcal.domain.contracts;
-using reexmonkey.xcal.domain.extensions;
+using reexjungle.foundation.essentials.contracts;
+using reexjungle.foundation.essentials.concretes;
+using reexjungle.infrastructure.io.concretes;
+using reexjungle.infrastructure.operations.concretes;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.extensions;
 
-namespace reexmonkey.xcal.domain.models
+namespace reexjungle.xcal.domain.models
 {
 
     /// <summary>

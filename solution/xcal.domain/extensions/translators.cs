@@ -1,10 +1,10 @@
-﻿using reexmonkey.xcal.domain.contracts;
-using reexmonkey.xcal.domain.models;
+﻿using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace reexmonkey.xcal.domain.extensions
+namespace reexjungle.xcal.domain.extensions
 {
     /// <summary>
     /// Helper class that provides support functionality related to the ICalendar interface

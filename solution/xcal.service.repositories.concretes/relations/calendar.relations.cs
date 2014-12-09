@@ -1,10 +1,10 @@
 ﻿using System;
 using ServiceStack.OrmLite;
 using ServiceStack.DataAnnotations;
-using reexmonkey.xcal.domain.models;
-using reexmonkey.foundation.essentials.contracts;
+using reexjungle.xcal.domain.models;
+using reexjungle.foundation.essentials.contracts;
 
-namespace reexmonkey.xcal.service.repositories.concretes.relations
+namespace reexjungle.xcal.service.repositories.concretes.relations
 {
     public class REL_CALENDARS_EVENTS : IEquatable<REL_CALENDARS_EVENTS>, IContainsKey<string>
     {

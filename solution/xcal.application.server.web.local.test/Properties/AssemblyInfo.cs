@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("xcal.application.server.web.dev.test")]
 [assembly: AssemblyDescription("Unit test suite for local iCalendar application web server")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("reexmonkey")]
+[assembly: AssemblyCompany("reexjungle")]
 [assembly: AssemblyProduct("xcal.application.server.web.dev.test")]
 [assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane")]
 [assembly: AssemblyTrademark("")]

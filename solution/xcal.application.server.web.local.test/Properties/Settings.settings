@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="reexmonkey.xcal.application.server.web.dev.test.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="reexjungle.xcal.application.server.web.dev.test.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
     <Setting Name="remote_server_redis" Type="System.String" Scope="User">
@@ -9,12 +9,12 @@
       <Value Profile="(Default)">iCalendar Web Services Provider</Value>
     </Setting>
     <Setting Name="fpiOwner" Type="System.String" Scope="User">
-      <Value Profile="(Default)">reexmonkey</Value>
+      <Value Profile="(Default)">reexjungle</Value>
     </Setting>
     <Setting Name="fpiLanguageId" Type="System.String" Scope="User">
       <Value Profile="(Default)">EN</Value>
     </Setting>
-    <Setting Name="fpiAuthority" Type="reexmonkey.infrastructure.operations.contracts.Authority" Scope="User">
+    <Setting Name="fpiAuthority" Type="reexjungle.infrastructure.operations.contracts.Authority" Scope="User">
       <Value Profile="(Default)">None</Value>
     </Setting>
     <Setting Name="local_server" Type="System.String" Scope="User">

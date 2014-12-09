@@ -1,11 +1,11 @@
-﻿using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.infrastructure.io.concretes;
-using reexmonkey.infrastructure.operations.contracts;
-using reexmonkey.technical.data.concretes.extensions.ormlite;
-using reexmonkey.xcal.domain.models;
-using reexmonkey.xcal.service.repositories.concretes.relations;
-using reexmonkey.xcal.service.repositories.contracts;
+﻿using reexjungle.foundation.essentials.concretes;
+using reexjungle.foundation.essentials.contracts;
+using reexjungle.infrastructure.io.concretes;
+using reexjungle.infrastructure.operations.contracts;
+using reexjungle.technical.data.concretes.extensions.ormlite;
+using reexjungle.xcal.domain.models;
+using reexjungle.xcal.service.repositories.concretes.relations;
+using reexjungle.xcal.service.repositories.contracts;
 using ServiceStack.OrmLite;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace reexmonkey.xcal.service.repositories.concretes.ormlite
+namespace reexjungle.xcal.service.repositories.concretes.ormlite
 {
     /// <summary>
     /// ORMLite Repository for Calendars

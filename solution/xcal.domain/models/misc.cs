@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using ServiceStack.DataAnnotations;
-using reexmonkey.xcal.domain.contracts;
+using reexjungle.xcal.domain.contracts;
 
 
 
-namespace reexmonkey.xcal.domain.models
+namespace reexjungle.xcal.domain.models
 {
     [DataContract]
     public class IANA_COMPONENT: IMISC_COMPONENT
