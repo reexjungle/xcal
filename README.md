@@ -170,7 +170,9 @@ For better release management and backward commpability, the assemblies of xCal 
 
 Community
 ==========
- xCal was created by [Emmanuel Ngwane](https://github.com/reexmonkey) and maintained by the core team.
+xCal is created by [Emmanuel Ngwane](https://github.com/reexmonkey) and maintained by the [core team](https://github.com/orgs/reexjungle/people) with the support and involvement of the community.
+
+
 
 License
 =======
