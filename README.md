@@ -20,7 +20,7 @@ Thirdly, you shall enjoy distributing calendar information through the multiple 
 * [JSV](http://mono.servicestack.net/docs/text-serializers/jsv-format) 
 * [XML](http://en.wikipedia.org/wiki/XML)
 
-Fourthly, xCal aids you not to *reinvent the wheel*. Instead of creating your own custom calendaring and scheduling system, it readily provides you an implementation of the internet standard (RFC 5545) and frees up the potential development time you could have wasted, so that you can concentrate on other important tasks at hand.
+Fourthly, xCal discourages you from *reinventing the wheel*. Instead of creating your own custom calendaring and scheduling system, it offers you a firsthand implementation of the internet standard (RFC 5545) thus freeing up the potential development time you could have wasted; rather you gain time and resources in order to concentrate on important tasks at hand.
 
 Finally, you gain the awesome [benefits][1] of using xCal as an open source software. These include low costs, quality improvement through continuous community input, business agility and mitigation of business risks. 
 
@@ -29,11 +29,10 @@ Table of Contents
 1. [Get Started](https://github.com/reexmonkey/xcal/#get-started)
 2. [Dependencies](https://github.com/reexmonkey/xcal/#dependencies)
 3. [Contributing](https://github.com/reexmonkey/xcal/#contributing)
-4. [Community](https://github.com/reexmonkey/xcal/#community)
-5. [Documentation](https://github.com/reexmonkey/xcal/#documentation)
-6. [Versioning](https://github.com/reexmonkey/xcal/#versioning)
-7. [Contact](https://github.com/reexmonkey/xcal/#contact)
-8. [License](https://github.com/reexmonkey/xcal/#license)
+4. [Documentation](https://github.com/reexmonkey/xcal/#documentation)
+5. [Versioning](https://github.com/reexmonkey/xcal/#versioning)
+6. [Community](https://github.com/reexmonkey/xcal/#community)
+7. [License](https://github.com/reexmonkey/xcal/#license)
 
 
 Get Started 
@@ -146,7 +145,7 @@ Assuming you are a newbie and xCal is opened in Visual Studio, please perform th
 2. Trigger the **Run** button (or press **F5**) -> *voila!* xCal is up and running :)
 
 ### Deploying xCal
-If you have downloaded the xCal source and have setup the projects using Visual Studio, then deplyoment of the binaries have been simplified through the usage of the **Publish** wizard. Of course, if you prefer to deploy xCal through other means, it is up to you to decide which deployment tools you would like to employ ;)
+If you downloaded the xCal source and setup the projects using Visual Studio, then deplyoment of the binaries should be simple with Visual Studio's **Publish** option. Of course, if you prefer to deploy xCal through other means, it is up to you to decide on the third-party deployment tools you would like to employ ;)
 
 Dependencies
 ============
@@ -159,10 +158,6 @@ We are very happy that you are interested in contributing to xCal. [Contributing
 
 However before any contributing code is reviewed, the contributor needs to approve the [xCal Individual Contributor Assignment Agreement](http://goo.gl/forms/hvyoqegA6s).
 
-Community
-==========
-
-
 Documentation
 =============
 
@@ -173,9 +168,9 @@ Versioning
 ==========
 For better release management and backward commpability, the assemblies of xCal are maintained under the [Semantic Versioning](http://semver.org/) guidelines. Moreover, the branching of the source code follows the *Development and Release Isolation Strategy* of the [Version Control Guide](http://vsarbranchingguide.codeplex.com/releases) proposed by Microsoft Visual Studio ALM Rangers.
 
-Contact
-========
-* Emmanuel Ngwane **[Github](https://github.com/reexmonkey), [Tweet](https://twitter.com/ngwanemk)**
+Community
+==========
+ xCal was created by [Emmanuel Ngwane](https://github.com/reexmonkey) and maintained by the core team.
 
 License
 =======
