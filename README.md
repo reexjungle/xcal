@@ -155,7 +155,9 @@ Dependencies
 
 Contributing
 ============
-Contributing to the xCal repository is quite easy; fork the repository, make changes and send a pull request on Github. However before any contributing code is reviewed, the contributor needs to approve the [xCal Individual Contributor Assignment Agreement](http://goo.gl/forms/hvyoqegA6s).
+We are very happy that you are interested in contributing to xCal. [Contributing to the repository on GitHub](https://guides.github.com/activities/contributing-to-open-source/) is quite easy; fork the repository, make changes and send a pull request on Github.
+
+However before any contributing code is reviewed, the contributor needs to approve the [xCal Individual Contributor Assignment Agreement](http://goo.gl/forms/hvyoqegA6s).
 
 Community
 ==========
@@ -163,6 +165,7 @@ Community
 
 Documentation
 =============
+
 
 ###### For further information on the project, web service, its architecture, dependencies, code examples and more, please do not hesitate to visit the [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) 
 
