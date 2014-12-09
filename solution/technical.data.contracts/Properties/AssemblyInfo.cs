@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("reexjungle")]
 [assembly: AssemblyProduct("reexjungle.infrastructure.ormlite.extensions")]
-[assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane and contributors")]
+[assembly: AssemblyCopyright("Copyright (c) 2014, reexjungle")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 #endif
 [assembly: AssemblyCompany("reexjungle")]
 [assembly: AssemblyProduct("xcal.domain")]
-[assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane and contributors")]
+[assembly: AssemblyCopyright("Copyright (c) 2014, reexjungle")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

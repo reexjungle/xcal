@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("xcal.service.interfaces")]
-[assembly: AssemblyDescription("Implementation of iCalendar service contracts")]
+[assembly: AssemblyDescription("Pre-release binaries to facilitate the hosting of iCalendar services.")]
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
 #else
@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 #endif
 [assembly: AssemblyCompany("reexjungle")]
 [assembly: AssemblyProduct("xcal.service.interfaces")]
-[assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane and contributors")]
+[assembly: AssemblyCopyright("Copyright (c) 2014, reexjungle")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
