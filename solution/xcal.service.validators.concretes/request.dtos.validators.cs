@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ServiceStack.FluentValidation;
-using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.crosscut.operations.concretes;
-using reexmonkey.xcal.domain.contracts;
-using reexmonkey.xcal.domain.models;
-using reexmonkey.xcal.domain.operations;
+using reexjungle.foundation.essentials.concretes;
+using reexjungle.crosscut.operations.concretes;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.models;
+using reexjungle.xcal.domain.operations;
 
-namespace reexmonkey.xcal.service.validators.concretes
+namespace reexjungle.xcal.service.validators.concretes
 {
 
     #region calendar request dto validators

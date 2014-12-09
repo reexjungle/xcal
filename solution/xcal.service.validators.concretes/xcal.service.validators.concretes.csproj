@@ -8,7 +8,7 @@
     <ProjectGuid>{2CCD1317-B13C-4372-B14F-CE7128103F5C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.xcal.service.validators.concretes</RootNamespace>
+    <RootNamespace>reexjungle.xcal.service.validators.concretes</RootNamespace>
     <AssemblyName>xcal.service.validators.concretes</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using reexmonkey.xcal.domain.models;
+using reexjungle.xcal.domain.models;
 using System;
 
-namespace reexmonkey.xcal.domain.contracts
+namespace reexjungle.xcal.domain.contracts
 {
     /// <summary>
     /// Specifies the value type and format of a property value.

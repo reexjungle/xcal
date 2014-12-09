@@ -8,7 +8,7 @@
     <ProjectGuid>{17322A2E-E311-41BD-9070-6146842A46C3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.xcal.service.repositories.concretes</RootNamespace>
+    <RootNamespace>reexjungle.xcal.service.repositories.concretes</RootNamespace>
     <AssemblyName>xcal.service.repositories.concretes</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

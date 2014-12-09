@@ -1,8 +1,8 @@
-﻿using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.infrastructure.operations.concretes;
-using reexmonkey.xcal.domain.contracts;
-using reexmonkey.xcal.domain.extensions;
+﻿using reexjungle.foundation.essentials.concretes;
+using reexjungle.foundation.essentials.contracts;
+using reexjungle.infrastructure.operations.concretes;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace reexmonkey.xcal.domain.models
+namespace reexjungle.xcal.domain.models
 {
     /// <summary>
     /// Specifies the contract for identifying properties that contain a character encoding of inline binary data.

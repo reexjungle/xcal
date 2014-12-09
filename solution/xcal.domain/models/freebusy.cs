@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.Serialization;
 using ServiceStack.DataAnnotations;
-using reexmonkey.xcal.domain.contracts;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.foundation.essentials.concretes;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.foundation.essentials.contracts;
+using reexjungle.foundation.essentials.concretes;
 
 
-namespace reexmonkey.xcal.domain.models
+namespace reexjungle.xcal.domain.models
 {
     [DataContract]
     public class VFREEBUSY: IFREEBUSY, IEquatable<VFREEBUSY>, IContainsKey<string>

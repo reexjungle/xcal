@@ -8,7 +8,7 @@
     <ProjectGuid>{F21CB427-5DD9-41B2-A993-17CD8085535A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.crosscut.operations.concretes</RootNamespace>
+    <RootNamespace>reexjungle.crosscut.operations.concretes</RootNamespace>
     <AssemblyName>crosscut.operations.concretes</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

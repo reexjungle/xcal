@@ -1,14 +1,14 @@
-﻿using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.infrastructure.operations.concretes;
-using reexmonkey.xcal.domain.contracts;
+﻿using reexjungle.foundation.essentials.concretes;
+using reexjungle.foundation.essentials.contracts;
+using reexjungle.infrastructure.operations.concretes;
+using reexjungle.xcal.domain.contracts;
 using ServiceStack.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace reexmonkey.xcal.domain.models
+namespace reexjungle.xcal.domain.models
 {
     /// <summary>
     /// Represents a core Calendar type

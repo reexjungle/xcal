@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using ServiceStack.OrmLite;
-using reexmonkey.xcal.service.repositories.contracts;
-using reexmonkey.xcal.domain.contracts;
-using reexmonkey.xcal.service.repositories.concretes.relations;
-using reexmonkey.xcal.domain.models;
-using reexmonkey.infrastructure.operations.contracts;
+using reexjungle.xcal.service.repositories.contracts;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.service.repositories.concretes.relations;
+using reexjungle.xcal.domain.models;
+using reexjungle.infrastructure.operations.contracts;
 
 
-namespace reexmonkey.xcal.service.repositories.concretes.ormlite
+namespace reexjungle.xcal.service.repositories.concretes.ormlite
 {
     public class AdminOrmLiteRepository : IAdminOrmLiteRepository
     {

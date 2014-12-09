@@ -8,7 +8,7 @@
     <ProjectGuid>{E307C223-9021-45BE-A261-DAF43F31B354}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.crosscut.security</RootNamespace>
+    <RootNamespace>reexjungle.crosscut.security</RootNamespace>
     <AssemblyName>crosscut.security.concretes</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

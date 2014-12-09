@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace reexmonkey.infrastructure.io.contracts
+namespace reexjungle.infrastructure.io.contracts
 {
     public interface IPaginated<T>
         where T: struct

@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using reexmonkey.infrastructure.operations.concretes;
-using reexmonkey.xcal.domain.contracts;
-using reexmonkey.xcal.domain.models;
+using reexjungle.infrastructure.operations.concretes;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace reexmonkey.xcal.application.server.web.dev.test
+namespace reexjungle.xcal.application.server.web.dev.test
 {
     [TestClass]
     public class EventUnitTests

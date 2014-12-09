@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace reexmonkey.infrastructure.operations.contracts
+namespace reexjungle.infrastructure.operations.contracts
 {
     /// <summary>
     /// Specifies a contract for providing unique keys

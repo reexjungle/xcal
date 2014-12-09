@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using reexmonkey.xcal.domain.models;
+using reexjungle.xcal.domain.models;
 
-namespace reexmonkey.xcal.domain.contracts
+namespace reexjungle.xcal.domain.contracts
 {
     /// <summary>
     /// General contract for calendar parameters

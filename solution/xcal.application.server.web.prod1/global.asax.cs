@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Security;
 using System.Web.SessionState;
 
-namespace reexmonkey.xcal.application.server.web.prod1
+namespace reexjungle.xcal.application.server.web.prod1
 {
     public class Global : System.Web.HttpApplication
     {

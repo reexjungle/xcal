@@ -1,4 +1,4 @@
-﻿namespace reexmonkey.xcal.domain.contracts
+﻿namespace reexjungle.xcal.domain.contracts
 {
     /// <summary>
     /// Represents the icalendar scale type e.g. GREGORIAN

@@ -8,7 +8,7 @@
     <ProjectGuid>{1898784A-99B2-4226-8C33-689EA6558CFA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.xcal.service.repositories.contracts</RootNamespace>
+    <RootNamespace>reexjungle.xcal.service.repositories.contracts</RootNamespace>
     <AssemblyName>xcal.service.repositories.contracts</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("xcal.application.server.web.local")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("reexMonkey")]
+[assembly: AssemblyCompany("reexjungle")]
 [assembly: AssemblyProduct("xcal.application.server.web.local")]
-[assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane")]
+[assembly: AssemblyCopyright("Copyright (c) 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

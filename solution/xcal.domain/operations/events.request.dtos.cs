@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using ServiceStack.ServiceHost;
-using reexmonkey.xcal.domain.contracts;
-using reexmonkey.xcal.domain.models;
-using reexmonkey.infrastructure.io.contracts;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.models;
+using reexjungle.infrastructure.io.contracts;
 
-namespace reexmonkey.xcal.domain.operations
+namespace reexjungle.xcal.domain.operations
 {
 
     [DataContract]

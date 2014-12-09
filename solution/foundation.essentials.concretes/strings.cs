@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace reexmonkey.foundation.essentials.concretes
+namespace reexjungle.foundation.essentials.concretes
 {
     /// <summary>
     /// Extensions to the <see cref="DATE_TIME"/> type

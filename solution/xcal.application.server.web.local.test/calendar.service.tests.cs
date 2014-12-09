@@ -2,14 +2,14 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ServiceStack.ServiceClient.Web;
-using reexmonkey.xcal.domain.contracts;
-using reexmonkey.xcal.domain.models;
-using reexmonkey.xcal.domain.operations;
-using reexmonkey.infrastructure.operations.concretes;
-using reexmonkey.infrastructure.operations.contracts;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.models;
+using reexjungle.xcal.domain.operations;
+using reexjungle.infrastructure.operations.concretes;
+using reexjungle.infrastructure.operations.contracts;
 using System.Collections.Generic;
 
-namespace reexmonkey.xcal.application.server.web.dev.test
+namespace reexjungle.xcal.application.server.web.dev.test
 {
     [TestClass]
     public class CalendarServiceUnitTests

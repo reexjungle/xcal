@@ -1,7 +1,7 @@
-﻿using reexmonkey.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
 using System.Collections.Generic;
 
-namespace reexmonkey.xcal.domain.contracts
+namespace reexjungle.xcal.domain.contracts
 {
     /// <summary>
     /// Specifies a contract for alarm objects associated to an iCalendar object.

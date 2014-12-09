@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace reexmonkey.technical.data.contracts
+namespace reexjungle.technical.data.contracts
 {
     /// <summary>
     /// Specifies the interface for retrieving keys from a non-relational repository

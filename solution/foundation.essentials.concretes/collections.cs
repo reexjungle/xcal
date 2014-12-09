@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace reexmonkey.foundation.essentials.concretes
+namespace reexjungle.foundation.essentials.concretes
 {
 
     /// <summary>

@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 using ServiceStack.Redis;
 using ServiceStack.Redis.Generic;
 using ServiceStack.Common;
-using reexmonkey.xcal.domain.models;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.infrastructure.io.concretes;
-using reexmonkey.xcal.service.repositories.contracts;
-using reexmonkey.xcal.service.repositories.concretes.relations;
-using reexmonkey.infrastructure.operations.contracts;
-using reexmonkey.technical.data.concretes.extensions.redis;
+using reexjungle.xcal.domain.models;
+using reexjungle.foundation.essentials.contracts;
+using reexjungle.foundation.essentials.concretes;
+using reexjungle.infrastructure.io.concretes;
+using reexjungle.xcal.service.repositories.contracts;
+using reexjungle.xcal.service.repositories.concretes.relations;
+using reexjungle.infrastructure.operations.contracts;
+using reexjungle.technical.data.concretes.extensions.redis;
 
-namespace reexmonkey.xcal.service.repositories.concretes.redis
+namespace reexjungle.xcal.service.repositories.concretes.redis
 {
     public class CalendarRedisRepository : ICalendarRedisRepository
     {

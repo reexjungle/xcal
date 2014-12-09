@@ -6,7 +6,7 @@ using ServiceStack.FluentValidation;
 using ServiceStack.FluentValidation.Results;
 using ServiceStack.FluentValidation.Validators;
 
-namespace reexmonkey.crosscut.operations.concretes
+namespace reexjungle.crosscut.operations.concretes
 {
     public abstract class AbstractCompositeValidator<T>: AbstractValidator<T>
     {

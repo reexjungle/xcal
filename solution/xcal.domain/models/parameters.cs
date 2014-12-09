@@ -1,5 +1,5 @@
-﻿using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.xcal.domain.contracts;
+﻿using reexjungle.foundation.essentials.concretes;
+using reexjungle.xcal.domain.contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace reexmonkey.xcal.domain.models
+namespace reexjungle.xcal.domain.models
 {
     [DataContract]
     public class TZID : ITZID, IEquatable<TZID>, IComparable<TZID>

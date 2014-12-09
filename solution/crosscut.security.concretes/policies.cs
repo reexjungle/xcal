@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 
-namespace reexmonkey.crosscut.security.policies.concretes
+namespace reexjungle.crosscut.security.policies.concretes
 {
     public class TrustAllCertificatePolicy: ICertificatePolicy
     {

@@ -5,20 +5,20 @@ using System.Linq.Expressions;
 using System.Collections.Generic;
 using System.Security;
 using ServiceStack.OrmLite;
-using reexmonkey.technical.data.contracts;
-using reexmonkey.technical.data.concretes.extensions.ormlite;
-using reexmonkey.crosscut.operations.concretes;
-using reexmonkey.foundation.essentials.contracts;
-using reexmonkey.foundation.essentials.concretes;
-using reexmonkey.infrastructure.io.concretes;
-using reexmonkey.xcal.domain.models;
-using reexmonkey.xcal.service.repositories.contracts;
-using reexmonkey.infrastructure.operations.concretes;
-using reexmonkey.infrastructure.operations.contracts;
-using reexmonkey.xcal.service.repositories.concretes.relations;
+using reexjungle.technical.data.contracts;
+using reexjungle.technical.data.concretes.extensions.ormlite;
+using reexjungle.crosscut.operations.concretes;
+using reexjungle.foundation.essentials.contracts;
+using reexjungle.foundation.essentials.concretes;
+using reexjungle.infrastructure.io.concretes;
+using reexjungle.xcal.domain.models;
+using reexjungle.xcal.service.repositories.contracts;
+using reexjungle.infrastructure.operations.concretes;
+using reexjungle.infrastructure.operations.contracts;
+using reexjungle.xcal.service.repositories.concretes.relations;
 
 
-namespace reexmonkey.xcal.service.repositories.concretes.ormlite
+namespace reexjungle.xcal.service.repositories.concretes.ormlite
 {
     /// <summary>
     /// Reüpresents a a repository of events connected to an ORMlite source

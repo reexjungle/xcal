@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace reexmonkey.xcal.application.server.web.dev.test.Properties {
+namespace reexjungle.xcal.application.server.web.dev.test.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -74,9 +74,10 @@ namespace reexmonkey.xcal.application.server.web.dev.test.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("None")]
-        public global::reexmonkey.infrastructure.operations.contracts.Authority fpiAuthority {
+        public global::reexjungle.infrastructure.operations.contracts.Authority fpiAuthority
+        {
             get {
-                return ((global::reexmonkey.infrastructure.operations.contracts.Authority)(this["fpiAuthority"]));
+                return ((global::reexjungle.infrastructure.operations.contracts.Authority)(this["fpiAuthority"]));
             }
             set {
                 this["fpiAuthority"] = value;

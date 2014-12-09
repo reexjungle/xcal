@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text;
 using System.Text.RegularExpressions;
-using reexmonkey.infrastructure.operations.contracts;
+using reexjungle.infrastructure.operations.contracts;
 
-namespace reexmonkey.infrastructure.operations.concretes
+namespace reexjungle.infrastructure.operations.concretes
 {
     public class GuidKeyGenerator: IGuidKeyGenerator
     {

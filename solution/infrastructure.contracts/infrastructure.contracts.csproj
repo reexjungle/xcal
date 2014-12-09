@@ -7,7 +7,7 @@
     <ProjectGuid>{82ED5F70-E1D9-456E-8686-C59306312726}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>reexmonkey.infrastructure.contracts</RootNamespace>
+    <RootNamespace>reexjungle.infrastructure.contracts</RootNamespace>
     <AssemblyName>infrastructure.contracts</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
