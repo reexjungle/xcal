@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 #endif
 [assembly: AssemblyCompany("reexjungle")]
 [assembly: AssemblyProduct("xcal.service.plugins.validators")]
-[assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane")]
+[assembly: AssemblyCopyright("Copyright (c) 2014, reexjungle")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

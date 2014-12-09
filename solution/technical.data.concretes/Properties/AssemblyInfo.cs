@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("reexjungle")]
 [assembly: AssemblyProduct("infrastructure.redis.extensions")]
-[assembly: AssemblyCopyright("Copyright (c) 2014, Emmanuel Ngwane")]
+[assembly: AssemblyCopyright("Copyright (c) 2014, reexjungle")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
