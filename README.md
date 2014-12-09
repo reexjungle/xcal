@@ -172,7 +172,7 @@ For better release management and backward commpability, the assemblies of xCal 
 
 Contact
 ========
-* Emmanuel Ngwane [Github](https://github.com/reexmonkey), [Tweet](https://twitter.com/ngwanemk)
+* Emmanuel Ngwane **[Github](https://github.com/reexmonkey), [Tweet](https://twitter.com/ngwanemk)**
 
 License
 =======
