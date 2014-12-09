@@ -43,13 +43,13 @@ To get started on the xCal, you might want to choose one of the following option
 1. Preview a [demo][2] of xCal web serivices. 
 2. Download the master repository [ZIP][3] file from GitHub.
 3. [Clone][4] the master repository on desktop using the Github application. 
-4. Download *core* xCal service interface binaries (i.e. the libraries and dependencies of *xcal.service.interfaces.concretes*) as Nuget packages from the [Nuget Gallery](https://www.nuget.org/packages/xcal.service.interfaces.concretes/) 
-5. Install *core* xCal service interface binaries via the Project Mangager Console in Visual studio e.g.
+4. Download core xCal service interface binaries (i.e. libraries and dependencies of *xcal.service.interfaces.concretes*) as Nuget packages from the [Nuget Gallery](https://www.nuget.org/packages/xcal.service.interfaces.concretes/) 
+5. Install core xCal service interface binaries via the Project Mangager Console in Visual studio e.g.
 
 ```
 PM> Install-Package xcal.service.interfaces.concretes -Pre
 ```
-*Note: The core xCal service interface binaries are not standalone binaries, they must be referenced by application servers (web servers, windows services, background daemons, etc) using the [Service Stack V3 Web Services Framework](https://github.com/ServiceStackV3/ServiceStackV3/wiki).*
+###### Note: xCal service interface binaries are not standalone binaries; they should be referenced by application servers e.g. web servers, windows services using the [Service Stack V3 Web Services Framework](https://github.com/ServiceStackV3/ServiceStackV3/wiki).
 
 
 ### Contents of Download Package
@@ -172,7 +172,7 @@ For better release management and backward commpability, the assemblies of xCal 
 
 Contact
 ========
-* https://github.com/reexmonkey
+* Emmanuel Ngwane [Github](https://github.com/reexmonkey), [Tweet](https://twitter.com/ngwanemk)
 
 License
 =======
