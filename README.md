@@ -43,6 +43,14 @@ To get started on the xCal, you might want to choose one of the following option
 1. Preview a [demo][2] of xCal web serivices. 
 2. Download the master repository [ZIP][3] file from GitHub.
 3. [Clone][4] the master repository on desktop using the Github application. 
+4. Download *core* xCal service interface binaries (i.e. the libraries and dependencies of *xcal.service.interfaces.concretes*) as Nuget packages from the [Nuget Gallery](https://www.nuget.org/packages/xcal.service.interfaces.concretes/) 
+5. Install *core* xCal service interface binaries via the Project Mangager Console in Visual studio e.g.
+
+```
+PM > PM> Install-Package xcal.service.interfaces.concretes -Pre
+```
+*Note: The core xCal service interface binaries are not standalone binaries, they must be referenced by application servers (web servers, windows services, background daemons, etc) using the [Service Stack V3 Web Services Framework](https://github.com/ServiceStackV3/ServiceStackV3/wiki).*
+
 
 ### Contents of Download Package
 
@@ -114,9 +122,9 @@ To build xCal, please do perform the following steps:
 2. Right-click and choose *Rebuild Solution* from context menu.
 
 ### Executing xCal
-After a successful build, it is time to enjoy the highly anticipated moment i.e. seeing xCal run! Nevertheless, a few more steps need to be performed before the final goal is achieved. This involves installing the necessary backend servers (if not yet installed on the host computer) and configuring them. Depending on the selected application server (*in fact, four preconfigured application servers are available in the download package*), you have the choice of installing a MySQL (relational database) or a Redis (a NoSQL datastore) backend server. 
+It is now time to see xCal run... although a few more steps are required before this final goal is achieved. These involve the installation and configuration of necessary backend servers (if not yet installed on the host computer). Depending on the selected application server from the download package, you have the choice of using a MySQL (relational database) or a Redis (one of the fastest NoSQL datastore) as the backend server. 
 
-It is highly recommended for beginners to start with the local application server (*xcal.application.server.web.local*),which been configured for testing on the local computer. The default data backend of this server is MySQL, although the user can change it to Redis through a switch in the project properties. 
+It is highly recommended for beginners to start with the local application server (*xcal.application.server.web.local*), which been configured for testing on a local machine. The default data backend of this server is MySQL, even though the user can alternatively use a Redis backend through a provided switch in the project settings. 
 
 Assuming you are a newbie and xCal is opened in Visual Studio, please perform the following steps:
 #### Visual Studio Configuration
@@ -138,14 +146,12 @@ Assuming you are a newbie and xCal is opened in Visual Studio, please perform th
 2. Trigger the **Run** button (or press **F5**) -> *voila!* xCal is up and running :)
 
 ### Deploying xCal
-
-
-
-###### For further information on the project, web service, its architecture, dependencies, code examples and more, please do not hesitate to visit the [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) 
-
+If you have downloaded the xCal source and have setup the projects using Visual Studio, then deplyoment of the binaries have been simplified through the usage of the **Publish** wizard. Of course, if you prefer to deploy xCal through other means, it is up to you to decide which deployment tools you would like to employ ;)
 
 Dependencies
 ============
+
+
 
 Contributing
 ============
@@ -158,6 +164,7 @@ Community
 Documentation
 =============
 
+###### For further information on the project, web service, its architecture, dependencies, code examples and more, please do not hesitate to visit the [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) 
 
 Versioning
 ==========
@@ -166,7 +173,6 @@ For better release management and backward commpability, the assemblies of xCal 
 Contact
 ========
 * https://github.com/reexmonkey
-* https://twitter.com/ngwanemk
 
 License
 =======
