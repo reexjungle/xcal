@@ -42,7 +42,7 @@ To get started on the xCal, you might want to choose one of the following option
 1. Preview a [demo][2] of xCal web serivices. 
 2. Download the master repository [ZIP][3] file from GitHub.
 3. [Clone][4] the master repository on desktop using the Github application. 
-4. Download core xCal service interface binaries (i.e. libraries and dependencies of *xcal.service.interfaces.concretes*) as Nuget packages from the [Nuget Gallery](https://www.nuget.org/packages/xcal.service.interfaces.concretes/) 
+4. Download core xCal service interface binaries (i.e. libraries and dependencies of *xcal.service.interfaces.concretes*) as a raw Nuget package from the [Nuget Gallery](https://www.nuget.org/packages/xcal.service.interfaces.concretes/) 
 5. Install core xCal service interface binaries via the Project Mangager Console in Visual studio e.g.
 
 ```
