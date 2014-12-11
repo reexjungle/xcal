@@ -1,4 +1,3 @@
 language: csharp
 solution: solution/xcal.sln
 services: redis
-cache: apt
