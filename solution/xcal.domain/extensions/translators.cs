@@ -249,8 +249,6 @@ namespace reexjungle.xcal.domain.extensions
         public static DateTime ToDateTime(this DATE value)
         {
             if (value == default(DATE)) return default(DateTime);
-
-            if (value == null) return new DateTime();
             return new DateTime((int)value.FULLYEAR, (int)value.MONTH, (int)value.MDAY);
         }
 

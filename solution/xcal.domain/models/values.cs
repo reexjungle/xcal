@@ -107,7 +107,7 @@ namespace reexjungle.xcal.domain.models
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
         public override int GetHashCode()
         {
@@ -276,7 +276,7 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public bool Equals(DATE other)
         {
-            if (other == null) return false;
+            if (other == default(DATE)) return false;
             return (this.fullyear == other.FULLYEAR) &&
                 (this.month == other.MONTH) &&
                 (this.mday == other.MDAY);
@@ -299,7 +299,7 @@ namespace reexjungle.xcal.domain.models
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
         public override int GetHashCode()
         {
@@ -315,7 +315,7 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public int CompareTo(DATE other)
         {
-            if (other == null) return -2; //undefined
+            if (other == default(DATE)) return -2; //undefined
             if (this.fullyear < other.FULLYEAR) return -1;
             else if (this.fullyear > other.FULLYEAR) return 1;
             else
@@ -626,7 +626,7 @@ namespace reexjungle.xcal.domain.models
         /// <exception cref="System.ArgumentNullException">date</exception>
         public DATE_TIME(DATE date, TZID tzid = null)
         {
-            if (date == null) throw new ArgumentNullException("date");
+            if (date == default(DATE)) throw new ArgumentNullException("date");
             this.fullyear = date.FULLYEAR;
             this.month = date.MONTH;
             this.mday = date.MDAY;
@@ -743,7 +743,6 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public bool Equals(DATE_TIME other)
         {
-            if (other == null) return false;
             return (this.fullyear == other.FULLYEAR) && (this.month == other.MONTH) && (this.mday == other.MDAY) &&
                 (this.hour == other.HOUR) && (this.minute == other.MINUTE) && (this.second == other.SECOND);
         }
@@ -1034,7 +1033,6 @@ namespace reexjungle.xcal.domain.models
 
         public bool Equals(TIME other)
         {
-            if (other == null) return false;
             return (this.hour == other.HOUR) && (this.minute == other.MINUTE) && (this.second == other.SECOND);
         }
 
@@ -1226,7 +1224,6 @@ namespace reexjungle.xcal.domain.models
 
         public bool Equals(DURATION other)
         {
-            if (other == null) return false;
             return (this.weeks == other.WEEKS) && (this.days == other.DAYS) &&
                 (this.hours == other.HOURS) && (this.minutes == other.MINUTES) &&
                 (this.seconds == other.SECONDS);
@@ -1385,7 +1382,6 @@ namespace reexjungle.xcal.domain.models
 
         public bool Equals(WEEKDAYNUM other)
         {
-            if (other == null) return false;
             return this.OrdinalWeek == other.OrdinalWeek && this.Weekday == other.Weekday;
         }
 
@@ -1436,25 +1432,21 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator <(WEEKDAYNUM a, WEEKDAYNUM b)
         {
-            if (b == null) return false;
             return a.CompareTo(b) == -1;
         }
 
         public static bool operator >(WEEKDAYNUM a, WEEKDAYNUM b)
         {
-            if (b == null) return false;
             return a.CompareTo(b) == 1;
         }
 
         public static bool operator <=(WEEKDAYNUM a, WEEKDAYNUM b)
         {
-            if (b == null) return false;
             return a.CompareTo(b) == -1 || a.CompareTo(b) == 0; ;
         }
 
         public static bool operator >=(WEEKDAYNUM a, WEEKDAYNUM b)
         {
-            if (b == null) return false;
             return a.CompareTo(b) == 1 || a.CompareTo(b) == 0;
         }
     }
@@ -1537,7 +1529,6 @@ namespace reexjungle.xcal.domain.models
 
         public bool Equals(UTC_OFFSET other)
         {
-            if (other == null) return false;
             return (this.hour == other.HOUR) && (this.minute == other.MINUTE) && (this.second == other.SECOND);
         }
 
@@ -1746,7 +1737,6 @@ namespace reexjungle.xcal.domain.models
 
         public bool Equals(PERIOD other)
         {
-            if (other == null) return false;
             return this.start == other.Start && this.duration == other.Duration;
         }
 
@@ -1765,7 +1755,6 @@ namespace reexjungle.xcal.domain.models
 
         public int CompareTo(PERIOD other)
         {
-            if (other == null) return -10; //undefined
             return (this.type == PeriodType.Explicit) ?
                 this.start.CompareTo(other.start) + this.end.CompareTo(other.end) :
                 this.start.CompareTo(other.start) + this.duration.CompareTo(other.duration);

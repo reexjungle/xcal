@@ -450,7 +450,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         {
             var sb = new StringBuilder();
             var ev1 = OrmLiteConfig.DialectProvider.ExpressionVisitor<T1>();
-            var ev2 = OrmLiteConfig.DialectProvider.ExpressionVisitor<T2>();
 
             var t1 = (quoted) ? GetQuotedTableName<T1>() : GetTableName<T1>();
             var t2 = (quoted) ? GetQuotedTableName<T2>() : GetTableName<T2>();
@@ -859,8 +858,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         {
             var sb = new StringBuilder();
             var ev1 = OrmLiteConfig.DialectProvider.ExpressionVisitor<T1>();
-            var ev2 = OrmLiteConfig.DialectProvider.ExpressionVisitor<T2>();
-            var ev3 = OrmLiteConfig.DialectProvider.ExpressionVisitor<T3>();
 
             var t1 = (quoted) ? GetQuotedTableName<T1>() : GetTableName<T1>();
             var t2 = (quoted) ? GetQuotedTableName<T2>() : GetTableName<T2>();
@@ -1074,7 +1071,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         /// <param name="R13_FK1">The foreign key of the third  relational table that refers to the primary key of the first POCO table.</param>
         /// <param name="R13_FK3">The foreign key of the third  relational table that refers to the primary key of the third POCO table.</param>
         /// <param name="P3"> The predicate from the third POCO table.</param>
-        /// <param name="C1">The conjunction between the first and the second predicate</param>
         /// <param name="mode">The type of SQL JOIN used</param>
         /// <param name="quoted">Should the table and column names be set in quotes?</param>
         /// <param name="skip">The row offset of records to return.</param>
@@ -1111,7 +1107,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         /// <param name="R13_FK1">The foreign key of the third  relational table that refers to the primary key of the first POCO table.</param>
         /// <param name="R13_FK3">The foreign key of the third  relational table that refers to the primary key of the third POCO table.</param>
         /// <param name="P3">The predicate from the third POCO table.</param>
-        /// <param name="C1">The conjunction between the first and the second predicate</param>
         /// <param name="mode">The type of SQL JOIN used</param>
         /// <param name="quoted">Should the table and column names be set in quotes?</param>
         /// <param name="skip">The row offset of records to return.</param>
@@ -1151,7 +1146,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         /// <param name="R13_FK1">The foreign key of the third  relational table that refers to the primary key of the first POCO table.</param>
         /// <param name="R13_FK3">The foreign key of the third  relational table that refers to the primary key of the third POCO table.</param>
         /// <param name="P3"> The predicate from the third POCO table.</param>
-        /// <param name="C1">The conjunction between the first and the second predicate</param>
         /// <param name="mode">The type of SQL JOIN used</param>
         /// <param name="quoted">Should the table and column names be set in quotes?</param>
         /// <param name="skip">The row offset of records to return. </param>
@@ -1343,7 +1337,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             var sb = new StringBuilder();
             var ev1 = OrmLiteConfig.DialectProvider.ExpressionVisitor<T1>();
             var ev2 = OrmLiteConfig.DialectProvider.ExpressionVisitor<T2>();
-            var ev3 = OrmLiteConfig.DialectProvider.ExpressionVisitor<T3>();
 
             var t1 = (quoted) ? GetQuotedTableName<T1>() : GetTableName<T1>();
             var t2 = (quoted) ? GetQuotedTableName<T2>() : GetTableName<T2>();
@@ -1680,7 +1673,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         {
             var sb = new StringBuilder();
             var ev1 = OrmLiteConfig.DialectProvider.ExpressionVisitor<T1>();
-            var ev2 = OrmLiteConfig.DialectProvider.ExpressionVisitor<T2>();
             var ev3 = OrmLiteConfig.DialectProvider.ExpressionVisitor<T3>();
 
             var t1 = (quoted) ? GetQuotedTableName<T1>() : GetTableName<T1>();

@@ -1,14 +1,14 @@
-﻿using System;
+﻿using reexjungle.foundation.essentials.contracts;
+using reexjungle.xcal.domain.models;
+using ServiceStack.DataAnnotations;
+using ServiceStack.OrmLite;
+using System;
 using System.Data;
 using System.Runtime.Serialization;
-using ServiceStack.OrmLite;
-using ServiceStack.DataAnnotations;
-using reexjungle.xcal.domain.models;
-using reexjungle.foundation.essentials.contracts;
 
 namespace reexjungle.xcal.service.repositories.concretes.relations
 {
-    public class REL_EVENTS_ORGANIZERS :IEquatable<REL_EVENTS_ORGANIZERS>, IContainsKey<string>
+    public class REL_EVENTS_ORGANIZERS : IEquatable<REL_EVENTS_ORGANIZERS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-organizer relation
@@ -48,7 +48,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
             return this.EventId.GetHashCode() ^ this.OrganizerId.GetHashCode();
         }
 
-        public static bool operator == (REL_EVENTS_ORGANIZERS x, REL_EVENTS_ORGANIZERS y)
+        public static bool operator ==(REL_EVENTS_ORGANIZERS x, REL_EVENTS_ORGANIZERS y)
         {
             if ((object)x == null || (object)y == null) return object.Equals(x, y);
             return x.Equals(y);
@@ -964,5 +964,4 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
             return !x.Equals(y);
         }
     }
-
 }

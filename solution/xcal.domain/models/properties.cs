@@ -640,7 +640,6 @@ namespace reexjungle.xcal.domain.models
 
         public bool Equals(GEO other)
         {
-            if (other == null) return false;
             return this.Latitude == other.Latitude && this.Longitude == other.Longitude;
         }
 
@@ -970,7 +969,6 @@ namespace reexjungle.xcal.domain.models
 
         public bool Equals(PRIORITY other)
         {
-            if (other == null) return false;
             return this.value == other.Value;
         }
 
@@ -2243,7 +2241,7 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator !=(STATCODE a, STATCODE b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            //if (a == null || b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
 
