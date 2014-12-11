@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace reexjungle.xcal.application.server.web.dev.test
+namespace reexjungle.xcal.application.server.web.local.test
 {
     [TestClass]
     public class EventUnitTests

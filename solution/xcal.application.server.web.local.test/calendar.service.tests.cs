@@ -9,7 +9,7 @@ using reexjungle.infrastructure.operations.concretes;
 using reexjungle.infrastructure.operations.contracts;
 using System.Collections.Generic;
 
-namespace reexjungle.xcal.application.server.web.dev.test
+namespace reexjungle.xcal.application.server.web.local.test
 {
     [TestClass]
     public class CalendarServiceUnitTests

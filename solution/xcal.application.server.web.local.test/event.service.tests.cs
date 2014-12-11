@@ -11,7 +11,7 @@ using reexjungle.xcal.domain.models;
 using reexjungle.xcal.domain.operations;
 
 
-namespace reexjungle.xcal.application.server.web.dev.test
+namespace reexjungle.xcal.application.server.web.local.test
 {
     [TestClass]
     public class EventServiceUnitTests

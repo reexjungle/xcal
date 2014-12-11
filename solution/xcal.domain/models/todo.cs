@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ServiceStack.DataAnnotations;
-using reexjungle.xcal.domain.contracts;
+﻿using reexjungle.foundation.essentials.concretes;
 using reexjungle.foundation.essentials.contracts;
-using reexjungle.foundation.essentials.concretes;
+using reexjungle.xcal.domain.contracts;
+using ServiceStack.DataAnnotations;
+using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
-
+using System.Text;
 
 namespace reexjungle.xcal.domain.models
 {
     [DataContract]
-    public class VTODO: ITODO, IEquatable<VTODO>, IContainsKey<string>
+    public class VTODO : ITODO, IEquatable<VTODO>, IContainsKey<string>
     {
         private string id;
         private DATE_TIME due;
@@ -31,7 +30,6 @@ namespace reexjungle.xcal.domain.models
                 else return this.id;
             }
             set { this.id = value; }
-
         }
 
         [DataMember]
@@ -236,7 +234,7 @@ namespace reexjungle.xcal.domain.models
             if (this.Location != null) sb.Append(this.Location).AppendLine();
             if (this.Organizer != null) sb.Append(this.Organizer).AppendLine();
             sb.AppendFormat("PERCENT-COMPLETED:{0}", this.Percent).AppendLine();
-            if (this.Priority != null) sb.Append(this.Priority).AppendLine();
+            if (this.Priority != default(PRIORITY)) sb.Append(this.Priority).AppendLine();
             sb.AppendFormat("SEQUENCE:{0}", this.Sequence).AppendLine();
             if (this.Status != STATUS.UNKNOWN) sb.AppendFormat("STATUS:{0}", this.Status).AppendLine();
             if (this.Summary != null) sb.Append(this.Summary).AppendLine();

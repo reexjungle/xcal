@@ -1,33 +1,34 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using ServiceStack.Logging;
-using ServiceStack.ServiceInterface;
-using reexjungle.foundation.essentials.concretes;
+﻿using reexjungle.foundation.essentials.concretes;
+using reexjungle.foundation.essentials.contracts;
 using reexjungle.infrastructure.io.concretes;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.domain.operations;
-using reexjungle.xcal.service.repositories.contracts;
 using reexjungle.xcal.service.interfaces.contracts.live;
-using reexjungle.foundation.essentials.contracts;
+using reexjungle.xcal.service.repositories.contracts;
+using ServiceStack.Logging;
+using ServiceStack.ServiceInterface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace reexjungle.xcal.service.interfaces.concretes.live
 {
-    public class EventService: Service, IEventService
+    public class EventService : Service, IEventService
     {
         private ILogFactory logfactory;
         private ICalendarRepository repository;
 
         private ILog log = null;
+
         private ILog logger
         {
-            get { return (log != null)? this.log: this.logfactory.GetLogger(this.GetType()); }
+            get { return (log != null) ? this.log : this.logfactory.GetLogger(this.GetType()); }
         }
 
-        public ILogFactory LogFactory 
+        public ILogFactory LogFactory
         {
-            get { return this.logfactory; } 
+            get { return this.logfactory; }
             set
             {
                 if (value == null) throw new ArgumentNullException("Logger");
@@ -35,17 +36,19 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 this.log = logfactory.GetLogger(this.GetType());
             }
         }
+
         public ICalendarRepository CalendarRepository
         {
             get { return this.repository; }
-            set 
+            set
             {
                 if (value == null) throw new ArgumentNullException("CalendarRepository");
-                this.repository = value; 
+                this.repository = value;
             }
         }
 
-        public EventService() : base() 
+        public EventService()
+            : base()
         {
             this.CalendarRepository = this.TryResolve<ICalendarRepository>();
             this.LogFactory = this.TryResolve<ILogFactory>();
@@ -57,7 +60,6 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             this.CalendarRepository = repository;
             this.LogFactory = logger;
         }
-
 
         public void Post(AddEvent request)
         {
@@ -97,7 +99,6 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
-
         }
 
         public void Put(UpdateEvent request)
@@ -106,7 +107,6 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             {
                 if (this.repository.EventRepository.ContainsKey(request.Event.Id))
                     this.repository.EventRepository.Save(request.Event);
-
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -120,7 +120,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 var keys = request.Events.Select(x => x.Id).ToArray();
                 if (this.repository.EventRepository.ContainsKeys(keys))
                 {
-                    this.repository.EventRepository.SaveAll(request.Events);   
+                    this.repository.EventRepository.SaveAll(request.Events);
                 }
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -154,7 +154,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                     Attendees = request.Attendees,
                     Categories = request.Categories,
                     Comments = request.Comments,
-                    Contacts= request.Contacts,
+                    Contacts = request.Contacts,
                     ExceptionDates = request.ExceptionDates,
                     RequestStatuses = request.RequestStatuses,
                     Resources = request.Resources,
@@ -169,7 +169,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 var fieldlist = new List<string>();
                 if (source.Start != default(DATE_TIME)) fieldlist.Add("Start");
                 if (source.Classification != default(CLASS)) fieldlist.Add("Classification");
-                if (source.Position != null) fieldlist.Add("Position");
+                if (source.Position != default(GEO)) fieldlist.Add("Position");
                 if (source.Location != null) fieldlist.Add("Location");
                 if (source.Organizer != null) fieldlist.Add("Organizer");
                 if (source.Priority != default(PRIORITY)) fieldlist.Add("Priority");

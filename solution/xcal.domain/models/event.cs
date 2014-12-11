@@ -377,7 +377,7 @@ namespace reexjungle.xcal.domain.models
             sb.AppendFormat("LAST-MODIFIED:{0}", this.LastModified.ToString()).AppendLine();
             if (this.Location != null) sb.Append(this.Location.ToString()).AppendLine();
             if (this.Organizer != null) sb.Append(this.Organizer.ToString()).AppendLine();
-            if (this.Priority != null) sb.Append(this.Priority.ToString()).AppendLine();
+            if (this.Priority != default(PRIORITY)) sb.Append(this.Priority.ToString()).AppendLine();
             sb.AppendFormat("SEQUENCE:{0}", this.Sequence.ToString()).AppendLine();
             if (this.Status != STATUS.UNKNOWN) sb.AppendFormat("STATUS:{0}", this.Status.ToString()).AppendLine();
             if (this.Summary != null) sb.Append(this.Summary.ToString()).AppendLine();

@@ -181,9 +181,9 @@ namespace reexjungle.xcal.domain.models
         {
             return this.Action.GetHashCode() ^
                 ((this.Trigger != null) ? this.Trigger.GetHashCode() : 0) ^
-                ((this.Duration != null) ? this.Duration.GetHashCode() : 0) ^
+                ((this.Duration != default(DURATION)) ? this.Duration.GetHashCode() : 0) ^
                 ((this.Repeat != -1) ? this.Repeat.GetHashCode() : 0) ^
-                ((this.Description != null) ? this.Description.GetHashCode() : 0);
+                ((this.Description != default(DESCRIPTION)) ? this.Description.GetHashCode() : 0);
         }
 
         public static bool operator ==(DISPLAY_ALARM a, DISPLAY_ALARM b)
@@ -285,7 +285,7 @@ namespace reexjungle.xcal.domain.models
             if (this.Description != null) sb.AppendFormat("{0}", this.Description.ToString()).AppendLine();
             if (this.Summary != null) sb.AppendFormat("{0}", this.Summary.ToString()).AppendLine();
             if (this.Trigger != null) sb.Append(this.Trigger.ToString()).AppendLine();
-            if (this.Duration != null && this.Repeat != -1)
+            if (this.Duration != default(DURATION) && this.Repeat != -1)
             {
                 sb.AppendFormat("DURATION:{0}", this.Duration.ToString()).AppendLine();
                 sb.AppendFormat("REPEAT:{0}", this.Repeat.ToString()).AppendLine();

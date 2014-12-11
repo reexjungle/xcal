@@ -1,25 +1,26 @@
-﻿using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Collections.Generic;
+﻿using reexjungle.foundation.essentials.concretes;
+using reexjungle.foundation.essentials.contracts;
+using reexjungle.infrastructure.operations.contracts;
+using reexjungle.technical.data.concretes.extensions.redis;
+using reexjungle.xcal.domain.models;
+using reexjungle.xcal.service.repositories.concretes.relations;
+using reexjungle.xcal.service.repositories.contracts;
+using ServiceStack.Common;
 using ServiceStack.Redis;
 using ServiceStack.Redis.Generic;
-using ServiceStack.Common;
-using reexjungle.xcal.domain.models;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.foundation.essentials.concretes;
-using reexjungle.xcal.service.repositories.contracts;
-using reexjungle.infrastructure.operations.contracts;
-using reexjungle.xcal.service.repositories.concretes.relations;
-using reexjungle.technical.data.concretes.extensions.redis;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace reexjungle.xcal.service.repositories.concretes.redis
 {
-    public class AudioAlarmRedisRepository: IAudioAlarmRedisRepository
+    public class AudioAlarmRedisRepository : IAudioAlarmRedisRepository
     {
         private IRedisClientsManager manager;
         private IKeyGenerator<string> keygen;
         private IRedisClient client = null;
+
         private IRedisClient redis
         {
             get
@@ -48,8 +49,10 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 this.keygen = value;
             }
         }
-               
-        public AudioAlarmRedisRepository() { }
+
+        public AudioAlarmRedisRepository()
+        {
+        }
 
         public AudioAlarmRedisRepository(IRedisClientsManager manager)
         {
@@ -61,7 +64,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             if (client == null) throw new ArgumentNullException("IRedisClient");
             this.client = client;
         }
- 
+
         public AUDIO_ALARM Find(string key)
         {
             try
@@ -113,7 +116,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                     var selected = !alarms.NullOrEmpty()
                         ? alarms.Skip(skip.Value).Take(take.Value)
                         : alarms;
-                    return !alarms.NullOrEmpty() ? this.HydrateAll(alarms) : new List<AUDIO_ALARM>();
+                    return !selected.NullOrEmpty() ? this.HydrateAll(selected) : new List<AUDIO_ALARM>();
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -189,13 +192,11 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         var rclient = this.redis.As<REL_AALARMS_ATTACHURIS>();
                         var orattachuris = rclient.GetAll().Where(x => x.AlarmId.Equals(entity.Id, StringComparison.OrdinalIgnoreCase));
                         this.redis.SynchronizeAll(rattachuri.ToSingleton(), orattachuris, transaction);
-
                     }
-                    
-                    #endregion   
-             
+
+                    #endregion save attributes and  relations
+
                     transaction.QueueCommand(x => this.redis.As<AUDIO_ALARM>().Store(this.Dehydrate(entity)));
-                
                 }
                 catch (ArgumentNullException) { throw; }
                 catch (RedisResponseException) { throw; }
@@ -229,7 +230,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             //5. Get list of selected primitives
             var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase);
 
-            #endregion
+            #endregion construct anonymous fields using expression lambdas
 
             this.manager.ExecTrans(transaction =>
             {
@@ -259,14 +260,13 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
                                 var orattachbins = this.redis.As<REL_AALARMS_ATTACHBINS>().GetAll().Where(x => keys.Contains(x.AlarmId));
                                 this.redis.SynchronizeAll(rattachbins, orattachbins, transaction);
-
                             }
 
                             var attachuri = source.AttachmentUri;
                             if (attachuri != null)
                             {
                                 transaction.QueueCommand(x => x.Store(attachuri));
-                                var rattachuris= keys.Select(x => new REL_AALARMS_ATTACHURIS
+                                var rattachuris = keys.Select(x => new REL_AALARMS_ATTACHURIS
                                 {
                                     Id = KeyGenerator.GetNextKey(),
                                     AlarmId = x,
@@ -275,12 +275,11 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
                                 var orattachuris = this.redis.As<REL_AALARMS_ATTACHURIS>().GetAll().Where(x => keys.Contains(x.AlarmId));
                                 this.redis.SynchronizeAll(rattachuris, orattachuris, transaction);
-
                             }
                         }
                     }
 
-                    #endregion
+                    #endregion save (insert or update) relational attributes
 
                     #region update-only non-relational attributes
 
@@ -303,14 +302,13 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         transaction.QueueCommand(x => x.StoreAll(this.Dehydrate(entities)));
                     }
 
-                    #endregion
-
+                    #endregion update-only non-relational attributes
                 }
                 catch (ArgumentNullException) { throw; }
                 catch (RedisResponseException) { throw; }
                 catch (RedisException) { throw; }
                 catch (InvalidOperationException) { throw; }
-            }); 
+            });
         }
 
         public void Erase(string key)
@@ -320,7 +318,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 var aaclient = this.redis.As<AUDIO_ALARM>();
                 if (aaclient.ContainsKey(key))
                 {
-
                     var rattachbins = this.redis.As<REL_AALARMS_ATTACHBINS>().GetAll();
                     if (!rattachbins.NullOrEmpty()) this.redis.As<REL_AALARMS_ATTACHBINS>()
                         .DeleteByIds(rattachbins.Where(x => x.AlarmId.Equals(key, StringComparison.OrdinalIgnoreCase)));
@@ -386,7 +383,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         var orattachuris = this.redis.As<REL_AALARMS_ATTACHURIS>().GetAll()
                             .Where(x => keys.Contains(x.AlarmId));
                         this.redis.SynchronizeAll(rattachuris, orattachuris, transaction);
-
                     }
 
                     transaction.QueueCommand(x => x.StoreAll(this.Dehydrate(entities)));
@@ -419,7 +415,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
                         aaclient.DeleteByIds(found);
                     }
-
                 }
                 else aaclient.DeleteAll();
             }
@@ -460,20 +455,19 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             var rattachbins = this.redis.As<REL_EVENTS_ATTACHBINS>().GetAll().Where(x => keys.Contains(x.EventId)).ToList();
             var rattachuris = this.redis.As<REL_EVENTS_ATTACHURIS>().GetAll().Where(x => keys.Contains(x.EventId)).ToList();
 
-            #endregion
+            #endregion 1. retrieve relationships
 
             #region 2. retrieve secondary entities
 
             var attachbins = (!rattachbins.Empty()) ? this.redis.As<ATTACH_BINARY>().GetByIds(rattachbins.Select(x => x.AttachmentId)) : null;
             var attachuris = (!rattachuris.Empty()) ? this.redis.As<ATTACH_URI>().GetByIds(rattachuris.Select(x => x.AttachmentId)) : null;
 
-            #endregion
+            #endregion 2. retrieve secondary entities
 
             #region 3. Use Linq to stitch secondary entities to primary entities
 
             full.ForEach(x =>
             {
-
                 if (!attachbins.NullOrEmpty())
                 {
                     var xattachbins = from y in attachbins
@@ -482,7 +476,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                       where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                       select y;
                     if (!xattachbins.NullOrEmpty()) x.AttachmentBinary = xattachbins.FirstOrDefault();
-
                 }
 
                 if (!attachuris.NullOrEmpty())
@@ -494,10 +487,9 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                       select y;
                     if (!xattachuris.NullOrEmpty()) x.AttachmentUri = xattachuris.FirstOrDefault();
                 }
-
             });
 
-            #endregion
+            #endregion 3. Use Linq to stitch secondary entities to primary entities
 
             return full ?? dry;
         }
@@ -509,7 +501,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 full.AttachmentBinary = null;
             }
             catch (ArgumentNullException) { throw; }
-            return full;        
+            return full;
         }
 
         public IEnumerable<AUDIO_ALARM> Dehydrate(IEnumerable<AUDIO_ALARM> full)
@@ -526,11 +518,12 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
         }
     }
 
-    public class DisplayAlarmRedisRepository: IDisplayAlarmRedisRepository
+    public class DisplayAlarmRedisRepository : IDisplayAlarmRedisRepository
     {
         private IRedisClientsManager manager;
         private IKeyGenerator<string> keygen;
         private IRedisClient client = null;
+
         private IRedisClient redis
         {
             get
@@ -560,7 +553,9 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             }
         }
 
-        public DisplayAlarmRedisRepository() { }
+        public DisplayAlarmRedisRepository()
+        {
+        }
 
         public DisplayAlarmRedisRepository(IRedisClientsManager manager)
         {
@@ -578,7 +573,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             try
             {
                 return this.redis.As<DISPLAY_ALARM>().GetById(key);
-
             }
             catch (ArgumentNullException) { throw; }
             catch (RedisResponseException) { throw; }
@@ -637,7 +631,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             try
             {
                 return this.redis.As<DISPLAY_ALARM>().ContainsKey(key);
-
             }
             catch (ArgumentNullException) { throw; }
             catch (RedisResponseException) { throw; }
@@ -671,7 +664,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                     if (!keys.NullOrEmpty()) this.redis.Watch(keys);
 
                     transaction.QueueCommand(x => this.redis.As<DISPLAY_ALARM>().Store(entity));
-
                 }
                 catch (ArgumentNullException) { throw; }
                 catch (RedisResponseException)
@@ -716,7 +708,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             //4. Get list of selected primitives
             var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase);
 
-            #endregion
+            #endregion construct anonymous fields using expression lambdas
 
             this.manager.ExecTrans(transaction =>
             {
@@ -749,14 +741,13 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         transaction.QueueCommand(x => x.StoreAll(entities));
                     }
 
-                    #endregion
-
+                    #endregion update-only non-relational attributes
                 }
                 catch (ArgumentNullException) { throw; }
                 catch (RedisResponseException) { throw; }
                 catch (RedisException) { throw; }
                 catch (InvalidOperationException) { throw; }
-            }); 
+            });
         }
 
         public void Erase(string key)
@@ -779,12 +770,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 try
                 {
                     var daclient = this.redis.As<DISPLAY_ALARM>();
-
-                    //watch keys
-                    var okeys = daclient.GetAllKeys().ToArray();
-                    if (!okeys.NullOrEmpty()) this.redis.Watch(okeys);
-
-                    var keys = entities.Select(c => c.Id);
                     transaction.QueueCommand(x => x.StoreAll(entities));
                 }
                 catch (ArgumentNullException) { throw; }
@@ -812,15 +797,14 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             catch (RedisException) { throw; }
             catch (InvalidOperationException) { throw; }
         }
-
     }
 
-    public class EmailAlarmRedisRepository: IEmailAlarmRedisRepository
+    public class EmailAlarmRedisRepository : IEmailAlarmRedisRepository
     {
-
         private IRedisClientsManager manager;
         private IKeyGenerator<string> keygen;
         private IRedisClient client = null;
+
         private IRedisClient redis
         {
             get
@@ -850,7 +834,9 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             }
         }
 
-        public EmailAlarmRedisRepository() { }
+        public EmailAlarmRedisRepository()
+        {
+        }
 
         public EmailAlarmRedisRepository(IRedisClientsManager manager)
         {
@@ -888,7 +874,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                     {
                         full.Attendees.AddRangeComplement(this.redis.As<ATTENDEE>().GetValues(rattendees.Select(x => x.AttendeeId).ToList()));
                     }
-
                 }
                 return full ?? dry;
             }
@@ -914,7 +899,8 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                     var rattachbins = this.redis.As<REL_EVENTS_ATTACHBINS>().GetAll().Where(x => keys.Contains(x.EventId));
                     var rattachuris = this.redis.As<REL_EVENTS_ATTACHURIS>().GetAll().Where(x => keys.Contains(x.EventId));
                     var rattendees = this.redis.As<REL_EVENTS_ATTENDEES>().GetAll().Where(x => keys.Contains(x.EventId));
-                    #endregion
+
+                    #endregion 1. retrieve relationships
 
                     #region 2. retrieve secondary entities
 
@@ -922,13 +908,12 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                     var attachuris = (!rattachuris.Empty()) ? this.redis.As<ATTACH_URI>().GetValues(rattachuris.Select(x => x.AttachmentId).ToList()) : null;
                     var attendees = (!rattendees.Empty()) ? this.redis.As<ATTENDEE>().GetValues(rattendees.Select(x => x.AttendeeId).ToList()) : null;
 
-                    #endregion
+                    #endregion 2. retrieve secondary entities
 
                     #region 3. Use Linq to stitch secondary entities to primary entities
 
                     full.ForEach(x =>
                     {
-
                         if (!attendees.NullOrEmpty())
                         {
                             var xattendees = from y in attendees
@@ -947,7 +932,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                               where e.Id == x.Id
                                               select y;
                             if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.AddRangeComplement(xattachbins);
-
                         }
 
                         if (!attachuris.NullOrEmpty())
@@ -959,9 +943,9 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                               select y;
                             if (!xattachuris.NullOrEmpty()) x.AttachmentUris.AddRangeComplement(xattachuris);
                         }
-
                     });
-                    #endregion
+
+                    #endregion 3. Use Linq to stitch secondary entities to primary entities
                 }
 
                 return full ?? dry;
@@ -978,7 +962,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             {
                 var dry = this.redis.As<EMAIL_ALARM>().GetById(key);
                 return dry != null ? this.Hydrate(dry) : dry;
-
             }
             catch (ArgumentNullException) { throw; }
             catch (RedisResponseException) { throw; }
@@ -1068,14 +1051,13 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             {
                 try
                 {
-
                     #region retrieve attributes of entity
 
                     var attendees = entity.Attendees;
                     var attachbins = entity.AttachmentBinaries;
                     var attachuris = entity.AttachmentUris;
 
-                    #endregion
+                    #endregion retrieve attributes of entity
 
                     #region save attributes and  relations
 
@@ -1092,7 +1074,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         var rclient = this.redis.As<REL_EALARMS_ATTENDEES>();
                         var orattendees = rclient.GetAll().Where(x => x.AlarmId == entity.Id);
                         this.redis.SynchronizeAll(rattendees, orattendees, transaction);
-
                     }
 
                     if (!attachbins.NullOrEmpty())
@@ -1108,7 +1089,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         var rclient = this.redis.As<REL_EALARMS_ATTACHBINS>();
                         var orattachbins = rclient.GetAll().Where(x => x.AlarmId == entity.Id);
                         this.redis.SynchronizeAll(rattachbins, orattachbins, transaction);
-
                     }
 
                     if (!attachuris.NullOrEmpty())
@@ -1126,11 +1106,9 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         this.redis.SynchronizeAll(rattachuris, orattachuris, transaction);
                     }
 
-                    #endregion
-
+                    #endregion save attributes and  relations
 
                     transaction.QueueCommand(x => x.Store(this.Dehydrate(entity)));
-
                 }
                 catch (ArgumentNullException) { throw; }
                 catch (RedisResponseException) { throw; }
@@ -1167,11 +1145,10 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             //5. Get list of selected primitives
             var sprimitives = primitives.GetMemberNames().Intersect(selection, StringComparer.OrdinalIgnoreCase).Distinct(StringComparer.OrdinalIgnoreCase);
 
-            #endregion
+            #endregion construct anonymous fields using expression lambdas
 
             this.manager.ExecTrans(transaction =>
             {
-
                 try
                 {
                     var eaclient = this.redis.As<EMAIL_ALARM>();
@@ -1185,7 +1162,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         Expression<Func<EMAIL_ALARM, object>> attendsexpr = y => y.Attendees;
                         Expression<Func<EMAIL_ALARM, object>> attachbinsexpr = y => y.AttachmentBinaries;
                         Expression<Func<EMAIL_ALARM, object>> attachurisexpr = y => y.AttachmentUris;
-
 
                         if (selection.Contains(attendsexpr.GetMemberName()))
                         {
@@ -1203,7 +1179,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                 var rclient = this.redis.As<REL_EALARMS_ATTENDEES>();
                                 var orattendees = rclient.GetAll().Where(x => x.AlarmId == source.Id);
                                 this.redis.SynchronizeAll(rattendees, orattendees, transaction);
-
                             }
                         }
 
@@ -1223,12 +1198,10 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                 var rclient = this.redis.As<REL_EALARMS_ATTACHBINS>();
                                 var orattachbins = rclient.GetAll().Where(x => keys.Contains(x.AlarmId));
                                 this.redis.SynchronizeAll(rattachbins, orattachbins, transaction);
-
                             }
-
                         }
 
-                        if(selection.Contains(attachurisexpr.GetMemberName()))
+                        if (selection.Contains(attachurisexpr.GetMemberName()))
                         {
                             var attachuris = source.AttachmentUris;
                             if (!attachuris.NullOrEmpty())
@@ -1243,12 +1216,11 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                 var rclient = this.redis.As<REL_EALARMS_ATTACHURIS>();
                                 var orattachuris = rclient.GetAll().Where(x => keys.Contains(x.AlarmId));
                                 this.redis.SynchronizeAll(rattachuris, orattachuris, transaction);
-
                             }
                         }
                     }
 
-                    #endregion
+                    #endregion save (insert or update) relational attributes
 
                     #region save (insert or update) non-relational attributes
 
@@ -1269,23 +1241,19 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                             if (selection.Contains(durationexpr.GetMemberName())) x.Duration = source.Duration;
                             if (selection.Contains(triggerexpr.GetMemberName())) x.Trigger = source.Trigger;
                             if (selection.Contains(descexpr.GetMemberName())) x.Description = source.Description;
-                            if (selection.Contains(descexpr.GetMemberName())) x.Summary = source.Summary;
+                            if (selection.Contains(summexpr.GetMemberName())) x.Summary = source.Summary;
                         });
 
                         transaction.QueueCommand(x => x.StoreAll(this.DehydrateAll(entities)));
                     }
 
-                    #endregion
+                    #endregion save (insert or update) non-relational attributes
                 }
                 catch (ArgumentNullException) { throw; }
                 catch (RedisResponseException) { throw; }
                 catch (RedisException) { throw; }
                 catch (InvalidOperationException) { throw; }
             });
-
-
-            
-
         }
 
         public void Erase(string key)
@@ -1315,7 +1283,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             var attachbins = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty()).SelectMany(x => x.AttachmentBinaries);
             var attachuris = entities.Where(x => !x.AttachmentUris.NullOrEmpty()).SelectMany(x => x.AttachmentUris);
 
-            #endregion
+            #endregion 1. retrieve attributes of entities
 
             #region 2. save aggregate attribbutes of entities
 
@@ -1339,7 +1307,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         var rclient = this.redis.As<REL_EALARMS_ATTENDEES>();
                         var orattendees = rclient.GetAll().Where(x => keys.Contains(x.AlarmId));
                         this.redis.SynchronizeAll(rattendees, orattendees, transaction);
-
                     }
 
                     if (!attachbins.NullOrEmpty())
@@ -1355,7 +1322,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         var rclient = this.redis.As<REL_EALARMS_ATTACHBINS>();
                         var orattachbins = rclient.GetAll().Where(x => keys.Contains(x.AlarmId));
                         this.redis.SynchronizeAll(rattachbins, orattachbins, transaction);
-
                     }
 
                     if (!attachuris.NullOrEmpty())
@@ -1371,7 +1337,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         var rclient = this.redis.As<REL_EALARMS_ATTACHURIS>();
                         var orattachuris = rclient.GetAll().Where(x => keys.Contains(x.AlarmId));
                         this.redis.SynchronizeAll(rattachuris, orattachuris, transaction);
-
                     }
 
                     transaction.Commit();
@@ -1382,7 +1347,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 catch (InvalidOperationException) { throw; }
             }
 
-            #endregion        
+            #endregion 2. save aggregate attribbutes of entities
         }
 
         public void EraseAll(IEnumerable<string> keys = null)
@@ -1429,7 +1394,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 return full;
             }
             catch (ArgumentNullException) { throw; }
-
         }
 
         public IEnumerable<EMAIL_ALARM> DehydrateAll(IEnumerable<EMAIL_ALARM> full)

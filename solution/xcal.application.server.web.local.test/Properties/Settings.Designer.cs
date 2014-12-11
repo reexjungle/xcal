@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace reexjungle.xcal.application.server.web.dev.test.Properties {
+namespace reexjungle.xcal.application.server.web.local.test.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
