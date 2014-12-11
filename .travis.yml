@@ -1,2 +1,3 @@
 language: csharp
 solution: xcal.sln
+services: redis
