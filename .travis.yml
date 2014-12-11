@@ -1,3 +1,3 @@
 language: csharp
-solution: solution/xcal.sln
+solution: solution/xcal.mo.sln
 services: redis
