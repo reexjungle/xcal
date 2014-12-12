@@ -65,7 +65,7 @@ namespace reexjungle.xcal.test.server.integration.concretes
 
             client.Post(new AddCalendar { Calendar = c1 });
             var f1 = client.Get(new FindCalendar { CalendarId = c1.Id });
-            Assert.Equal(f1.Calscale, CALSCALE.GREGORIAN);
+            Assert.Equal(f1.Calscale, c1.Calscale);
             Assert.Equal(f1.ProdId, c1.ProdId);
             Assert.Equal(f1.Method, c1.Method);
             Assert.Equal(f1.Version, c1.Version);
