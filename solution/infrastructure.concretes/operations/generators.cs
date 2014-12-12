@@ -1,11 +1,11 @@
-﻿using System;
+﻿using reexjungle.infrastructure.operations.contracts;
+using System;
 using System.Text;
 using System.Text.RegularExpressions;
-using reexjungle.infrastructure.operations.contracts;
 
 namespace reexjungle.infrastructure.operations.concretes
 {
-    public class GuidKeyGenerator: IGuidKeyGenerator
+    public class GuidKeyGenerator : IGuidKeyGenerator
     {
         private string seed = null;
         private bool compact = false;
@@ -29,15 +29,15 @@ namespace reexjungle.infrastructure.operations.concretes
             var key = string.Empty;
             try
             {
-                if (string.IsNullOrEmpty(this.seed)) 
-                    key = (Guid.NewGuid() == Guid.Empty) 
-                        ? GetNextKey() 
+                if (string.IsNullOrEmpty(this.seed))
+                    key = (Guid.NewGuid() == Guid.Empty)
+                        ? GetNextKey()
                         : Guid.NewGuid().ToString();
                 else key = new Guid(this.seed).ToString();
-               
+
                 return compact
-                   ?key.Replace("-", string.Empty)
-                   :key;
+                   ? key.Replace("-", string.Empty)
+                   : key;
             }
             catch (ArgumentNullException) { throw; }
             catch (FormatException) { throw; }
@@ -46,15 +46,19 @@ namespace reexjungle.infrastructure.operations.concretes
         }
     }
 
-    public class FPIKeyGenerator<T>: IFPIKeyGenerator
-        where T: IEquatable<T>
+    public class FPIKeyGenerator<T> : IFPIKeyGenerator
+        where T : IEquatable<T>
     {
         private IKeyGenerator<T> discriminator;
 
         public string ISO { get; set; }
+
         public string Owner { get; set; }
+
         public string Description { get; set; }
+
         public string LanguageId { get; set; }
+
         public Authority Authority { get; set; }
 
         public FPIKeyGenerator(IKeyGenerator<T> discriminator = null)
@@ -68,17 +72,43 @@ namespace reexjungle.infrastructure.operations.concretes
             if (Authority == Authority.ISO) sb.Append(this.ISO);
             else if (Authority == Authority.NonStandard) sb.Append("+");
             else if (Authority == Authority.None) sb.Append("-");
-            if(!string.IsNullOrEmpty(this.Owner) && this.discriminator != null)sb.AppendFormat("//{0}-{1}", this.Owner, this.discriminator.GetNextKey());
-            else if(!string.IsNullOrEmpty(this.Owner))sb.AppendFormat("//{0}", this.Owner);
-            if(!string.IsNullOrEmpty(this.Description))sb.AppendFormat("//{0}", this.Description);            
-            if(!string.IsNullOrEmpty(this.LanguageId))sb.AppendFormat("//{0}", this.LanguageId);      
+            if (!string.IsNullOrEmpty(this.Owner) && this.discriminator != null) sb.AppendFormat("//{0}-{1}", this.Owner, this.discriminator.GetNextKey());
+            else if (!string.IsNullOrEmpty(this.Owner)) sb.AppendFormat("//{0}", this.Owner);
+            if (!string.IsNullOrEmpty(this.Description)) sb.AppendFormat("//{0}", this.Description);
+            if (!string.IsNullOrEmpty(this.LanguageId)) sb.AppendFormat("//{0}", this.LanguageId);
             return sb.ToString();
         }
     }
 
-    public class IntegralKeyGenerator: IIntegralKeyGenerator
+    public class StringFPIKeyGenerator : IFPIKeyGenerator
+    {
+        public string ISO { get; set; }
+
+        public string Owner { get; set; }
+
+        public string Description { get; set; }
+
+        public string LanguageId { get; set; }
+
+        public Authority Authority { get; set; }
+
+        public string GetNextKey()
+        {
+            var sb = new StringBuilder();
+            if (Authority == Authority.ISO) sb.Append(this.ISO);
+            else if (Authority == Authority.NonStandard) sb.Append("+");
+            else if (Authority == Authority.None) sb.Append("-");
+            if (!string.IsNullOrEmpty(this.Owner)) sb.AppendFormat("//{0}", this.Owner);
+            if (!string.IsNullOrEmpty(this.Description)) sb.AppendFormat("//{0}", this.Description);
+            if (!string.IsNullOrEmpty(this.LanguageId)) sb.AppendFormat("//{0}", this.LanguageId);
+            return sb.ToString();
+        }
+    }
+
+    public class IntegralKeyGenerator : IIntegralKeyGenerator
     {
         private int counter = 0;
+
         public int GetNextKey()
         {
             return counter++;
@@ -95,7 +125,7 @@ namespace reexjungle.infrastructure.operations.concretes
         }
     }
 
-    public class LongKeyGenerator: ILongKeyGenerator
+    public class LongKeyGenerator : ILongKeyGenerator
     {
         private long counter = 0;
 

@@ -5,7 +5,6 @@ using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.domain.operations;
 using reexjungle.xcal.test.server.integration.contracts;
-using ServiceStack.ServiceInterface.Testing;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -15,17 +14,23 @@ namespace reexjungle.xcal.test.server.integration.concretes
     public abstract class CalendarWebServicesTests : IWebServiceTests
     {
         protected string baseUri = string.Empty;
+
         protected GuidKeyGenerator keygen = new GuidKeyGenerator();
 
-        protected FPIKeyGenerator<string> fkeygen = new FPIKeyGenerator<string>
-            {
-                Owner = "reexjungle",
-                Authority = Authority.None,
-                Description = "Test iCalendar Web Services Provider",
-                LanguageId = "EN"
-            };
+        protected StringFPIKeyGenerator fkeygen = null;
 
         protected IEnumerable<VCALENDAR> calendars = null;
+
+        public CalendarWebServicesTests()
+        {
+            var config = GenFu.GenFu.Configure<StringFPIKeyGenerator>()
+                .Fill(x => x.Owner, () => "reexjungle")
+                .Fill(x => x.Authority, () => Authority.None)
+                .Fill(x => x.Description, () => "Test iCalendar Web Services Provider")
+                .Fill(x => x.LanguageId, () => "EN");
+
+            this.fkeygen = A.New<StringFPIKeyGenerator>();
+        }
 
         public void Initialize()
         {
@@ -39,13 +44,6 @@ namespace reexjungle.xcal.test.server.integration.concretes
                 .Fill(x => x.Calscale).WithRandom(new CALSCALE[] { CALSCALE.CHINESE, CALSCALE.GREGORIAN, CALSCALE.HEBREW, CALSCALE.INDIAN, CALSCALE.ISLAMIC, CALSCALE.JULIAN });
 
             this.calendars = A.ListOf<VCALENDAR>();
-
-            //this.calendars.Add(new VCALENDAR
-            //{
-            //    Id = this.keygen.GetNextKey(),
-            //    ProdId = this.fkeygen.GetNextKey(),
-            //    Method = METHOD.PUBLISH
-            //});
         }
 
         public void TearDown()
