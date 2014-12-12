@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="reexjungle.xcal.test.server.integration.concretes.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="remote_dev1_uri" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://reexux.com/xcal/dev1/</Value>
+    </Setting>
+    <Setting Name="remote_dev2_uri" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://reexux.com/xcal/dev2/</Value>
+    </Setting>
+    <Setting Name="localhost_uri" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://localhost:3105</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

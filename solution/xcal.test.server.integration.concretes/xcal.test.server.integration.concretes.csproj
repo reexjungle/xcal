@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\xunit.runner.visualstudio.0.99.9-build1021\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\packages\xunit.runner.visualstudio.0.99.9-build1021\build\net20\xunit.runner.visualstudio.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>reexjungle.xcal.test.server.integration.concretes</RootNamespace>
+    <AssemblyName>xcal.test.server.integration.concretes</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>c7c9c84e</NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="GenFu">
+      <HintPath>..\packages\GenFu.1.0.2\lib\net45\GenFu.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack">
+      <HintPath>..\packages\ServiceStack.3.9.71\lib\net35\ServiceStack.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\packages\ServiceStack.Common.3.9.71\lib\net35\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\packages\ServiceStack.Common.3.9.71\lib\net35\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite">
+      <HintPath>..\packages\ServiceStack.OrmLite.SqlServer.3.9.71\lib\net35\ServiceStack.OrmLite.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite.SqlServer">
+      <HintPath>..\packages\ServiceStack.OrmLite.SqlServer.3.9.71\lib\net35\ServiceStack.OrmLite.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Redis">
+      <HintPath>..\packages\ServiceStack.Redis.3.9.71\lib\net35\ServiceStack.Redis.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.ServiceInterface">
+      <HintPath>..\packages\ServiceStack.3.9.71\lib\net35\ServiceStack.ServiceInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\packages\ServiceStack.Text.3.9.71\lib\net35\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="xunit">
+      <HintPath>..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="mock\calendar.mock.service.tests.cs" />
+    <Compile Include="web\calendar.web.service.tests.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="global\global.service.tests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="web\web.services.tests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\foundation.essentials.contracts\foundation.essentials.contracts.csproj">
+      <Project>{0188be5c-bafa-4fac-b068-11dcf7cd918e}</Project>
+      <Name>foundation.essentials.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\infrastructure.concretes\infrastructure.concretes.csproj">
+      <Project>{9b9036f7-c547-43d3-b1ec-bb0c5965dc12}</Project>
+      <Name>infrastructure.concretes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\infrastructure.contracts\infrastructure.contracts.csproj">
+      <Project>{82ed5f70-e1d9-456e-8686-c59306312726}</Project>
+      <Name>infrastructure.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.domain\xcal.domain.csproj">
+      <Project>{5b708e08-1f69-4fde-9d99-afa3784a49d7}</Project>
+      <Name>xcal.domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.service.interfaces.concretes\xcal.service.interfaces.concretes.csproj">
+      <Project>{0b922294-6a3f-4232-a150-cac6bfc7bcfd}</Project>
+      <Name>xcal.service.interfaces.concretes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.service.interfaces.contracts\xcal.service.interfaces.contracts.csproj">
+      <Project>{0f139102-92d0-4d11-8a18-49757609ccbf}</Project>
+      <Name>xcal.service.interfaces.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.service.repositories.concretes\xcal.service.repositories.concretes.csproj">
+      <Project>{17322a2e-e311-41bd-9070-6146842a46c3}</Project>
+      <Name>xcal.service.repositories.concretes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.service.repositories.contracts\xcal.service.repositories.contracts.csproj">
+      <Project>{1898784a-99b2-4226-8c33-689ea6558cfa}</Project>
+      <Name>xcal.service.repositories.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.test.server.integration.contracts\xcal.test.server.integration.contracts.csproj">
+      <Project>{1f6c2586-112b-4e92-97a6-b74568707070}</Project>
+      <Name>xcal.test.server.integration.contracts</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\xunit.runner.visualstudio.0.99.9-build1021\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.runner.visualstudio.0.99.9-build1021\build\net20\xunit.runner.visualstudio.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

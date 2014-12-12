@@ -65,10 +65,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.server.web.prod2", "xcal.application.server.web.prod2\xcal.application.server.web.prod2.csproj", "{F8C94EA7-B173-4FFA-94B8-2B69AD6BE7CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.test.server.integration.contracts", "xcal.test.server.integration.contracts\xcal.test.server.integration.contracts.csproj", "{1F6C2586-112B-4E92-97A6-B74568707070}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.test.server.integration.concretes", "xcal.test.server.integration.concretes\xcal.test.server.integration.concretes.csproj", "{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{50E2A7B4-8699-49DB-ABFF-EFF1B35F5CA5}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
 Global
-	GlobalSection(CodealikeProperties) = postSolution
-		SolutionGuid = 1352b368-b41e-43bd-abe6-2b78282795b3
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -166,6 +172,14 @@ Global
 		{F8C94EA7-B173-4FFA-94B8-2B69AD6BE7CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8C94EA7-B173-4FFA-94B8-2B69AD6BE7CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8C94EA7-B173-4FFA-94B8-2B69AD6BE7CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F6C2586-112B-4E92-97A6-B74568707070}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F6C2586-112B-4E92-97A6-B74568707070}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F6C2586-112B-4E92-97A6-B74568707070}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F6C2586-112B-4E92-97A6-B74568707070}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -194,5 +208,10 @@ Global
 		{2CA95C26-3EA5-4CEB-B27F-BD538814031D} = {A6C8E01B-8688-4D61-AACF-E045B9BC68C6}
 		{CFA48312-8E02-43E4-8F17-92DC290CEC5B} = {A6C8E01B-8688-4D61-AACF-E045B9BC68C6}
 		{F8C94EA7-B173-4FFA-94B8-2B69AD6BE7CD} = {A6C8E01B-8688-4D61-AACF-E045B9BC68C6}
+		{1F6C2586-112B-4E92-97A6-B74568707070} = {994ADDCE-FC85-436E-8F9A-FCCE54BE307C}
+		{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA} = {994ADDCE-FC85-436E-8F9A-FCCE54BE307C}
+	EndGlobalSection
+	GlobalSection(CodealikeProperties) = postSolution
+		SolutionGuid = 1352b368-b41e-43bd-abe6-2b78282795b3
 	EndGlobalSection
 EndGlobal
