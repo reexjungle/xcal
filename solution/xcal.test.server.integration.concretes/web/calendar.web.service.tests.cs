@@ -1,5 +1,4 @@
-﻿using GenFu;
-using reexjungle.infrastructure.operations.concretes;
+﻿using reexjungle.infrastructure.operations.concretes;
 using reexjungle.infrastructure.operations.contracts;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
@@ -17,33 +16,27 @@ namespace reexjungle.xcal.test.server.integration.concretes
 
         protected GuidKeyGenerator keygen = new GuidKeyGenerator();
 
-        protected StringFPIKeyGenerator fkeygen = null;
+        protected StringFPIKeyGenerator fkeygen = new StringFPIKeyGenerator
+        {
+            Owner = "reexjungle",
+            Authority = Authority.None,
+            Description = "Test iCalendar Web Services Provider",
+            LanguageId = "EN"
+        };
 
         protected IEnumerable<VCALENDAR> calendars = null;
 
-        public CalendarWebServicesTests()
-        {
-            var config = GenFu.GenFu.Configure<StringFPIKeyGenerator>()
-                .Fill(x => x.Owner, () => "reexjungle")
-                .Fill(x => x.Authority, () => Authority.None)
-                .Fill(x => x.Description, () => "Test iCalendar Web Services Provider")
-                .Fill(x => x.LanguageId, () => "EN");
-
-            this.fkeygen = A.New<StringFPIKeyGenerator>();
-        }
-
         public void Initialize()
         {
-            ///TODO: Tanssfer seed data generation to separate *.cs file
-            //create seed data with GenFu
-
-            GenFu.GenFu.Configure<VCALENDAR>()
-                .Fill(x => x.Id, () => this.keygen.GetNextKey())
-                .Fill(x => x.ProdId, () => this.fkeygen.GetNextKey())
-                .Fill(x => x.Method).WithRandom(new METHOD[] { METHOD.ADD, METHOD.CANCEL, METHOD.PUBLISH, METHOD.REFRESH, METHOD.REPLY, METHOD.REQUEST, METHOD.COUNTER, METHOD.DECLINECOUNTER })
-                .Fill(x => x.Calscale).WithRandom(new CALSCALE[] { CALSCALE.CHINESE, CALSCALE.GREGORIAN, CALSCALE.HEBREW, CALSCALE.INDIAN, CALSCALE.ISLAMIC, CALSCALE.JULIAN });
-
-            this.calendars = A.ListOf<VCALENDAR>();
+            this.calendars = new List<VCALENDAR>
+            {
+                new VCALENDAR
+                {
+                    Id = this.keygen.GetNextKey(),
+                    ProdId = this.fkeygen.GetNextKey(),
+                    Method = METHOD.PUBLISH
+                }
+            };
         }
 
         public void TearDown()
