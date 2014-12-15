@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace reexjungle.xcal.test.server.integration.concretes.web
+namespace reexjungle.xcal.test.server.integration.concretes
 {
     public abstract class EventWebServicesTests : IWebServiceTests
     {
@@ -79,10 +79,70 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
                 .Build();
         }
 
-        private IEnumerable<VEVENT> RandomlyAttendEvents(ref IEnumerable<VEVENT> events, IEnumerable<ATTENDEE> attendees)
+        private void RandomlyAttendEvents(ref IEnumerable<VEVENT> events, IEnumerable<ATTENDEE> attendees)
         {
             var atts = attendees.ToList();
-            return events.Select(x => { x.Attendees.Add(Pick<ATTENDEE>.RandomItemFrom(atts)); return x; });
+            foreach (var x in events) x.Attendees.Add(Pick<ATTENDEE>.RandomItemFrom(atts));
+        }
+
+        [Fact]
+        public void MaintainSingleEvent()
+        {
+            this.TearDown();
+            this.Initialize();
+
+            var c1 = new VCALENDAR
+            {
+                Id = this.keygen.GetNextKey(),
+                ProdId = this.fkeygen.GetNextKey(),
+                Method = METHOD.PUBLISH
+            };
+
+            var events = this.GenerateEventsOfSize(1);
+            var e1 = events.First();
+            e1.RecurrenceRule = new RECUR
+                {
+                    Id = keygen.GetNextKey(),
+                    FREQ = FREQ.MONTHLY
+                };
+            e1.Description = new DESCRIPTION("A meeting for coding gurus, nerds, geeks and quants who enjoy programming for others such that the world becomes a better place for all producers and consumers préamble à la gare de nöel für ein wünderschönes Abend mit Bären außerdem.");
+
+            e1.Attendees = this.GenerateAttendeesOfSize(4).ToList();
+
+            var client = new JsonWebServicesTests(this.baseUri).CreateServiceClient();
+            client.Post(new AddCalendar { Calendar = c1 });
+            client.Post(new AddEvent { CalendarId = c1.Id, Event = e1 });
+            var re1 = client.Get(new FindEvent { EventId = e1.Id });
+            Assert.Equal(re1.Organizer.CN, "Caesar");
+            Assert.Equal(re1.Start, e1.Start);
+            Assert.Equal(re1, e1);
+
+            var rcal = client.Get(new FindCalendar { CalendarId = c1.Id });
+            e1.Start = new DATE_TIME(new DateTime(2014, 6, 16, 10, 30, 0, 0, DateTimeKind.Utc));
+            e1.End = new DATE_TIME(new DateTime(2014, 6, 16, 11, 30, 0, 0, DateTimeKind.Utc));
+            e1.Duration = new DURATION(1, 5, 2, 30);
+            e1.RecurrenceRule.FREQ = FREQ.WEEKLY;
+            e1.Organizer.CN = "Robot Clone";
+
+            client.Put(new UpdateEvent { Event = e1 });
+            re1 = client.Get(new FindEvent { EventId = e1.Id });
+            Assert.Equal(re1.End, e1.End);
+            Assert.Equal(re1.RecurrenceRule.FREQ, FREQ.WEEKLY);
+            Assert.Equal(re1.Organizer.CN, "Robot Clone");
+            Assert.Equal(re1, e1);
+
+            e1.Attendees.RemoveRange(0, 2);
+            client.Put(new UpdateEvent { Event = e1 });
+            re1 = client.Get(new FindEvent { EventId = e1.Id });
+            Assert.Equal(re1.Attendees.Count, 2);
+
+            client.Patch(new PatchEvent { Transparency = TRANSP.OPAQUE, EventId = e1.Id });
+            var patched = client.Get(new FindEvent { EventId = e1.Id });
+            Assert.Equal(patched.Transparency, TRANSP.OPAQUE);
+
+            client.Delete(new DeleteEvent { EventId = e1.Id });
+            var deleted = client.Get(new FindEvent { EventId = e1.Id });
+            Assert.Equal(deleted, null);
         }
 
         public class EventRemoteWebServiceTestsDev1 : EventWebServicesTests
