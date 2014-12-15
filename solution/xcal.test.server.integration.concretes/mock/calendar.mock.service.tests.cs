@@ -8,7 +8,7 @@ using Xunit;
 
 namespace reexjungle.xcal.test.server.integration.concretes.mock
 {
-    public class CalendarMockServiceTests : IMockTests
+    public class CalendarMockServiceTests : IMockServiceTests
     {
         private Funq.Container container = new Funq.Container();
 

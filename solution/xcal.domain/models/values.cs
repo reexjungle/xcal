@@ -2219,8 +2219,7 @@ namespace reexjungle.xcal.domain.models
             get { return this.path; }
             set
             {
-                if (Uri.IsWellFormedUriString(value, UriKind.RelativeOrAbsolute) || value == null) this.path = value;
-                else throw new FormatException("The format of the path is not URI-compatible");
+                this.path = value;
             }
         }
 
@@ -2231,8 +2230,7 @@ namespace reexjungle.xcal.domain.models
 
         public URI(string value)
         {
-            if (Uri.IsWellFormedUriString(value, UriKind.RelativeOrAbsolute)) this.path = value;
-            else throw new FormatException("The path is not a valid uri!");
+            this.path = value;
         }
 
         public URI(IURI uri)

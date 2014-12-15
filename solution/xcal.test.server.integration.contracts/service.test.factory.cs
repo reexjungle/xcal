@@ -7,7 +7,7 @@ namespace reexjungle.xcal.test.server.integration.contracts
     /// Specifies a contract for all service interface integration tests from service clients
     /// </summary>
     /// <typeparam name="TServiceClient">The type of the service client.</typeparam>
-    public interface IServiceTests<T>
+    public interface IServiceTestFactory<T>
         where T : IServiceClient
     {
         /// <summary>
@@ -19,9 +19,9 @@ namespace reexjungle.xcal.test.server.integration.contracts
         string BaseUri { get; set; }
 
         /// <summary>
-        /// Creates the service client.
+        /// Gets or creates a service client.
         /// </summary>
         /// <returns></returns>
-        T CreateServiceClient();
+        T GetClient();
     }
 }

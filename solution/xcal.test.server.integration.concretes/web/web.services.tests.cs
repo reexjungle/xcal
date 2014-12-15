@@ -9,58 +9,54 @@ using System.Threading.Tasks;
 
 namespace reexjungle.xcal.test.server.integration.concretes
 {
-    public class JsonWebServicesTests : ServiceTestsBase<JsonServiceClient>
+    public class JsonWebServiceTestFactory : IServiceTestFactory<JsonServiceClient>
     {
-        public JsonWebServicesTests()
-            : base()
+        private JsonServiceClient client = null;
+
+        public string BaseUri { get; set; }
+
+        public JsonWebServiceTestFactory(string baseUri)
         {
-            this.baseUri = Properties.Settings.Default.localhost_uri;
+            this.BaseUri = baseUri;
         }
 
-        public JsonWebServicesTests(string baseUri)
-            : base(baseUri)
+        public JsonServiceClient GetClient()
         {
-        }
-
-        public override JsonServiceClient CreateServiceClient()
-        {
-            return new JsonServiceClient(this.BaseUri);
+            return this.client ?? (this.client = new JsonServiceClient(this.BaseUri));
         }
     }
 
-    public class XmlWebServicesTests : ServiceTestsBase<XmlServiceClient>
+    public class XmlWebServiceTestFactory : IServiceTestFactory<XmlServiceClient>
     {
-        public XmlWebServicesTests()
-            : base()
+        private XmlServiceClient client = null;
+
+        public string BaseUri { get; set; }
+
+        public XmlWebServiceTestFactory(string baseUri)
         {
+            this.BaseUri = baseUri;
         }
 
-        public XmlWebServicesTests(string baseUri)
-            : base(baseUri)
+        public XmlServiceClient GetClient()
         {
-        }
-
-        public override XmlServiceClient CreateServiceClient()
-        {
-            return new XmlServiceClient(this.BaseUri);
+            return this.client ?? (this.client = new XmlServiceClient(this.BaseUri));
         }
     }
 
-    public class JsvWebServicesTests : ServiceTestsBase<JsvServiceClient>
+    public class JsvWebServicesTestFactory : IServiceTestFactory<JsvServiceClient>
     {
-        public JsvWebServicesTests()
-            : base()
+        private JsvServiceClient client = null;
+
+        public JsvWebServicesTestFactory(string baseUri)
         {
+            this.BaseUri = baseUri;
         }
 
-        public JsvWebServicesTests(string baseUri)
-            : base(baseUri)
-        {
-        }
+        public string BaseUri { get; set; }
 
-        public override JsvServiceClient CreateServiceClient()
+        public JsvServiceClient GetClient()
         {
-            return new JsvServiceClient(this.BaseUri);
+            return this.client ?? (this.client = new JsvServiceClient(this.BaseUri));
         }
     }
 }

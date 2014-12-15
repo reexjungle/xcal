@@ -14,7 +14,7 @@ namespace reexjungle.xcal.test.server.integration.contracts
         void TearDown();
     }
 
-    public interface IMockTests
+    public interface IMockServiceTests
     {
         Container Container { get; }
 

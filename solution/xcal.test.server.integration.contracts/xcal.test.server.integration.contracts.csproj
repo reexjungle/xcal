@@ -64,8 +64,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="global.tests.cs" />
-    <Compile Include="global.services.tests.cs" />
+    <Compile Include="service.tests.cs" />
+    <Compile Include="service.test.factory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

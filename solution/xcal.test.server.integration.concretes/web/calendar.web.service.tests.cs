@@ -10,13 +10,20 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace reexjungle.xcal.test.server.integration.concretes
+namespace reexjungle.xcal.test.server.integration.concretes.web
 {
     public abstract class CalendarWebServicesTests : IWebServiceTests
     {
-        protected string baseUri = string.Empty;
-        protected GuidKeyGenerator keygen = new GuidKeyGenerator();
-        protected StringFPIKeyGenerator fkeygen = new StringFPIKeyGenerator();
+        protected GuidKeyGenerator keygen = null;
+        protected StringFPIKeyGenerator fkeygen = null;
+        protected JsonWebServiceTestFactory factory = null;
+
+        public CalendarWebServicesTests()
+        {
+            this.factory = new JsonWebServiceTestFactory(null);
+            this.keygen = new GuidKeyGenerator();
+            this.fkeygen = new StringFPIKeyGenerator();
+        }
 
         public void Initialize()
         {
@@ -31,8 +38,7 @@ namespace reexjungle.xcal.test.server.integration.concretes
 
         public void TearDown()
         {
-            var client = new JsonWebServicesTests(this.baseUri).CreateServiceClient();
-            client.Post(new FlushDatabase { Mode = FlushMode.soft });
+            this.factory.GetClient().Post(new FlushDatabase { Mode = FlushMode.soft });
         }
 
         [Fact]
@@ -48,8 +54,7 @@ namespace reexjungle.xcal.test.server.integration.concretes
                 Method = METHOD.PUBLISH
             };
 
-            var client = new JsonWebServicesTests(this.baseUri).CreateServiceClient();
-
+            var client = this.factory.GetClient();
             client.Post(new AddCalendar { Calendar = c1 });
             var f1 = client.Get(new FindCalendar { CalendarId = c1.Id });
             Assert.Equal(f1.Calscale, c1.Calscale);
@@ -101,7 +106,7 @@ namespace reexjungle.xcal.test.server.integration.concretes
             cals[4].Method = METHOD.CANCEL;
             cals[4].Version = "1.0";
 
-            var client = new JsonWebServicesTests(this.baseUri).CreateServiceClient();
+            var client = this.factory.GetClient();
             client.Post(new AddCalendars { Calendars = cals.ToList() });
             var keys = cals.Select(x => x.Id).ToList();
 
@@ -183,7 +188,7 @@ namespace reexjungle.xcal.test.server.integration.concretes
 
             cal.Events.AddRange(evs);
 
-            var client = new JsonWebServicesTests(this.baseUri).CreateServiceClient();
+            var client = this.factory.GetClient();
             client.Post(new AddCalendar { Calendar = cal });
 
             var retrieved = client.Get(new FindCalendar { CalendarId = cal.Id });
@@ -279,7 +284,7 @@ namespace reexjungle.xcal.test.server.integration.concretes
             calendars[3].Events.AddRange(new VEVENT[] { evs[2], evs[4] });
             calendars[4].Events.AddRange(evs);
 
-            var client = new JsonWebServicesTests(this.baseUri).CreateServiceClient();
+            var client = this.factory.GetClient();
             client.Post(new AddCalendars { Calendars = calendars.ToList() });
             var keys = calendars.Select(x => x.Id).ToList();
 
@@ -338,7 +343,7 @@ namespace reexjungle.xcal.test.server.integration.concretes
         public CalendarRemoteWebServiceTestsDev1()
             : base()
         {
-            this.baseUri = Properties.Settings.Default.remote_dev1_uri;
+            this.factory.BaseUri = Properties.Settings.Default.remote_dev1_uri;
         }
     }
 
@@ -347,7 +352,7 @@ namespace reexjungle.xcal.test.server.integration.concretes
         public CalendarRemoteWebServiceTestsDev2()
             : base()
         {
-            this.baseUri = Properties.Settings.Default.remote_dev2_uri;
+            this.factory.BaseUri = Properties.Settings.Default.remote_dev2_uri;
         }
     }
 
@@ -356,7 +361,7 @@ namespace reexjungle.xcal.test.server.integration.concretes
         public CalendarLocalWebServiceTests()
             : base()
         {
-            this.baseUri = Properties.Settings.Default.localhost_uri;
+            this.factory.BaseUri = Properties.Settings.Default.localhost_uri;
         }
     }
 }
