@@ -65,7 +65,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
                     Language = new LANGUAGE("de", "DE")
                 })
                 .And(x => x.Summary = new SUMMARY("Test Meeting"))
-                .And(x => x.Description = new DESCRIPTION("A meeting for coding gurus, nerds, geeks and quants who enjoy programming for others such that the world becomes a better place for all qui sonts presentes à la Gare de Nöel für ein außerordentliches wünderschönes Abend mit Bären."))
+                .And(x => x.Description = new DESCRIPTION("A meeting for coding gurus, nerds, geeks and quants who enjoy programming for others such that the world becomes a better place for all qui sonts presentes à la Gare de Nöel für ein außerordentliches wünderschönes Abend mit Bären aaaaaaaaaaaaa."))
                 .And(x => x.Start = new DATE_TIME(dgen.Generate()))
                 .And(x => x.Duration = new DURATION(0,
                     new RandomGenerator().Next(1, 7),
@@ -190,6 +190,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             e1.Duration = new DURATION(0, 1, 2, 30);
             e1.Priority = new PRIORITY(PRIORITYLEVEL.MEDIUM);
             e1.Description.Text = string.Format("{0} >>Updated<<", e1.Description.Text);
+            var len = e1.Description.Text.Length;
 
             e2.Start = new DATE_TIME(new DateTime(2014, 6, 16, 10, 30, 0, 0, DateTimeKind.Local));
             e2.Duration = new DURATION(0, 1, 10, 00);

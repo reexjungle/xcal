@@ -4,6 +4,7 @@ using reexjungle.xcal.domain.contracts;
 using ServiceStack.DataAnnotations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -335,6 +336,7 @@ namespace reexjungle.xcal.domain.models
         /// The TEXT content of the comment
         /// </summary>
         [DataMember]
+        [StringLength(int.MaxValue)]
         public string Text { get; set; }
 
         /// <summary>

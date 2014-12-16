@@ -1,19 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Text;
-using ServiceStack.DataAnnotations;
+﻿using reexjungle.foundation.essentials.concretes;
 using reexjungle.foundation.essentials.contracts;
-using reexjungle.foundation.essentials.concretes;
 using reexjungle.infrastructure.io.concretes;
 using reexjungle.infrastructure.operations.concretes;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.extensions;
+using ServiceStack.DataAnnotations;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Text;
 
 namespace reexjungle.xcal.domain.models
 {
-
     /// <summary>
     /// Specifes the VEVENT component of the iCalendar Core Object
     /// </summary>
@@ -25,11 +25,11 @@ namespace reexjungle.xcal.domain.models
         private DURATION duration;
 
         /// <summary>
-        /// Gets or sets the unique identifier of the event.. 
+        /// Gets or sets the unique identifier of the event..
         /// </summary>
         [DataMember]
         [Index(Unique = true)]
-        public string Id 
+        public string Id
         {
             get { return this.Uid; }
             set { this.Uid = value; }
@@ -53,7 +53,7 @@ namespace reexjungle.xcal.domain.models
             set
             {
                 this.start = value;
-                if(this.end == default(DATE_TIME))this.end = this.start + new DURATION(0,0,1,0,0); //same value as start time
+                if (this.end == default(DATE_TIME)) this.end = this.start + new DURATION(0, 0, 1, 0, 0); //same value as start time
             }
         }
 
@@ -64,6 +64,7 @@ namespace reexjungle.xcal.domain.models
         public DATE_TIME Created { get; set; }
 
         [DataMember]
+        [StringLength(int.MaxValue)]
         public DESCRIPTION Description { get; set; }
 
         [DataMember]
@@ -109,17 +110,17 @@ namespace reexjungle.xcal.domain.models
         public DATE_TIME End
         {
             get { return this.end; }
-            set 
-            { 
+            set
+            {
                 this.end = value;
                 this.duration = this.end - this.start;
             }
         }
 
         [DataMember]
-        public DURATION Duration 
+        public DURATION Duration
         {
-            get { return this.duration; } 
+            get { return this.duration; }
             set
             {
                 this.duration = value;
@@ -140,6 +141,7 @@ namespace reexjungle.xcal.domain.models
         public List<ATTENDEE> Attendees { get; set; }
 
         [DataMember]
+        [StringLength(int.MaxValue)]
         public CATEGORIES Categories { get; set; }
 
         [DataMember]
@@ -211,10 +213,9 @@ namespace reexjungle.xcal.domain.models
             this.EmailAlarms = new List<EMAIL_ALARM>();
             this.IANAProperties = new Dictionary<string, IANA_PROPERTY>();
             this.XProperties = new Dictionary<string, X_PROPERTY>();
-           
         }
 
-        public VEVENT(DATE_TIME dtstamp, string uid, DATE_TIME start, DATE_TIME end,  PRIORITY priority, ORGANIZER organizer = null, LOCATION location = null, 
+        public VEVENT(DATE_TIME dtstamp, string uid, DATE_TIME start, DATE_TIME end, PRIORITY priority, ORGANIZER organizer = null, LOCATION location = null,
             STATUS status = STATUS.NEEDS_ACTION, SUMMARY summary = null, TRANSP transparency = TRANSP.TRANSPARENT,
             RECURRENCE_ID recurid = null, RECUR rrule = null, List<ATTENDEE> attendees = null, CATEGORIES categories = null, List<RELATEDTO> relatedtos = null)
         {
@@ -233,9 +234,7 @@ namespace reexjungle.xcal.domain.models
             this.Attendees = attendees;
             this.Categories = categories;
             this.RelatedTos = relatedtos;
-
         }
-
 
         public VEVENT(DATE_TIME dtstamp, string uid, DATE_TIME start, DURATION duration, PRIORITY priority, ORGANIZER organizer = null, LOCATION location = null,
              STATUS status = STATUS.NEEDS_ACTION, SUMMARY summary = null, TRANSP transparency = TRANSP.TRANSPARENT, RECURRENCE_ID recurid = null, RECUR rrule = null, List<ATTENDEE> attendees = null, CATEGORIES categories = null, List<RELATEDTO> relatedtos = null)
@@ -255,7 +254,6 @@ namespace reexjungle.xcal.domain.models
             this.Attendees = attendees;
             this.Categories = categories;
             this.RelatedTos = relatedtos;
-
         }
 
         public VEVENT(IEVENT value)
@@ -303,10 +301,10 @@ namespace reexjungle.xcal.domain.models
             //primary reference
             equals = this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase);
 
-            if(equals && this.RecurrenceId != null && other.RecurrenceId != null) equals = this.RecurrenceId == other.RecurrenceId;
-            
+            if (equals && this.RecurrenceId != null && other.RecurrenceId != null) equals = this.RecurrenceId == other.RecurrenceId;
+
             //secondary reference if both events are equal by Uid/Recurrence Id
-            if (equals)  equals = this.Sequence == other.Sequence;
+            if (equals) equals = this.Sequence == other.Sequence;
 
             //tie-breaker
             if (equals) equals = this.Datestamp == other.Datestamp;
@@ -317,8 +315,8 @@ namespace reexjungle.xcal.domain.models
         public int CompareTo(VEVENT other)
         {
             var compare = this.Uid.CompareTo(other.Uid);
-            if(compare == 0) compare = this.Sequence.CompareTo(other.Sequence);
-            if(compare == 0) compare = this.Datestamp.CompareTo(other.Datestamp);
+            if (compare == 0) compare = this.Sequence.CompareTo(other.Sequence);
+            if (compare == 0) compare = this.Datestamp.CompareTo(other.Datestamp);
             return compare;
         }
 
@@ -394,12 +392,12 @@ namespace reexjungle.xcal.domain.models
             }
             else if (this.Duration != default(DURATION)) sb.Append(this.Duration.ToString()).AppendLine();
 
-            if(!this.AttachmentBinaries.NullOrEmpty())
+            if (!this.AttachmentBinaries.NullOrEmpty())
             {
                 foreach (var attachment in this.AttachmentBinaries) if (attachment != null) sb.Append(attachment.ToString()).AppendLine();
             }
 
-            if(!this.Attendees.NullOrEmpty())
+            if (!this.Attendees.NullOrEmpty())
             {
                 foreach (var attendee in this.Attendees)
                 {
@@ -509,5 +507,4 @@ namespace reexjungle.xcal.domain.models
             return recurs;
         }
     }
-
 }
