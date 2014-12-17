@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.Serialization;
-using ServiceStack.DataAnnotations;
-
+﻿using reexjungle.foundation.essentials.concretes;
 using reexjungle.foundation.essentials.contracts;
-using reexjungle.foundation.essentials.concretes;
 using reexjungle.xcal.domain.contracts;
+using ServiceStack.DataAnnotations;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Text;
 
 namespace reexjungle.xcal.domain.models
 {
     [DataContract]
-    public class VTIMEZONE: ITIMEZONE, IEquatable<VTIMEZONE>, IContainsKey<string>
+    public class VTIMEZONE : ITIMEZONE, IEquatable<VTIMEZONE>, IContainsKey<string>
     {
         public string Id { get; set; }
 
@@ -68,7 +68,7 @@ namespace reexjungle.xcal.domain.models
             sb.Append("BEGIN:VTIMEZONE").AppendLine();
             sb.AppendFormat("TZID={0}", this.TimeZoneId).AppendLine();
             if (!this.StandardTimes.NullOrEmpty()) this.StandardTimes.ForEach(x => sb.Append(x).AppendLine());
-            else if (!this.DaylightTimes.NullOrEmpty()) this.DaylightTimes.ForEach(x => sb.Append(x).AppendLine()); 
+            else if (!this.DaylightTimes.NullOrEmpty()) this.DaylightTimes.ForEach(x => sb.Append(x).AppendLine());
             sb.Append("END:VTIMEZONE");
             return sb.ToString();
         }
@@ -77,7 +77,7 @@ namespace reexjungle.xcal.domain.models
     [DataContract]
     [KnownType(typeof(STANDARD))]
     [KnownType(typeof(DAYLIGHT))]
-    public abstract class OBSERVANCE: IOBSERVANCE, IEquatable<OBSERVANCE>, IContainsKey<string>
+    public abstract class OBSERVANCE : IOBSERVANCE, IEquatable<OBSERVANCE>, IContainsKey<string>
     {
         public string Id { get; set; }
 
@@ -91,7 +91,7 @@ namespace reexjungle.xcal.domain.models
         public UTC_OFFSET TimeZoneOffsetTo { get; set; }
 
         [DataMember]
-        [Ignore]
+        [StringLength(int.MaxValue)]
         public RECUR RecurrenceRule { get; set; }
 
         [DataMember]
@@ -106,7 +106,7 @@ namespace reexjungle.xcal.domain.models
         [Ignore]
         public List<TZNAME> TimeZoneNames { get; set; }
 
-        public OBSERVANCE() 
+        public OBSERVANCE()
         {
             this.Comments = new List<COMMENT>();
             this.RecurrenceDates = new List<RDATE>();
@@ -130,13 +130,12 @@ namespace reexjungle.xcal.domain.models
         {
             if (obj == null || GetType() != obj.GetType()) return false;
             return this.Equals(obj as OBSERVANCE);
-
         }
 
         public override int GetHashCode()
         {
-            return this.Start.GetHashCode()^ 
-                this.TimeZoneOffsetFrom.GetHashCode() ^ 
+            return this.Start.GetHashCode() ^
+                this.TimeZoneOffsetFrom.GetHashCode() ^
                 this.TimeZoneOffsetTo.GetHashCode();
         }
 
@@ -151,17 +150,21 @@ namespace reexjungle.xcal.domain.models
             if ((object)a == null || (object)b == null) return !object.Equals(a, b);
             return !a.Equals(b);
         }
-
-
     }
 
     [DataContract]
-    public class STANDARD: OBSERVANCE
+    public class STANDARD : OBSERVANCE
     {
-        public STANDARD(): base() {}
+        public STANDARD()
+            : base()
+        {
+        }
 
-        public STANDARD(DATE_TIME start, UTC_OFFSET from, UTC_OFFSET to): base(start, from , to) { }
-        
+        public STANDARD(DATE_TIME start, UTC_OFFSET from, UTC_OFFSET to)
+            : base(start, from, to)
+        {
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -181,9 +184,15 @@ namespace reexjungle.xcal.domain.models
     [DataContract]
     public class DAYLIGHT : OBSERVANCE
     {
-        public DAYLIGHT() : base() { }
+        public DAYLIGHT()
+            : base()
+        {
+        }
 
-        public DAYLIGHT(DATE_TIME start, UTC_OFFSET from, UTC_OFFSET to) : base(start, from, to) { }
+        public DAYLIGHT(DATE_TIME start, UTC_OFFSET from, UTC_OFFSET to)
+            : base(start, from, to)
+        {
+        }
 
         public override string ToString()
         {
@@ -193,12 +202,11 @@ namespace reexjungle.xcal.domain.models
             sb.AppendFormat("TZOFFSETFROM", this.TimeZoneOffsetFrom).AppendLine();
             sb.AppendFormat("TZOFFSETTO", this.TimeZoneOffsetTo).AppendLine();
             if (this.RecurrenceRule != null) sb.Append(this.RecurrenceRule).AppendLine();
-            if(!this.RecurrenceDates.NullOrEmpty()) this.RecurrenceDates.ForEach(x => sb.Append(x).AppendLine());
-            if(!this.Comments.NullOrEmpty())this.Comments.ForEach(x => sb.Append(x).AppendLine());
-            if(!this.TimeZoneNames.NullOrEmpty())this.TimeZoneNames.ForEach(x => sb.Append(x).AppendLine());
+            if (!this.RecurrenceDates.NullOrEmpty()) this.RecurrenceDates.ForEach(x => sb.Append(x).AppendLine());
+            if (!this.Comments.NullOrEmpty()) this.Comments.ForEach(x => sb.Append(x).AppendLine());
+            if (!this.TimeZoneNames.NullOrEmpty()) this.TimeZoneNames.ForEach(x => sb.Append(x).AppendLine());
             sb.Append("END:DAYLIGHT");
             return sb.ToString();
         }
     }
-
 }

@@ -1,172 +1,13 @@
-﻿using System;
+﻿using reexjungle.xcal.domain.models;
+using ServiceStack.DataAnnotations;
+using ServiceStack.OrmLite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ServiceStack.DataAnnotations;
-using ServiceStack.OrmLite;
-using reexjungle.xcal.domain.models;
 
 namespace reexjungle.xcal.service.repositories.concretes.relations
 {
-    public class REL_JOURNALS_ORGANIZERS : IEquatable<REL_JOURNALS_ORGANIZERS>
-    {
-        /// <summary>
-        /// Gets or sets the unique identifier of the event-organizer relation
-        /// </summary>
-        [Index(true)]
-        public string Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the unique identifier of the related event entity
-        /// </summary>
-        [ForeignKey(typeof(VJOURNAL), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the unique identifier of the related organizer entity
-        /// </summary>
-        [ForeignKey(typeof(ORGANIZER), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string OrganizerId { get; set; }
-
-        public bool Equals(REL_JOURNALS_ORGANIZERS other)
-        {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.OrganizerId.Equals(other.OrganizerId, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            var rel = obj as REL_JOURNALS_ORGANIZERS;
-            if (rel == null) return false;
-            return this.Equals(rel);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.TodoId.GetHashCode() ^ this.OrganizerId.GetHashCode();
-        }
-
-        public static bool operator ==(REL_JOURNALS_ORGANIZERS x, REL_JOURNALS_ORGANIZERS y)
-        {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
-        }
-
-        public static bool operator !=(REL_JOURNALS_ORGANIZERS x, REL_JOURNALS_ORGANIZERS y)
-        {
-            if (x == null || y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
-        }
-    }
-
-    public class REL_JOURNALS_RECURRENCE_IDS : IEquatable<REL_JOURNALS_RECURRENCE_IDS>
-    {
-        /// <summary>
-        /// Gets or sets the unique identifier of the event-recurrence ID relation
-        /// </summary>
-        [Index(true)]
-        public string Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the unique identifier of the related event entity
-        /// </summary>
-        [ForeignKey(typeof(VJOURNAL), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the unique identifier of the related recurrence identifier entity
-        /// </summary>
-        [ForeignKey(typeof(RECURRENCE_ID), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string RecurrenceId_Id { get; set; }
-
-        public bool Equals(REL_JOURNALS_RECURRENCE_IDS other)
-        {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.RecurrenceId_Id.Equals(other.RecurrenceId_Id, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            var rel = obj as REL_JOURNALS_RECURRENCE_IDS;
-            if (rel == null) return false;
-            return this.Equals(rel);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.TodoId.GetHashCode() ^ this.RecurrenceId_Id.GetHashCode();
-        }
-
-        public static bool operator ==(REL_JOURNALS_RECURRENCE_IDS x, REL_JOURNALS_RECURRENCE_IDS y)
-        {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
-        }
-
-        public static bool operator !=(REL_JOURNALS_RECURRENCE_IDS x, REL_JOURNALS_RECURRENCE_IDS y)
-        {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
-            return !x.Equals(y);
-        }
-    }
-
-    public class REL_JOURNALS_RECURS : IEquatable<REL_JOURNALS_RECURS>
-    {
-        /// <summary>
-        /// Gets or sets the unique identifier of the event-recurrence relation
-        /// </summary>
-        [Index(true)]
-        public string Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the unique identifier of the related event entity
-        /// </summary>
-        [ForeignKey(typeof(VJOURNAL), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the unique identifier of the related recurrence identifier entity
-        /// </summary>
-        [ForeignKey(typeof(RECUR), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string RecurrenceRuleId { get; set; }
-
-        public bool Equals(REL_JOURNALS_RECURS other)
-        {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.RecurrenceRuleId.Equals(other.RecurrenceRuleId, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            var rel = obj as REL_JOURNALS_RECURS;
-            if (rel == null) return false;
-            return this.Equals(rel);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.TodoId.GetHashCode() ^ this.RecurrenceRuleId.GetHashCode();
-        }
-
-        public static bool operator ==(REL_JOURNALS_RECURS x, REL_JOURNALS_RECURS y)
-        {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
-        }
-
-        public static bool operator !=(REL_JOURNALS_RECURS x, REL_JOURNALS_RECURS y)
-        {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
-            return !x.Equals(y);
-        }
-    }
-
     public class REL_JOURNALS_ATTACHBINS : IEquatable<REL_JOURNALS_ATTACHBINS>
     {
         /// <summary>
@@ -696,5 +537,4 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
             return !x.Equals(y);
         }
     }
-
 }

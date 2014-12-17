@@ -250,7 +250,6 @@ namespace reexjungle.xcal.domain.models
         /// <exception cref="System.ArgumentNullException">date</exception>
         public DATE(IDATE date)
         {
-            if (date == null) throw new ArgumentNullException("date");
             this.fullyear = date.FULLYEAR;
             this.month = date.MONTH;
             this.mday = date.MDAY;
@@ -665,9 +664,9 @@ namespace reexjungle.xcal.domain.models
         /// <param name="value">The string containing serialized ínformation about the <see cref="DATE_TIME"/> struct.</param>
         public DATE_TIME(string value)
         {
-            this.fullyear = 1u;
-            this.month = 1u;
-            this.mday = 1u;
+            this.fullyear = 0u;
+            this.month = 0u;
+            this.mday = 0u;
             this.hour = 0u;
             this.minute = 0u;
             this.second = 0u;
@@ -704,17 +703,17 @@ namespace reexjungle.xcal.domain.models
         /// <summary>
         /// Initializes a new instance of the <see cref="DATE_TIME"/> struct from an implementation of the <see cref="IDATE_TIME"/> interface.
         /// </summary>
-        /// <param name="datetime">The <see cref="IDATE_TIME"/> interface.</param>
-        public DATE_TIME(IDATE_TIME datetime)
+        /// <param name="value">The <see cref="IDATE_TIME"/> interface.</param>
+        public DATE_TIME(IDATE_TIME value, TZID tzid = null)
         {
-            this.fullyear = datetime.FULLYEAR;
-            this.month = datetime.MONTH;
-            this.mday = datetime.MDAY;
-            this.hour = datetime.HOUR;
-            this.minute = datetime.MINUTE;
-            this.second = datetime.SECOND;
-            this.time_type = datetime.Type;
-            this.tzid = datetime.TimeZoneId;
+            this.fullyear = value.FULLYEAR;
+            this.month = value.MONTH;
+            this.mday = value.MDAY;
+            this.hour = value.HOUR;
+            this.minute = value.MINUTE;
+            this.second = value.SECOND;
+            this.time_type = value.Type;
+            this.tzid = tzid == null ? value.TimeZoneId : tzid;
         }
 
         /// <summary>
@@ -1010,14 +1009,14 @@ namespace reexjungle.xcal.domain.models
             this.tzid = datetime.TimeZoneId;
         }
 
-        public TIME(ITIME time)
+        public TIME(ITIME time, TZID tzid = null)
         {
             if (time == null) throw new ArgumentNullException("time");
             this.hour = time.HOUR;
             this.minute = time.MINUTE;
             this.second = time.SECOND;
             this.format = time.Type;
-            this.tzid = time.TimeZoneId;
+            this.tzid = tzid == null ? time.TimeZoneId : tzid;
         }
 
         public override string ToString()

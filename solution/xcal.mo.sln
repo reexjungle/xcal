@@ -67,6 +67,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.test.server.integratio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.test.server.integration.concretes", "xcal.test.server.integration.concretes\xcal.test.server.integration.concretes.csproj", "{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.test.units.concretes", "xcal.test.units.concretes\xcal.test.units.concretes.csproj", "{220A6912-609F-49AA-B4E1-C058EC87906A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.test.units.contracts", "xcal.test.units.contracts\xcal.test.units.contracts.csproj", "{569D565E-81E0-423A-8762-E634C5F66550}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -169,6 +173,14 @@ Global
 		{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{220A6912-609F-49AA-B4E1-C058EC87906A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{220A6912-609F-49AA-B4E1-C058EC87906A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{220A6912-609F-49AA-B4E1-C058EC87906A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{220A6912-609F-49AA-B4E1-C058EC87906A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{569D565E-81E0-423A-8762-E634C5F66550}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{569D565E-81E0-423A-8762-E634C5F66550}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{569D565E-81E0-423A-8762-E634C5F66550}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{569D565E-81E0-423A-8762-E634C5F66550}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -198,6 +210,8 @@ Global
 		{F8C94EA7-B173-4FFA-94B8-2B69AD6BE7CD} = {A6C8E01B-8688-4D61-AACF-E045B9BC68C6}
 		{1F6C2586-112B-4E92-97A6-B74568707070} = {994ADDCE-FC85-436E-8F9A-FCCE54BE307C}
 		{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA} = {994ADDCE-FC85-436E-8F9A-FCCE54BE307C}
+		{220A6912-609F-49AA-B4E1-C058EC87906A} = {994ADDCE-FC85-436E-8F9A-FCCE54BE307C}
+		{569D565E-81E0-423A-8762-E634C5F66550} = {994ADDCE-FC85-436E-8F9A-FCCE54BE307C}
 	EndGlobalSection
 	GlobalSection(CodealikeProperties) = postSolution
 		SolutionGuid = 1352b368-b41e-43bd-abe6-2b78282795b3

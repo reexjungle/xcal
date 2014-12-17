@@ -53,7 +53,7 @@ namespace reexjungle.xcal.domain.models
             set
             {
                 this.start = value;
-                if (this.end == default(DATE_TIME)) this.end = this.start + new DURATION(0, 0, 1, 0, 0); //same value as start time
+                this.end = this.start + this.duration;
             }
         }
 
@@ -77,7 +77,7 @@ namespace reexjungle.xcal.domain.models
         public LOCATION Location { get; set; }
 
         [DataMember]
-        [Ignore]
+        [StringLength(int.MaxValue)]
         public ORGANIZER Organizer { get; set; }
 
         [DataMember]
@@ -99,11 +99,11 @@ namespace reexjungle.xcal.domain.models
         public URI Url { get; set; }
 
         [DataMember]
-        [Ignore]
+        [StringLength(int.MaxValue)]
         public RECURRENCE_ID RecurrenceId { get; set; }
 
         [DataMember]
-        [Ignore]
+        [StringLength(int.MaxValue)]
         public RECUR RecurrenceRule { get; set; }
 
         [DataMember]
@@ -124,7 +124,7 @@ namespace reexjungle.xcal.domain.models
             set
             {
                 this.duration = value;
-                this.end = start + duration;
+                this.end = this.start + this.duration;
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using Funq;
+using reexjungle.xcal.test.units.contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,14 +8,16 @@ using System.Threading.Tasks;
 
 namespace reexjungle.xcal.test.server.integration.contracts
 {
-    public interface IWebServiceTests
+    public interface IIntegrationTests : ITests { }
+
+    public interface IWebServiceIntegrationTests : IIntegrationTests
     {
         void Initialize();
 
         void TearDown();
     }
 
-    public interface IMockServiceTests
+    public interface IMockServiceIntegrationTests : IIntegrationTests
     {
         Container Container { get; }
 

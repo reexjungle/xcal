@@ -136,6 +136,14 @@
       <Project>{1f6c2586-112b-4e92-97a6-b74568707070}</Project>
       <Name>xcal.test.server.integration.contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\xcal.test.units.concretes\xcal.test.units.concretes.csproj">
+      <Project>{220a6912-609f-49aa-b4e1-c058ec87906a}</Project>
+      <Name>xcal.test.units.concretes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.test.units.contracts\xcal.test.units.contracts.csproj">
+      <Project>{569d565e-81e0-423a-8762-e634c5f66550}</Project>
+      <Name>xcal.test.units.contracts</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

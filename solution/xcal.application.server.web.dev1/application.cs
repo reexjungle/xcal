@@ -1,32 +1,31 @@
-﻿using System;
-using System.Data;
-using Funq;
+﻿using Funq;
 using MySql.Data.MySqlClient;
-using ServiceStack.CacheAccess;
-using ServiceStack.OrmLite;
-using ServiceStack.WebHost.Endpoints;
-using ServiceStack.Redis;
-using ServiceStack.Logging;
-using ServiceStack.Logging.NLogger;
-using ServiceStack.Logging.Elmah;
-using ServiceStack.ServiceInterface.Validation;
-using ServiceStack.Plugins.MsgPack;
-using ServiceStack.ServiceInterface.Cors;
-using reexjungle.xcal.domain.models;
-using reexjungle.xcal.service.validators.concretes;
-using reexjungle.xcal.service.interfaces.concretes.live;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.foundation.essentials.concretes;
 using reexjungle.crosscut.operations.concretes;
-using reexjungle.xcal.service.repositories.contracts;
+using reexjungle.foundation.essentials.concretes;
+using reexjungle.foundation.essentials.contracts;
+using reexjungle.infrastructure.operations.concretes;
+using reexjungle.infrastructure.operations.contracts;
+using reexjungle.technical.data.concretes.extensions.ormlite.mysql;
+using reexjungle.xcal.domain.models;
+using reexjungle.xcal.service.interfaces.concretes.live;
+using reexjungle.xcal.service.plugins.formats.concretes;
 using reexjungle.xcal.service.repositories.concretes.ormlite;
 using reexjungle.xcal.service.repositories.concretes.redis;
 using reexjungle.xcal.service.repositories.concretes.relations;
-using reexjungle.technical.data.concretes.extensions.ormlite.mysql;
-using reexjungle.infrastructure.operations.concretes;
-using reexjungle.infrastructure.operations.contracts;
-using reexjungle.xcal.service.plugins.formats.concretes;
-
+using reexjungle.xcal.service.repositories.contracts;
+using reexjungle.xcal.service.validators.concretes;
+using ServiceStack.CacheAccess;
+using ServiceStack.Logging;
+using ServiceStack.Logging.Elmah;
+using ServiceStack.Logging.NLogger;
+using ServiceStack.OrmLite;
+using ServiceStack.Plugins.MsgPack;
+using ServiceStack.Redis;
+using ServiceStack.ServiceInterface.Cors;
+using ServiceStack.ServiceInterface.Validation;
+using ServiceStack.WebHost.Endpoints;
+using System;
+using System.Data;
 
 namespace reexjungle.xcal.application.server.web.dev1
 {
@@ -49,16 +48,15 @@ namespace reexjungle.xcal.application.server.web.dev1
                 ReturnsInnerException = true
             });
 
-            #endregion
+            #endregion configure headers
 
             #region configure request and response filters
 
             //this.PreRequestFilters.Add((req, res) =>
             //    {
-                   
             //    });
 
-            #endregion
+            #endregion configure request and response filters
 
             #region configure plugins
 
@@ -67,33 +65,33 @@ namespace reexjungle.xcal.application.server.web.dev1
             Plugins.Add(new iCalendarFormat());
             Plugins.Add(new CorsFeature());
 
-            #endregion
+            #endregion configure plugins
 
             #region inject plugins
 
             //register all validators defined in the assembly of EventValidator
             container.RegisterValidators(typeof(EventValidator).Assembly);
 
-            #endregion
+            #endregion inject plugins
 
             #region inject loggers
 
             container.Register<ILogFactory>(new ElmahLogFactory(new NLogFactory()));
 
-            #endregion
+            #endregion inject loggers
 
             #region inject key generators
 
             container.Register<IGuidKeyGenerator>(new GuidKeyGenerator());
 
-            #endregion
+            #endregion inject key generators
 
             #region inject rdbms provider
 
             container.Register<IOrmLiteDialectProvider>(MySqlDialect.Provider);
             container.Register<IDbConnectionFactory>(new OrmLiteConnectionFactory(Properties.Settings.Default.mysql_server, container.Resolve<IOrmLiteDialectProvider>()));
 
-            #endregion
+            #endregion inject rdbms provider
 
             #region Create databases and corresponding tables
 
@@ -136,7 +134,6 @@ namespace reexjungle.xcal.application.server.web.dev1
 
                     x.Dispose();
                 });
-
             }
             catch (NLog.NLogConfigurationException ex)
             {
@@ -159,14 +156,13 @@ namespace reexjungle.xcal.application.server.web.dev1
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }
 
-            #endregion
+            #endregion create logger databases and tables
 
-           
-            #endregion
+            #endregion Create databases and corresponding tables
 
             #region inject core repositories and create primary data sources on first run
 
-            #region  create main database and tables
+            #region create main database and tables
 
             try
             {
@@ -176,16 +172,12 @@ namespace reexjungle.xcal.application.server.web.dev1
                     x.ChangeDatabase(Properties.Settings.Default.main_db_name);
                     x.ConnectionString = string.Format("{0};Database={1};", Properties.Settings.Default.mysql_server, Properties.Settings.Default.main_db_name);
 
-
-                    //core tables 
+                    //core tables
                     x.CreateTableIfNotExists(typeof(VCALENDAR), typeof(VEVENT), typeof(VTODO), typeof(VFREEBUSY), typeof(FREEBUSY_INFO), typeof(VJOURNAL), typeof(VTIMEZONE), typeof(STANDARD), typeof(DAYLIGHT), typeof(IANA_PROPERTY), typeof(IANA_COMPONENT), typeof(X_PROPERTY), typeof(XCOMPONENT), typeof(AUDIO_ALARM), typeof(DISPLAY_ALARM), typeof(EMAIL_ALARM), typeof(ORGANIZER), typeof(ATTENDEE), typeof(COMMENT), typeof(RELATEDTO), typeof(ATTACH_BINARY), typeof(ATTACH_URI), typeof(CONTACT), typeof(RDATE), typeof(EXDATE), typeof(RECUR), typeof(RECURRENCE_ID), typeof(REQUEST_STATUS), typeof(RESOURCES), typeof(TZNAME));
 
                     //3NF relational tables
-                    x.CreateTableIfNotExists(typeof(REL_CALENDARS_EVENTS), typeof(REL_CALENDARS_TODOS), typeof(REL_CALENDARS_FREEBUSIES), typeof(REL_CALENDARS_JOURNALS), typeof(REL_CALENDARS_TIMEZONES), typeof(REL_CALENDARS_IANACS), typeof(REL_CALENDARS_XCS), typeof(REL_EVENTS_ATTACHBINS), typeof(REL_EVENTS_ATTACHURIS), typeof(REL_EVENTS_ATTENDEES), typeof(REL_EVENTS_AUDIO_ALARMS), typeof(REL_EVENTS_COMMENTS), typeof(REL_EVENTS_CONTACTS), typeof(REL_EVENTS_DISPLAY_ALARMS), typeof(REL_EVENTS_EMAIL_ALARMS), typeof(REL_EVENTS_EXDATES), typeof(REL_EVENTS_ORGANIZERS), typeof(REL_EVENTS_RDATES), typeof(REL_EVENTS_RECURRENCE_IDS), typeof(REL_EVENTS_RELATEDTOS), typeof(REL_EVENTS_REQSTATS), typeof(REL_EVENTS_RESOURCES), typeof(REL_EVENTS_RECURS), typeof(REL_TODOS_ATTACHBINS), typeof(REL_TODOS_ATTACHURIS), typeof(REL_TODOS_ATTENDEES), typeof(REL_TODOS_AUDIO_ALARMS), typeof(REL_TODOS_COMMENTS), typeof(REL_TODOS_CONTACTS), typeof(REL_TODOS_DISPLAY_ALARMS), typeof(REL_TODOS_EMAIL_ALARMS), typeof(REL_TODOS_EXDATES), typeof(REL_TODOS_ORGANIZERS), typeof(REL_TODOS_RDATES), typeof(REL_TODOS_RECURRENCE_IDS), typeof(REL_TODOS_RELATEDTOS), typeof(REL_TODOS_REQSTATS), typeof(REL_TODOS_RESOURCES), typeof(REL_TODOS_RECURS), typeof(REL_FREEBUSIES_ATTACHBINS), typeof(REL_FREEBUSIES_ATTACHURIS), typeof(REL_FREEBUSIES_ATTENDEES), typeof(REL_FREEBUSIES_COMMENTS), typeof(REL_FREEBUSIES_ORGANIZERS), typeof(REL_FREEBUSIES_REQSTATS), typeof(REL_FREEBUSIES_INFOS), typeof(REL_JOURNALS_ATTACHBINS), typeof(REL_JOURNALS_ATTACHURIS), typeof(REL_JOURNALS_ATTENDEES), typeof(REL_JOURNALS_COMMENTS), typeof(REL_JOURNALS_CONTACTS), typeof(REL_JOURNALS_EXDATES), typeof(REL_JOURNALS_ORGANIZERS), typeof(REL_JOURNALS_RDATES), typeof(REL_JOURNALS_RECURRENCE_IDS), typeof(REL_JOURNALS_RELATEDTOS), typeof(REL_JOURNALS_REQSTATS), typeof(REL_JOURNALS_RESOURCES), typeof(REL_JOURNALS_RECURS), typeof(REL_AALARMS_ATTACHBINS), typeof(REL_AALARMS_ATTACHURIS), typeof(REL_EALARMS_ATTACHBINS), typeof(REL_EALARMS_ATTACHURIS), typeof(REL_EALARMS_ATTENDEES), typeof(REL_TIMEZONES_STANDARDS), typeof(REL_TIMEZONES_DAYLIGHT), typeof(REL_STANDARDS_RECURS), typeof(REL_STANDARDS_COMMENTS), typeof(REL_STANDARDS_RDATES), typeof(REL_STANDARDS_TZNAMES), typeof(REL_DAYLIGHTS_RECURS), typeof(REL_DAYLIGHTS_COMMENTS), typeof(REL_DAYLIGHTS_RDATES), typeof(REL_DAYLIGHTS_TZNAMES));
-
+                    x.CreateTableIfNotExists(typeof(REL_CALENDARS_EVENTS), typeof(REL_CALENDARS_TODOS), typeof(REL_CALENDARS_FREEBUSIES), typeof(REL_CALENDARS_JOURNALS), typeof(REL_CALENDARS_TIMEZONES), typeof(REL_CALENDARS_IANACS), typeof(REL_CALENDARS_XCS), typeof(REL_EVENTS_ATTACHBINS), typeof(REL_EVENTS_ATTACHURIS), typeof(REL_EVENTS_ATTENDEES), typeof(REL_EVENTS_AUDIO_ALARMS), typeof(REL_EVENTS_COMMENTS), typeof(REL_EVENTS_CONTACTS), typeof(REL_EVENTS_DISPLAY_ALARMS), typeof(REL_EVENTS_EMAIL_ALARMS), typeof(REL_EVENTS_EXDATES), typeof(REL_EVENTS_RDATES), typeof(REL_EVENTS_RELATEDTOS), typeof(REL_EVENTS_REQSTATS), typeof(REL_EVENTS_RESOURCES), typeof(REL_TODOS_ATTACHBINS), typeof(REL_TODOS_ATTACHURIS), typeof(REL_TODOS_ATTENDEES), typeof(REL_TODOS_AUDIO_ALARMS), typeof(REL_TODOS_COMMENTS), typeof(REL_TODOS_CONTACTS), typeof(REL_TODOS_DISPLAY_ALARMS), typeof(REL_TODOS_EMAIL_ALARMS), typeof(REL_TODOS_EXDATES), typeof(REL_TODOS_RDATES), typeof(REL_TODOS_RELATEDTOS), typeof(REL_TODOS_REQSTATS), typeof(REL_TODOS_RESOURCES), typeof(REL_FREEBUSIES_ATTACHBINS), typeof(REL_FREEBUSIES_ATTACHURIS), typeof(REL_FREEBUSIES_ATTENDEES), typeof(REL_FREEBUSIES_COMMENTS), typeof(REL_FREEBUSIES_REQSTATS), typeof(REL_FREEBUSIES_INFOS), typeof(REL_JOURNALS_ATTACHBINS), typeof(REL_JOURNALS_ATTACHURIS), typeof(REL_JOURNALS_ATTENDEES), typeof(REL_JOURNALS_COMMENTS), typeof(REL_JOURNALS_CONTACTS), typeof(REL_JOURNALS_EXDATES), typeof(REL_JOURNALS_RDATES), typeof(REL_JOURNALS_RELATEDTOS), typeof(REL_JOURNALS_REQSTATS), typeof(REL_JOURNALS_RESOURCES), typeof(REL_AALARMS_ATTACHBINS), typeof(REL_AALARMS_ATTACHURIS), typeof(REL_EALARMS_ATTACHBINS), typeof(REL_EALARMS_ATTACHURIS), typeof(REL_EALARMS_ATTENDEES), typeof(REL_TIMEZONES_STANDARDS), typeof(REL_TIMEZONES_DAYLIGHT), typeof(REL_STANDARDS_COMMENTS), typeof(REL_STANDARDS_RDATES), typeof(REL_STANDARDS_TZNAMES), typeof(REL_DAYLIGHTS_COMMENTS), typeof(REL_DAYLIGHTS_RDATES), typeof(REL_DAYLIGHTS_TZNAMES));
                 });
-
-
             }
             catch (MySqlException ex)
             {
@@ -200,7 +192,7 @@ namespace reexjungle.xcal.application.server.web.dev1
                 container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString(), ex);
             }
 
-            #endregion
+            #endregion create main database and tables
 
             #region inject ormlite repositories
 
@@ -249,31 +241,30 @@ namespace reexjungle.xcal.application.server.web.dev1
                 DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
             });
 
-            #endregion
+            #endregion inject ormlite repositories
 
             #region inject cached providers
 
-            //register cache client to redis server running on linux. 
+            //register cache client to redis server running on linux.
             //NOTE: Redis Server must already be installed on the remote machine and must be running
             container.Register<IRedisClientsManager>(x => new BasicRedisClientManager(Properties.Settings.Default.redis_server));
             var cachedclient = container.Resolve<IRedisClientsManager>().GetCacheClient();
             if (cachedclient != null) container.Register<ICacheClient>(x => cachedclient);
 
-            #endregion
+            #endregion inject cached providers
 
-            #endregion
+            #endregion inject core repositories and create primary data sources on first run
         }
 
-        public ApplicationHost() : base(Properties.Settings.Default.service_name, typeof(EventService).Assembly)
+        public ApplicationHost()
+            : base(Properties.Settings.Default.service_name, typeof(EventService).Assembly)
         {
             #region set up mono compliant settings
 
             if (Environment.GetEnvironmentVariable("MONO_STRICT_MS_COMPLIANT") != "yes")
                 Environment.SetEnvironmentVariable("MONO_STRICT_MS_COMPLIANT", "yes");
 
-            #endregion
-
+            #endregion set up mono compliant settings
         }
-
     }
 }
