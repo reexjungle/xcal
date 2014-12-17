@@ -188,7 +188,7 @@ xCal is created by [Emmanuel Ngwane](https://github.com/reexmonkey) and maintain
 Keep track on upcoming features, development and community news:
 * Chat on [**xCal Google+ Community**](https://plus.google.com/communities/105811904931972542578)
 * Follow [**@xcal5545**](https://twitter.com/xcal5545) on twitter
-* Raise [**issues**](https://github.com/reexjungle/xcal/issues) on xCal.
+* Raise [**issues**](https://github.com/reexjungle/xcal/issues) on Github.
  
 
 License
