@@ -175,7 +175,7 @@ To ensure high quality of code, contributors must include unit tests alongside t
 
 Documentation
 =============
-The [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) provides detailed information on the xCal project, tutorials, and blogs on auxilarry software engineering topics for newbies such as design principles, continuous integration and web services.
+The [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) provides detailed information on the xCal project, tutorials, and blogs on auxillary software engineering topics for newbies such as design principles, continuous integration and web services.
 
 Versioning
 ==========
