@@ -1,18 +1,18 @@
 What is xCal?
 ============
-The xCal project is an **open source** project that basically does 2 things:
+The xCal project is a **free and open source software (FOSS)** project that basically does 2 things:
 
-1. Implements the [Internet Calendaring and Scheduling Core Object Specification (RFC 5545)](http://tools.ietf.org/html/rfc5545) such that calendaring and scheduling information (events, to-dos, journals and free/busy) can be represented and exchanged in the [iCalendar](http://en.wikipedia.org/wiki/ICalendar) data format independently of calendar service or protocol.
+1. Implements the [Internet Calendaring and Scheduling Core Object Specification (RFC 5545)](http://tools.ietf.org/html/rfc5545), such that calendaring and scheduling information (events, to-dos, journals and free/busy) can be represented and exchanged in [iCalendar](http://en.wikipedia.org/wiki/ICalendar) and other data formats independently of calendar service or protocol.
 
-2. Develops a sofware service library to facilitate the setup and hosting of [REST](http://en.wikipedia.org/wiki/Representational_state_transfer)-ful calendar services, in which operations to access and edit distributed calendar data are exposed by means of an [API](http://en.wikipedia.org/wiki/Application_programming_interface).
+2. Develops a software service library to facilitate the setup and hosting of [REST](http://en.wikipedia.org/wiki/Representational_state_transfer)-ful calendar services, in which operations to access and edit distributed calendar data are exposed by means of an [API](http://en.wikipedia.org/wiki/Application_programming_interface).
 
 Why xCal?
 =========
-First of all, xCal is **free** - yes  *'free' as in 'free air' and not 'free' as in 'free beer'*. 
+First of all, xCal is **free** - yes  *'free' as in 'free air'* and not *'free' as in 'free beer'*. 
 
 Secondly, xCal allows you **to host and maintain your calendar data on your own server** - that is, you have total control over your calendar information and thus in no way is your private data shared with third parties.
 
-Thirdly, you shall enjoy distributing calendar information through the multiple data formats xCal currently supports: 
+Thirdly, you shall enjoy distributing calendar information in multiple data formats that include: 
 * [iCalendar](http://en.wikipedia.org/wiki/ICalendar) 
 * [CSV](http://en.wikipedia.org/wiki/Comma-separated_values)
 * [MessagePack](http://msgpack.org/)
@@ -20,7 +20,7 @@ Thirdly, you shall enjoy distributing calendar information through the multiple 
 * [JSV](http://mono.servicestack.net/docs/text-serializers/jsv-format) 
 * [XML](http://en.wikipedia.org/wiki/XML)
 
-Fourthly, xCal discourages you from *reinventing the wheel*. Instead of creating your own custom calendaring and scheduling system, it offers you a firsthand implementation of the internet standard (RFC 5545) thus freeing up the potential development time you could have wasted; rather you gain time and resources in order to concentrate on important tasks at hand.
+Fourthly, xCal discourages you from *reinventing the wheel*. Instead of creating your own custom calendaring and scheduling system, it offers you a firsthand implementation of the internet standard (RFC 5545), thus freeing up the potential development time you could have wasted, in order to concentrate on other important tasks at hand.
 
 Finally, you gain the awesome [benefits][1] of using xCal as an open source software. These include low costs, quality improvement through continuous community input, business agility and mitigation of business risks. 
 
@@ -87,13 +87,14 @@ solution/
 |   ├── technical.data.concretes.csproj
 |   ├── technical.data.contracts.csproj
 ├── tests/
-|   ├── xcal.applications.server.web.local.csproj
+|   ├── xcal.test.server.integration.contracts.csproj
+|   ├── xcal.test.server.integration.concretes.csproj
 
 ```
 
 ### Development Tools for xCal
 
-xCal is written entirely in C# - therefore it is recommended to use a specialized IDE such as [Microsoft Visual Studio][5] whose editor, debugger and compiler features facilitate rapid application development. As a matter of fact, Microsoft now  offers [Visual Studio Community 2013][6] at no cost to an unlimited number of users developing open source projects. In any case, if Visual Studio does not suit your tastes, please feel free to use other third-party tools. 
+xCal is written entirely in C# - therefore it is recommended to use a specialized IDE such as [Microsoft Visual Studio][5] whose editor, debugger and compiler features facilitate rapid application development. As a matter of fact, Microsoft now  offers [Visual Studio Community 2013][6] at no cost to an unlimited number of users developing open source projects. In any case, if Visual Studio does not suit your tastes, please feel free to use other third-party tools e.g. [Xamarin Studio / Monodevelop](http://www.monodevelop.com/download/). 
 
 *For the remainder of this Get Started section and for the sake of simplicity, it would be assumed you use Visual Studio 2013 for software development.*
 
@@ -149,30 +150,45 @@ If you downloaded the xCal source and setup the projects using Visual Studio, th
 
 Dependencies
 ============
+xCal depends on the awesome open source software libraries below, in order to be compiled, executed and tested. Furthermore, xCal integrates and extends the source code of some of these libraries for its core functionality. Each referenced library is released under its respective license.
 
+The following development library is referenced in all of the xcal projects and is required to compile the application:
+* [Semantic Git Versioning](https://www.nuget.org/packages/SemanticGit/) [(license)](https://github.com/kzu/SemanticGit/blob/master/LICENSE)
 
+The following library is referenced in almost all of the xcal projects and are required to compile and run and test the application:
+* [Service Stack V3](https://github.com/ServiceStackV3/ServiceStackV3) [(license)](https://github.com/ServiceStack/ServiceStack/blob/v3/LICENSE)
+
+The following library is referenced in the xcal test projects (*xcal.test.server.integration.**) only and is required to test the application:
+* [NBuilder](https://www.nuget.org/packages/NBuilder/) [(license)](http://www.gnu.org/licenses/lgpl.html)
+
+The following libraries are referenced in the xcal application projects (*xcal.application.server.web.**) only and are required to log and trace in the application:
+* [ELMAH on MySQL](https://www.nuget.org/packages/elmah.mysql/) with transitive reference to [Elmah](https://code.google.com/p/elmah/) [(license)](http://www.apache.org/licenses/LICENSE-2.0)
+* [Nlog](https://github.com/NLog/NLog/) with transitive reference to [Nlog Project](http://nlog-project.org/) [(license)](https://raw.githubusercontent.com/NLog/NLog/master/LICENSE.txt)
 
 Contributing
 ============
 We are very happy that you are interested in contributing to xCal. [Contributing to the repository on GitHub](https://guides.github.com/activities/contributing-to-open-source/) is quite easy; fork the repository, make changes and send a pull request on Github.
 
-However before any contributing code is reviewed, the contributor needs to approve the [xCal Individual Contributor Assignment Agreement](http://goo.gl/forms/hvyoqegA6s).
+However before any contributed code is reviewed, the contributor is required to accept the [Individual Contributor Assignment Agreement](http://goo.gl/forms/hvyoqegA6s).
+
+To ensure high quality of code, contributors must include unit tests alongside their source code. Documentation of source code shall also be highly appreciated.
 
 Documentation
 =============
-
-
-###### For further information on the project, web service, its architecture, dependencies, code examples and more, please do not hesitate to visit the [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) 
+The [xCal Wiki](https://github.com/reexmonkey/xcal/wiki) provides detailed information on the xCal project, tutorials, and blogs on auxilarry software engineering topics for newbies such as design principles, continuous integration and web services.
 
 Versioning
 ==========
-For better release management and backward commpability, the assemblies of xCal are maintained under the [Semantic Versioning](http://semver.org/) guidelines. Moreover, the branching of the source code follows the *Development and Release Isolation Strategy* of the [Version Control Guide](http://vsarbranchingguide.codeplex.com/releases) proposed by Microsoft Visual Studio ALM Rangers.
+For better release management and backward commpability, the assemblies of xCal are maintained under the [Semantic Versioning](http://semver.org/) guidelines. Moreover, the branching of the source code follows the [GitFlow](http://nvie.com/posts/a-successful-git-branching-model/) branching model proposed by Vincent Driessen.
 
 Community
 ==========
-xCal is created by [Emmanuel Ngwane](https://github.com/reexmonkey) and maintained by the [core team](https://github.com/orgs/reexjungle/teams/core-members) with the support and involvement of the community.
+xCal is created by [Emmanuel Ngwane](https://github.com/reexmonkey) and maintained by [ collaborators](https://github.com/orgs/reexjungle/people) with the support and involvement of the community.
 
-
+Ask qestions and keep track up on upcoming features, development and community news:
+* Chat on [**xCal Google+ Community**](https://plus.google.com/communities/105811904931972542578)
+* Follow [**@xcal5545**](https://twitter.com/xcal5545) on twitter
+ 
 
 License
 =======
