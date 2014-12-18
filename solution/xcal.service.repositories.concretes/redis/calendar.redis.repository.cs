@@ -78,7 +78,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 {
                     var keys = revents.Select(x => x.EventId).ToList();
                     var events = this.EventRepository.FindAll(keys);
-                    full.Events.AddRangeComplement(events);
+                    full.Events.MergeRange(events);
                 }
             }
             return full ?? dry;
@@ -101,7 +101,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                      join c in full on r.CalendarId equals c.Id
                                      where c.Id == x.Id
                                      select y;
-                       if (!xevents.NullOrEmpty()) x.Events.AddRangeComplement(xevents);
+                       if (!xevents.NullOrEmpty()) x.Events.MergeRange(xevents);
                    });
                 }
             }

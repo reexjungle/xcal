@@ -119,7 +119,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                     if (!revents.NullOrEmpty())
                     {
                         var events = this.EventRepository.FindAll(revents.Select(x => x.EventId).ToList());
-                        full.Events.AddRangeComplement(this.EventRepository.HydrateAll(events));
+                        full.Events.MergeRange(this.EventRepository.HydrateAll(events));
                     }
                 }
             }
@@ -157,7 +157,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                           join c in full on r.CalendarId equals c.Id
                                           where c.Id == x.Id
                                           select y;
-                            if (!xevents.NullOrEmpty()) x.Events.AddRangeComplement(xevents);
+                            if (!xevents.NullOrEmpty()) x.Events.MergeRange(xevents);
                         });
                     }
                 }

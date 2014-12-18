@@ -113,79 +113,79 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 var rattachbins = this.redis.As<REL_EVENTS_ATTACHBINS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!rattachbins.NullOrEmpty())
                 {
-                    full.AttachmentBinaries.AddRangeComplement(this.redis.As<ATTACH_BINARY>().GetByIds(rattachbins.Select(x => x.AttachmentId).ToList()));
+                    full.AttachmentBinaries.MergeRange(this.redis.As<ATTACH_BINARY>().GetByIds(rattachbins.Select(x => x.AttachmentId).ToList()));
                 }
 
                 var rattachuris = this.redis.As<REL_EVENTS_ATTACHURIS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!rattachuris.NullOrEmpty())
                 {
-                    full.AttachmentUris.AddRangeComplement(this.redis.As<ATTACH_URI>().GetByIds(rattachuris.Select(x => x.AttachmentId).ToList()));
+                    full.AttachmentUris.MergeRange(this.redis.As<ATTACH_URI>().GetByIds(rattachuris.Select(x => x.AttachmentId).ToList()));
                 }
 
                 var rattendees = this.redis.As<REL_EVENTS_ATTENDEES>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!rattendees.NullOrEmpty())
                 {
-                    full.Attendees.AddRangeComplement(this.redis.As<ATTENDEE>().GetByIds(rattendees.Select(x => x.AttendeeId).ToList()));
+                    full.Attendees.MergeRange(this.redis.As<ATTENDEE>().GetByIds(rattendees.Select(x => x.AttendeeId).ToList()));
                 }
 
                 var rcomments = this.redis.As<REL_EVENTS_COMMENTS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!rcomments.NullOrEmpty())
                 {
-                    full.Comments.AddRangeComplement(this.redis.As<COMMENT>().GetByIds(rcomments.Select(x => x.CommentId).ToList()));
+                    full.Comments.MergeRange(this.redis.As<COMMENT>().GetByIds(rcomments.Select(x => x.CommentId).ToList()));
                 }
 
                 var rcontacts = this.redis.As<REL_EVENTS_CONTACTS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!rcontacts.NullOrEmpty())
                 {
-                    full.Contacts.AddRangeComplement(this.redis.As<CONTACT>().GetByIds(rcontacts.Select(x => x.ContactId).ToList()));
+                    full.Contacts.MergeRange(this.redis.As<CONTACT>().GetByIds(rcontacts.Select(x => x.ContactId).ToList()));
                 }
 
                 var rrdates = this.redis.As<REL_EVENTS_RDATES>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!rrdates.NullOrEmpty())
                 {
-                    full.RecurrenceDates.AddRangeComplement(this.redis.As<RDATE>().GetByIds(rrdates.Select(x => x.RecurrenceDateId).ToList()));
+                    full.RecurrenceDates.MergeRange(this.redis.As<RDATE>().GetByIds(rrdates.Select(x => x.RecurrenceDateId).ToList()));
                 }
 
                 var rexdates = this.redis.As<REL_EVENTS_EXDATES>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!rexdates.NullOrEmpty())
                 {
-                    full.ExceptionDates.AddRangeComplement(this.redis.As<EXDATE>().GetByIds(rexdates.Select(x => x.ExceptionDateId).ToList()));
+                    full.ExceptionDates.MergeRange(this.redis.As<EXDATE>().GetByIds(rexdates.Select(x => x.ExceptionDateId).ToList()));
                 }
 
                 var rrelatedtos = this.redis.As<REL_EVENTS_RELATEDTOS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!rrelatedtos.NullOrEmpty())
                 {
-                    full.RelatedTos.AddRangeComplement(this.redis.As<RELATEDTO>().GetByIds(rrelatedtos.Select(x => x.RelatedToId).ToList()));
+                    full.RelatedTos.MergeRange(this.redis.As<RELATEDTO>().GetByIds(rrelatedtos.Select(x => x.RelatedToId).ToList()));
                 }
 
                 var rreqstats = this.redis.As<REL_EVENTS_REQSTATS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!rreqstats.NullOrEmpty())
                 {
-                    full.RequestStatuses.AddRangeComplement(this.redis.As<REQUEST_STATUS>().GetByIds(rreqstats.Select(x => x.ReqStatsId).ToList()));
+                    full.RequestStatuses.MergeRange(this.redis.As<REQUEST_STATUS>().GetByIds(rreqstats.Select(x => x.ReqStatsId).ToList()));
                 }
 
                 var rresources = this.redis.As<REL_EVENTS_RESOURCES>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!rresources.NullOrEmpty())
                 {
-                    full.Resources.AddRangeComplement(this.redis.As<RESOURCES>().GetByIds(rresources.Select(x => x.ResourcesId).ToList()));
+                    full.Resources.MergeRange(this.redis.As<RESOURCES>().GetByIds(rresources.Select(x => x.ResourcesId).ToList()));
                 }
 
                 var raalarms = this.redis.As<REL_EVENTS_AUDIO_ALARMS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!raalarms.NullOrEmpty())
                 {
-                    full.AudioAlarms.AddRangeComplement(this.AudioAlarmRepository.FindAll(raalarms.Select(x => x.AlarmId).ToList()));
+                    full.AudioAlarms.MergeRange(this.AudioAlarmRepository.FindAll(raalarms.Select(x => x.AlarmId).ToList()));
                 }
 
                 var rdalarms = this.redis.As<REL_EVENTS_DISPLAY_ALARMS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!rdalarms.NullOrEmpty())
                 {
-                    full.DisplayAlarms.AddRangeComplement(this.DisplayAlarmRepository.FindAll(rdalarms.Select(x => x.AlarmId).ToList()));
+                    full.DisplayAlarms.MergeRange(this.DisplayAlarmRepository.FindAll(rdalarms.Select(x => x.AlarmId).ToList()));
                 }
 
                 var realarms = this.redis.As<REL_EVENTS_EMAIL_ALARMS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!realarms.NullOrEmpty())
                 {
-                    full.EmailAlarms.AddRangeComplement(this.EmailAlarmRepository
+                    full.EmailAlarms.MergeRange(this.EmailAlarmRepository
                         .HydrateAll(this.EmailAlarmRepository.FindAll(realarms.Select(x => x.AlarmId).ToList())));
                 }
 
@@ -252,7 +252,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                         join e in full on r.EventId equals e.Id
                                         where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                         select y;
-                        if (!xcomments.NullOrEmpty()) x.Comments.AddRangeComplement(xcomments);
+                        if (!xcomments.NullOrEmpty()) x.Comments.MergeRange(xcomments);
                     }
 
                     if (!attendees.NullOrEmpty())
@@ -262,7 +262,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                          join e in full on r.EventId equals e.Id
                                          where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                          select y;
-                        if (!xattendees.NullOrEmpty()) x.Attendees.AddRangeComplement(xattendees);
+                        if (!xattendees.NullOrEmpty()) x.Attendees.MergeRange(xattendees);
                     }
 
                     if (!attachbins.NullOrEmpty())
@@ -272,7 +272,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                           join e in full on r.EventId equals e.Id
                                           where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                           select y;
-                        if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.AddRangeComplement(xattachbins);
+                        if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.MergeRange(xattachbins);
                     }
 
                     if (!attachuris.NullOrEmpty())
@@ -282,7 +282,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                           join e in full on r.EventId equals e.Id
                                           where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                           select y;
-                        if (!xattachuris.NullOrEmpty()) x.AttachmentUris.AddRangeComplement(xattachuris);
+                        if (!xattachuris.NullOrEmpty()) x.AttachmentUris.MergeRange(xattachuris);
                     }
 
                     if (!contacts.NullOrEmpty())
@@ -293,7 +293,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                         where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                         select y;
 
-                        if (!xcontacts.NullOrEmpty()) x.Contacts.AddRangeComplement(xcontacts);
+                        if (!xcontacts.NullOrEmpty()) x.Contacts.MergeRange(xcontacts);
                     }
 
                     if (!rdates.NullOrEmpty())
@@ -303,7 +303,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                      join e in full on r.EventId equals e.Id
                                      where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                      select y;
-                        if (!xdates.NullOrEmpty()) x.RecurrenceDates.AddRangeComplement(xdates);
+                        if (!xdates.NullOrEmpty()) x.RecurrenceDates.MergeRange(xdates);
                     }
 
                     if (!exdates.NullOrEmpty())
@@ -313,7 +313,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                        join e in full on r.EventId equals e.Id
                                        where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                        select y;
-                        if (!xexdates.NullOrEmpty()) x.ExceptionDates.AddRangeComplement(xexdates);
+                        if (!xexdates.NullOrEmpty()) x.ExceptionDates.MergeRange(xexdates);
                     }
 
                     if (!relatedtos.NullOrEmpty())
@@ -323,7 +323,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                          join e in full on r.EventId equals e.Id
                                          where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                          select y;
-                        if (!xelatedtos.NullOrEmpty()) x.RelatedTos.AddRangeComplement(xelatedtos);
+                        if (!xelatedtos.NullOrEmpty()) x.RelatedTos.MergeRange(xelatedtos);
                     }
 
                     if (!reqstats.NullOrEmpty())
@@ -333,7 +333,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                        join e in full on r.EventId equals e.Id
                                        where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                        select y;
-                        if (!xeqstats.NullOrEmpty()) x.RequestStatuses.AddRangeComplement(xeqstats);
+                        if (!xeqstats.NullOrEmpty()) x.RequestStatuses.MergeRange(xeqstats);
                     }
 
                     if (!resources.NullOrEmpty())
@@ -343,7 +343,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                         join e in full on r.EventId equals e.Id
                                         where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                         select y;
-                        if (!xesources.NullOrEmpty()) x.Resources.AddRangeComplement(xesources);
+                        if (!xesources.NullOrEmpty()) x.Resources.MergeRange(xesources);
                     }
 
                     if (!aalarms.NullOrEmpty())
@@ -353,7 +353,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                        join e in full on r.EventId equals e.Id
                                        where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                        select y;
-                        if (!xaalarms.NullOrEmpty()) x.AudioAlarms.AddRangeComplement(xaalarms);
+                        if (!xaalarms.NullOrEmpty()) x.AudioAlarms.MergeRange(xaalarms);
                     }
 
                     if (!dalarms.NullOrEmpty())
@@ -363,7 +363,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                        join e in full on r.EventId equals e.Id
                                        where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                        select y;
-                        if (!xdalarms.NullOrEmpty()) x.DisplayAlarms.AddRangeComplement(xdalarms);
+                        if (!xdalarms.NullOrEmpty()) x.DisplayAlarms.MergeRange(xdalarms);
                     }
 
                     if (!ealarms.NullOrEmpty())
@@ -373,7 +373,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                        join e in full on r.EventId equals e.Id
                                        where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                        select y;
-                        if (!xealarms.NullOrEmpty()) x.EmailAlarms.AddRangeComplement(xealarms);
+                        if (!xealarms.NullOrEmpty()) x.EmailAlarms.MergeRange(xealarms);
                     }
                 });
 

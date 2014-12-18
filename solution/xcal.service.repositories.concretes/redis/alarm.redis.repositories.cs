@@ -843,15 +843,15 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
                     if (!rattachbins.NullOrEmpty())
                     {
-                        full.AttachmentBinaries.AddRangeComplement(this.redis.As<ATTACH_BINARY>().GetValues(rattachbins.Select(x => x.AttachmentId).ToList()));
+                        full.AttachmentBinaries.MergeRange(this.redis.As<ATTACH_BINARY>().GetValues(rattachbins.Select(x => x.AttachmentId).ToList()));
                     }
                     if (!rattachuris.NullOrEmpty())
                     {
-                        full.AttachmentUris.AddRangeComplement(this.redis.As<ATTACH_URI>().GetValues(rattachuris.Select(x => x.AttachmentId).ToList()));
+                        full.AttachmentUris.MergeRange(this.redis.As<ATTACH_URI>().GetValues(rattachuris.Select(x => x.AttachmentId).ToList()));
                     }
                     if (!rattendees.NullOrEmpty())
                     {
-                        full.Attendees.AddRangeComplement(this.redis.As<ATTENDEE>().GetValues(rattendees.Select(x => x.AttendeeId).ToList()));
+                        full.Attendees.MergeRange(this.redis.As<ATTENDEE>().GetValues(rattendees.Select(x => x.AttendeeId).ToList()));
                     }
                 }
                 return full ?? dry;
@@ -910,7 +910,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                               join e in full on r.EventId equals e.Id
                                               where e.Id == x.Id
                                               select y;
-                            if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.AddRangeComplement(xattachbins);
+                            if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.MergeRange(xattachbins);
                         }
 
                         if (!attachuris.NullOrEmpty())
@@ -920,7 +920,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                               join e in full on r.EventId equals e.Id
                                               where e.Id == x.Id
                                               select y;
-                            if (!xattachuris.NullOrEmpty()) x.AttachmentUris.AddRangeComplement(xattachuris);
+                            if (!xattachuris.NullOrEmpty()) x.AttachmentUris.MergeRange(xattachuris);
                         }
                     });
 

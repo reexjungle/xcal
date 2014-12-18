@@ -851,19 +851,19 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                         r => r.AttendeeId,
                         r => r.AlarmId,
                         a => a.Id == dry.Id);
-                    if (!attendees.NullOrEmpty()) full.Attendees.AddRangeComplement(attendees);
+                    if (!attendees.NullOrEmpty()) full.Attendees.MergeRange(attendees);
 
                     var attachbins = db.Select<ATTACH_BINARY, EMAIL_ALARM, REL_EALARMS_ATTACHBINS>(
                         r => r.AttachmentId,
                         r => r.AlarmId,
                         a => a.Id == dry.Id);
-                    if (!attachbins.NullOrEmpty()) full.AttachmentBinaries.AddRangeComplement(attachbins);
+                    if (!attachbins.NullOrEmpty()) full.AttachmentBinaries.MergeRange(attachbins);
 
                     var attachuris = db.Select<ATTACH_URI, EMAIL_ALARM, REL_EALARMS_ATTACHURIS>(
                         r => r.AttachmentId,
                         r => r.AlarmId,
                         a => a.Id == dry.Id);
-                    if (!attachuris.NullOrEmpty()) full.AttachmentUris.AddRangeComplement(attachuris);
+                    if (!attachuris.NullOrEmpty()) full.AttachmentUris.MergeRange(attachuris);
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -904,7 +904,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                               join a in full on r.AlarmId equals a.Id
                                               where a.Id == x.Id
                                               select y;
-                            if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.AddRangeComplement(xattachbins);
+                            if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.MergeRange(xattachbins);
                         }
 
                         if (!rattachuris.NullOrEmpty())
@@ -914,7 +914,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                               join a in full on r.AlarmId equals a.Id
                                               where a.Id == x.Id
                                               select y;
-                            if (!xattachuris.NullOrEmpty()) x.AttachmentUris.AddRangeComplement(xattachuris);
+                            if (!xattachuris.NullOrEmpty()) x.AttachmentUris.MergeRange(xattachuris);
                         }
 
                         if (!rattendees.NullOrEmpty())
@@ -924,7 +924,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                              join f in full on r.AlarmId equals f.Id
                                              where f.Id == x.Id
                                              select y;
-                            if (!xattendees.NullOrEmpty()) x.Attendees.AddRangeComplement(xattendees);
+                            if (!xattendees.NullOrEmpty()) x.Attendees.MergeRange(xattendees);
                         }
                     });
                 }

@@ -976,78 +976,78 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                    r => r.AttachmentId,
                    r => r.EventId,
                    e => e.Id == dry.Id);
-                if (!attachbins.NullOrEmpty()) full.AttachmentBinaries.AddRangeComplement(attachbins);
+                if (!attachbins.NullOrEmpty()) full.AttachmentBinaries.MergeRange(attachbins);
 
                 var attachuris = db.Select<ATTACH_URI, VEVENT, REL_EVENTS_ATTACHURIS>(
                    r => r.AttachmentId,
                    r => r.EventId,
                    e => e.Id == dry.Id);
-                if (!attachuris.NullOrEmpty()) full.AttachmentUris.AddRangeComplement(attachuris);
+                if (!attachuris.NullOrEmpty()) full.AttachmentUris.MergeRange(attachuris);
 
                 var attendees = db.Select<ATTENDEE, VEVENT, REL_EVENTS_ATTENDEES>(
                      r => r.AttendeeId,
                      r => r.EventId,
                      e => e.Id == dry.Id);
-                if (!attendees.NullOrEmpty()) full.Attendees.AddRangeComplement(attendees);
+                if (!attendees.NullOrEmpty()) full.Attendees.MergeRange(attendees);
 
                 var comments = db.Select<COMMENT, VEVENT, REL_EVENTS_COMMENTS>(
                     r => r.CommentId,
                     r => r.EventId,
                     e => e.Id == dry.Id);
-                if (!comments.NullOrEmpty()) full.Comments.AddRangeComplement(comments);
+                if (!comments.NullOrEmpty()) full.Comments.MergeRange(comments);
 
                 var contacts = db.Select<CONTACT, VEVENT, REL_EVENTS_CONTACTS>(
                     r => r.ContactId,
                     r => r.EventId,
                     e => e.Id == dry.Id);
-                if (!contacts.NullOrEmpty()) full.Contacts.AddRangeComplement(contacts);
+                if (!contacts.NullOrEmpty()) full.Contacts.MergeRange(contacts);
 
                 var rdates = db.Select<RDATE, VEVENT, REL_EVENTS_RDATES>(
                     r => r.RecurrenceDateId,
                     r => r.EventId,
                     e => e.Id == dry.Id);
-                if (!rdates.NullOrEmpty()) full.RecurrenceDates.AddRangeComplement(rdates);
+                if (!rdates.NullOrEmpty()) full.RecurrenceDates.MergeRange(rdates);
 
                 var exdates = db.Select<EXDATE, VEVENT, REL_EVENTS_EXDATES>(
                     r => r.ExceptionDateId,
                     r => r.EventId,
                     e => e.Id == dry.Id);
-                if (!exdates.NullOrEmpty()) full.ExceptionDates.AddRangeComplement(exdates);
+                if (!exdates.NullOrEmpty()) full.ExceptionDates.MergeRange(exdates);
 
                 var relatedtos = db.Select<RELATEDTO, VEVENT, REL_EVENTS_RELATEDTOS>(
                      r => r.RelatedToId,
                      r => r.EventId,
                      e => e.Id == dry.Id);
-                full.RelatedTos.AddRangeComplement(relatedtos);
+                full.RelatedTos.MergeRange(relatedtos);
 
                 var reqstats = db.Select<REQUEST_STATUS, VEVENT, REL_EVENTS_REQSTATS>(
                     r => r.ReqStatsId,
                     r => r.EventId,
                     e => e.Id == dry.Id);
-                full.RequestStatuses.AddRangeComplement(reqstats);
+                full.RequestStatuses.MergeRange(reqstats);
 
                 var resources = db.Select<RESOURCES, VEVENT, REL_EVENTS_RESOURCES>(
                     r => r.ResourcesId,
                     r => r.EventId,
                     e => e.Id == dry.Id);
-                if (!resources.NullOrEmpty()) full.Resources.AddRangeComplement(resources);
+                if (!resources.NullOrEmpty()) full.Resources.MergeRange(resources);
 
                 var raalarms = this.db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.EventId == dry.Id);
                 if (!raalarms.NullOrEmpty())
                 {
-                    full.AudioAlarms.AddRangeComplement(this.AudioAlarmRepository.FindAll(raalarms.Select(x => x.AlarmId).ToList()));
+                    full.AudioAlarms.MergeRange(this.AudioAlarmRepository.FindAll(raalarms.Select(x => x.AlarmId).ToList()));
                 }
 
                 var rdalarms = this.db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.EventId == dry.Id);
                 if (!rdalarms.NullOrEmpty())
                 {
-                    full.DisplayAlarms.AddRangeComplement(this.DisplayAlarmRepository.FindAll(rdalarms.Select(x => x.AlarmId).ToList()));
+                    full.DisplayAlarms.MergeRange(this.DisplayAlarmRepository.FindAll(rdalarms.Select(x => x.AlarmId).ToList()));
                 }
 
                 var realarms = this.db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.EventId == dry.Id);
                 if (!realarms.NullOrEmpty())
                 {
-                    full.EmailAlarms.AddRangeComplement(this.EmailAlarmRepository.FindAll(realarms.Select(x => x.AlarmId).ToList()));
+                    full.EmailAlarms.MergeRange(this.EmailAlarmRepository.FindAll(realarms.Select(x => x.AlarmId).ToList()));
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -1114,7 +1114,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                             join e in full on r.EventId equals e.Id
                                             where e.Id == x.Id
                                             select y;
-                            if (!xcomments.NullOrEmpty()) x.Comments.AddRangeComplement(xcomments);
+                            if (!xcomments.NullOrEmpty()) x.Comments.MergeRange(xcomments);
                         }
 
                         if (!attendees.NullOrEmpty())
@@ -1134,7 +1134,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                               join e in full on r.EventId equals e.Id
                                               where e.Id == x.Id
                                               select y;
-                            if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.AddRangeComplement(xattachbins);
+                            if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.MergeRange(xattachbins);
                         }
 
                         if (!attachuris.NullOrEmpty())
@@ -1144,7 +1144,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                               join e in full on r.EventId equals e.Id
                                               where e.Id == x.Id
                                               select y;
-                            if (!xattachuris.NullOrEmpty()) x.AttachmentUris.AddRangeComplement(xattachuris);
+                            if (!xattachuris.NullOrEmpty()) x.AttachmentUris.MergeRange(xattachuris);
                         }
 
                         if (!contacts.NullOrEmpty())
@@ -1155,7 +1155,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                             where e.Id == x.Id
                                             select y;
 
-                            if (!xcontacts.NullOrEmpty()) x.Contacts.AddRangeComplement(xcontacts);
+                            if (!xcontacts.NullOrEmpty()) x.Contacts.MergeRange(xcontacts);
                         }
 
                         if (!rdates.NullOrEmpty())
@@ -1165,7 +1165,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                           join e in full on r.EventId equals e.Id
                                           where e.Id == x.Id
                                           select y;
-                            if (!xrdates.NullOrEmpty()) x.RecurrenceDates.AddRangeComplement(xrdates);
+                            if (!xrdates.NullOrEmpty()) x.RecurrenceDates.MergeRange(xrdates);
                         }
 
                         if (!exdates.NullOrEmpty())
@@ -1175,7 +1175,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                            join e in full on r.EventId equals e.Id
                                            where e.Id == x.Id
                                            select y;
-                            if (!xexdates.NullOrEmpty()) x.ExceptionDates.AddRangeComplement(xexdates);
+                            if (!xexdates.NullOrEmpty()) x.ExceptionDates.MergeRange(xexdates);
                         }
 
                         if (!relatedtos.NullOrEmpty())
@@ -1185,7 +1185,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                               join e in full on r.EventId equals e.Id
                                               where e.Id == x.Id
                                               select y;
-                            if (!xrelatedtos.NullOrEmpty()) x.RelatedTos.AddRangeComplement(xrelatedtos);
+                            if (!xrelatedtos.NullOrEmpty()) x.RelatedTos.MergeRange(xrelatedtos);
                         }
 
                         if (!reqstats.NullOrEmpty())
@@ -1195,7 +1195,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                             join e in full on r.EventId equals e.Id
                                             where e.Id == x.Id
                                             select y;
-                            if (!xreqstats.NullOrEmpty()) x.RequestStatuses.AddRangeComplement(xreqstats);
+                            if (!xreqstats.NullOrEmpty()) x.RequestStatuses.MergeRange(xreqstats);
                         }
 
                         if (!resources.NullOrEmpty())
@@ -1205,7 +1205,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                              join e in full on r.EventId equals e.Id
                                              where e.Id == x.Id
                                              select y;
-                            if (!xresources.NullOrEmpty()) x.Resources.AddRangeComplement(xresources);
+                            if (!xresources.NullOrEmpty()) x.Resources.MergeRange(xresources);
                         }
 
                         if (!aalarms.NullOrEmpty())
@@ -1215,7 +1215,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                             join e in full on r.EventId equals e.Id
                                             where e.Id == x.Id
                                             select y;
-                            if (!xraalarms.NullOrEmpty()) x.AudioAlarms.AddRangeComplement(xraalarms);
+                            if (!xraalarms.NullOrEmpty()) x.AudioAlarms.MergeRange(xraalarms);
                         }
 
                         if (!dalarms.NullOrEmpty())
@@ -1225,7 +1225,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                             join e in full on r.EventId equals e.Id
                                             where e.Id == x.Id
                                             select y;
-                            if (!xrdalarms.NullOrEmpty()) x.DisplayAlarms.AddRangeComplement(xrdalarms);
+                            if (!xrdalarms.NullOrEmpty()) x.DisplayAlarms.MergeRange(xrdalarms);
                         }
 
                         if (!ealarms.NullOrEmpty())
@@ -1235,7 +1235,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                             join e in full on r.EventId equals e.Id
                                             where e.Id == x.Id
                                             select y;
-                            if (!xrealarms.NullOrEmpty()) x.EmailAlarms.AddRangeComplement(xrealarms);
+                            if (!xrealarms.NullOrEmpty()) x.EmailAlarms.MergeRange(xrealarms);
                         }
                     });
 

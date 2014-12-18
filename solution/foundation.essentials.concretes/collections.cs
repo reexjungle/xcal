@@ -6,15 +6,13 @@ using System.Text;
 
 namespace reexjungle.foundation.essentials.concretes
 {
-
     /// <summary>
     /// Extension class for generic collections
     /// </summary>
     public static class GenericCollectionExtensions
     {
-
         /// <summary>
-        /// Checks (without null-safety-checks) if a generic collection is empty 
+        /// Checks (without null-safety-checks) if a generic collection is empty
         /// </summary>
         /// <typeparam name="TValue">The generic type of the value.</typeparam>
         /// <param name="source">The geneic collection</param>
@@ -24,10 +22,8 @@ namespace reexjungle.foundation.essentials.concretes
             return (source.Count() == 0);
         }
 
-
-
         /// <summary>
-        /// Checks (with null-safety-checks) if a generic collection is empty 
+        /// Checks (with null-safety-checks) if a generic collection is empty
         /// </summary>
         /// <typeparam name="TValue">The type of the value.</typeparam>
         /// <param name="source">The source.</param>
@@ -36,7 +32,6 @@ namespace reexjungle.foundation.essentials.concretes
         {
             return (source != null) ? source.Count() == 0 : false;
         }
-
 
         /// <summary>
         /// Checks if a generic collection is null or empty
@@ -48,7 +43,6 @@ namespace reexjungle.foundation.essentials.concretes
         {
             return (!(source != null && source.Count() != 0));
         }
-
 
         /// <summary>
         /// Checks if two generic collections are duplicates of each other
@@ -62,9 +56,8 @@ namespace reexjungle.foundation.essentials.concretes
         {
             return (comparer == null)
                 ? first.Intersect(second).Count() == first.Count()
-                :first.Intersect(second, comparer).Count() == first.Count();
+                : first.Intersect(second, comparer).Count() == first.Count();
         }
-
 
         /// <summary>
         /// Checks if members of a generic collection are unique to each other.
@@ -75,9 +68,8 @@ namespace reexjungle.foundation.essentials.concretes
         /// <returns></returns>
         public static bool AreUnique<TValue>(this IEnumerable<TValue> source, IEqualityComparer<TValue> comparer = null)
         {
-            return (comparer == null) ? source.Distinct().Count() == source.Count(): source.Distinct(comparer).Count() == source.Count();
+            return (comparer == null) ? source.Distinct().Count() == source.Count() : source.Distinct(comparer).Count() == source.Count();
         }
-
 
         /// <summary>
         /// Checks if two generic collections are disjoint.
@@ -92,7 +84,6 @@ namespace reexjungle.foundation.essentials.concretes
             return (comparer == null) ? first.Intersect(second).Count() == 0 : first.Intersect(second, comparer).Count() == 0;
         }
 
-
         /// <summary>
         /// Checks if two generic collections intersects each other.
         /// </summary>
@@ -106,8 +97,6 @@ namespace reexjungle.foundation.essentials.concretes
             return (comparer == null) ? first.Intersect(second).Count() > 0 : first.Intersect(second, comparer).Count() > 0;
         }
 
-
-
         /// <summary>
         /// Gets the duplicates between two generic collections
         /// </summary>
@@ -118,13 +107,13 @@ namespace reexjungle.foundation.essentials.concretes
         /// <returns></returns>
         public static IEnumerable<TValue> Duplicates<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second, IEqualityComparer<TValue> comparer = null)
         {
-            return (comparer == null)? second.Intersect(first): second.Intersect(first, comparer);
+            return (comparer == null) ? second.Intersect(first) : second.Intersect(first, comparer);
         }
 
         public static IEnumerable<TValue> NonDuplicates<TValue>(this IEnumerable<TValue> first, IEnumerable<TValue> second, IEqualityComparer<TValue> comparer = null)
         {
-            return (comparer == null)? 
-                (second.Union(first)).Except(second.Intersect(first)):
+            return (comparer == null) ?
+                (second.Union(first)).Except(second.Intersect(first)) :
                 (second.Union(first, comparer)).Except(second.Intersect(first, comparer), comparer);
         }
 
@@ -133,7 +122,7 @@ namespace reexjungle.foundation.essentials.concretes
             list.AddRange(collection.Where(predicate.Compile()));
         }
 
-        public static void AddRangeComplement<TValue>(this List<TValue> list, IEnumerable<TValue> collection, IEqualityComparer<TValue> comparer = null)
+        public static void MergeRange<TValue>(this List<TValue> list, IEnumerable<TValue> collection, IEqualityComparer<TValue> comparer = null)
         {
             var incoming = (comparer != null)
                 ? collection.ToArray().Except(list.Distinct(), comparer)
@@ -141,7 +130,6 @@ namespace reexjungle.foundation.essentials.concretes
 
             if (!incoming.NullOrEmpty()) list.AddRange(incoming);
         }
-
 
         /// <summary>
         /// Adds a value to the specified list when the precondition is satisfied.
@@ -178,9 +166,5 @@ namespace reexjungle.foundation.essentials.concretes
         {
             return new TValue[] { value };
         }
-
-
-
-
     }
 }
