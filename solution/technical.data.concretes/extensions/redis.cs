@@ -15,7 +15,7 @@ namespace reexjungle.technical.data.concretes.extensions.redis
             return string.Format("urn:{0}:{1}", typeof(T).Name.ToLowerInvariant(), key);
         }
 
-        public static void SynchronizeAll<T, Tkey>(this IRedisClient redis, IEnumerable<T> entities, IEnumerable<T> oentities, IRedisTransaction transaction)
+        public static void MergeAll<T, Tkey>(this IRedisClient redis, IEnumerable<T> entities, IEnumerable<T> oentities, IRedisTransaction transaction)
             where Tkey : IEquatable<Tkey>, IComparable<Tkey>
             where T : class, IContainsKey<Tkey>, new()
         {
@@ -33,7 +33,7 @@ namespace reexjungle.technical.data.concretes.extensions.redis
         public static void MergeAll<T>(this IRedisClient redis, IEnumerable<T> entities, IEnumerable<T> oentities, IRedisTransaction transaction)
     where T : class, IContainsKey<string>, new()
         {
-            redis.SynchronizeAll<T, string>(entities, oentities, transaction);
+            redis.MergeAll<T, string>(entities, oentities, transaction);
         }
 
         public static void RemoveAll<T, Tkey>(this IRedisClient redis, IEnumerable<T> oentities, IRedisTransaction transaction)

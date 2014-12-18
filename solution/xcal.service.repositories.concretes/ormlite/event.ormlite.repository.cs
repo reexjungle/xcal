@@ -488,6 +488,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
 
                     if (selection.Contains(attendsexpr.GetMemberName()))
                     {
+                        var orattendees = db.Select<REL_EVENTS_ATTENDEES>(q => Sql.In(q.EventId, okeys));
                         var attendees = source.Attendees;
                         if (!attendees.NullOrEmpty())
                         {
@@ -498,9 +499,9 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                 EventId = x,
                                 AttendeeId = y.Id
                             }));
-                            var orattendees = db.Select<REL_EVENTS_ATTENDEES>(q => Sql.In(q.EventId, okeys));
                             db.MergeAll(rattendees, orattendees);
                         }
+                        else db.RemoveAll(orattendees);
                     }
 
                     if (selection.Contains(attachbinsexpr.GetMemberName()))

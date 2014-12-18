@@ -1941,5 +1941,18 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         {
             redis.MergeAll<T, string>(entities, oentities);
         }
+
+        public static void RemoveAll<T, Tkey>(this IDbConnection db, IEnumerable<T> oentities)
+            where Tkey : IEquatable<Tkey>, IComparable<Tkey>
+            where T : class, IContainsKey<Tkey>, new()
+        {
+            if (!oentities.NullOrEmpty()) db.DeleteByIds<T>(oentities.Select(y => y.Id).ToArray());
+        }
+
+        public static void RemoveAll<T>(this IDbConnection redis, IEnumerable<T> oentities)
+    where T : class, IContainsKey<string>, new()
+        {
+            redis.RemoveAll<T, string>(oentities);
+        }
     }
 }

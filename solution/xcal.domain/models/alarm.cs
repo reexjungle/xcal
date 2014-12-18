@@ -4,6 +4,7 @@ using reexjungle.xcal.domain.contracts;
 using ServiceStack.DataAnnotations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using System.Text;
 
@@ -28,11 +29,11 @@ namespace reexjungle.xcal.domain.models
         public int Repeat { get; set; }
 
         [DataMember]
-        [Ignore]
+        [StringLength(int.MaxValue)]
         public ATTACH_BINARY AttachmentBinary { get; set; }
 
         [DataMember]
-        [Ignore]
+        [StringLength(int.MaxValue)]
         public ATTACH_URI AttachmentUri { get; set; }
 
         public AUDIO_ALARM()

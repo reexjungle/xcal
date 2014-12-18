@@ -166,7 +166,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
                 Classification = CLASS.CONFIDENTIAL,
                 Priority = new PRIORITY(PRIORITYLEVEL.HIGH),
                 Organizer = u1.Organizer,
-                Attendees = u1.Attendees
+                Attendees = new List<ATTENDEE>(u1.Attendees)
             });
 
             var patched = client.Post(new FindEvents { EventIds = keys });
