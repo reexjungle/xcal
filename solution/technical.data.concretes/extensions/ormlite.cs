@@ -1916,10 +1916,10 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             else db.SaveAll(entities, transaction);
         }
 
-        public static void MergeAll<T>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities, IDbTransaction transaction)
+        public static void MergeAll<T>(this IDbConnection redis, IEnumerable<T> entities, IEnumerable<T> oentities, IDbTransaction transaction)
     where T : class, IContainsKey<string>, new()
         {
-            db.MergeAll<T, string>(entities, oentities, transaction);
+            redis.MergeAll<T, string>(entities, oentities, transaction);
         }
 
         public static void MergeAll<T, Tkey>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities)
@@ -1936,10 +1936,10 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             else db.SaveAll(entities);
         }
 
-        public static void MergeAll<T>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities)
+        public static void MergeAll<T>(this IDbConnection redis, IEnumerable<T> entities, IEnumerable<T> oentities)
     where T : class, IContainsKey<string>, new()
         {
-            db.MergeAll<T, string>(entities, oentities);
+            redis.MergeAll<T, string>(entities, oentities);
         }
     }
 }

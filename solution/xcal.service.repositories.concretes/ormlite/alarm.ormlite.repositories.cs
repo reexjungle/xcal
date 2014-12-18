@@ -154,7 +154,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                         AttachmentId = attachbin.Id
                     };
                     var orattachbins = db.Select<REL_AALARMS_ATTACHBINS>(q => q.AlarmId == entity.Id);
-                    db.MergeAllchbin.ToSingleton(), orattachbins);
+                    db.MergeAll(rattachbin.ToSingleton(), orattachbins);
                 }
 
                 if (attachuri != null)
@@ -167,7 +167,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                         AttachmentId = attachbin.Id
                     };
                     var orattachuris = db.Select<REL_AALARMS_ATTACHBINS>(q => q.AlarmId == entity.Id);
-                    db.MergeAllchuri.ToSingleton(), orattachuris);
+                    db.MergeAll(rattachuri.ToSingleton(), orattachuris);
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -212,7 +212,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                         AttachmentId = x.AttachmentBinary.Id
                     });
                     var orattachbins = db.Select<REL_AALARMS_ATTACHBINS>(q => Sql.In(q.AlarmId, keys));
-                    db.MergeAllchbins, orattachbins);
+                    db.MergeAll(rattachbins, orattachbins);
                 }
 
                 if (!attachuris.NullOrEmpty())
@@ -225,7 +225,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                         AttachmentId = x.AttachmentUri.Id
                     });
                     var orattachuris = db.Select<REL_AALARMS_ATTACHURIS>(q => Sql.In(q.AlarmId, keys));
-                    db.MergeAllchuris, orattachuris);
+                    db.MergeAll(rattachuris, orattachuris);
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -290,7 +290,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                 AttachmentId = attachbin.Id
                             });
                             var orattachbins = db.Select<REL_AALARMS_ATTACHBINS>(q => Sql.In(q.AlarmId, okeys));
-                            db.MergeAllchbins, orattachbins);
+                            db.MergeAll(rattachbins, orattachbins);
                         }
                     }
 
@@ -308,7 +308,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                 AttachmentId = attachuri.Id
                             });
                             var orattachuris = db.Select<REL_AALARMS_ATTACHURIS>(q => Sql.In(q.AlarmId, okeys));
-                            db.MergeAllchuris, orattachuris);
+                            db.MergeAll(rattachuris, orattachuris);
                         }
                     }
                 }
@@ -988,7 +988,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                     db.SaveAll(attendees);
                     var rattendees = attendees.Select(x => new REL_EALARMS_ATTENDEES { AlarmId = entity.Id, AttendeeId = x.Id });
                     var orattendees = db.Select<REL_EALARMS_ATTENDEES>(q => q.Id == entity.Id && Sql.In(q.AttendeeId, attendees.Select(x => x.Id).ToArray()));
-                    db.MergeAllndees, orattendees);
+                    db.MergeAll(rattendees, orattendees);
                 }
 
                 if (!attachbins.NullOrEmpty())
@@ -996,7 +996,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                     db.SaveAll(attachbins);
                     var rattachbins = attachbins.Select(x => new REL_EALARMS_ATTACHBINS { AlarmId = entity.Id, AttachmentId = x.Id });
                     var orattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachbins.Select(x => x.Id).ToArray()));
-                    db.MergeAllchbins, orattachbins);
+                    db.MergeAll(rattachbins, orattachbins);
                 }
 
                 if (!attachuris.NullOrEmpty())
@@ -1004,7 +1004,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                     db.SaveAll(attachuris);
                     var rattachuris = attachuris.Select(x => new REL_EALARMS_ATTACHURIS { AlarmId = entity.Id, AttachmentId = x.Id });
                     var orattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => q.Id == entity.Id && Sql.In(q.AttachmentId, attachuris.Select(x => x.Id).ToArray()));
-                    db.MergeAllchuris, orattachuris);
+                    db.MergeAll(rattachuris, orattachuris);
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -1047,7 +1047,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                             AttendeeId = x.Id
                         }));
                     var orattendees = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.Id, keys));
-                    db.MergeAllndees, orattendees);
+                    db.MergeAll(rattendees, orattendees);
                 }
 
                 if (!attachbins.NullOrEmpty())
@@ -1061,7 +1061,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                             AttachmentId = x.Id
                         }));
                     var orattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.Id, keys));
-                    db.MergeAllchbins, orattachbins);
+                    db.MergeAll(rattachbins, orattachbins);
                 }
 
                 if (!attachuris.NullOrEmpty())
@@ -1075,7 +1075,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                             AttachmentId = x.Id
                         }));
                     var orattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.Id, keys));
-                    db.MergeAllchuris, orattachuris);
+                    db.MergeAll(rattachuris, orattachuris);
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -1160,7 +1160,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                     AttendeeId = y.Id
                                 }));
                                 var orattendees = db.Select<REL_EALARMS_ATTENDEES>(q => Sql.In(q.AlarmId, okeys));
-                                db.MergeAllndees, orattendees);
+                                db.MergeAll(rattendees, orattendees);
                             }
                         }
 
@@ -1177,7 +1177,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                     AttachmentId = y.Id
                                 }));
                                 var orattachbins = db.Select<REL_EALARMS_ATTACHBINS>(q => Sql.In(q.AlarmId, okeys));
-                                db.MergeAllchbins, orattachbins);
+                                db.MergeAll(rattachbins, orattachbins);
                             }
                         }
 
@@ -1194,7 +1194,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                     AttachmentId = y.Id
                                 }));
                                 var orattachuris = db.Select<REL_EALARMS_ATTACHURIS>(q => Sql.In(q.AlarmId, okeys));
-                                db.MergeAllchuris, orattachuris);
+                                db.MergeAll(rattachuris, orattachuris);
                             }
                         }
 
