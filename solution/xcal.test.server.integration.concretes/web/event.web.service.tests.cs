@@ -1,12 +1,12 @@
 ﻿using FizzWare.NBuilder;
 using reexjungle.foundation.essentials.concretes;
-using reexjungle.foundation.essentials.contracts;
 using reexjungle.infrastructure.operations.concretes;
 using reexjungle.infrastructure.operations.contracts;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.domain.operations;
 using reexjungle.xcal.test.server.integration.contracts;
+using reexjungle.xcal.test.units.concretes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,22 +14,22 @@ using Xunit;
 
 namespace reexjungle.xcal.test.server.integration.concretes.web
 {
-    public abstract class EventWebServicesTests : IWebServiceTests
+    public abstract class EventWebServicesTests : IWebServiceIntegrationTests
     {
-        protected GuidKeyGenerator keygen = null;
-        protected StringFPIKeyGenerator fkeygen = null;
+        protected CalendarUnitTests caltests = new CalendarUnitTests();
+        protected EventUnitTests evtests = new EventUnitTests();
+        protected PropertiesUnitTests proptests = new PropertiesUnitTests();
+        protected AlarmUnitTests altests = new AlarmUnitTests();
         protected JsonWebServiceTestFactory factory = null;
 
         public EventWebServicesTests()
         {
             this.factory = new JsonWebServiceTestFactory(null);
-            this.keygen = new GuidKeyGenerator();
-            this.fkeygen = new StringFPIKeyGenerator();
         }
 
         public void Initialize()
         {
-            this.fkeygen = Builder<StringFPIKeyGenerator>
+            this.caltests.FPIKeyGen = Builder<StringFPIKeyGenerator>
                 .CreateNew()
                 .With(x => x.Owner = Pick<string>.RandomItemFrom(new List<string> { "reexjungle", "reexmonkey" }))
                 .And(x => x.Authority = Pick<Authority>.RandomItemFrom(new List<Authority> { Authority.ISO, Authority.None, Authority.NonStandard }))
@@ -43,83 +43,23 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             this.factory.GetClient().Post(new FlushDatabase { Mode = FlushMode.soft });
         }
 
-        protected IEnumerable<VEVENT> GenerateEventsOfSize(int n)
-        {
-            var dgen = new SequentialGenerator<DateTime> { IncrementDateBy = IncrementDate.Day, Direction = GeneratorDirection.Ascending };
-            dgen.StartingWith(new DateTime(2014, 06, 15));
-
-            return Builder<VEVENT>.CreateListOfSize(n)
-                .All()
-                .With(x => x.Uid = keygen.GetNextKey())
-                .And(x => x.Organizer = new ORGANIZER
-                {
-                    Id = keygen.GetNextKey(),
-                    CN = Pick<string>.RandomItemFrom(new string[] { "Caesar", "Koba", "Cornelia", "Blue Eyes", "Grey", "Ash" }),
-                    Address = new URI("organizer@apes.ju"),
-                    Language = new LANGUAGE("en")
-                })
-                .And(x => x.Location = new LOCATION
-                {
-                    Text = "Düsseldorf",
-                    AlternativeText = new URI("http://www.duesseldorf.de/de/"),
-                    Language = new LANGUAGE("de", "DE")
-                })
-                .And(x => x.Summary = new SUMMARY("Test Meeting"))
-                .And(x => x.Description = new DESCRIPTION("A meeting for coding gurus, nerds, geeks and quants who enjoy programming for others such that the world becomes a better place for all qui sonts presentes à la Gare de Nöel für ein außerordentliches wünderschönes Abend mit Bären aaaaaaaaaaaaa."))
-                .And(x => x.Start = new DATE_TIME(dgen.Generate()))
-                .And(x => x.Duration = new DURATION(0,
-                    new RandomGenerator().Next(1, 7),
-                    new RandomGenerator().Next(1, 12),
-                    new RandomGenerator().Next(0, 59),
-                    new RandomGenerator().Next(0, 59)))
-                .And(x => x.Status = STATUS.CONFIRMED)
-                .And(x => x.Transparency = TRANSP.TRANSPARENT)
-                .And(x => x.Classification = CLASS.PUBLIC)
-                .Build();
-        }
-
-        protected IEnumerable<ATTENDEE> GenerateAttendeesOfSize(int n)
-        {
-            return Builder<ATTENDEE>.CreateListOfSize(n)
-                .All()
-                .With(x => x.Id = keygen.GetNextKey())
-                .And(x => x.CN = Pick<string>.RandomItemFrom(new string[] { "Caesar", "Koba", "Cornelia", "Blue Eyes", "Grey", "Ash" }))
-                .And(x => x.Address = new URI(string.Format("{0}@apes.je", x.CN.Replace(" ", ".").ToLower())))
-                .And(x => x.Role = Pick<ROLE>.RandomItemFrom(new List<ROLE> { ROLE.CHAIR, ROLE.NON_PARTICIPANT, ROLE.OPT_PARTICIPANT, ROLE.REQ_PARTICIPANT }))
-                .And(x => x.Participation = Pick<PARTSTAT>.RandomItemFrom(new List<PARTSTAT> { PARTSTAT.ACCEPTED, PARTSTAT.COMPLETED, PARTSTAT.DECLINED, PARTSTAT.NEEDS_ACTION, PARTSTAT.TENTATIVE }))
-                .And(x => x.CalendarUserType = Pick<CUTYPE>.RandomItemFrom(new List<CUTYPE> { CUTYPE.GROUP, CUTYPE.INDIVIDUAL, CUTYPE.RESOURCE, CUTYPE.ROOM }))
-                .And(x => x.Language = new LANGUAGE(Pick<string>.RandomItemFrom(new List<string> { "en", "fr", "de" })))
-                .Build();
-        }
-
-        protected void RandomlyAttendEvents(ref IEnumerable<VEVENT> events, IEnumerable<ATTENDEE> attendees)
-        {
-            var atts = attendees.ToList(); var max = atts.Count;
-            foreach (var x in events) x.Attendees.AddRange(Pick<ATTENDEE>.UniqueRandomList(With.Between(1, max)).From(atts));
-        }
-
         [Fact]
         public void MaintainSingleEvent()
         {
             this.TearDown();
             this.Initialize();
 
-            var c1 = new VCALENDAR
-            {
-                Id = this.keygen.GetNextKey(),
-                ProdId = this.fkeygen.GetNextKey(),
-                Method = METHOD.PUBLISH
-            };
+            var c1 = this.caltests.GenerateCalendarsOfSize(1).First();
 
-            var events = this.GenerateEventsOfSize(1);
+            var events = this.evtests.GenerateEventsOfSize(1);
             var e1 = events.First();
             e1.RecurrenceRule = new RECUR
                 {
-                    Id = keygen.GetNextKey(),
+                    Id = this.evtests.KeyGen.GetNextKey(),
                     FREQ = FREQ.MONTHLY
                 };
 
-            e1.Attendees = this.GenerateAttendeesOfSize(4).ToList();
+            e1.Attendees = this.proptests.GenerateAttendeesOfSize(4).ToList();
 
             var client = this.factory.GetClient();
             client.Post(new AddCalendar { Calendar = c1 });
@@ -162,17 +102,9 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             this.TearDown();
             this.Initialize();
 
-            var events = this.GenerateEventsOfSize(5);
-            var attendees = this.GenerateAttendeesOfSize(10);
-            this.RandomlyAttendEvents(ref events, attendees);
-
-            var calendar = new VCALENDAR
-            {
-                Id = this.keygen.GetNextKey(),
-                ProdId = this.fkeygen.GetNextKey(),
-                Method = METHOD.PUBLISH
-            };
-
+            var calendar = this.caltests.GenerateCalendarsOfSize(1).First();
+            var events = this.evtests.GenerateEventsOfSize(5);
+            this.evtests.RandomlyAttendEvents(ref events, this.proptests.GenerateAttendeesOfSize(10));
             var keys = events.Select(x => x.Id).ToList();
 
             var client = this.factory.GetClient();
@@ -234,7 +166,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
                 Classification = CLASS.CONFIDENTIAL,
                 Priority = new PRIORITY(PRIORITYLEVEL.HIGH),
                 Organizer = u1.Organizer,
-                Attendees = u1.Attendees
+                Attendees = new List<ATTENDEE>(u1.Attendees)
             });
 
             var patched = client.Post(new FindEvents { EventIds = keys });
@@ -251,6 +183,56 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             client.Delete(new DeleteEvents { EventIds = keys });
             var deleted = client.Post(new FindEvents { EventIds = keys });
             Assert.Equal(deleted.Count, 0);
+        }
+
+        [Fact]
+        public void MaintainSingleEventWithAlarms()
+        {
+            this.TearDown();
+            this.Initialize();
+
+            var calendar = this.caltests.GenerateCalendarsOfSize(1).First();
+
+            var events = this.evtests.GenerateEventsOfSize(1);
+            this.evtests.RandomlyAttendEvents(ref events, this.proptests.GenerateAttendeesOfSize(10));
+            var e1 = events.First();
+
+            e1.AudioAlarms = this.altests.GenerateAudioAlarmsOfSize(5).ToList();
+            e1.DisplayAlarms = this.altests.GenerateDisplayAlarmsOfSize(5).ToList();
+            e1.EmailAlarms = this.altests.GenerateEmailAlarmsOfSize(3).ToList();
+
+            var client = this.factory.GetClient();
+            client.Post(new AddCalendar { Calendar = calendar });
+            client.Post(new AddEvent { CalendarId = calendar.Id, Event = e1 });
+
+            var re1 = client.Get(new FindEvent { EventId = e1.Id });
+            Assert.Equal(re1, e1);
+            Assert.Equal(re1.AudioAlarms.AreDuplicatesOf(e1.AudioAlarms), true);
+            Assert.NotEqual(re1.EmailAlarms.AreDuplicatesOf(e1.EmailAlarms), false);
+
+            ////remove email alarm and update
+            e1.AudioAlarms.First().AttachmentUri.FormatType = new FMTTYPE("file", "video");
+            var ealarm = e1.EmailAlarms.First();
+            e1.EmailAlarms.Clear();
+
+            client.Put(new UpdateEvent { Event = e1 });
+            re1 = client.Get(new FindEvent { EventId = e1.Id });
+            Assert.Equal(re1.EmailAlarms.Count, 0);
+
+            //reinsert some alarms and update
+            e1.EmailAlarms.AddRange(new EMAIL_ALARM[] { ealarm });
+            client.Put(new UpdateEvent { Event = e1 });
+            re1 = client.Get(new FindEvent { EventId = e1.Id });
+            Assert.Equal(re1.EmailAlarms.Count, 1);
+
+            e1.EmailAlarms.First().Description.Text = "This is a patched alarm";
+            client.Patch(new PatchEvent { EmailAlarms = e1.EmailAlarms, EventId = e1.Id });
+            var patched = client.Get(new FindEvent { EventId = e1.Id });
+            Assert.Equal(patched.EmailAlarms.First().Description.Text, "This is a patched alarm");
+
+            client.Delete(new DeleteEvent { EventId = e1.Id });
+            var deleted = client.Get(new FindEvent { EventId = e1.Id });
+            Assert.Equal(deleted, null);
         }
     }
 

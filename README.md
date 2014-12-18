@@ -152,18 +152,19 @@ Dependencies
 ============
 xCal depends on the awesome open source software libraries below, in order to be compiled, executed and tested. Furthermore, xCal integrates and extends the source code of some of these libraries for its core functionality. Each referenced library is released under its respective license.
 
-The following development library is referenced in all of the xcal projects and is required to compile the application:
+The following development library is referenced in all of the xcal projects:
 * [Semantic Git Versioning](https://www.nuget.org/packages/SemanticGit/) [(license)](https://github.com/kzu/SemanticGit/blob/master/LICENSE)
 
-The following library is referenced in almost all of the xcal projects and are required to compile and run and test the application:
+The following library is referenced in almost all of the xcal projects:
 * [Service Stack V3](https://github.com/ServiceStackV3/ServiceStackV3) [(license)](https://github.com/ServiceStack/ServiceStack/blob/v3/LICENSE)
 
-The following library is referenced in the xcal test projects (*xcal.test.server.integration.**) only and is required to test the application:
+The following libraries are only referenced in the xcal test projects (*xcal.test.server.integration.**):
 * [NBuilder](https://www.nuget.org/packages/NBuilder/) [(license)](http://www.gnu.org/licenses/lgpl.html)
+* [xUnit](https://www.nuget.org/packages/xunit/1.9.2) as transitive reference to [xunit](https://github.com/xunit/xunit) [(license)](https://github.com/xunit/xunit/blob/master/license.txt)
 
-The following libraries are referenced in the xcal application projects (*xcal.application.server.web.**) only and are required to log and trace in the application:
-* [ELMAH on MySQL](https://www.nuget.org/packages/elmah.mysql/) with transitive reference to [Elmah](https://code.google.com/p/elmah/) [(license)](http://www.apache.org/licenses/LICENSE-2.0)
-* [Nlog](https://github.com/NLog/NLog/) with transitive reference to [Nlog Project](http://nlog-project.org/) [(license)](https://raw.githubusercontent.com/NLog/NLog/master/LICENSE.txt)
+The following libraries are only referenced in the xcal application projects (*xcal.application.server.web.**):
+* [ELMAH on MySQL](https://www.nuget.org/packages/elmah.mysql/) as transitive reference to [Elmah](https://code.google.com/p/elmah/) [(license)](http://www.apache.org/licenses/LICENSE-2.0)
+* [Nlog](https://github.com/NLog/NLog/) as transitive reference to [Nlog Project](http://nlog-project.org/) [(license)](https://raw.githubusercontent.com/NLog/NLog/master/LICENSE.txt)
 
 Contributing
 ============
@@ -188,7 +189,7 @@ xCal is created by [Emmanuel Ngwane](https://github.com/reexmonkey) and maintain
 Keep track on upcoming features, development and community news:
 * Chat on [**xCal Google+ Community**](https://plus.google.com/communities/105811904931972542578)
 * Follow [**@xcal5545**](https://twitter.com/xcal5545) on twitter
-* Raise [**issues**](https://github.com/reexjungle/xcal/issues) on xCal.
+* Raise [**issues**](https://github.com/reexjungle/xcal/issues) on Github.
  
 
 License

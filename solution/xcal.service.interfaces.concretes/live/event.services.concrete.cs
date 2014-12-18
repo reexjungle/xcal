@@ -70,7 +70,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                     if (!this.repository.EventRepository.ContainsKey(request.Event.Id))
                     {
                         var calendar = this.repository.Find(request.CalendarId);
-                        calendar.Events.AddRangeComplement(request.Event.ToSingleton());
+                        calendar.Events.MergeRange(request.Event.ToSingleton());
                         this.repository.Save(calendar);
                     }
                 }
@@ -90,7 +90,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                     if (!this.repository.EventRepository.ContainsKeys(keys))
                     {
                         var calendar = this.repository.Find(request.CalendarId);
-                        calendar.Events.AddRangeComplement(request.Events);
+                        calendar.Events.MergeRange(request.Events);
                         this.repository.Save(calendar);
                     }
                 }

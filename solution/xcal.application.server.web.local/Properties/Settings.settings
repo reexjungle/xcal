@@ -34,7 +34,7 @@
       <Value Profile="(Default)">xcal_nlog_local_db</Value>
     </Setting>
     <Setting Name="primary_storage" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">rdbms</Value>
+      <Value Profile="(Default)">nosql</Value>
     </Setting>
   </Settings>
 </SettingsFile>

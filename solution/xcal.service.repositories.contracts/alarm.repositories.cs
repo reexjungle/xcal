@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using reexjungle.technical.data.contracts;
+using reexjungle.xcal.domain.models;
 using ServiceStack.OrmLite;
 using ServiceStack.Redis;
-using reexjungle.technical.data.contracts;
-using reexjungle.xcal.domain.models;
+using System.Collections.Generic;
 
 namespace reexjungle.xcal.service.repositories.contracts
 {
-
     #region audio alarm repository
 
     /// <summary>
@@ -14,37 +13,7 @@ namespace reexjungle.xcal.service.repositories.contracts
     /// </summary>
     public interface IAudioAlarmRepository :
         IReadRepository<AUDIO_ALARM, string>,
-        IWriteRepository<AUDIO_ALARM, string>
-    {
-
-        /// <summary>
-        /// Populates a sparse audio alarm entity with details from its consitutent entities
-        /// </summary>
-        /// <param name="dry">The audio alarm entity to be populated</param>
-        /// <returns>The populated audio alarm entity</returns>
-        AUDIO_ALARM Hydrate(AUDIO_ALARM dry);
-
-        /// <summary>
-        /// Populates audio alarm entities with details from respective constituent entities
-        /// </summary>
-        /// <param name="dry">The sparse audio alarm entities to be populated</param>
-        /// <returns>Populated audio alarm entities</returns>
-        IEnumerable<AUDIO_ALARM> HydrateAll(IEnumerable<AUDIO_ALARM> dry);
-
-        /// <summary>
-        /// Depopulates aggregate entities from event
-        /// </summary>
-        /// <param name="full">The audio alarm entity to depopulate</param>
-        /// <returns>Depopulated event</returns>
-        AUDIO_ALARM Dehydrate(AUDIO_ALARM full);
-
-        /// <summary>
-        /// Depopulates aggregate entities from respective events
-        /// </summary>
-        /// <param name="full">The audio alarm entities to depopulate</param>
-        /// <returns>Depopulated events</returns>
-        IEnumerable<AUDIO_ALARM> Dehydrate(IEnumerable<AUDIO_ALARM> full);
-    }
+        IWriteRepository<AUDIO_ALARM, string> { }
 
     /// <summary>
     /// Specifies an interface for a repository of audio alerts connected to an ORMlite source
@@ -57,7 +26,6 @@ namespace reexjungle.xcal.service.repositories.contracts
         IDbConnectionFactory DbConnectionFactory { get; set; }
     }
 
-
     /// <summary>
     /// Specifies an interface for a repository of audio alerts connected to a NoSQL Redis source
     /// </summary>
@@ -67,9 +35,9 @@ namespace reexjungle.xcal.service.repositories.contracts
         /// Gets or sets the connection factory of ORMLite datasources
         /// </summary>
         IRedisClientsManager RedisClientsManager { get; set; }
-    } 
+    }
 
-    #endregion
+    #endregion audio alarm repository
 
     #region display alarm repository
 
@@ -78,7 +46,7 @@ namespace reexjungle.xcal.service.repositories.contracts
     /// </summary>
     public interface IDisplayAlarmRepository :
         IReadRepository<DISPLAY_ALARM, string>,
-        IWriteRepository<DISPLAY_ALARM, string> {}
+        IWriteRepository<DISPLAY_ALARM, string> { }
 
     /// <summary>
     /// Specifies an interface for a repository of display alerts connected to an ORMlite source
@@ -91,7 +59,6 @@ namespace reexjungle.xcal.service.repositories.contracts
         IDbConnectionFactory DbConnectionFactory { get; set; }
     }
 
-
     /// <summary>
     /// Specifies an interface for a repository of display alerts connected to a NoSQL Redis source
     /// </summary>
@@ -103,10 +70,9 @@ namespace reexjungle.xcal.service.repositories.contracts
         IRedisClientsManager RedisClientsManager { get; set; }
     }
 
-    #endregion
+    #endregion display alarm repository
 
     #region email alarm repository
-
 
     /// <summary>
     /// Specifies a general interface for a repository of email alerts
@@ -115,7 +81,6 @@ namespace reexjungle.xcal.service.repositories.contracts
         IReadRepository<EMAIL_ALARM, string>,
         IWriteRepository<EMAIL_ALARM, string>
     {
-
         /// <summary>
         /// Populates a sparse email alarm entity with details from its consitutent entities
         /// </summary>
@@ -143,7 +108,6 @@ namespace reexjungle.xcal.service.repositories.contracts
         /// <param name="full">The audio alarm entities to depopulate</param>
         /// <returns>Depopulated events</returns>
         IEnumerable<EMAIL_ALARM> DehydrateAll(IEnumerable<EMAIL_ALARM> full);
-
     }
 
     /// <summary>
@@ -157,7 +121,6 @@ namespace reexjungle.xcal.service.repositories.contracts
         IDbConnectionFactory DbConnectionFactory { get; set; }
     }
 
-
     /// <summary>
     /// Specifies an interface for a repository of email alerts connected to a NoSQL Redis source
     /// </summary>
@@ -169,7 +132,5 @@ namespace reexjungle.xcal.service.repositories.contracts
         IRedisClientsManager RedisClientsManager { get; set; }
     }
 
-
-    #endregion
-
+    #endregion email alarm repository
 }

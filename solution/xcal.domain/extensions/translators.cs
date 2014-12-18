@@ -210,6 +210,7 @@ namespace reexjungle.xcal.domain.extensions
 
         public static DATE_TIME ToDATE_TIME(this DateTime value, TZID tzid)
         {
+            if (value == default(DateTime)) return new DATE_TIME(default(DATE_TIME), tzid);
             if (tzid != null)
             {
                 if (value.Kind == DateTimeKind.Utc) throw new ArgumentException("UTC Date Time not compatible with Local Time with Time Zone Id");
@@ -224,11 +225,13 @@ namespace reexjungle.xcal.domain.extensions
 
         public static DATE ToDATE(this DateTime value)
         {
+            if (value == default(DateTime)) return default(DATE);
             return new DATE((uint)value.Year, (uint)value.Month, (uint)value.Day);
         }
 
         public static TIME ToTIME(this DateTime value, TimeZoneInfo tzinfo = null)
         {
+            if (value == default(DateTime)) return new TIME(default(TIME), tzinfo != null ? tzinfo.ToTZID() : null);
             if (tzinfo != null)
             {
                 if (value.Kind == DateTimeKind.Utc) throw new ArgumentException();

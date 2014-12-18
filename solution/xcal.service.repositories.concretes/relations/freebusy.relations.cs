@@ -1,66 +1,13 @@
-﻿using System;
+﻿using reexjungle.xcal.domain.models;
+using ServiceStack.DataAnnotations;
+using ServiceStack.OrmLite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ServiceStack.DataAnnotations;
-using ServiceStack.OrmLite;
-using reexjungle.xcal.domain.models;
 
 namespace reexjungle.xcal.service.repositories.concretes.relations
 {
-    public class REL_FREEBUSIES_ORGANIZERS : IEquatable<REL_FREEBUSIES_ORGANIZERS>
-    {
-        /// <summary>
-        /// Gets or sets the unique identifier of the event-organizer relation
-        /// </summary>
-        [Index(true)]
-        public string Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the unique identifier of the related event entity
-        /// </summary>
-        [ForeignKey(typeof(VFREEBUSY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the unique identifier of the related organizer entity
-        /// </summary>
-        [ForeignKey(typeof(ORGANIZER), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string OrganizerId { get; set; }
-
-        public bool Equals(REL_FREEBUSIES_ORGANIZERS other)
-        {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.OrganizerId.Equals(other.OrganizerId, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            var rel = obj as REL_FREEBUSIES_ORGANIZERS;
-            if (rel == null) return false;
-            return this.Equals(rel);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.TodoId.GetHashCode() ^ this.OrganizerId.GetHashCode();
-        }
-
-        public static bool operator ==(REL_FREEBUSIES_ORGANIZERS x, REL_FREEBUSIES_ORGANIZERS y)
-        {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
-        }
-
-        public static bool operator !=(REL_FREEBUSIES_ORGANIZERS x, REL_FREEBUSIES_ORGANIZERS y)
-        {
-            if (x == null || y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
-        }
-    }
-
     public class REL_FREEBUSIES_ATTACHBINS : IEquatable<REL_FREEBUSIES_ATTACHBINS>
     {
         /// <summary>
@@ -378,5 +325,4 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
             return !x.Equals(y);
         }
     }
-
 }

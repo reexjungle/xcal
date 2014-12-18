@@ -1,15 +1,15 @@
-﻿using System;
+﻿using reexjungle.xcal.domain.models;
+using ServiceStack.DataAnnotations;
+using ServiceStack.OrmLite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ServiceStack.DataAnnotations;
-using ServiceStack.OrmLite;
-using reexjungle.xcal.domain.models;
 
 namespace reexjungle.xcal.service.repositories.concretes.relations
 {
     #region TimeZone relations
-    
+
     public class REL_TIMEZONES_STANDARDS : IEquatable<REL_TIMEZONES_STANDARDS>
     {
         /// <summary>
@@ -114,56 +114,11 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
             if (x == null || y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
-    } 
-    
-    #endregion
+    }
+
+    #endregion TimeZone relations
 
     #region Standard Time relations
-    
-    public class REL_STANDARDS_RECURS : IEquatable<REL_STANDARDS_RECURS>
-    {
-        [Index(true)]
-        public string Id { get; set; }
-
-        [ForeignKey(typeof(STANDARD), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string StandardId { get; set; }
-
-
-        [ForeignKey(typeof(RECUR), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string RecurrenceId { get; set; }
-
-        public bool Equals(REL_STANDARDS_RECURS other)
-        {
-            if (other == null) return false;
-            return (this.StandardId.Equals(other.StandardId, StringComparison.OrdinalIgnoreCase) &&
-                this.RecurrenceId.Equals(other.RecurrenceId, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            var rel = obj as REL_STANDARDS_RECURS;
-            if (rel == null) return false;
-            return this.Equals(rel);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.StandardId.GetHashCode() ^ this.RecurrenceId.GetHashCode();
-        }
-
-        public static bool operator ==(REL_STANDARDS_RECURS x, REL_STANDARDS_RECURS y)
-        {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
-        }
-
-        public static bool operator !=(REL_STANDARDS_RECURS x, REL_STANDARDS_RECURS y)
-        {
-            if (x == null || y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
-        }
-    }
 
     public class REL_STANDARDS_COMMENTS : IEquatable<REL_STANDARDS_COMMENTS>
     {
@@ -172,7 +127,6 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         [ForeignKey(typeof(STANDARD), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string StandardId { get; set; }
-
 
         [ForeignKey(typeof(COMMENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string CommentId { get; set; }
@@ -218,7 +172,6 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         [ForeignKey(typeof(STANDARD), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string StandardId { get; set; }
 
-
         [ForeignKey(typeof(RDATE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string RecurrenceDateId { get; set; }
 
@@ -263,7 +216,6 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         [ForeignKey(typeof(STANDARD), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string StandardId { get; set; }
 
-
         [ForeignKey(typeof(TZNAME), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string TimeZoneName { get; set; }
 
@@ -298,56 +250,11 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
             if (x == null || y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
-    } 
-    
-    #endregion
+    }
+
+    #endregion Standard Time relations
 
     #region Daylight Time relations
-
-    public class REL_DAYLIGHTS_RECURS : IEquatable<REL_DAYLIGHTS_RECURS>
-    {
-        [Index(true)]
-        public string Id { get; set; }
-
-        [ForeignKey(typeof(DAYLIGHT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string DaylightId { get; set; }
-
-
-        [ForeignKey(typeof(RECUR), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string RecurrenceId { get; set; }
-
-        public bool Equals(REL_DAYLIGHTS_RECURS other)
-        {
-            if (other == null) return false;
-            return (this.DaylightId.Equals(other.DaylightId, StringComparison.OrdinalIgnoreCase) &&
-                this.RecurrenceId.Equals(other.RecurrenceId, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            var rel = obj as REL_DAYLIGHTS_RECURS;
-            if (rel == null) return false;
-            return this.Equals(rel);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.DaylightId.GetHashCode() ^ this.RecurrenceId.GetHashCode();
-        }
-
-        public static bool operator ==(REL_DAYLIGHTS_RECURS x, REL_DAYLIGHTS_RECURS y)
-        {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
-        }
-
-        public static bool operator !=(REL_DAYLIGHTS_RECURS x, REL_DAYLIGHTS_RECURS y)
-        {
-            if (x == null || y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
-        }
-    }
 
     public class REL_DAYLIGHTS_COMMENTS : IEquatable<REL_DAYLIGHTS_COMMENTS>
     {
@@ -401,7 +308,6 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         [ForeignKey(typeof(DAYLIGHT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string DaylightId { get; set; }
 
-
         [ForeignKey(typeof(RDATE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string RecurrenceDateId { get; set; }
 
@@ -446,7 +352,6 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         [ForeignKey(typeof(DAYLIGHT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string DaylightId { get; set; }
 
-
         [ForeignKey(typeof(TZNAME), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string TimeZoneName { get; set; }
 
@@ -483,6 +388,5 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         }
     }
 
-    #endregion
-
+    #endregion Daylight Time relations
 }
