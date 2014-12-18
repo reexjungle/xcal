@@ -248,7 +248,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                         EventId = x.Id
                     });
                     var orevents = db.Select<REL_CALENDARS_EVENTS>(q => q.CalendarId == entity.Id);
-                    db.SynchronizeAll(revents, orevents);
+                    db.MergeAll(revents, orevents);
                 }
             }
             catch (ArgumentNullException) { throw; }
@@ -314,7 +314,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                 EventId = y.Id
                             }));
                             var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, okeys));
-                            db.SynchronizeAll(revents, orevents);
+                            db.MergeAll(revents, orevents);
                         }
                     }
                 }
@@ -371,7 +371,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                         EventId = x.Id
                     }));
                     var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, keys));
-                    db.SynchronizeAll(revents, orevents);
+                    db.MergeAll(revents, orevents);
                 }
             }
             catch (ArgumentNullException) { throw; }

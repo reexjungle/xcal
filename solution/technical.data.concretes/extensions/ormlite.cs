@@ -1,14 +1,14 @@
-﻿using System;
+﻿using reexjungle.foundation.essentials.concretes;
+using reexjungle.foundation.essentials.contracts;
+using ServiceStack.Common.Utils;
+using ServiceStack.OrmLite;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using System.Linq;
 using System.Linq.Expressions;
-using ServiceStack.OrmLite;
-using ServiceStack.Common.Utils;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.foundation.essentials.concretes;
+using System.Text;
 
 namespace reexjungle.technical.data.concretes.extensions.ormlite
 {
@@ -22,7 +22,7 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
 
     [Flags]
     public enum JoinMode
-    { 
+    {
         INNER = 0x0001,
         OUTER = 0x0002,
         LEFT = 0x0004,
@@ -30,11 +30,10 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         FULL = 0x0010
     }
 
-    #endregion
+    #endregion helper enumerations
 
     public static class OrmLiteExtensions
     {
-
         #region From original service stack source implementation
 
         internal static IDataReader ExecReader(this IDbCommand cmd, string sql)
@@ -149,18 +148,16 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             foreach (var row in rows)
             {
                 var id = IdUtils.GetId(row);
-                if (id != defkeyvalue && existing.ContainsKey(id)) 
+                if (id != defkeyvalue && existing.ContainsKey(id))
                     cmd.Update(row);
-                else 
+                else
                     cmd.Insert(row);
             }
-
         }
 
-        #endregion
+        #endregion From original service stack source implementation
 
         #region common dml read operations
-
 
         public static string GetQuotedTableName<TTable>()
         {
@@ -184,7 +181,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         {
             var modeldef = ModelDefinition<TTable>.Definition;
             return OrmLiteConfig.DialectProvider.GetQuotedColumnName(modeldef.PrimaryKey.FieldName);
-
         }
 
         public static string ToQuotedFieldname<TTable>(this string fieldname)
@@ -222,7 +218,7 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             return sb.ToString();
         }
 
-        #endregion
+        #endregion common dml read operations
 
         #region selects and table joins
 
@@ -239,7 +235,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
                 case JoinMode.LEFT | JoinMode.OUTER: return "RIGHT OUTER JOIN";
                 default: return "JOIN";
             }
-
         }
 
         public static List<string> SelectParam<TModel>(this IDbConnection db,
@@ -255,7 +250,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             int? skip = null,
             int? rows = null)
         {
-
             var sb = new StringBuilder();
             var ev = OrmLiteConfig.DialectProvider.ExpressionVisitor<TModel>();
 
@@ -289,7 +283,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             int? skip = null,
             int? rows = null)
         {
-
             var sb = new StringBuilder();
             var ev = OrmLiteConfig.DialectProvider.ExpressionVisitor<TModel>();
 
@@ -308,7 +301,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
                 return reader.ReadToList<TParam>();
             }
         }
-
 
         #region Group I: Select from 1 table (extended)
 
@@ -353,11 +345,11 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             });
         }
 
-        #endregion
+        #endregion Group I: Select from 1 table (extended)
 
         #region Group II: Joining 2 tables
 
-        #region  Join Scenario: 2 tables (T1, T2), 1 relation (R12) and 1 predicate (P1)
+        #region Join Scenario: 2 tables (T1, T2), 1 relation (R12) and 1 predicate (P1)
 
         /// <summary>
         /// Combines records of a POCO model from 2 tables using 1 relational table, 1 predicate (from first table) and string-based keys.
@@ -417,7 +409,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         {
             return db.Select<T1, T2, R12, K, K>(R12_FK1, P1, R12_FK2, mode, quoted, skip, rows);
         }
-
 
         /// <summary>
         /// Combines records of a POCO model from 2 tables using 1 relational table, 1 predicate (from first table) and 2 key types
@@ -479,9 +470,10 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
                 return reader.ConvertToList<T1>();
             }
         }
-        #endregion
 
-        #region  Join Scenario: 2 tables (T1, T2), 1 relation (R12) and 1 predicate (P2)
+        #endregion Join Scenario: 2 tables (T1, T2), 1 relation (R12) and 1 predicate (P1)
+
+        #region Join Scenario: 2 tables (T1, T2), 1 relation (R12) and 1 predicate (P2)
 
         /// <summary>
         /// Combines records of a POCO model from 2 tables using 1 relational table, 1 predicate (from second table) and string-based keys.
@@ -602,7 +594,8 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
                 return reader.ConvertToList<T1>();
             }
         }
-        #endregion
+
+        #endregion Join Scenario: 2 tables (T1, T2), 1 relation (R12) and 1 predicate (P2)
 
         #region Join Scenario: 2 Tables (T1, T2), 1 relation (R12) and 2 predicates (P1, P2)
 
@@ -719,7 +712,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             r12_fk1 = (quoted) ? ToQuotedFieldname<R12>(r12_fk1) : r12_fk1;
             r12_fk2 = (quoted) ? ToQuotedFieldname<R12>(r12_fk2) : r12_fk2;
 
-
             var t1_pk = (quoted) ? GetPrimaryKeyName<T1>() : GetQuotedPrimaryKeyName<T1>();
             var t2_pk = (quoted) ? GetPrimaryKeyName<T2>() : GetQuotedPrimaryKeyName<T2>();
 
@@ -741,13 +733,13 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             }
         }
 
-        #endregion
+        #endregion Join Scenario: 2 Tables (T1, T2), 1 relation (R12) and 2 predicates (P1, P2)
 
-        #endregion
+        #endregion Group II: Joining 2 tables
 
         #region Group III: Joining 3 tables (T1, T2, T3)
 
-        #region  Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 1 predicate (P1)
+        #region Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 1 predicate (P1)
 
         /// <summary>
         /// Combines records from 3 POCO tables (T1, T2, T3) by the relationship (T1, R12, T2) and (T1, R13, T3) using 2 relational tables (R12, R13), 1 predicate (from first table) and string-based keys.
@@ -875,7 +867,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             r13_fk1 = (quoted) ? ToQuotedFieldname<R13>(r13_fk1) : r13_fk1;
             r13_fk3 = (quoted) ? ToQuotedFieldname<R13>(r13_fk3) : r13_fk3;
 
-
             var t1_pk = (quoted) ? GetPrimaryKeyName<T1>() : GetQuotedPrimaryKeyName<T1>();
             var t2_pk = (quoted) ? GetPrimaryKeyName<T2>() : GetQuotedPrimaryKeyName<T2>();
             var t3_pk = (quoted) ? GetPrimaryKeyName<T3>() : GetQuotedPrimaryKeyName<T3>();
@@ -897,9 +888,10 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
                 return reader.ConvertToList<T1>();
             }
         }
-        #endregion
 
-        #region  Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 1 predicate (P2)
+        #endregion Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 1 predicate (P1)
+
+        #region Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 1 predicate (P2)
 
         /// <summary>
         /// Combines records from 3 POCO tables (T1, T2, T3) by the relationship (T1, R12, T2) and (T1, R13, T3) using 2 relational tables (R12, R13), 1 predicate (from second table) and string-based keys.
@@ -972,7 +964,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             return db.Select<T1, T2, T3, R12, R13, K, K, K>(R12_FK1, R12_FK2, P2, R13_FK1, R13_FK3, mode, quoted, skip, rows);
         }
 
-
         /// <summary>
         /// Combines records from 3 POCO tables (T1, T2, T3) by the relationship (T1, R12, T2) and (T1, R13, T3) using 2 relational tables (R12, R13), 1 predicate (from second table) and 3 key types
         /// </summary>
@@ -1031,7 +1022,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             r13_fk1 = (quoted) ? ToQuotedFieldname<R13>(r13_fk1) : r13_fk1;
             r13_fk3 = (quoted) ? ToQuotedFieldname<R13>(r13_fk3) : r13_fk3;
 
-
             var t1_pk = (quoted) ? GetPrimaryKeyName<T1>() : GetQuotedPrimaryKeyName<T1>();
             var t2_pk = (quoted) ? GetPrimaryKeyName<T2>() : GetQuotedPrimaryKeyName<T2>();
             var t3_pk = (quoted) ? GetPrimaryKeyName<T3>() : GetQuotedPrimaryKeyName<T3>();
@@ -1053,9 +1043,10 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
                 return reader.ConvertToList<T1>();
             }
         }
-        #endregion
 
-        #region  Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 1 predicate (P3)
+        #endregion Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 1 predicate (P2)
+
+        #region Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 1 predicate (P3)
 
         /// <summary>
         /// Combines records from 3 POCO tables (T1, T2, T3) by the relationship (T1, R12, T2) and (T1, R13, T3) using 2 relational tables (R12, R13), 1 predicate (from third table) and string-based keys.
@@ -1090,7 +1081,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         {
             return db.Select<T1, T2, T3, R12, R13, string>(R12_FK1, R12_FK2, R13_FK1, R13_FK3, P3, mode, quoted, skip, rows);
         }
-
 
         /// <summary>
         /// Combines records from 3 POCO tables (T1, T2, T3) by the relationship (T1, R12, T2) and (T1, R13, T3) using 2 relational tables (R12, R13), 1 predicate (from third table) and a key type for all tables
@@ -1127,7 +1117,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         {
             return db.Select<T1, T2, T3, R12, R13, K, K, K>(R12_FK1, R12_FK2, R13_FK1, R13_FK3, P3, mode, quoted, skip, rows);
         }
-
 
         /// <summary>
         /// Combines records from 3 POCO tables (T1, T2, T3) by the relationship (T1, R12, T2) and (T1, R13, T3) using 2 relational tables (R12, R13), 1 predicate (from third table) and 3 key types
@@ -1187,7 +1176,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             r13_fk1 = (quoted) ? ToQuotedFieldname<R13>(r13_fk1) : r13_fk1;
             r13_fk3 = (quoted) ? ToQuotedFieldname<R13>(r13_fk3) : r13_fk3;
 
-
             var t1_pk = (quoted) ? GetPrimaryKeyName<T1>() : GetQuotedPrimaryKeyName<T1>();
             var t2_pk = (quoted) ? GetPrimaryKeyName<T2>() : GetQuotedPrimaryKeyName<T2>();
             var t3_pk = (quoted) ? GetPrimaryKeyName<T3>() : GetQuotedPrimaryKeyName<T3>();
@@ -1210,9 +1198,9 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             }
         }
 
-        #endregion
+        #endregion Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 1 predicate (P3)
 
-        #region  Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 2 predicates (P1, P2)
+        #region Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 2 predicates (P1, P2)
 
         /// <summary>
         /// Combines records from 3 POCO tables (T1, T2, T3) by the relationship (T1, R12, T2) and (T1, R13, T3) using 2 relational tables (R12, R13), 2 predicates (from first and second tables) and string-based keys.
@@ -1292,7 +1280,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             return db.Select<T1, T2, T3, R12, R13, K, K, K>(R12_FK1, P1, R12_FK2, P2, R13_FK1, R13_FK3, C1, mode, quoted, skip, rows);
         }
 
-
         /// <summary>
         /// Combines records from 3 POCO tables (T1, T2, T3) by the relationship (T1, R12, T2) and (T1, R13, T3) using 2 relational tables (R12, R13), 2 predicates (from first and second tables) and 3 key types
         /// </summary>
@@ -1354,7 +1341,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             r13_fk1 = (quoted) ? ToQuotedFieldname<R13>(r13_fk1) : r13_fk1;
             r13_fk3 = (quoted) ? ToQuotedFieldname<R13>(r13_fk3) : r13_fk3;
 
-
             var t1_pk = (quoted) ? GetPrimaryKeyName<T1>() : GetQuotedPrimaryKeyName<T1>();
             var t2_pk = (quoted) ? GetPrimaryKeyName<T2>() : GetQuotedPrimaryKeyName<T2>();
             var t3_pk = (quoted) ? GetPrimaryKeyName<T3>() : GetQuotedPrimaryKeyName<T3>();
@@ -1378,9 +1364,10 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
                 return reader.ConvertToList<T1>();
             }
         }
-        #endregion
 
-        #region  Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 2 predicates (P2, P3)
+        #endregion Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 2 predicates (P1, P2)
+
+        #region Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 2 predicates (P2, P3)
 
         /// <summary>
         /// Combines records from 3 POCO tables (T1, T2, T3) by the relationship (T1, R12, T2) and (T1, R13, T3) using 2 relational tables (R12, R13), 2 predicates (from second and third tables) and string-based keys.
@@ -1460,7 +1447,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             return db.Select<T1, T2, T3, R12, R13, K, K, K>(R12_FK1, R12_FK2, P2, R13_FK1, R13_FK3, P3, C1, mode, quoted, skip, rows);
         }
 
-
         /// <summary>
         /// Combines records from 3 POCO tables (T1, T2, T3) by the relationship (T1, R12, T2) and (T1, R13, T3) using 2 relational tables (R12, R13), 2 predicates (from second and third tables) and 3 key types
         /// </summary>
@@ -1523,7 +1509,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             r13_fk1 = (quoted) ? ToQuotedFieldname<R13>(r13_fk1) : r13_fk1;
             r13_fk3 = (quoted) ? ToQuotedFieldname<R13>(r13_fk3) : r13_fk3;
 
-
             var t1_pk = (quoted) ? GetPrimaryKeyName<T1>() : GetQuotedPrimaryKeyName<T1>();
             var t2_pk = (quoted) ? GetPrimaryKeyName<T2>() : GetQuotedPrimaryKeyName<T2>();
             var t3_pk = (quoted) ? GetPrimaryKeyName<T3>() : GetQuotedPrimaryKeyName<T3>();
@@ -1547,9 +1532,10 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
                 return reader.ConvertToList<T1>();
             }
         }
-        #endregion
 
-        #region  Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 2 predicates (P1, P3)
+        #endregion Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 2 predicates (P2, P3)
+
+        #region Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 2 predicates (P1, P3)
 
         /// <summary>
         /// Combines records from 3 POCO tables (T1, T2, T3) by the relationship (T1, R12, T2) and (T1, R13, T3) using 2 relational tables (R12, R13), 2 predicates (from first and third tables) and string-based keys.
@@ -1629,7 +1615,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             return db.Select<T1, T2, T3, R12, R13, K, K, K>(R12_FK1, P1, R12_FK2, R13_FK1, R13_FK3, P3, C1, mode, quoted, skip, rows);
         }
 
-
         /// <summary>
         /// Combines records from 3 POCO tables (T1, T2, T3) by the relationship (T1, R12, T2) and (T1, R13, T3) using 2 relational tables (R12, R13), 2 predicates (from first and third tables) and 3 key types
         /// </summary>
@@ -1691,7 +1676,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             r13_fk1 = (quoted) ? ToQuotedFieldname<R13>(r13_fk1) : r13_fk1;
             r13_fk3 = (quoted) ? ToQuotedFieldname<R13>(r13_fk3) : r13_fk3;
 
-
             var t1_pk = (quoted) ? GetPrimaryKeyName<T1>() : GetQuotedPrimaryKeyName<T1>();
             var t2_pk = (quoted) ? GetPrimaryKeyName<T2>() : GetQuotedPrimaryKeyName<T2>();
             var t3_pk = (quoted) ? GetPrimaryKeyName<T3>() : GetQuotedPrimaryKeyName<T3>();
@@ -1716,7 +1700,7 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             }
         }
 
-        #endregion
+        #endregion Join Scenario: 3 tables (T1, T2, T3) (T1, T2, T3), 2 relations (R12, R13) and 2 predicates (P1, P3)
 
         #region Join Scenario: 3 Tables (T1, T2, T3) and 2 relations (R12, R13), 3 predicates (P1, P2, P3)
 
@@ -1872,7 +1856,6 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             r13_fk1 = (quoted) ? ToQuotedFieldname<R13>(r13_fk1) : r13_fk1;
             r13_fk3 = (quoted) ? ToQuotedFieldname<R13>(r13_fk3) : r13_fk3;
 
-
             var t1_pk = (quoted) ? GetPrimaryKeyName<T1>() : GetQuotedPrimaryKeyName<T1>();
             var t2_pk = (quoted) ? GetPrimaryKeyName<T2>() : GetQuotedPrimaryKeyName<T2>();
             var t3_pk = (quoted) ? GetPrimaryKeyName<T3>() : GetQuotedPrimaryKeyName<T3>();
@@ -1899,11 +1882,11 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             }
         }
 
-        #endregion
+        #endregion Join Scenario: 3 Tables (T1, T2, T3) and 2 relations (R12, R13), 3 predicates (P1, P2, P3)
 
-        #endregion
+        #endregion Group III: Joining 3 tables (T1, T2, T3)
 
-        #endregion 
+        #endregion selects and table joins
 
         #region SaveAll operation without implicit transaction commit
 
@@ -1917,10 +1900,9 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             db.Exec(cmd => cmd.SaveAll(entities, transaction));
         }
 
-        #endregion
+        #endregion SaveAll operation without implicit transaction commit
 
-
-        public static void SynchronizeAll<T, Tkey>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities, IDbTransaction transaction)
+        public static void MergeAll<T, Tkey>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities, IDbTransaction transaction)
             where Tkey : IEquatable<Tkey>, IComparable<Tkey>
             where T : class, IContainsKey<Tkey>, new()
         {
@@ -1930,19 +1912,17 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
                 if (!incoming.NullOrEmpty()) db.SaveAll(incoming, transaction);
                 var outgoing = oentities.Except(entities).ToArray();
                 if (!outgoing.NullOrEmpty()) db.DeleteByIds<T>(outgoing.Select(y => y.Id).ToArray());
-
             }
             else db.SaveAll(entities, transaction);
         }
 
-        public static void SynchronizeAll<T>(this IDbConnection redis, IEnumerable<T> entities, IEnumerable<T> oentities, IDbTransaction transaction)
+        public static void MergeAll<T>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities, IDbTransaction transaction)
     where T : class, IContainsKey<string>, new()
         {
-            redis.SynchronizeAll<T, string>(entities, oentities, transaction);
+            db.MergeAll<T, string>(entities, oentities, transaction);
         }
 
-
-        public static void SynchronizeAll<T, Tkey>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities)
+        public static void MergeAll<T, Tkey>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities)
             where Tkey : IEquatable<Tkey>, IComparable<Tkey>
             where T : class, IContainsKey<Tkey>, new()
         {
@@ -1956,12 +1936,10 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             else db.SaveAll(entities);
         }
 
-        public static void SynchronizeAll<T>(this IDbConnection redis, IEnumerable<T> entities, IEnumerable<T> oentities)
+        public static void MergeAll<T>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities)
     where T : class, IContainsKey<string>, new()
         {
-            redis.SynchronizeAll<T, string>(entities, oentities);
+            db.MergeAll<T, string>(entities, oentities);
         }
-
-
     }
 }

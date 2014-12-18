@@ -172,7 +172,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         });
 
                         var orevents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => x.CalendarId == entity.Id);
-                        this.redis.SynchronizeAll(revents, orevents, transaction);
+                        this.redis.MergeAll(revents, orevents, transaction);
                     }
                     transaction.QueueCommand(x => x.Store(this.Dehydrate(entity)));
                 });
@@ -244,7 +244,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                 }));
 
                                 var orevents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => keys.Contains(x.CalendarId));
-                                this.redis.SynchronizeAll<REL_CALENDARS_EVENTS>(revents, orevents, transaction);
+                                this.redis.MergeAll<REL_CALENDARS_EVENTS>(revents, orevents, transaction);
                             }
                         });
                     }
@@ -359,7 +359,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
                         var okeys = entities.Select(x => x.Id);
                         var orevents = this.redis.As<REL_CALENDARS_EVENTS>().GetAll().Where(x => okeys.Contains(x.CalendarId));
-                        this.redis.SynchronizeAll(revents, orevents, transaction);
+                        this.redis.MergeAll(revents, orevents, transaction);
                     }
 
                     transaction.QueueCommand(x => x.StoreAll(this.DehydrateAll(entities)));
