@@ -1169,8 +1169,12 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             try
             {
                 var eclient = this.redis.As<VEVENT>();
-                var okeys = eclient.GetAllKeys().ToArray();
-                if (!okeys.NullOrEmpty()) this.redis.Watch(okeys);
+                if (!keys.NullOrEmpty()) this.redis.Watch(keys.ToArray());
+
+                var entities = !keys.NullOrEmpty() ? eclient.GetByIds(keys).ToList() : eclient.GetAll().ToList();
+                if (entities.NullOrEmpty()) return;
+
+                var okeys = entities.Select(x => x.Id).ToArray();
 
                 if (!srelation.NullOrEmpty())
                 {
@@ -1194,27 +1198,29 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                     {
                         #region save relational aggregate attributes of entities
 
-                        var orattendees = this.redis.As<REL_EVENTS_ATTENDEES>().GetAll().Where(x => keys.Contains(x.EventId));
-                        var orattachbins = this.redis.As<REL_EVENTS_ATTACHBINS>().GetAll().Where(x => keys.Contains(x.EventId));
-                        var orattachuris = this.redis.As<REL_EVENTS_ATTACHURIS>().GetAll().Where(x => keys.Contains(x.EventId));
-                        var orcontacts = this.redis.As<REL_EVENTS_CONTACTS>().GetAll().Where(x => keys.Contains(x.EventId));
-                        var orcomments = this.redis.As<REL_EVENTS_COMMENTS>().GetAll().Where(x => keys.Contains(x.EventId));
-                        var orrdates = this.redis.As<REL_EVENTS_RDATES>().GetAll().Where(x => keys.Contains(x.EventId));
-                        var orexdates = this.redis.As<REL_EVENTS_EXDATES>().GetAll().Where(x => keys.Contains(x.EventId));
-                        var orrelatedtos = this.redis.As<REL_EVENTS_RELATEDTOS>().GetAll().Where(x => keys.Contains(x.EventId));
-                        var orresources = this.redis.As<REL_EVENTS_RESOURCES>().GetAll().Where(x => keys.Contains(x.EventId));
-                        var orreqstats = this.redis.As<REL_EVENTS_REQSTATS>().GetAll().Where(x => keys.Contains(x.EventId));
-                        var oraalarms = this.redis.As<REL_EVENTS_AUDIO_ALARMS>().GetAll().Where(x => keys.Contains(x.EventId));
-                        var ordalarms = this.redis.As<REL_EVENTS_DISPLAY_ALARMS>().GetAll().Where(x => keys.Contains(x.EventId));
-                        var orealarms = this.redis.As<REL_EVENTS_EMAIL_ALARMS>().GetAll().Where(x => keys.Contains(x.EventId));
-                        var orianas = this.redis.As<REL_EVENTS_IANA_PROPERTIES>().GetAll().Where(x => keys.Contains(x.EventId));
-                        var orxprops = this.redis.As<REL_EVENTS_X_PROPERTIES>().GetAll().Where(x => keys.Contains(x.EventId));
+                        var orattendees = this.redis.As<REL_EVENTS_ATTENDEES>().GetAll().Where(x => okeys.Contains(x.EventId));
+                        var orattachbins = this.redis.As<REL_EVENTS_ATTACHBINS>().GetAll().Where(x => okeys.Contains(x.EventId));
+                        var orattachuris = this.redis.As<REL_EVENTS_ATTACHURIS>().GetAll().Where(x => okeys.Contains(x.EventId));
+                        var orcontacts = this.redis.As<REL_EVENTS_CONTACTS>().GetAll().Where(x => okeys.Contains(x.EventId));
+                        var orcomments = this.redis.As<REL_EVENTS_COMMENTS>().GetAll().Where(x => okeys.Contains(x.EventId));
+                        var orrdates = this.redis.As<REL_EVENTS_RDATES>().GetAll().Where(x => okeys.Contains(x.EventId));
+                        var orexdates = this.redis.As<REL_EVENTS_EXDATES>().GetAll().Where(x => okeys.Contains(x.EventId));
+                        var orrelatedtos = this.redis.As<REL_EVENTS_RELATEDTOS>().GetAll().Where(x => okeys.Contains(x.EventId));
+                        var orresources = this.redis.As<REL_EVENTS_RESOURCES>().GetAll().Where(x => okeys.Contains(x.EventId));
+                        var orreqstats = this.redis.As<REL_EVENTS_REQSTATS>().GetAll().Where(x => okeys.Contains(x.EventId));
+                        var oraalarms = this.redis.As<REL_EVENTS_AUDIO_ALARMS>().GetAll().Where(x => okeys.Contains(x.EventId));
+                        var ordalarms = this.redis.As<REL_EVENTS_DISPLAY_ALARMS>().GetAll().Where(x => okeys.Contains(x.EventId));
+                        var orealarms = this.redis.As<REL_EVENTS_EMAIL_ALARMS>().GetAll().Where(x => okeys.Contains(x.EventId));
+                        var orianas = this.redis.As<REL_EVENTS_IANA_PROPERTIES>().GetAll().Where(x => okeys.Contains(x.EventId));
+                        var orxprops = this.redis.As<REL_EVENTS_X_PROPERTIES>().GetAll().Where(x => okeys.Contains(x.EventId));
 
                         if (selection.Contains(attendsexpr.GetMemberName()))
                         {
-                            if (!source.Attendees.NullOrEmpty())
+                            var attendees = source.Attendees;
+
+                            if (!attendees.NullOrEmpty())
                             {
-                                var rattendees = keys.SelectMany(x => source.Attendees.Select(y => new REL_EVENTS_ATTENDEES
+                                var rattendees = okeys.SelectMany(x => attendees.Select(y => new REL_EVENTS_ATTENDEES
                                 {
                                     Id = KeyGenerator.GetNextKey(),
                                     EventId = x,
@@ -1222,7 +1228,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                 }));
 
                                 this.redis.MergeAll(rattendees, orattendees, transaction);
-                                transaction.QueueCommand(x => x.StoreAll(source.Attendees.Distinct()));
+                                transaction.QueueCommand(x => x.StoreAll(attendees.Distinct()));
                             }
                             else this.redis.RemoveAll(orattendees, transaction);
                         }
@@ -1233,7 +1239,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                             if (!attachbins.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(attachbins.Distinct()));
-                                var rattachbins = keys.SelectMany(x => attachbins.Select(y => new REL_EVENTS_ATTACHBINS
+                                var rattachbins = okeys.SelectMany(x => attachbins.Select(y => new REL_EVENTS_ATTACHBINS
                                 {
                                     Id = KeyGenerator.GetNextKey(),
                                     EventId = x,
@@ -1250,7 +1256,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                             if (!attachuris.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(attachuris.Distinct()));
-                                var rattachuris = keys.SelectMany(x => attachuris.Select(y => new REL_EVENTS_ATTACHURIS
+                                var rattachuris = okeys.SelectMany(x => attachuris.Select(y => new REL_EVENTS_ATTACHURIS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
@@ -1267,7 +1273,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                             if (!contacts.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(contacts.Distinct()));
-                                var rcontacts = keys.SelectMany(x => contacts.Select(y => new REL_EVENTS_CONTACTS
+                                var rcontacts = okeys.SelectMany(x => contacts.Select(y => new REL_EVENTS_CONTACTS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
@@ -1284,7 +1290,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                             if (!comments.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(comments.Distinct()));
-                                var rcomments = keys.SelectMany(x => comments.Select(y => new REL_EVENTS_COMMENTS
+                                var rcomments = okeys.SelectMany(x => comments.Select(y => new REL_EVENTS_COMMENTS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
@@ -1301,7 +1307,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                             if (!rdates.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(rdates.Distinct()));
-                                var rrdates = keys.SelectMany(x => rdates.Select(y => new REL_EVENTS_RDATES
+                                var rrdates = okeys.SelectMany(x => rdates.Select(y => new REL_EVENTS_RDATES
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
@@ -1318,7 +1324,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                             if (!exdates.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(exdates.Distinct()));
-                                var rexdates = keys.SelectMany(x => exdates.Select(y => new REL_EVENTS_EXDATES
+                                var rexdates = okeys.SelectMany(x => exdates.Select(y => new REL_EVENTS_EXDATES
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
@@ -1335,7 +1341,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                             if (!relatedtos.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(relatedtos.Distinct()));
-                                var rrelatedtos = keys.SelectMany(x => relatedtos.Select(y => new REL_EVENTS_RELATEDTOS
+                                var rrelatedtos = okeys.SelectMany(x => relatedtos.Select(y => new REL_EVENTS_RELATEDTOS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
@@ -1353,7 +1359,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                             if (!resources.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(resources.Distinct()));
-                                var rresources = keys.SelectMany(x => resources.Select(y => new REL_EVENTS_RESOURCES
+                                var rresources = okeys.SelectMany(x => resources.Select(y => new REL_EVENTS_RESOURCES
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
@@ -1370,7 +1376,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                             if (!reqstats.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(reqstats.Distinct()));
-                                var rreqstats = keys.SelectMany(x => reqstats.Select(y => new REL_EVENTS_REQSTATS
+                                var rreqstats = okeys.SelectMany(x => reqstats.Select(y => new REL_EVENTS_REQSTATS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
@@ -1387,7 +1393,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                             if (!aalarms.NullOrEmpty())
                             {
                                 this.AudioAlarmRepository.SaveAll(aalarms.Distinct());
-                                var raalarms = keys.SelectMany(x => aalarms.Select(y => new REL_EVENTS_AUDIO_ALARMS
+                                var raalarms = okeys.SelectMany(x => aalarms.Select(y => new REL_EVENTS_AUDIO_ALARMS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
@@ -1403,7 +1409,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                             if (!dalarms.NullOrEmpty())
                             {
                                 this.DisplayAlarmRepository.SaveAll(dalarms.Distinct());
-                                var rdalarms = keys.SelectMany(x => dalarms.Select(y => new REL_EVENTS_DISPLAY_ALARMS
+                                var rdalarms = okeys.SelectMany(x => dalarms.Select(y => new REL_EVENTS_DISPLAY_ALARMS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
@@ -1419,7 +1425,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                             if (!ealarms.NullOrEmpty())
                             {
                                 this.EmailAlarmRepository.SaveAll(ealarms.Distinct());
-                                var realarms = keys.SelectMany(x => ealarms.Select(y => new REL_EVENTS_EMAIL_ALARMS
+                                var realarms = okeys.SelectMany(x => ealarms.Select(y => new REL_EVENTS_EMAIL_ALARMS
                                 {
                                     Id = this.KeyGenerator.GetNextKey(),
                                     EventId = x,
@@ -1436,7 +1442,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                             if (!ianas.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(ianas.Distinct()));
-                                var rianas = keys.SelectMany(x => source.IANAProperties
+                                var rianas = okeys.SelectMany(x => source.IANAProperties
                                     .Select(y => new REL_EVENTS_IANA_PROPERTIES
                                     {
                                         Id = this.KeyGenerator.GetNextKey(),
@@ -1455,7 +1461,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                             if (!xprops.NullOrEmpty())
                             {
                                 transaction.QueueCommand(x => x.StoreAll(xprops.Distinct()));
-                                var rxprops = keys.SelectMany(x => source.XProperties
+                                var rxprops = okeys.SelectMany(x => source.XProperties
                                     .Select(y => new REL_EVENTS_X_PROPERTIES
                                     {
                                         Id = this.KeyGenerator.GetNextKey(),
@@ -1493,7 +1499,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                     Expression<Func<VEVENT, object>> durexpr = x => x.Duration;
                     Expression<Func<VEVENT, object>> catexpr = x => x.Categories;
 
-                    var entities = !keys.NullOrEmpty() ? eclient.GetByIds(keys).ToList() : eclient.GetAll().ToList();
                     entities.ForEach(x =>
                     {
                         if (selection.Contains(startexpr.GetMemberName())) x.Start = source.Start;
