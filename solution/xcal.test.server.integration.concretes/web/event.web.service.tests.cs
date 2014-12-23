@@ -16,9 +16,9 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
 {
     public abstract class EventWebServicesTests : IWebServiceIntegrationTests
     {
-        protected CalendarUnitTests caltests = new CalendarUnitTests();
+        protected CalendarUnitTests ctests = new CalendarUnitTests();
         protected EventUnitTests evtests = new EventUnitTests();
-        protected PropertiesUnitTests proptests = new PropertiesUnitTests();
+        protected PropertiesUnitTests ptests = new PropertiesUnitTests();
         protected AlarmUnitTests altests = new AlarmUnitTests();
         protected JsonWebServiceTestFactory factory = null;
 
@@ -29,7 +29,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
 
         public void Initialize()
         {
-            this.caltests.FPIKeyGen = Builder<StringFPIKeyGenerator>
+            this.ctests.FPIKeyGen = Builder<StringFPIKeyGenerator>
                 .CreateNew()
                 .With(x => x.Owner = Pick<string>.RandomItemFrom(new List<string> { "reexjungle", "reexmonkey" }))
                 .And(x => x.Authority = Pick<Authority>.RandomItemFrom(new List<Authority> { Authority.ISO, Authority.None, Authority.NonStandard }))
@@ -49,7 +49,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             this.TearDown();
             this.Initialize();
 
-            var c1 = this.caltests.GenerateCalendarsOfSize(1).First();
+            var c1 = this.ctests.GenerateCalendarsOfSize(1).First();
 
             var events = this.evtests.GenerateEventsOfSize(1);
             var e1 = events.First();
@@ -59,7 +59,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
                     FREQ = FREQ.MONTHLY
                 };
 
-            e1.Attendees = this.proptests.GenerateAttendeesOfSize(4).ToList();
+            e1.Attendees = this.ptests.GenerateAttendeesOfSize(4).ToList();
 
             var client = this.factory.GetClient();
             client.Post(new AddCalendar { Calendar = c1 });
@@ -102,9 +102,9 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             this.TearDown();
             this.Initialize();
 
-            var calendar = this.caltests.GenerateCalendarsOfSize(1).First();
+            var calendar = this.ctests.GenerateCalendarsOfSize(1).First();
             var events = this.evtests.GenerateEventsOfSize(5);
-            this.evtests.RandomlyAttendEvents(ref events, this.proptests.GenerateAttendeesOfSize(10));
+            this.evtests.RandomlyAttendEvents(ref events, this.ptests.GenerateAttendeesOfSize(10));
             var keys = events.Select(x => x.Id).ToList();
 
             var client = this.factory.GetClient();
@@ -135,6 +135,9 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             var u1 = r2.Where(x => x == e1).First();
             var u2 = r2.Where(x => x == e2).First();
 
+            var u1str = u1.ToString();
+            var u2str = u2.ToString();
+
             Assert.Equal(u1.End, e1.End);
             Assert.Equal(u2.Duration, e2.Duration);
 
@@ -159,6 +162,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             Assert.Equal(u2.Attendees.Count, te2);
             u1.Organizer.Language = new LANGUAGE("fr");
 
+            keys = client.Get(new GetEvents { Page = 1, Size = int.MaxValue }).Select(x => x.Id).ToList();
             client.Patch(new PatchEvents
             {
                 EventIds = keys,
@@ -166,7 +170,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
                 Classification = CLASS.CONFIDENTIAL,
                 Priority = new PRIORITY(PRIORITYLEVEL.HIGH),
                 Organizer = u1.Organizer,
-                Attendees = new List<ATTENDEE>(u1.Attendees)
+                Attendees = u1.Attendees,
             });
 
             var patched = client.Post(new FindEvents { EventIds = keys });
@@ -176,7 +180,30 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
                 Assert.Equal(result.Transparency, TRANSP.OPAQUE);
                 Assert.Equal(result.Classification, CLASS.CONFIDENTIAL);
                 Assert.Equal(result.Priority, new PRIORITY(PRIORITYLEVEL.HIGH));
-                Assert.Equal(result.Attendees.Count, u1.Attendees.Count);
+                Assert.Equal(result.Attendees.AreDuplicatesOf(u1.Attendees), true);
+            }
+
+            client.Patch(new PatchEvents
+            {
+                Start = u1.Start,
+                End = u1.End,
+                Duration = u1.Duration,
+                Categories = u1.Categories,
+                Description = new DESCRIPTION("Patched again!!!"),
+                Transparency = TRANSP.TRANSPARENT,
+                Classification = CLASS.PRIVATE,
+                Priority = new PRIORITY(PRIORITYLEVEL.MEDIUM),
+                Organizer = u1.Organizer,
+                Attendees = u1.Attendees
+            });
+
+            patched = client.Get(new GetEvents { Page = 1, Size = int.MaxValue });
+            foreach (var result in patched)
+            {
+                Assert.Equal(result.Transparency, TRANSP.TRANSPARENT);
+                Assert.Equal(result.Classification, CLASS.PRIVATE);
+                Assert.Equal(result.Priority, new PRIORITY(PRIORITYLEVEL.MEDIUM));
+                Assert.Equal(result.Attendees.Count, u1.Attendees.Count());
                 Assert.Equal(result.Attendees.AreDuplicatesOf(u1.Attendees), true);
             }
 
@@ -191,10 +218,10 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             this.TearDown();
             this.Initialize();
 
-            var calendar = this.caltests.GenerateCalendarsOfSize(1).First();
+            var calendar = this.ctests.GenerateCalendarsOfSize(1).First();
 
             var events = this.evtests.GenerateEventsOfSize(1);
-            this.evtests.RandomlyAttendEvents(ref events, this.proptests.GenerateAttendeesOfSize(10));
+            this.evtests.RandomlyAttendEvents(ref events, this.ptests.GenerateAttendeesOfSize(10));
             var e1 = events.First();
 
             e1.AudioAlarms = this.altests.GenerateAudioAlarmsOfSize(5).ToList();

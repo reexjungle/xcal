@@ -1133,6 +1133,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 x.Url,
                 x.End,
                 x.Duration,
+                x.Categories,
                 x.Organizer,
                 x.RecurrenceId,
                 x.RecurrenceRule
@@ -1211,10 +1212,9 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
                         if (selection.Contains(attendsexpr.GetMemberName()))
                         {
-                            var attendees = source.Attendees;
-                            if (!attendees.NullOrEmpty())
+                            if (!source.Attendees.NullOrEmpty())
                             {
-                                var rattendees = keys.SelectMany(x => attendees.Select(y => new REL_EVENTS_ATTENDEES
+                                var rattendees = keys.SelectMany(x => source.Attendees.Select(y => new REL_EVENTS_ATTENDEES
                                 {
                                     Id = KeyGenerator.GetNextKey(),
                                     EventId = x,
@@ -1222,7 +1222,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                 }));
 
                                 this.redis.MergeAll(rattendees, orattendees, transaction);
-                                transaction.QueueCommand(x => x.StoreAll(attendees.Distinct()));
+                                transaction.QueueCommand(x => x.StoreAll(source.Attendees.Distinct()));
                             }
                             else this.redis.RemoveAll(orattendees, transaction);
                         }

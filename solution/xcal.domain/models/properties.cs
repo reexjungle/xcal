@@ -280,7 +280,7 @@ namespace reexjungle.xcal.domain.models
             var last = this.Values.Last();
             foreach (var val in this.Values)
             {
-                if (val != last) sb.AppendFormat("{0}, ");
+                if (val != last) sb.AppendFormat("{0}, ", val);
                 else sb.Append(val);
             }
             return sb.ToString();

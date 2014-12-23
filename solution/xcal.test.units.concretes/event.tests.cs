@@ -49,6 +49,13 @@ namespace reexjungle.xcal.test.units.concretes
                 .And(x => x.Status = STATUS.CONFIRMED)
                 .And(x => x.Transparency = TRANSP.TRANSPARENT)
                 .And(x => x.Classification = CLASS.PUBLIC)
+                .And(x => x.Categories = Pick<CATEGORIES>.RandomItemFrom(
+                    new List<CATEGORIES>{
+                        new CATEGORIES(new List<string>{"DRESS", new RandomGenerator().Phrase(new RandomGenerator().Next(10, 15)), "OFFICE"}, new LANGUAGE("EN", "en")),
+                        new CATEGORIES(new List<string>{new RandomGenerator().Phrase(new RandomGenerator().Next(3, 7))}, new LANGUAGE("DE", "ch")),
+                        new CATEGORIES(new List<string>{new RandomGenerator().Phrase(new RandomGenerator().Next(8, 9))}, new LANGUAGE("FR", "ca")),
+                        new CATEGORIES(new List<string>{new RandomGenerator().Phrase(new RandomGenerator().Next(4, 6))}, new LANGUAGE("EN", "ca"))
+                    }))
                 .Build();
         }
 

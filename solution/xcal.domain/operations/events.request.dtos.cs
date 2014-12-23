@@ -1,14 +1,13 @@
-﻿using System.Linq;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using ServiceStack.ServiceHost;
+﻿using reexjungle.infrastructure.io.contracts;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
-using reexjungle.infrastructure.io.contracts;
+using ServiceStack.ServiceHost;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
 
 namespace reexjungle.xcal.domain.operations
 {
-
     [DataContract]
     [Route("/calendars/{CalendarId}/events/add", "POST")]
     public class AddEvent : IReturnVoid
@@ -161,7 +160,6 @@ namespace reexjungle.xcal.domain.operations
     [Route("/calendars/events/batch/patch", "PATCH")]
     public class PatchEvents : IReturnVoid
     {
-
         [DataMember]
         public List<string> EventIds { get; set; }
 
@@ -266,7 +264,6 @@ namespace reexjungle.xcal.domain.operations
 
         [DataMember]
         public Dictionary<string, X_PROPERTY> XProperties { get; set; }
-
     }
 
     [DataContract]
@@ -308,7 +305,6 @@ namespace reexjungle.xcal.domain.operations
 
         [DataMember]
         public int? Size { get; set; }
-
     }
 
     [DataContract]
@@ -322,6 +318,4 @@ namespace reexjungle.xcal.domain.operations
         [DataMember]
         public int? Size { get; set; }
     }
-
-
 }
