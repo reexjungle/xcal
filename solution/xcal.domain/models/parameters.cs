@@ -306,8 +306,9 @@ namespace reexjungle.xcal.domain.models
 
         public DELEGATE(string value)
         {
-            var uricheck = @"(DELEGATED-FROM=|DELEGATED-TO=)?(?<value>(\w+)((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?))";
-            var pattern = string.Format(@"^(DELEGATED\-{0}(,[\s]*{0})*$", uricheck);
+            var uricheck = @"(?<value>(\w+)((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?))";
+            var pattern = string.Format("(\")(mailto:){0}(\")", uricheck);
+
             try
             {
                 if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
@@ -406,7 +407,7 @@ namespace reexjungle.xcal.domain.models
         public MEMBER(string value)
         {
             var uricheck = @"(?<value>(\w+)((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?))";
-            var pattern = string.Format(@"^(DELEGATED\-{0}(,\s*{0})*$", uricheck);
+            var pattern = string.Format("(\")(mailto:){0}(\")", uricheck);
 
             try
             {
