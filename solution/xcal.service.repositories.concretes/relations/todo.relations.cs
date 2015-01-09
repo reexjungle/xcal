@@ -1,4 +1,5 @@
-﻿using reexjungle.xcal.domain.models;
+﻿using reexjungle.foundation.essentials.contracts;
+using reexjungle.xcal.domain.models;
 using ServiceStack.DataAnnotations;
 using ServiceStack.OrmLite;
 using System;
@@ -8,7 +9,7 @@ using System.Text;
 
 namespace reexjungle.xcal.service.repositories.concretes.relations
 {
-    public class REL_TODOS_ATTACHBINS : IEquatable<REL_TODOS_ATTACHBINS>
+    public class REL_TODOS_ATTACHBINS : IEquatable<REL_TODOS_ATTACHBINS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
@@ -56,12 +57,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_TODOS_ATTACHBINS x, REL_TODOS_ATTACHBINS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_TODOS_ATTACHURIS : IEquatable<REL_TODOS_ATTACHURIS>
+    public class REL_TODOS_ATTACHURIS : IEquatable<REL_TODOS_ATTACHURIS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
@@ -109,12 +110,118 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_TODOS_ATTACHURIS x, REL_TODOS_ATTACHURIS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_TODOS_ATTENDEES : IEquatable<REL_TODOS_ATTENDEES>
+    public class REL_TODOS_RECURS : IEquatable<REL_TODOS_RECURS>, IContainsKey<string>
+    {
+        /// <summary>
+        /// Gets or sets the unique identifier of the event-attendee relation
+        /// </summary>
+        [Index(true)]
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the related event entity
+        /// </summary>
+        [ForeignKey(typeof(VTODO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string TodoId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the related attendee identifier entity
+        /// </summary>
+        [ForeignKey(typeof(RECUR), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string RecurId { get; set; }
+
+        public bool Equals(REL_TODOS_RECURS other)
+        {
+            if (other == null) return false;
+            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
+                this.RecurId.Equals(other.RecurId, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            var rel = obj as REL_TODOS_RECURS;
+            if (rel == null) return false;
+            return this.Equals(rel);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.TodoId.GetHashCode() ^ this.RecurId.GetHashCode();
+        }
+
+        public static bool operator ==(REL_TODOS_RECURS x, REL_TODOS_RECURS y)
+        {
+            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            return x.Equals(y);
+        }
+
+        public static bool operator !=(REL_TODOS_RECURS x, REL_TODOS_RECURS y)
+        {
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            return !x.Equals(y);
+        }
+    }
+
+    public class REL_TODOS_ORGANIZERS : IEquatable<REL_TODOS_ORGANIZERS>, IContainsKey<string>
+    {
+        /// <summary>
+        /// Gets or sets the unique identifier of the event-attendee relation
+        /// </summary>
+        [Index(true)]
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the related event entity
+        /// </summary>
+        [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string TodoId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the related attendee identifier entity
+        /// </summary>
+        [ForeignKey(typeof(ORGANIZER), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string OrganizerId { get; set; }
+
+        public bool Equals(REL_TODOS_ORGANIZERS other)
+        {
+            if (other == null) return false;
+            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
+                this.OrganizerId.Equals(other.OrganizerId, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            var rel = obj as REL_TODOS_ORGANIZERS;
+            if (rel == null) return false;
+            return this.Equals(rel);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.TodoId.GetHashCode() ^ this.OrganizerId.GetHashCode();
+        }
+
+        public static bool operator ==(REL_TODOS_ORGANIZERS x, REL_TODOS_ORGANIZERS y)
+        {
+            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            return x.Equals(y);
+        }
+
+        public static bool operator !=(REL_TODOS_ORGANIZERS x, REL_TODOS_ORGANIZERS y)
+        {
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            return !x.Equals(y);
+        }
+    }
+
+    public class REL_TODOS_ATTENDEES : IEquatable<REL_TODOS_ATTENDEES>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
@@ -162,12 +269,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_TODOS_ATTENDEES x, REL_TODOS_ATTENDEES y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_TODOS_COMMENTS : IEquatable<REL_TODOS_COMMENTS>
+    public class REL_TODOS_COMMENTS : IEquatable<REL_TODOS_COMMENTS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-comment relation
@@ -215,12 +322,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_TODOS_COMMENTS x, REL_TODOS_COMMENTS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_TODOS_CONTACTS : IEquatable<REL_TODOS_CONTACTS>
+    public class REL_TODOS_CONTACTS : IEquatable<REL_TODOS_CONTACTS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-contact relation
@@ -268,12 +375,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_TODOS_CONTACTS x, REL_TODOS_CONTACTS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_TODOS_RDATES : IEquatable<REL_TODOS_RDATES>
+    public class REL_TODOS_RDATES : IEquatable<REL_TODOS_RDATES>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-recurrence date relation
@@ -321,12 +428,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_TODOS_RDATES x, REL_TODOS_RDATES y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_TODOS_EXDATES : IEquatable<REL_TODOS_EXDATES>
+    public class REL_TODOS_EXDATES : IEquatable<REL_TODOS_EXDATES>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-exception date relation
@@ -374,12 +481,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_TODOS_EXDATES x, REL_TODOS_EXDATES y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_TODOS_RELATEDTOS : IEquatable<REL_TODOS_RELATEDTOS>
+    public class REL_TODOS_RELATEDTOS : IEquatable<REL_TODOS_RELATEDTOS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-related to relation
@@ -427,12 +534,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_TODOS_RELATEDTOS x, REL_TODOS_RELATEDTOS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_TODOS_REQSTATS : IEquatable<REL_TODOS_REQSTATS>
+    public class REL_TODOS_REQSTATS : IEquatable<REL_TODOS_REQSTATS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-request status relation
@@ -480,12 +587,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_TODOS_REQSTATS x, REL_TODOS_REQSTATS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_TODOS_RESOURCES : IEquatable<REL_TODOS_RESOURCES>
+    public class REL_TODOS_RESOURCES : IEquatable<REL_TODOS_RESOURCES>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-resources relation
@@ -533,12 +640,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_TODOS_RESOURCES x, REL_TODOS_RESOURCES y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_TODOS_AUDIO_ALARMS : IEquatable<REL_TODOS_AUDIO_ALARMS>
+    public class REL_TODOS_AUDIO_ALARMS : IEquatable<REL_TODOS_AUDIO_ALARMS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-alarm relation
@@ -586,12 +693,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_TODOS_AUDIO_ALARMS x, REL_TODOS_AUDIO_ALARMS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_TODOS_DISPLAY_ALARMS : IEquatable<REL_TODOS_DISPLAY_ALARMS>
+    public class REL_TODOS_DISPLAY_ALARMS : IEquatable<REL_TODOS_DISPLAY_ALARMS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-alarm relation
@@ -639,12 +746,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_TODOS_DISPLAY_ALARMS x, REL_TODOS_DISPLAY_ALARMS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_TODOS_EMAIL_ALARMS : IEquatable<REL_TODOS_EMAIL_ALARMS>
+    public class REL_TODOS_EMAIL_ALARMS : IEquatable<REL_TODOS_EMAIL_ALARMS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-alarm relation
@@ -692,7 +799,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_TODOS_EMAIL_ALARMS x, REL_TODOS_EMAIL_ALARMS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }

@@ -1,4 +1,5 @@
-﻿using reexjungle.xcal.domain.models;
+﻿using reexjungle.foundation.essentials.contracts;
+using reexjungle.xcal.domain.models;
 using ServiceStack.DataAnnotations;
 using ServiceStack.OrmLite;
 using System;
@@ -10,7 +11,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 {
     #region TimeZone relations
 
-    public class REL_TIMEZONES_STANDARDS : IEquatable<REL_TIMEZONES_STANDARDS>
+    public class REL_TIMEZONES_STANDARDS : IEquatable<REL_TIMEZONES_STANDARDS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the calendar-standard time relation
@@ -63,7 +64,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_TIMEZONES_DAYLIGHT : IEquatable<REL_TIMEZONES_DAYLIGHT>
+    public class REL_TIMEZONES_DAYLIGHT : IEquatable<REL_TIMEZONES_DAYLIGHT>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the calendar-daylight saving changes time relation
@@ -120,7 +121,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
     #region Standard Time relations
 
-    public class REL_STANDARDS_COMMENTS : IEquatable<REL_STANDARDS_COMMENTS>
+    public class REL_STANDARDS_COMMENTS : IEquatable<REL_STANDARDS_COMMENTS>, IContainsKey<string>
     {
         [Index(true)]
         public string Id { get; set; }
@@ -164,7 +165,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_STANDARDS_RDATES : IEquatable<REL_STANDARDS_RDATES>
+    public class REL_STANDARDS_RDATES : IEquatable<REL_STANDARDS_RDATES>, IContainsKey<string>
     {
         [Index(true)]
         public string Id { get; set; }
@@ -208,7 +209,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_STANDARDS_TZNAMES : IEquatable<REL_STANDARDS_TZNAMES>
+    public class REL_STANDARDS_TZNAMES : IEquatable<REL_STANDARDS_TZNAMES>, IContainsKey<string>
     {
         [Index(true)]
         public string Id { get; set; }
@@ -256,7 +257,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
     #region Daylight Time relations
 
-    public class REL_DAYLIGHTS_COMMENTS : IEquatable<REL_DAYLIGHTS_COMMENTS>
+    public class REL_DAYLIGHTS_COMMENTS : IEquatable<REL_DAYLIGHTS_COMMENTS>, IContainsKey<string>
     {
         [Index(true)]
         public string Id { get; set; }
@@ -300,7 +301,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_DAYLIGHTS_RDATES : IEquatable<REL_DAYLIGHTS_RDATES>
+    public class REL_DAYLIGHTS_RDATES : IEquatable<REL_DAYLIGHTS_RDATES>, IContainsKey<string>
     {
         [Index(true)]
         public string Id { get; set; }
@@ -344,7 +345,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_DAYLIGHTS_TZNAMES : IEquatable<REL_DAYLIGHTS_TZNAMES>
+    public class REL_DAYLIGHTS_TZNAMES : IEquatable<REL_DAYLIGHTS_TZNAMES>, IContainsKey<string>
     {
         [Index(true)]
         public string Id { get; set; }

@@ -1,4 +1,5 @@
-﻿using reexjungle.xcal.domain.models;
+﻿using reexjungle.foundation.essentials.contracts;
+using reexjungle.xcal.domain.models;
 using ServiceStack.DataAnnotations;
 using ServiceStack.OrmLite;
 using System;
@@ -8,7 +9,7 @@ using System.Text;
 
 namespace reexjungle.xcal.service.repositories.concretes.relations
 {
-    public class REL_FREEBUSIES_ATTACHBINS : IEquatable<REL_FREEBUSIES_ATTACHBINS>
+    public class REL_FREEBUSIES_ATTACHBINS : IEquatable<REL_FREEBUSIES_ATTACHBINS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
@@ -20,7 +21,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VFREEBUSY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public string FreeBusyId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
@@ -31,7 +32,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         public bool Equals(REL_FREEBUSIES_ATTACHBINS other)
         {
             if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
+            return (this.FreeBusyId.Equals(other.FreeBusyId, StringComparison.OrdinalIgnoreCase) &&
                 this.AttachmentId.Equals(other.AttachmentId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -45,7 +46,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.AttachmentId.GetHashCode();
+            return this.FreeBusyId.GetHashCode() ^ this.AttachmentId.GetHashCode();
         }
 
         public static bool operator ==(REL_FREEBUSIES_ATTACHBINS x, REL_FREEBUSIES_ATTACHBINS y)
@@ -56,12 +57,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_FREEBUSIES_ATTACHBINS x, REL_FREEBUSIES_ATTACHBINS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_FREEBUSIES_ATTACHURIS : IEquatable<REL_FREEBUSIES_ATTACHURIS>
+    public class REL_FREEBUSIES_ATTACHURIS : IEquatable<REL_FREEBUSIES_ATTACHURIS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
@@ -73,7 +74,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VFREEBUSY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public string FreeBusyId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
@@ -84,7 +85,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         public bool Equals(REL_FREEBUSIES_ATTACHURIS other)
         {
             if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
+            return (this.FreeBusyId.Equals(other.FreeBusyId, StringComparison.OrdinalIgnoreCase) &&
                 this.AttachmentId.Equals(other.AttachmentId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -98,7 +99,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.AttachmentId.GetHashCode();
+            return this.FreeBusyId.GetHashCode() ^ this.AttachmentId.GetHashCode();
         }
 
         public static bool operator ==(REL_FREEBUSIES_ATTACHURIS x, REL_FREEBUSIES_ATTACHURIS y)
@@ -109,12 +110,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_FREEBUSIES_ATTACHURIS x, REL_FREEBUSIES_ATTACHURIS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_FREEBUSIES_ATTENDEES : IEquatable<REL_FREEBUSIES_ATTENDEES>
+    public class REL_FREEBUSIES_ATTENDEES : IEquatable<REL_FREEBUSIES_ATTENDEES>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
@@ -126,7 +127,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VFREEBUSY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public string FreeBusyId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
@@ -137,7 +138,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         public bool Equals(REL_FREEBUSIES_ATTENDEES other)
         {
             if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
+            return (this.FreeBusyId.Equals(other.FreeBusyId, StringComparison.OrdinalIgnoreCase) &&
                 this.AttendeeId.Equals(other.AttendeeId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -151,7 +152,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.AttendeeId.GetHashCode();
+            return this.FreeBusyId.GetHashCode() ^ this.AttendeeId.GetHashCode();
         }
 
         public static bool operator ==(REL_FREEBUSIES_ATTENDEES x, REL_FREEBUSIES_ATTENDEES y)
@@ -162,12 +163,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_FREEBUSIES_ATTENDEES x, REL_FREEBUSIES_ATTENDEES y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_FREEBUSIES_COMMENTS : IEquatable<REL_FREEBUSIES_COMMENTS>
+    public class REL_FREEBUSIES_COMMENTS : IEquatable<REL_FREEBUSIES_COMMENTS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-comment relation
@@ -179,7 +180,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VFREEBUSY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public string FreeBusyId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related comment entity
@@ -190,7 +191,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         public bool Equals(REL_FREEBUSIES_COMMENTS other)
         {
             if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
+            return (this.FreeBusyId.Equals(other.FreeBusyId, StringComparison.OrdinalIgnoreCase) &&
                 this.CommentId.Equals(other.CommentId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -204,7 +205,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.CommentId.GetHashCode();
+            return this.FreeBusyId.GetHashCode() ^ this.CommentId.GetHashCode();
         }
 
         public static bool operator ==(REL_FREEBUSIES_COMMENTS x, REL_FREEBUSIES_COMMENTS y)
@@ -215,12 +216,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_FREEBUSIES_COMMENTS x, REL_FREEBUSIES_COMMENTS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_FREEBUSIES_INFOS : IEquatable<REL_FREEBUSIES_INFOS>
+    public class REL_FREEBUSIES_INFOS : IEquatable<REL_FREEBUSIES_INFOS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-contact relation
@@ -268,12 +269,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_FREEBUSIES_INFOS x, REL_FREEBUSIES_INFOS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_FREEBUSIES_REQSTATS : IEquatable<REL_FREEBUSIES_REQSTATS>
+    public class REL_FREEBUSIES_REQSTATS : IEquatable<REL_FREEBUSIES_REQSTATS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-request status relation
@@ -285,7 +286,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VFREEBUSY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public string FreeBusyId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related request status entity
@@ -296,7 +297,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         public bool Equals(REL_FREEBUSIES_REQSTATS other)
         {
             if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
+            return (this.FreeBusyId.Equals(other.FreeBusyId, StringComparison.OrdinalIgnoreCase) &&
                 this.ReqStatsId.Equals(other.ReqStatsId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -310,7 +311,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.ReqStatsId.GetHashCode();
+            return this.FreeBusyId.GetHashCode() ^ this.ReqStatsId.GetHashCode();
         }
 
         public static bool operator ==(REL_FREEBUSIES_REQSTATS x, REL_FREEBUSIES_REQSTATS y)
@@ -321,7 +322,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_FREEBUSIES_REQSTATS x, REL_FREEBUSIES_REQSTATS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }

@@ -56,7 +56,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_EVENTS_ATTACHBINS x, REL_EVENTS_ATTACHBINS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -109,7 +109,113 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_EVENTS_ATTACHURIS x, REL_EVENTS_ATTACHURIS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            return !x.Equals(y);
+        }
+    }
+
+    public class REL_EVENTS_RECURS : IEquatable<REL_EVENTS_RECURS>, IContainsKey<string>
+    {
+        /// <summary>
+        /// Gets or sets the unique identifier of the event-attendee relation
+        /// </summary>
+        [Index(true)]
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the related event entity
+        /// </summary>
+        [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string EventId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the related attendee identifier entity
+        /// </summary>
+        [ForeignKey(typeof(RECUR), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string RecurId { get; set; }
+
+        public bool Equals(REL_EVENTS_RECURS other)
+        {
+            if (other == null) return false;
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
+                this.RecurId.Equals(other.RecurId, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            var rel = obj as REL_EVENTS_RECURS;
+            if (rel == null) return false;
+            return this.Equals(rel);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.EventId.GetHashCode() ^ this.RecurId.GetHashCode();
+        }
+
+        public static bool operator ==(REL_EVENTS_RECURS x, REL_EVENTS_RECURS y)
+        {
+            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            return x.Equals(y);
+        }
+
+        public static bool operator !=(REL_EVENTS_RECURS x, REL_EVENTS_RECURS y)
+        {
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            return !x.Equals(y);
+        }
+    }
+
+    public class REL_EVENTS_ORGANIZERS : IEquatable<REL_EVENTS_ORGANIZERS>, IContainsKey<string>
+    {
+        /// <summary>
+        /// Gets or sets the unique identifier of the event-attendee relation
+        /// </summary>
+        [Index(true)]
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the related event entity
+        /// </summary>
+        [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string EventId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the related attendee identifier entity
+        /// </summary>
+        [ForeignKey(typeof(ORGANIZER), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string OrganizerId { get; set; }
+
+        public bool Equals(REL_EVENTS_ORGANIZERS other)
+        {
+            if (other == null) return false;
+            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
+                this.OrganizerId.Equals(other.OrganizerId, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            var rel = obj as REL_EVENTS_ORGANIZERS;
+            if (rel == null) return false;
+            return this.Equals(rel);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.EventId.GetHashCode() ^ this.OrganizerId.GetHashCode();
+        }
+
+        public static bool operator ==(REL_EVENTS_ORGANIZERS x, REL_EVENTS_ORGANIZERS y)
+        {
+            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            return x.Equals(y);
+        }
+
+        public static bool operator !=(REL_EVENTS_ORGANIZERS x, REL_EVENTS_ORGANIZERS y)
+        {
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -162,7 +268,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_EVENTS_ATTENDEES x, REL_EVENTS_ATTENDEES y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -215,7 +321,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_EVENTS_COMMENTS x, REL_EVENTS_COMMENTS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -268,7 +374,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_EVENTS_CONTACTS x, REL_EVENTS_CONTACTS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -321,7 +427,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_EVENTS_RDATES x, REL_EVENTS_RDATES y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -374,7 +480,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_EVENTS_EXDATES x, REL_EVENTS_EXDATES y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -427,7 +533,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_EVENTS_RELATEDTOS x, REL_EVENTS_RELATEDTOS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -480,7 +586,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_EVENTS_REQSTATS x, REL_EVENTS_REQSTATS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -536,7 +642,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_EVENTS_RESOURCES x, REL_EVENTS_RESOURCES y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -589,7 +695,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_EVENTS_AUDIO_ALARMS x, REL_EVENTS_AUDIO_ALARMS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -642,7 +748,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_EVENTS_DISPLAY_ALARMS x, REL_EVENTS_DISPLAY_ALARMS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -695,7 +801,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_EVENTS_EMAIL_ALARMS x, REL_EVENTS_EMAIL_ALARMS y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -748,7 +854,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_EVENTS_IANA_PROPERTIES x, REL_EVENTS_IANA_PROPERTIES y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -801,7 +907,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator !=(REL_EVENTS_X_PROPERTIES x, REL_EVENTS_X_PROPERTIES y)
         {
-            if ((object)x == null || y == (object)null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
             return !x.Equals(y);
         }
     }
