@@ -29,11 +29,11 @@ namespace reexjungle.xcal.domain.models
         public int Repeat { get; set; }
 
         [DataMember]
-        [StringLength(int.MaxValue)]
+        [Ignore]
         public ATTACH_BINARY AttachmentBinary { get; set; }
 
         [DataMember]
-        [StringLength(int.MaxValue)]
+        [Ignore]
         public ATTACH_URI AttachmentUri { get; set; }
 
         public AUDIO_ALARM()

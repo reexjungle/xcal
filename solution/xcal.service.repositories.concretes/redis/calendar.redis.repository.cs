@@ -476,9 +476,9 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
         {
             try
             {
-                var events = full.ToList();
-                events.ForEach(x => this.Dehydrate(x));
-                return events.AsEnumerable();
+                var pquery = full.AsParallel();
+                pquery.ForAll(x => this.Dehydrate(x));
+                return pquery.AsEnumerable();
             }
             catch (ArgumentNullException) { throw; }
             catch (OperationCanceledException) { throw; }

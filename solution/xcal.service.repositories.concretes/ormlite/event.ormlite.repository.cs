@@ -146,6 +146,8 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
         {
             #region retrieve attributes of entity
 
+            var organizer = entity.Organizer;
+            var recur = entity.RecurrenceRule;
             var attendees = entity.Attendees;
             var attachbins = entity.AttachmentBinaries;
             var attachuris = entity.AttachmentUris;
@@ -168,6 +170,8 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
             {
                 db.Save(entity);
 
+                var ororgs = db.Select<REL_EVENTS_ORGANIZERS>(q => q.EventId == entity.Id);
+                var orrecurs = db.Select<REL_EVENTS_RECURS>(q => q.EventId == entity.Id);
                 var orattendees = db.Select<REL_EVENTS_ATTENDEES>(q => q.EventId == entity.Id);
                 var orattachbins = db.Select<REL_EVENTS_ATTACHBINS>(q => q.EventId == entity.Id);
                 var orattachuris = db.Select<REL_EVENTS_ATTACHURIS>(q => q.EventId == entity.Id);
@@ -181,6 +185,34 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 var oraalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.EventId == entity.Id);
                 var ordalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.EventId == entity.Id);
                 var orealarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.EventId == entity.Id);
+
+                if (organizer != null)
+                {
+                    db.Save(organizer);
+                    var rorg = new REL_EVENTS_ORGANIZERS
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        OrganizerId = organizer.Id
+                    };
+
+                    db.MergeAll(rorg.ToSingleton(), ororgs);
+                }
+                else db.RemoveAll(ororgs);
+
+                if (recur != null)
+                {
+                    db.Save(recur);
+                    var rrecur = new REL_EVENTS_RECURS
+                    {
+                        Id = this.KeyGenerator.GetNextKey(),
+                        EventId = entity.Id,
+                        RecurId = recur.Id
+                    };
+
+                    db.MergeAll(rrecur.ToSingleton(), orrecurs);
+                }
+                else db.RemoveAll(ororgs);
 
                 if (!attendees.NullOrEmpty())
                 {
@@ -384,8 +416,6 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 x.End,
                 x.Categories,
                 x.Duration,
-                x.Organizer,
-                x.RecurrenceId,
                 x.RecurrenceRule
             };
 
@@ -403,7 +433,10 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 x.RequestStatuses,
                 x.AudioAlarms,
                 x.DisplayAlarms,
-                x.EmailAlarms
+                x.EmailAlarms,
+                x.Organizer,
+                x.RecurrenceId,
+
             };
 
             //4. Get list of selected relationals
@@ -422,6 +455,8 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
 
                 if (!srelation.NullOrEmpty())
                 {
+                    Expression<Func<VEVENT, object>> orgexpr = y => y.Organizer;
+                    Expression<Func<VEVENT, object>> recurexpr = y => y.RecurrenceRule;
                     Expression<Func<VEVENT, object>> attendsexpr = y => y.Attendees;
                     Expression<Func<VEVENT, object>> attachbinsexpr = y => y.AttachmentBinaries;
                     Expression<Func<VEVENT, object>> attachurisexpr = y => y.AttachmentUris;
@@ -437,6 +472,40 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                     Expression<Func<VEVENT, object>> ealarmexpr = y => y.EmailAlarms;
 
                     #region save relational attributes of entities
+
+                    if (selection.Contains(orgexpr.GetMemberName()))
+                    {
+                        var ororgs = db.Select<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.EventId, okeys));
+                        if (source.Organizer != null)
+                        {
+                            db.Save(source.Organizer);
+                            var rorgs = okeys.Select(x => new REL_EVENTS_ORGANIZERS
+                            {
+                                Id = this.KeyGenerator.GetNextKey(),
+                                EventId = x,
+                                OrganizerId = source.Organizer.Id
+                            });
+                            db.MergeAll(rorgs, ororgs);
+                        }
+                        else db.RemoveAll(ororgs);
+                    }
+
+                    if (selection.Contains(recurexpr.GetMemberName()))
+                    {
+                        var orrecurs = db.Select<REL_EVENTS_RECURS>(q => Sql.In(q.EventId, okeys));
+                        if (source.RecurrenceRule != null)
+                        {
+                            db.Save(source.RecurrenceRule);
+                            var rrecurs = okeys.Select(x => new REL_EVENTS_RECURS
+                            {
+                                Id = this.KeyGenerator.GetNextKey(),
+                                EventId = x,
+                                RecurId = source.RecurrenceRule.Id
+                            });
+                            db.MergeAll(rrecurs, orrecurs);
+                        }
+                        else db.RemoveAll(orrecurs);
+                    }
 
                     if (selection.Contains(attendsexpr.GetMemberName()))
                     {
@@ -696,6 +765,8 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
         {
             #region 1. retrieve attributes of entities
 
+            var orgs = entities.Where(x => x.Organizer != null).Select(x => x.Organizer);
+            var recurs = entities.Where(x => x.RecurrenceRule != null).Select(x => x.RecurrenceRule);
             var attendees = entities.Where(x => !x.Attendees.NullOrEmpty()).SelectMany(x => x.Attendees);
             var attachbins = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty()).SelectMany(x => x.AttachmentBinaries);
             var attachuris = entities.Where(x => !x.AttachmentUris.NullOrEmpty()).SelectMany(x => x.AttachmentUris);
@@ -719,6 +790,8 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 var keys = entities.Select(x => x.Id).ToArray();
                 db.SaveAll(entities);
 
+                var ororgs = db.Select<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.EventId, keys));
+                var orrecurs = db.Select<REL_EVENTS_RECURS>(q => Sql.In(q.EventId, keys));
                 var orattendees = db.Select<REL_EVENTS_ATTENDEES>(q => Sql.In(q.EventId, keys));
                 var orattachbins = db.Select<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.EventId, keys));
                 var orattachuris = db.Select<REL_EVENTS_ATTACHURIS>(q => Sql.In(q.EventId, keys));
@@ -732,6 +805,36 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 var oraalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)));
                 var ordalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)));
                 var orealarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.EventId, entities.Select(x => x.Id)));
+
+                if (!orgs.NullOrEmpty())
+                {
+                    db.SaveAll(orgs.Distinct());
+                    var rorgs = entities.Where(x => x.Organizer != null)
+                            .Select(x => new REL_EVENTS_ORGANIZERS
+                            {
+                                Id = this.KeyGenerator.GetNextKey(),
+                                EventId = x.Id,
+                                OrganizerId = x.Organizer.Id
+                            });
+
+                    db.MergeAll(rorgs, ororgs);
+                }
+                else db.RemoveAll(ororgs);
+
+                if (!recurs.NullOrEmpty())
+                {
+                    db.SaveAll(recurs.Distinct());
+                    var rrecurs = entities.Where(x => x.RecurrenceRule != null)
+                            .Select(x => new REL_EVENTS_RECURS
+                            {
+                                Id = this.KeyGenerator.GetNextKey(),
+                                EventId = x.Id,
+                                RecurId = x.RecurrenceRule.Id
+                            });
+
+                    db.MergeAll(rrecurs, orrecurs);
+                }
+                else db.RemoveAll(orrecurs);
 
                 if (!attendees.NullOrEmpty())
                 {
@@ -945,6 +1048,18 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
             var full = dry;
             try
             {
+                var organizers = db.Select<ORGANIZER, VEVENT, REL_EVENTS_ORGANIZERS>(
+                    r => r.OrganizerId,
+                    r => r.EventId,
+                    e => e.Id == dry.Id);
+                if (!organizers.NullOrEmpty()) full.Organizer = organizers.First();
+
+                var recurs = db.Select<RECUR, VEVENT, REL_EVENTS_RECURS>(
+                    r => r.RecurId,
+                    r => r.EventId,
+                    e => e.Id == dry.Id);
+                if (!recurs.NullOrEmpty()) full.RecurrenceRule = recurs.First();
+
                 var attachbins = db.Select<ATTACH_BINARY, VEVENT, REL_EVENTS_ATTACHBINS>(
                    r => r.AttachmentId,
                    r => r.EventId,
@@ -1041,7 +1156,9 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 if (!okeys.NullOrEmpty())
                 {
                     #region 1. retrieve relationships
-
+                    
+                    var rorgs = this.db.Select<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.EventId, okeys));
+                    var rrecurs = this.db.Select<REL_EVENTS_RECURS>(q => Sql.In(q.EventId, okeys));
                     var rattendees = this.db.Select<REL_EVENTS_ATTENDEES>(q => Sql.In(q.EventId, okeys));
                     var rcomments = this.db.Select<REL_EVENTS_COMMENTS>(q => Sql.In(q.EventId, okeys));
                     var rattachbins = this.db.Select<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.EventId, okeys));
@@ -1060,6 +1177,8 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
 
                     #region 2. retrieve secondary entitiesB
 
+                    var orgs =  (!rorgs.SafeEmpty()) ? db.Select<ORGANIZER>(q => Sql.In(q.Id, rorgs.Select(r => r.OrganizerId).ToList())) : null;
+                    var recurs =  (!rrecurs.SafeEmpty()) ? db.Select<RECUR>(q => Sql.In(q.Id, rrecurs.Select(r => r.RecurId).ToList())) : null;
                     var attendees = (!rattendees.SafeEmpty()) ? db.Select<ATTENDEE>(q => Sql.In(q.Id, rattendees.Select(r => r.AttendeeId).ToList())) : null;
                     var comments = (!rcomments.SafeEmpty()) ? db.Select<COMMENT>(q => Sql.In(q.Id, rcomments.Select(r => r.CommentId).ToList())) : null;
                     var attachbins = (!rattachbins.SafeEmpty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToList())) : null;
@@ -1080,6 +1199,26 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
 
                     full.ForEach(x =>
                     {
+                        if (!orgs.NullOrEmpty())
+                        {
+                            var xorgs = from y in orgs
+                                            join r in rorgs on y.Id equals r.OrganizerId
+                                            join e in full on r.EventId equals e.Id
+                                            where e.Id == x.Id
+                                            select y;
+                            if (!xorgs.NullOrEmpty()) x.Organizer = xorgs.First();
+                        }
+
+                        if (!recurs.NullOrEmpty())
+                        {
+                            var xrecurs = from y in recurs
+                                        join r in rorgs on y.Id equals r.OrganizerId
+                                        join e in full on r.EventId equals e.Id
+                                        where e.Id == x.Id
+                                        select y;
+                            if (!xrecurs.NullOrEmpty()) x.RecurrenceRule = xrecurs.First();
+                        }
+
                         if (!comments.NullOrEmpty())
                         {
                             var xcomments = from y in comments
@@ -1276,6 +1415,8 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
             try
             {
                 var dry = full;
+                if (dry.Organizer != null) dry.Organizer = null;
+                if (dry.RecurrenceRule != null) dry.RecurrenceRule = null;
                 if (!dry.Attendees.NullOrEmpty()) dry.Attendees.Clear();
                 if (!dry.AttachmentBinaries.NullOrEmpty()) dry.AttachmentBinaries.Clear();
                 if (!dry.AttachmentUris.NullOrEmpty()) dry.AttachmentUris.Clear();
