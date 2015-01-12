@@ -121,6 +121,50 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
     #region Standard Time relations
 
+    public class REL_STANDARDS_RECURS : IEquatable<REL_STANDARDS_RECURS>, IContainsKey<string>
+    {
+        [Index(true)]
+        public string Id { get; set; }
+
+        [ForeignKey(typeof(STANDARD), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string StandardId { get; set; }
+
+        [ForeignKey(typeof(RECUR), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string RecurId { get; set; }
+
+        public bool Equals(REL_STANDARDS_RECURS other)
+        {
+            if (other == null) return false;
+            return (this.StandardId.Equals(other.StandardId, StringComparison.OrdinalIgnoreCase) &&
+                this.RecurId.Equals(other.RecurId, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            var rel = obj as REL_STANDARDS_RECURS;
+            if (rel == null) return false;
+            return this.Equals(rel);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.StandardId.GetHashCode() ^ this.RecurId.GetHashCode();
+        }
+
+        public static bool operator ==(REL_STANDARDS_RECURS x, REL_STANDARDS_RECURS y)
+        {
+            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            return x.Equals(y);
+        }
+
+        public static bool operator !=(REL_STANDARDS_RECURS x, REL_STANDARDS_RECURS y)
+        {
+            if (x == null || y == null) return !object.Equals(x, y);
+            return !x.Equals(y);
+        }
+    }
+
     public class REL_STANDARDS_COMMENTS : IEquatable<REL_STANDARDS_COMMENTS>, IContainsKey<string>
     {
         [Index(true)]
@@ -256,6 +300,50 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
     #endregion Standard Time relations
 
     #region Daylight Time relations
+
+    public class REL_DAYLIGHT_RECURS : IEquatable<REL_DAYLIGHT_RECURS>, IContainsKey<string>
+    {
+        [Index(true)]
+        public string Id { get; set; }
+
+        [ForeignKey(typeof(DAYLIGHT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string DaylightId { get; set; }
+
+        [ForeignKey(typeof(RECUR), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        public string RecurId { get; set; }
+
+        public bool Equals(REL_DAYLIGHT_RECURS other)
+        {
+            if (other == null) return false;
+            return (this.DaylightId.Equals(other.DaylightId, StringComparison.OrdinalIgnoreCase) &&
+                this.RecurId.Equals(other.RecurId, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            var rel = obj as REL_DAYLIGHT_RECURS;
+            if (rel == null) return false;
+            return this.Equals(rel);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.DaylightId.GetHashCode() ^ this.RecurId.GetHashCode();
+        }
+
+        public static bool operator ==(REL_DAYLIGHT_RECURS x, REL_DAYLIGHT_RECURS y)
+        {
+            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            return x.Equals(y);
+        }
+
+        public static bool operator !=(REL_DAYLIGHT_RECURS x, REL_DAYLIGHT_RECURS y)
+        {
+            if (x == null || y == null) return !object.Equals(x, y);
+            return !x.Equals(y);
+        }
+    }
 
     public class REL_DAYLIGHTS_COMMENTS : IEquatable<REL_DAYLIGHTS_COMMENTS>, IContainsKey<string>
     {

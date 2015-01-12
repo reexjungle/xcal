@@ -91,7 +91,7 @@ namespace reexjungle.xcal.domain.models
         public UTC_OFFSET TimeZoneOffsetTo { get; set; }
 
         [DataMember]
-        [StringLength(int.MaxValue)]
+        [Ignore]
         public RECUR RecurrenceRule { get; set; }
 
         [DataMember]
