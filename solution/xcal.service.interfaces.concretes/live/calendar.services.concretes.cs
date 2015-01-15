@@ -1,35 +1,36 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using ServiceStack.Logging;
-using ServiceStack.ServiceInterface;
-using reexjungle.foundation.essentials.concretes;
+﻿using reexjungle.foundation.essentials.concretes;
+using reexjungle.foundation.essentials.contracts;
+using reexjungle.infrastructure.io.concretes;
+using reexjungle.infrastructure.operations.concretes;
 using reexjungle.infrastructure.operations.contracts;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.domain.operations;
-using reexjungle.xcal.service.repositories.contracts;
 using reexjungle.xcal.service.interfaces.contracts.live;
-using reexjungle.infrastructure.io.concretes;
-using reexjungle.infrastructure.operations.concretes;
-using reexjungle.foundation.essentials.contracts;
+using reexjungle.xcal.service.repositories.contracts;
+using ServiceStack.Logging;
+using ServiceStack.ServiceInterface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace reexjungle.xcal.service.interfaces.concretes.live
 {
-    public class CalendarService: Service, ICalendarService
-    {        
+    public class CalendarService : Service, ICalendarService
+    {
         private ILogFactory logfactory;
         private ICalendarRepository repository;
 
         private ILog log = null;
+
         private ILog logger
         {
-            get { return (log != null)? this.log: this.logfactory.GetLogger(this.GetType()); }
+            get { return (log != null) ? this.log : this.logfactory.GetLogger(this.GetType()); }
         }
 
-        public ILogFactory LogFactory 
+        public ILogFactory LogFactory
         {
-            get { return this.logfactory; } 
+            get { return this.logfactory; }
             set
             {
                 if (value == null) throw new ArgumentNullException("Logger");
@@ -37,17 +38,19 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 this.log = logfactory.GetLogger(this.GetType());
             }
         }
+
         public ICalendarRepository CalendarRepository
         {
             get { return this.repository; }
-            set 
+            set
             {
                 if (value == null) throw new ArgumentNullException("CalendarRepository");
-                this.repository = value; 
+                this.repository = value;
             }
         }
 
-        public CalendarService() : base() 
+        public CalendarService()
+            : base()
         {
             this.CalendarRepository = this.TryResolve<ICalendarRepository>();
             this.LogFactory = this.TryResolve<ILogFactory>();
@@ -77,7 +80,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             try
             {
                 var keys = request.Calendars.Select(x => x.Id).ToArray();
-                if(!this.repository.ContainsKeys(keys, ExpectationMode.pessimistic))
+                if (!this.repository.ContainsKeys(keys, ExpectationMode.pessimistic))
                 {
                     this.repository.SaveAll(request.Calendars);
                 }
@@ -95,7 +98,6 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 {
                     this.repository.Save(request.Calendar);
                 }
-                   
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -248,7 +250,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
-        public List<VCALENDAR> Get (GetCalendars request)
+        public List<VCALENDAR> Get(GetCalendars request)
         {
             try
             {

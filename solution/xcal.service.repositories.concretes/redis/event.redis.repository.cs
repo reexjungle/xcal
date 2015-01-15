@@ -113,13 +113,13 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 var rrecurs = this.redis.As<REL_EVENTS_RECURS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!rrecurs.NullOrEmpty())
                 {
-                    full.RecurrenceRule = this.redis.As<RECUR>().GetById(rrecurs.First().RecurId);
+                    full.RecurrenceRule = this.redis.As<RECUR>().GetById(rrecurs.FirstOrDefault().RecurId);
                 }
 
                 var rorgs = this.redis.As<REL_EVENTS_ORGANIZERS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
                 if (!rorgs.NullOrEmpty())
                 {
-                    full.Organizer = this.redis.As<ORGANIZER>().GetById(rorgs.First().OrganizerId);
+                    full.Organizer = this.redis.As<ORGANIZER>().GetById(rorgs.FirstOrDefault().OrganizerId);
                 }
 
                 var rattachbins = this.redis.As<REL_EVENTS_ATTACHBINS>().GetAll().Where(x => x.EventId.Equals(full.Id, StringComparison.OrdinalIgnoreCase));
@@ -274,7 +274,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                     if (!organizers.NullOrEmpty())
                     {
                         var xorgs = from y in organizers
-                                    join r in rrecurs on y.Id equals r.RecurId
+                                    join r in rorgs on y.Id equals r.OrganizerId
                                     join e in full on r.EventId equals e.Id
                                     where e.Id.Equals(x.Id, StringComparison.OrdinalIgnoreCase)
                                     select y;
@@ -519,8 +519,8 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
                     if (!attendees.NullOrEmpty())
                     {
-                        transaction.QueueCommand(x => x.Store(recur));
-                        var rattendees = attachbins.Select(x => new REL_EVENTS_ATTENDEES
+                        transaction.QueueCommand(x => x.StoreAll(attendees));
+                        var rattendees = attendees.Select(x => new REL_EVENTS_ATTENDEES
                         {
                             Id = this.KeyGenerator.GetNextKey(),
                             EventId = entity.Id,
@@ -824,8 +824,8 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
                 #region retrieve attributes of entities
 
-                var organizers = entities.Where(x => x.Organizer != null);
-                var recurs = entities.Where(x => x.RecurrenceRule != null);
+                var organizers = entities.Where(x => x.Organizer != null).Select(x => x.Organizer);
+                var recurs = entities.Where(x => x.RecurrenceRule != null).Select(x => x.RecurrenceRule);
                 var attendees = entities.Where(x => !x.Attendees.NullOrEmpty()).SelectMany(x => x.Attendees);
                 var attachbins = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty()).SelectMany(x => x.AttachmentBinaries);
                 var attachuris = entities.Where(x => !x.AttachmentUris.NullOrEmpty()).SelectMany(x => x.AttachmentUris);
@@ -866,7 +866,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                     var orianas = this.redis.As<REL_EVENTS_IANA_PROPERTIES>().GetAll().Where(x => okeys.Contains(x.EventId));
                     var orxprops = this.redis.As<REL_EVENTS_X_PROPERTIES>().GetAll().Where(x => okeys.Contains(x.EventId));
 
-                    if(!organizers.NullOrEmpty())
+                    if (!organizers.NullOrEmpty())
                     {
                         transaction.QueueCommand(x => x.StoreAll(organizers.Distinct()));
                         var rorganizers = entities.Where(x => x.Organizer != null)
@@ -877,8 +877,9 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                     OrganizerId = x.Organizer.Id
                                 });
 
-                        this.redis.MergeAll(ororganizers, rorganizers, transaction); 
+                        this.redis.MergeAll(rorganizers, ororganizers, transaction);
                     }
+                    else this.redis.RemoveAll(ororganizers, transaction);
 
                     if (!recurs.NullOrEmpty())
                     {
@@ -891,8 +892,9 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                 RecurId = x.RecurrenceRule.Id
                             });
 
-                        this.redis.MergeAll(rrecurs, orrecurs, transaction); 
+                        this.redis.MergeAll(rrecurs, orrecurs, transaction);
                     }
+                    else this.redis.RemoveAll(orrecurs, transaction);
 
                     if (!attendees.NullOrEmpty())
                     {

@@ -49,10 +49,10 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             this.TearDown();
             this.Initialize();
 
-            var c1 = this.ctests.GenerateCalendarsOfSize(1).First();
+            var c1 = this.ctests.GenerateCalendarsOfSize(1).FirstOrDefault();
 
             var events = this.evtests.GenerateEventsOfSize(1);
-            var e1 = events.First();
+            var e1 = events.FirstOrDefault();
             e1.RecurrenceRule = new RECUR
                 {
                     Id = this.evtests.KeyGen.GetNextKey(),
@@ -102,7 +102,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             this.TearDown();
             this.Initialize();
 
-            var calendar = this.ctests.GenerateCalendarsOfSize(1).First();
+            var calendar = this.ctests.GenerateCalendarsOfSize(1).FirstOrDefault();
             var events = this.evtests.GenerateEventsOfSize(5);
             this.evtests.RandomlyAttendEvents(ref events, this.ptests.GenerateAttendeesOfSize(10));
             var keys = events.Select(x => x.Id).ToList();
@@ -113,10 +113,10 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             client.Post(new AddEvents { CalendarId = calendar.Id, Events = events.ToList() });
             var r1 = client.Get(new GetEvents { Page = 1, Size = 100 });
             Assert.Equal(r1.Count, events.Count());
-            var e1 = events.Where(x => x.Organizer == events.ElementAt(0).Organizer).First();
-            var p1 = r1.Where(x => x.Organizer == events.ElementAt(0).Organizer).First();
-            var e2 = events.Where(x => x.Organizer == events.ElementAt(1).Organizer).First();
-            var p2 = r1.Where(x => x.Organizer == events.ElementAt(1).Organizer).First();
+            var e1 = events.Where(x => x.Organizer == events.ElementAt(0).Organizer).FirstOrDefault();
+            var p1 = r1.Where(x => x.Organizer == events.ElementAt(0).Organizer).FirstOrDefault();
+            var e2 = events.Where(x => x.Organizer == events.ElementAt(1).Organizer).FirstOrDefault();
+            var p2 = r1.Where(x => x.Organizer == events.ElementAt(1).Organizer).FirstOrDefault();
 
             e1.Start = new DATE_TIME(new DateTime(2014, 6, 16, 10, 30, 0, 0, DateTimeKind.Utc));
             e1.Duration = new DURATION(0, 1, 2, 30);
@@ -132,8 +132,8 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             client.Put(new UpdateEvents { Events = new List<VEVENT> { e1, e2 } });
 
             var r2 = client.Post(new FindEvents { EventIds = new List<string> { e1.Id, e2.Id } });
-            var u1 = r2.Where(x => x == e1).First();
-            var u2 = r2.Where(x => x == e2).First();
+            var u1 = r2.Where(x => x == e1).FirstOrDefault();
+            var u2 = r2.Where(x => x == e2).FirstOrDefault();
 
             var u1str = u1.ToString();
             var u2str = u2.ToString();
@@ -155,8 +155,8 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             client.Put(new UpdateEvents { Events = new List<VEVENT> { e1, e2 } });
             r2 = client.Post(new FindEvents { EventIds = r2.Select(x => x.Id).ToList() });
 
-            u1 = r2.Where(x => x.Id == e1.Id).First();
-            u2 = r2.Where(x => x.Id == e2.Id).First();
+            u1 = r2.Where(x => x.Id == e1.Id).FirstOrDefault();
+            u2 = r2.Where(x => x.Id == e2.Id).FirstOrDefault();
 
             Assert.Equal(u1.Attendees.Count, te1);
             Assert.Equal(u2.Attendees.Count, te2);
@@ -218,11 +218,11 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             this.TearDown();
             this.Initialize();
 
-            var calendar = this.ctests.GenerateCalendarsOfSize(1).First();
+            var calendar = this.ctests.GenerateCalendarsOfSize(1).FirstOrDefault();
 
             var events = this.evtests.GenerateEventsOfSize(1);
             this.evtests.RandomlyAttendEvents(ref events, this.ptests.GenerateAttendeesOfSize(10));
-            var e1 = events.First();
+            var e1 = events.FirstOrDefault();
 
             e1.AudioAlarms = this.altests.GenerateAudioAlarmsOfSize(5).ToList();
             e1.DisplayAlarms = this.altests.GenerateDisplayAlarmsOfSize(5).ToList();
@@ -238,8 +238,8 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             Assert.NotEqual(re1.EmailAlarms.AreDuplicatesOf(e1.EmailAlarms), false);
 
             ////remove email alarm and update
-            e1.AudioAlarms.First().AttachmentUri.FormatType = new FMTTYPE("file", "video");
-            var ealarm = e1.EmailAlarms.First();
+            e1.AudioAlarms.FirstOrDefault().AttachmentUri.FormatType = new FMTTYPE("file", "video");
+            var ealarm = e1.EmailAlarms.FirstOrDefault();
             e1.EmailAlarms.Clear();
 
             client.Put(new UpdateEvent { Event = e1 });
@@ -252,10 +252,10 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             re1 = client.Get(new FindEvent { EventId = e1.Id });
             Assert.Equal(re1.EmailAlarms.Count, 1);
 
-            e1.EmailAlarms.First().Description.Text = "This is a patched alarm";
+            e1.EmailAlarms.FirstOrDefault().Description.Text = "This is a patched alarm";
             client.Patch(new PatchEvent { EmailAlarms = e1.EmailAlarms, EventId = e1.Id });
             var patched = client.Get(new FindEvent { EventId = e1.Id });
-            Assert.Equal(patched.EmailAlarms.First().Description.Text, "This is a patched alarm");
+            Assert.Equal(patched.EmailAlarms.FirstOrDefault().Description.Text, "This is a patched alarm");
 
             client.Delete(new DeleteEvent { EventId = e1.Id });
             var deleted = client.Get(new FindEvent { EventId = e1.Id });
