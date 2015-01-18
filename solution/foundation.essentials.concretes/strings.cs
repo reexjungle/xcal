@@ -103,7 +103,7 @@ namespace reexjungle.foundation.essentials.concretes
         /// <returns>The string, whose lines are folded</returns>
         public static string FoldLines(this string value, int max, string newline = "\r\n")
         {
-            var lines = value.Split(new string[]{newline}, System.StringSplitOptions.RemoveEmptyEntries);
+            var lines = value.Split(new string[] { newline }, System.StringSplitOptions.RemoveEmptyEntries);
             using (var ms = new System.IO.MemoryStream(value.Length))
             {
                 var crlf = Encoding.UTF8.GetBytes(newline); //CRLF
@@ -115,7 +115,7 @@ namespace reexjungle.foundation.essentials.concretes
                     if (len <= max)
                     {
                         ms.Write(bytes, 0, len);
-                        ms.Write(crlf, 0, crlf.Length); 
+                        ms.Write(crlf, 0, crlf.Length);
                     }
                     else
                     {
@@ -125,7 +125,7 @@ namespace reexjungle.foundation.essentials.concretes
                         while (b < blen)
                         {
                             ms.Write(bytes, (b++) * max, max);
-                            ms.Write(crlfs, 0, crlfs.Length); 
+                            ms.Write(crlfs, 0, crlfs.Length);
                         }
                         if (rlen > 0)
                         {
@@ -160,11 +160,14 @@ namespace reexjungle.foundation.essentials.concretes
         {
             try
             {
-                foreach (var pair in pairs) value = value.Replace(pair.Item1, pair.Item2);
+                foreach (var pair in pairs)
+                {
+                    if (!string.IsNullOrEmpty(value)) value = value.Replace(pair.Item1, pair.Item2);
+                }
                 return value;
             }
-            catch (ArgumentNullException) {  throw; }
-            catch (ArgumentException) {  throw; }
+            catch (ArgumentNullException) { throw; }
+            catch (ArgumentException) { throw; }
         }
 
         /// <summary>

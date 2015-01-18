@@ -108,7 +108,7 @@ namespace reexjungle.xcal.application.server.web.local.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("nosql")]
+        [global::System.Configuration.DefaultSettingValueAttribute("rdbms")]
         public global::reexjungle.infrastructure.operations.concretes.StorageType primary_storage {
             get {
                 return ((global::reexjungle.infrastructure.operations.concretes.StorageType)(this["primary_storage"]));
@@ -117,7 +117,7 @@ namespace reexjungle.xcal.application.server.web.local.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("rdbms")]
+        [global::System.Configuration.DefaultSettingValueAttribute("nosql")]
         public global::reexjungle.infrastructure.operations.concretes.StorageType auth_storage {
             get {
                 return ((global::reexjungle.infrastructure.operations.concretes.StorageType)(this["auth_storage"]));
