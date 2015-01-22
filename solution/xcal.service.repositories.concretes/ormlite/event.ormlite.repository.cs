@@ -1,9 +1,9 @@
 ﻿using reexjungle.crosscut.operations.concretes;
 using reexjungle.foundation.essentials.concretes;
 using reexjungle.foundation.essentials.contracts;
+using reexjungle.infrastructure.concretes.operations;
+using reexjungle.infrastructure.contracts;
 using reexjungle.infrastructure.io.concretes;
-using reexjungle.infrastructure.operations.concretes;
-using reexjungle.infrastructure.operations.contracts;
 using reexjungle.technical.data.concretes.extensions.ormlite;
 using reexjungle.technical.data.contracts;
 using reexjungle.xcal.domain.models;
@@ -436,7 +436,6 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 x.EmailAlarms,
                 x.Organizer,
                 x.RecurrenceId,
-
             };
 
             //4. Get list of selected relationals
@@ -1156,7 +1155,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 if (!okeys.NullOrEmpty())
                 {
                     #region 1. retrieve relationships
-                    
+
                     var rorgs = this.db.Select<REL_EVENTS_ORGANIZERS>(q => Sql.In(q.EventId, okeys));
                     var rrecurs = this.db.Select<REL_EVENTS_RECURS>(q => Sql.In(q.EventId, okeys));
                     var rattendees = this.db.Select<REL_EVENTS_ATTENDEES>(q => Sql.In(q.EventId, okeys));
@@ -1177,8 +1176,8 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
 
                     #region 2. retrieve secondary entitiesB
 
-                    var orgs =  (!rorgs.SafeEmpty()) ? db.Select<ORGANIZER>(q => Sql.In(q.Id, rorgs.Select(r => r.OrganizerId).ToList())) : null;
-                    var recurs =  (!rrecurs.SafeEmpty()) ? db.Select<RECUR>(q => Sql.In(q.Id, rrecurs.Select(r => r.RecurId).ToList())) : null;
+                    var orgs = (!rorgs.SafeEmpty()) ? db.Select<ORGANIZER>(q => Sql.In(q.Id, rorgs.Select(r => r.OrganizerId).ToList())) : null;
+                    var recurs = (!rrecurs.SafeEmpty()) ? db.Select<RECUR>(q => Sql.In(q.Id, rrecurs.Select(r => r.RecurId).ToList())) : null;
                     var attendees = (!rattendees.SafeEmpty()) ? db.Select<ATTENDEE>(q => Sql.In(q.Id, rattendees.Select(r => r.AttendeeId).ToList())) : null;
                     var comments = (!rcomments.SafeEmpty()) ? db.Select<COMMENT>(q => Sql.In(q.Id, rcomments.Select(r => r.CommentId).ToList())) : null;
                     var attachbins = (!rattachbins.SafeEmpty()) ? db.Select<ATTACH_BINARY>(q => Sql.In(q.Id, rattachbins.Select(r => r.AttachmentId).ToList())) : null;
@@ -1202,20 +1201,20 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                         if (!orgs.NullOrEmpty())
                         {
                             var xorgs = from y in orgs
-                                            join r in rorgs on y.Id equals r.OrganizerId
-                                            join e in full on r.EventId equals e.Id
-                                            where e.Id == x.Id
-                                            select y;
+                                        join r in rorgs on y.Id equals r.OrganizerId
+                                        join e in full on r.EventId equals e.Id
+                                        where e.Id == x.Id
+                                        select y;
                             if (!xorgs.NullOrEmpty()) x.Organizer = xorgs.First();
                         }
 
                         if (!recurs.NullOrEmpty())
                         {
                             var xrecurs = from y in recurs
-                                        join r in rorgs on y.Id equals r.OrganizerId
-                                        join e in full on r.EventId equals e.Id
-                                        where e.Id == x.Id
-                                        select y;
+                                          join r in rorgs on y.Id equals r.OrganizerId
+                                          join e in full on r.EventId equals e.Id
+                                          where e.Id == x.Id
+                                          select y;
                             if (!xrecurs.NullOrEmpty()) x.RecurrenceRule = xrecurs.First();
                         }
 

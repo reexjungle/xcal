@@ -48,6 +48,7 @@
     <Compile Include="io\copy.cs" />
     <Compile Include="operations\encoders.cs" />
     <Compile Include="io\file.cs" />
+    <Compile Include="operations\enums.cs" />
     <Compile Include="operations\generators.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="operations\reflectors.cs" />

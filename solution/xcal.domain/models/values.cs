@@ -1,6 +1,6 @@
 ﻿using reexjungle.foundation.essentials.concretes;
 using reexjungle.foundation.essentials.contracts;
-using reexjungle.infrastructure.operations.concretes;
+using reexjungle.infrastructure.concretes.operations;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.extensions;
 using System;

@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
+﻿using reexjungle.xcal.service.plugins.formats.concretes;
 using ServiceStack.ServiceClient.Web;
 using ServiceStack.ServiceHost;
-using reexjungle.xcal.service.plugins.formats.concretes;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
-namespace xcal.service.clients.concretes
+namespace reexjungle.xcal.service.clients.concretes
 {
     public class iCalendarServiceClient : ServiceClientBase
     {
@@ -21,19 +21,21 @@ namespace xcal.service.clients.concretes
             get { return "calendar"; }
         }
 
-
         public override StreamDeserializerDelegate StreamDeserializer
         {
             get { return iCalendarFormat.DeserializeFromStream; }
         }
 
-        
-        public iCalendarServiceClient(string baseUri): base()
+        public iCalendarServiceClient(string baseUri)
+            : base()
         {
             this.SetBaseUri(baseUri);
         }
 
-        public iCalendarServiceClient(string syncReplyBaseUri, string asyncOneWayBaseUri) : base(syncReplyBaseUri, asyncOneWayBaseUri) { }
+        public iCalendarServiceClient(string syncReplyBaseUri, string asyncOneWayBaseUri)
+            : base(syncReplyBaseUri, asyncOneWayBaseUri)
+        {
+        }
 
         public override T DeserializeFromStream<T>(Stream stream)
         {
@@ -46,7 +48,5 @@ namespace xcal.service.clients.concretes
             //Todo: Serialize iCalendar content to stream
             throw new NotImplementedException();
         }
-
-
     }
 }

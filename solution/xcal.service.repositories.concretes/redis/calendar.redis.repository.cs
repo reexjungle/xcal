@@ -1,7 +1,7 @@
 ﻿using reexjungle.foundation.essentials.concretes;
 using reexjungle.foundation.essentials.contracts;
+using reexjungle.infrastructure.contracts;
 using reexjungle.infrastructure.io.concretes;
-using reexjungle.infrastructure.operations.contracts;
 using reexjungle.technical.data.concretes.extensions.redis;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.repositories.concretes.relations;

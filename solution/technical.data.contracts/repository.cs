@@ -1,8 +1,8 @@
-﻿using System;
+﻿using reexjungle.infrastructure.contracts;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Collections.Generic;
-using reexjungle.infrastructure.operations.contracts;
 
 namespace reexjungle.technical.data.contracts
 {
@@ -11,14 +11,13 @@ namespace reexjungle.technical.data.contracts
     /// </summary>
     public interface IRepository { }
 
-
     /// <summary>
     /// Specifies the interface for read-only operations on a repository
     /// </summary>
     /// <typeparam name="TEntity">Type of entity to read from repository</typeparam>
     /// <typeparam name="TKey">Type of unique identifier for for retrieving entities</typeparam>
     public interface IReadRepository<out TEntity, in TKey> : IRepository
-        where TKey: IEquatable<TKey>, IComparable<TKey>
+        where TKey : IEquatable<TKey>, IComparable<TKey>
     {
         /// <summary>
         /// Finds an entity in the repository based on a unique identifier
@@ -55,8 +54,8 @@ namespace reexjungle.technical.data.contracts
         /// Checks if the repository contains entities
         /// </summary>
         /// <param name="keys">The unique identifiers of the entities</param>
-        /// <param name="mode">How the search is performed. 
-        /// Optimistic if at least one entity found, 
+        /// <param name="mode">How the search is performed.
+        /// Optimistic if at least one entity found,
         /// Pessimistic if all entities are found</param>
         /// <returns>True if the entities are found, otherwise false</returns>
         bool ContainsKeys(IEnumerable<TKey> keys, ExpectationMode mode = ExpectationMode.optimistic);
@@ -96,7 +95,7 @@ namespace reexjungle.technical.data.contracts
         void Erase(TKey key);
 
         /// <summary>
-        /// Inserts new entities or updates existing ones in the repository 
+        /// Inserts new entities or updates existing ones in the repository
         /// </summary>
         /// <param name="entities">The entities to save</param>
         void SaveAll(IEnumerable<TEntity> entities);
@@ -106,7 +105,5 @@ namespace reexjungle.technical.data.contracts
         /// </summary>
         /// <param name="keys">The unique identifier of the entity</param>
         void EraseAll(IEnumerable<TKey> keys = null);
-
     }
-
 }

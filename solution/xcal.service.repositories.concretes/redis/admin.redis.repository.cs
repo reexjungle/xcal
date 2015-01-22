@@ -1,12 +1,10 @@
-﻿using System;
+﻿using reexjungle.infrastructure.contracts;
+using reexjungle.xcal.service.repositories.contracts;
+using ServiceStack.Redis;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ServiceStack.Redis;
-using reexjungle.xcal.service.repositories.contracts;
-using reexjungle.infrastructure.operations.contracts;
-
-
 
 namespace reexjungle.xcal.service.repositories.concretes.redis
 {
@@ -14,6 +12,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
     {
         private IRedisClientsManager manager;
         private IRedisClient client = null;
+
         private IRedisClient redis
         {
             get
@@ -32,8 +31,10 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 this.client = manager.GetClient();
             }
         }
-               
-        public AdminRedisRepository() { }
+
+        public AdminRedisRepository()
+        {
+        }
 
         public AdminRedisRepository(IRedisClientsManager manager)
         {

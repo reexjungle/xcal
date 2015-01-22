@@ -1,6 +1,6 @@
 ﻿using reexjungle.foundation.essentials.concretes;
 using reexjungle.foundation.essentials.contracts;
-using reexjungle.infrastructure.operations.contracts;
+using reexjungle.infrastructure.contracts;
 using reexjungle.technical.data.concretes.extensions.redis;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.repositories.concretes.relations;
@@ -143,7 +143,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             {
                 try
                 {
-
                     #region save normalized and non-normalized attributes
 
                     var orattachbins = this.redis.As<REL_AALARMS_ATTACHBINS>().GetAll().Where(x => x.AlarmId == entity.Id);
@@ -166,7 +165,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                     if (entity.AttachmentUri != null)
                     {
                         transaction.QueueCommand(x => x.Store(entity.AttachmentUri));
-                        var rattachuri = new  REL_AALARMS_ATTACHURIS
+                        var rattachuri = new REL_AALARMS_ATTACHURIS
                         {
                             Id = KeyGenerator.GetNextKey(),
                             AlarmId = entity.Id,
@@ -177,7 +176,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                     }
                     else this.redis.RemoveAll(orattachuris, transaction);
 
-                    #endregion save attributes and  relations
+                    #endregion save normalized and non-normalized attributes
 
                     transaction.QueueCommand(x => x.Store(this.Dehydrate(entity)));
                 }
@@ -199,7 +198,8 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 x.Action,
                 x.Duration,
                 x.Trigger,
-                x.Repeat            };
+                x.Repeat
+            };
 
             Expression<Func<AUDIO_ALARM, object>> relations = x => new
             {
@@ -265,10 +265,10 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         }
                     }
 
-                    #endregion save (insert or update) relational attributes
+                    #endregion save (insert or update) normalized attributes
 
                     #region save (insert or update) non-normalized attributes
-                    
+
                     if (!sprimitives.NullOrEmpty())
                     {
                         Expression<Func<AUDIO_ALARM, object>> actionexpr = x => x.Action;
@@ -286,8 +286,9 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         });
 
                         transaction.QueueCommand(x => x.StoreAll(entities));
-                    } 
-                    #endregion
+                    }
+
+                    #endregion save (insert or update) non-normalized attributes
                 }
                 catch (ArgumentNullException) { throw; }
                 catch (RedisResponseException) { throw; }
@@ -433,7 +434,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
                     full.ForEach(x =>
                     {
-
                         if (!attachbins.NullOrEmpty())
                         {
                             var xattachbins = from y in attachbins
@@ -1040,7 +1040,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                     }
                     else this.redis.RemoveAll(orattachuris, transaction);
 
-                    #endregion save attributes and  relations
+                    #endregion save normalized and non-normalized attributes
 
                     transaction.QueueCommand(x => x.Store(this.Dehydrate(entity)));
                 }

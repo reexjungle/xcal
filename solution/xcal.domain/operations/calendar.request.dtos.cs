@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.Serialization;
-using ServiceStack.ServiceHost;
-using reexjungle.infrastructure.io.contracts;
+﻿using reexjungle.infrastructure.contracts;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
+using ServiceStack.ServiceHost;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Text;
 
 namespace reexjungle.xcal.domain.operations
 {
     [DataContract]
     [Route("/calendars/add", "POST")]
-    public class AddCalendar: IReturnVoid
+    public class AddCalendar : IReturnVoid
     {
         [DataMember]
         public VCALENDAR Calendar { get; set; }
@@ -122,12 +122,11 @@ namespace reexjungle.xcal.domain.operations
 
         [DataMember]
         public List<XCOMPONENT> XComponents { get; set; }
-
     }
 
     [DataContract]
     [Route("/calendars/{CalendarId}/delete", "DELETE")]
-    public class DeleteCalendar: IReturnVoid
+    public class DeleteCalendar : IReturnVoid
     {
         [DataMember]
         public string CalendarId { get; set; }
@@ -163,14 +162,12 @@ namespace reexjungle.xcal.domain.operations
 
         [DataMember]
         public int? Size { get; set; }
-
     }
-
 
     [DataContract]
     [Route("/calendars/{Page}/{Size}", "GET")]
     [Route("/calendars/page/{Page}/size/{Size}", "GET")]
-    public class GetCalendars: IReturn<List<VCALENDAR>>, IPaginated<int>
+    public class GetCalendars : IReturn<List<VCALENDAR>>, IPaginated<int>
     {
         [DataMember]
         public int? Page { get; set; }
@@ -178,7 +175,4 @@ namespace reexjungle.xcal.domain.operations
         [DataMember]
         public int? Size { get; set; }
     }
-
 }
-
-

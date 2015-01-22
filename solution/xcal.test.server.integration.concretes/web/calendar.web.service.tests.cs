@@ -1,6 +1,6 @@
 ﻿using FizzWare.NBuilder;
-using reexjungle.infrastructure.operations.concretes;
-using reexjungle.infrastructure.operations.contracts;
+using reexjungle.infrastructure.concretes.operations;
+using reexjungle.infrastructure.contracts;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.domain.operations;

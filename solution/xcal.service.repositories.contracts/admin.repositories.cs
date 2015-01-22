@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using reexjungle.infrastructure.contracts;
+using reexjungle.technical.data.contracts;
+using reexjungle.xcal.domain.models;
 using ServiceStack.OrmLite;
 using ServiceStack.Redis;
-using reexjungle.xcal.domain.models;
-using reexjungle.technical.data.contracts;
-using reexjungle.infrastructure.operations.contracts;
+using System;
+using System.Collections.Generic;
 
 namespace reexjungle.xcal.service.repositories.contracts
 {
-    public interface IAdminRepository: IRepository
+    public interface IAdminRepository : IRepository
     {
         void Flush(FlushMode mode = FlushMode.soft);
     }
@@ -20,7 +20,6 @@ namespace reexjungle.xcal.service.repositories.contracts
         /// </summary>
         IDbConnectionFactory DbConnectionFactory { get; set; }
     }
-
 
     /// <summary>
     /// Specifies an interface for a repository of events connected to a NoSQL Redis source

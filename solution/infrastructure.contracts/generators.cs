@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace reexjungle.infrastructure.operations.contracts
+namespace reexjungle.infrastructure.contracts
 {
     /// <summary>
     /// Specifies a contract for providing unique keys
@@ -29,9 +29,13 @@ namespace reexjungle.infrastructure.operations.contracts
     public interface IFPIKeyGenerator : IKeyGenerator<string>
     {
         string ISO { get; set; }
+
         string Owner { get; set; }
+
         string Description { get; set; }
+
         string LanguageId { get; set; }
+
         Authority Authority { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace reexjungle.infrastructure.operations.contracts
+namespace reexjungle.infrastructure.contracts
 {
     public enum FlushMode { soft, hard };
 

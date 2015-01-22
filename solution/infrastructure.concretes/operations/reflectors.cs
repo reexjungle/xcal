@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Reflection;
+using System.Text;
 
-namespace reexjungle.infrastructure.operations.concretes
+namespace reexjungle.infrastructure.concretes.operations
 {
     /// <summary>
-    /// Represents a basic property structure of an object  
+    /// Represents a basic property structure of an object
     /// </summary>
     public class PropertyElement
     {
@@ -69,7 +69,7 @@ namespace reexjungle.infrastructure.operations.concretes
     }
 
     /// <summary>
-    /// Represents a basic property structure of a generic instance  
+    /// Represents a basic property structure of a generic instance
     /// </summary>
     public class PropertyElement<TValue>
     {
@@ -126,7 +126,6 @@ namespace reexjungle.infrastructure.operations.concretes
     /// </summary>
     public static class ReflectionExtensions
     {
-
         /// <summary>
         /// Gets the properties of an object
         /// </summary>
@@ -175,7 +174,6 @@ namespace reexjungle.infrastructure.operations.concretes
                         for (int p = 0; p < pair.Value.Values.Count; ++p) type.GetProperty(pair.Key).SetValue(target, pair.Value.Values[p], new object[] { p });
                     }
                     else type.GetProperty(pair.Key).SetValue(target, pair.Value.Values[0], null);
-
                 }
                 catch (ArgumentNullException) { throw; }
                 catch (TargetException) { throw; }
@@ -230,11 +228,9 @@ namespace reexjungle.infrastructure.operations.concretes
                 catch (ArgumentException) { throw; }
                 catch (AmbiguousMatchException) { throw; }
                 catch (Exception) { throw; }
-
             }
 
             return target;
-
         }
 
         /// <summary>
@@ -275,11 +271,9 @@ namespace reexjungle.infrastructure.operations.concretes
                 catch (ArgumentException) { throw; }
                 catch (AmbiguousMatchException) { throw; }
                 catch (Exception) { throw; }
-
             }
 
             return instance;
-
         }
 
         public static bool PropertiesEquals<T>(this T instance, T other, params string[] ignore) where T : class
@@ -346,6 +340,5 @@ namespace reexjungle.infrastructure.operations.concretes
 
             return new List<object>();
         }
-
     }
 }

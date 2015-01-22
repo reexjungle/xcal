@@ -1,4 +1,4 @@
-﻿using reexjungle.infrastructure.io.contracts;
+﻿using reexjungle.infrastructure.contracts;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
 using ServiceStack.ServiceHost;

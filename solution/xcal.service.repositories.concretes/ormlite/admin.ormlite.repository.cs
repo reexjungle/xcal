@@ -1,4 +1,4 @@
-﻿using reexjungle.infrastructure.operations.contracts;
+﻿using reexjungle.infrastructure.contracts;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.repositories.concretes.relations;

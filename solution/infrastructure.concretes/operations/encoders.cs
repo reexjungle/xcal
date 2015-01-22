@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
+using System.Text;
 
-namespace reexjungle.infrastructure.operations.concretes
+namespace reexjungle.infrastructure.concretes.operations
 {
     public static class EncodingExtensions
     {
-
         public static byte[] ToUtf8Bytes(this string unicode)
         {
             byte[] bytes = null;
@@ -16,8 +15,8 @@ namespace reexjungle.infrastructure.operations.concretes
                 var utf8 = new UTF8Encoding();
                 bytes = utf8.GetBytes(unicode);
             }
-            catch (ArgumentNullException ) { throw; }
-            catch (EncoderFallbackException ) { throw; }
+            catch (ArgumentNullException) { throw; }
+            catch (EncoderFallbackException) { throw; }
             catch (Exception) { throw; }
             return bytes;
         }
@@ -30,8 +29,8 @@ namespace reexjungle.infrastructure.operations.concretes
                 var bytes = Encoding.UTF8.GetBytes(unicode);
                 encoded = Encoding.UTF8.GetString(bytes);
             }
-            catch (ArgumentNullException ) { throw; }
-            catch (EncoderFallbackException ) { throw; }
+            catch (ArgumentNullException) { throw; }
+            catch (EncoderFallbackException) { throw; }
             return encoded;
         }
 
@@ -47,7 +46,7 @@ namespace reexjungle.infrastructure.operations.concretes
             if (unicode == null) throw new ArgumentNullException();
             try
             {
-                return Encoding.ASCII.GetBytes(unicode);        
+                return Encoding.ASCII.GetBytes(unicode);
             }
             catch (ArgumentNullException) { throw; }
             catch (EncoderFallbackException) { throw; }
@@ -112,8 +111,6 @@ namespace reexjungle.infrastructure.operations.concretes
             catch (ArgumentNullException) { throw; }
             catch (EncoderFallbackException) { throw; }
             catch (DecoderFallbackException) { throw; }
-
-
         }
 
         /// <summary>
@@ -132,9 +129,6 @@ namespace reexjungle.infrastructure.operations.concretes
             }
             catch (ArgumentNullException) { throw; }
             catch (FormatException) { throw; }
-            
-
         }
-
     }
 }

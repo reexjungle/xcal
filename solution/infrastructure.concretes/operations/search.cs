@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace reexjungle.infrastructure.operations.concretes
+namespace reexjungle.infrastructure.concretes.operations
 {
     [Flags]
     public enum DateTimeOption
@@ -52,7 +52,6 @@ namespace reexjungle.infrastructure.operations.concretes
 
     public static class SearchParserExtensions
     {
-
         public static DateTimeSearchOption ToDateFindOption(this string value)
         {
             if (value.Trim().ToLower().Equals("lasthour")) return DateTimeSearchOption.lasthour;
@@ -78,11 +77,5 @@ namespace reexjungle.infrastructure.operations.concretes
             else if (value.Trim().ToLower().Equals("not_equals")) return TextSearchOption.not_equals;
             else return TextSearchOption.none;
         }
-
-
     }
-
-
-
-
 }

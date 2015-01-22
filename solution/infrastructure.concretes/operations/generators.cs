@@ -1,9 +1,9 @@
-﻿using reexjungle.infrastructure.operations.contracts;
+﻿using reexjungle.infrastructure.contracts;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace reexjungle.infrastructure.operations.concretes
+namespace reexjungle.infrastructure.concretes.operations
 {
     public class GuidKeyGenerator : IGuidKeyGenerator
     {

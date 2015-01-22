@@ -1,16 +1,15 @@
-﻿using System;
+﻿using reexjungle.foundation.essentials.contracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using reexjungle.foundation.essentials.contracts;
 
-namespace reexjungle.infrastructure.operations.concretes
+namespace reexjungle.infrastructure.concretes.operations
 {
     public abstract class EqualByTId<TPrimary, TId> : IEqualityComparer<TPrimary>
         where TPrimary : IContainsKey<TId>
         where TId : IEquatable<TId>
     {
-
         public virtual bool Equals(TPrimary x, TPrimary y)
         {
             return x.Id.Equals(y.Id);
@@ -70,5 +69,4 @@ namespace reexjungle.infrastructure.operations.concretes
             return obj.GetHashCode();
         }
     }
-
 }

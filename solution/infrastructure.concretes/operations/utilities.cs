@@ -1,25 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
 using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 
-namespace reexjungle.infrastructure.operations.concretes
+namespace reexjungle.infrastructure.concretes.operations
 {
-    public enum StorageType
-    { 
-        rdbms = 0x1,
-        nosql = 0x2,
-        unknown = 0xf
-    }
-
     /// <summary>
     /// Specifies a helper class providing common IO functionalities
     /// </summary>
     public static class Utilities
     {
-
         #region assembly helpers
 
         /// <summary>
@@ -112,7 +104,6 @@ namespace reexjungle.infrastructure.operations.concretes
             try
             {
                 paths = types.Select(x => Assembly.GetAssembly(x).Location);
-
             }
             catch (ArgumentNullException) { throw; }
             catch (Exception) { throw; }
@@ -126,7 +117,6 @@ namespace reexjungle.infrastructure.operations.concretes
             try
             {
                 paths = objects.Select(x => Assembly.GetAssembly(typeof(TValue)).Location);
-
             }
             catch (ArgumentNullException) { throw; }
             catch (Exception) { throw; }
@@ -172,13 +162,14 @@ namespace reexjungle.infrastructure.operations.concretes
 
         public static FileVersionInfo GetFileVersionInfo(this Assembly assembly)
         {
-            return FileVersionInfo.GetVersionInfo(assembly.Location); 
+            return FileVersionInfo.GetVersionInfo(assembly.Location);
         }
 
         public static Version GetVersionInfo(this Assembly assembly)
         {
             return assembly.GetName().Version;
         }
+
         /// <summary>
         /// Gets the application path of current executing application
         /// </summary>
@@ -197,7 +188,7 @@ namespace reexjungle.infrastructure.operations.concretes
             return Assembly.GetEntryAssembly().Location;
         }
 
-        #endregion
+        #endregion assembly helpers
 
         #region generators
 
@@ -236,7 +227,6 @@ namespace reexjungle.infrastructure.operations.concretes
             return guid.ToString();
         }
 
-        #endregion
-        
+        #endregion generators
     }
 }

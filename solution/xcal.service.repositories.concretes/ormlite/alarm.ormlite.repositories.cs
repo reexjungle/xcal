@@ -1,7 +1,7 @@
 ﻿using reexjungle.foundation.essentials.concretes;
 using reexjungle.foundation.essentials.contracts;
+using reexjungle.infrastructure.contracts;
 using reexjungle.infrastructure.io.concretes;
-using reexjungle.infrastructure.operations.contracts;
 using reexjungle.technical.data.concretes.extensions.ormlite;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.repositories.concretes.relations;
@@ -106,7 +106,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
             try
             {
                 var dry = db.Select<AUDIO_ALARM>(q => Sql.In(q.Id, keys.ToArray()), skip, take);
-                return !dry.NullOrEmpty() ? this.HydrateAll(dry): dry;
+                return !dry.NullOrEmpty() ? this.HydrateAll(dry) : dry;
             }
             catch (ArgumentNullException) { throw; }
             catch (InvalidOperationException) { throw; }
@@ -139,7 +139,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
             try
             {
                 db.Save(entity);
-                
+
                 var orattachbins = db.Select<REL_AALARMS_ATTACHBINS>(q => q.Id == entity.Id);
                 var orattachuris = db.Select<REL_AALARMS_ATTACHURIS>(q => q.Id == entity.Id);
 
@@ -253,7 +253,6 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                     ? db.SelectParam<AUDIO_ALARM, string>(q => q.Id, p => Sql.In(p.Id, keys.ToArray())).ToArray()
                     : db.SelectParam<AUDIO_ALARM>(q => q.Id).ToArray();
 
-
                 //1. Get fields slected for patching
                 var selection = fields.GetMemberNames();
 
@@ -313,7 +312,6 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                         }
                         else db.RemoveAll(orattachuris);
                     }
-
                 }
 
                 if (!sprimitives.NullOrEmpty())
@@ -771,7 +769,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public class EmailAlarmOrmLiteRepository : IEmailAlarmOrmLiteRepository, IDisposable
     {
@@ -1071,7 +1069,6 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
 
         public void Patch(EMAIL_ALARM source, Expression<Func<EMAIL_ALARM, object>> fields, IEnumerable<string> keys = null)
         {
-
             try
             {
                 var okeys = (keys != null)
@@ -1160,7 +1157,6 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                         }
                         else db.RemoveAll(orattachuris);
                     }
-
                 }
 
                 //5. Patch primitives
@@ -1176,7 +1172,6 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
             catch (InvalidOperationException) { throw; }
             catch (ApplicationException) { throw; }
             catch (Exception) { throw; }
-
         }
 
         public bool ContainsKey(string key)
