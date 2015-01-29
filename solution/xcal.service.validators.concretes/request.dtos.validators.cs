@@ -1,17 +1,16 @@
-﻿using System;
+﻿using reexjungle.crosscut.operations.concretes;
+using reexjungle.foundation.essentials.concretes;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.models;
+using reexjungle.xcal.service.operations.concretes.live;
+using ServiceStack.FluentValidation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ServiceStack.FluentValidation;
-using reexjungle.foundation.essentials.concretes;
-using reexjungle.crosscut.operations.concretes;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
-using reexjungle.xcal.domain.operations;
 
 namespace reexjungle.xcal.service.validators.concretes
 {
-
     #region calendar request dto validators
 
     public class AddCalendarValidator : AbstractValidator<AddCalendar>
@@ -41,7 +40,6 @@ namespace reexjungle.xcal.service.validators.concretes
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Calendar).NotNull();
             RuleFor(x => x.Calendar).SetValidator(new CalendarValidator()).When(x => x.Calendar != null);
-
         }
     }
 
@@ -52,7 +50,6 @@ namespace reexjungle.xcal.service.validators.concretes
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Calendars).NotNull().NotEmpty();
             RuleFor(x => x.Calendars).SetCollectionValidator(new CalendarValidator()).When(x => !x.Calendars.NullOrEmpty());
-
         }
     }
 
@@ -73,7 +70,6 @@ namespace reexjungle.xcal.service.validators.concretes
             RuleFor(x => x.CalendarIds).NotNull().NotEmpty();
         }
     }
-
 
     public class DeleteCalendarValidator : AbstractValidator<DeleteCalendar>
     {
@@ -119,14 +115,13 @@ namespace reexjungle.xcal.service.validators.concretes
             RuleFor(x => x.Page).GreaterThan(0).When(x => x.Page != null && x.Page.HasValue);
             RuleFor(x => x.Size).GreaterThan(0).When(x => x.Size != null && x.Size.HasValue);
         }
-    } 
+    }
 
-
-    #endregion
+    #endregion calendar request dto validators
 
     #region event request dto validators
-    
-    public class AddEventValidator: AbstractValidator<AddEvent>
+
+    public class AddEventValidator : AbstractValidator<AddEvent>
     {
         public AddEventValidator()
         {
@@ -134,7 +129,6 @@ namespace reexjungle.xcal.service.validators.concretes
             RuleFor(x => x.CalendarId).Must((x, y) => !string.IsNullOrEmpty(x.CalendarId) || !string.IsNullOrWhiteSpace(x.CalendarId));
             RuleFor(x => x.Event).NotNull();
             RuleFor(x => x.Event).SetValidator(new EventValidator()).When(x => x.Event != null);
-
         }
     }
 
@@ -146,7 +140,6 @@ namespace reexjungle.xcal.service.validators.concretes
             RuleFor(x => x.CalendarId).Must((x, y) => !string.IsNullOrEmpty(x.CalendarId) || !string.IsNullOrWhiteSpace(x.CalendarId));
             RuleFor(x => x.Events).NotNull();
             RuleFor(x => x.Events).SetCollectionValidator(new EventValidator()).When(x => !x.Events.NullOrEmpty());
-
         }
     }
 
@@ -160,8 +153,5 @@ namespace reexjungle.xcal.service.validators.concretes
         }
     }
 
-
-    
-    #endregion
-
+    #endregion event request dto validators
 }

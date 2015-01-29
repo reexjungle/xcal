@@ -4,7 +4,7 @@ using reexjungle.infrastructure.concretes.operations;
 using reexjungle.infrastructure.contracts;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
-using reexjungle.xcal.domain.operations;
+using reexjungle.xcal.service.operations.concretes.live;
 using reexjungle.xcal.test.server.integration.contracts;
 using reexjungle.xcal.test.units.concretes;
 using System;

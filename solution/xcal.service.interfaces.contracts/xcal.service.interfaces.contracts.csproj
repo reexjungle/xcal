@@ -101,6 +101,10 @@
       <Project>{5b708e08-1f69-4fde-9d99-afa3784a49d7}</Project>
       <Name>xcal.domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\xcal.service.operations.concretes\xcal.service.operations.concretes.csproj">
+      <Project>{ba751bd2-68a5-4e95-8dcc-b7fc98cc0df6}</Project>
+      <Name>xcal.service.operations.concretes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\xcal.service.repositories.contracts\xcal.service.repositories.contracts.csproj">
       <Project>{1898784a-99b2-4226-8c33-689ea6558cfa}</Project>
       <Name>xcal.service.repositories.contracts</Name>

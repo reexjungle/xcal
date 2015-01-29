@@ -110,6 +110,10 @@
       <Project>{0f139102-92d0-4d11-8a18-49757609ccbf}</Project>
       <Name>xcal.service.interfaces.contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\xcal.service.operations.concretes\xcal.service.operations.concretes.csproj">
+      <Project>{ba751bd2-68a5-4e95-8dcc-b7fc98cc0df6}</Project>
+      <Name>xcal.service.operations.concretes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\xcal.service.repositories.contracts\xcal.service.repositories.contracts.csproj">
       <Project>{1898784a-99b2-4226-8c33-689ea6558cfa}</Project>
       <Name>xcal.service.repositories.contracts</Name>

@@ -1,12 +1,12 @@
-﻿using System;
+﻿using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.models;
+using reexjungle.xcal.service.operations.concretes.live;
+using reexjungle.xcal.service.repositories.contracts;
+using ServiceStack.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ServiceStack.Logging;
-using reexjungle.xcal.service.repositories.contracts;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
-using reexjungle.xcal.domain.operations;
 
 namespace reexjungle.xcal.service.interfaces.contracts.live
 {
@@ -14,5 +14,4 @@ namespace reexjungle.xcal.service.interfaces.contracts.live
     {
         void Post(FlushDatabase request);
     }
-
 }
