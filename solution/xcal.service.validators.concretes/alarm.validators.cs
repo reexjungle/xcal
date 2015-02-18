@@ -1,11 +1,11 @@
-﻿using System;
+﻿using reexjungle.foundation.essentials.concretes;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.models;
+using ServiceStack.FluentValidation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ServiceStack.FluentValidation;
-using reexjungle.foundation.essentials.concretes;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
 
 namespace reexjungle.xcal.service.validators.concretes
 {
@@ -16,7 +16,7 @@ namespace reexjungle.xcal.service.validators.concretes
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Trigger).NotNull().SetValidator(new TriggerValidator());
             RuleFor(x => x.Duration).NotNull().SetValidator(new DurationValidator()).Unless(x => x.Repeat < 0);
-            RuleFor(x => x.Repeat).GreaterThanOrEqualTo(0).Unless(x => x.Duration == null);
+            RuleFor(x => x.Repeat).GreaterThanOrEqualTo(0).Unless(x => x.Duration == default(DURATION));
         }
     }
 

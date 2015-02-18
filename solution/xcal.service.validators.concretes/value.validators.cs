@@ -1,17 +1,16 @@
-﻿using System;
+﻿using reexjungle.foundation.essentials.concretes;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.models;
+using ServiceStack.FluentValidation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using ServiceStack.FluentValidation;
-using reexjungle.foundation.essentials.concretes;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
 
 namespace reexjungle.xcal.service.validators.concretes
 {
-
-    public class BinaryValidator: AbstractValidator<BINARY>
+    public class BinaryValidator : AbstractValidator<BINARY>
     {
         public BinaryValidator()
         {
@@ -21,7 +20,7 @@ namespace reexjungle.xcal.service.validators.concretes
         }
     }
 
-    public class DateValidator: AbstractValidator<DATE>
+    public class DateValidator : AbstractValidator<DATE>
     {
         public DateValidator()
         {
@@ -32,7 +31,7 @@ namespace reexjungle.xcal.service.validators.concretes
         }
     }
 
-    public class DateTimeValidator: AbstractValidator<DATE_TIME>
+    public class DateTimeValidator : AbstractValidator<DATE_TIME>
     {
         public DateTimeValidator()
         {
@@ -48,7 +47,7 @@ namespace reexjungle.xcal.service.validators.concretes
         }
     }
 
-    public class TimeValidator: AbstractValidator<TIME>
+    public class TimeValidator : AbstractValidator<TIME>
     {
         public TimeValidator()
         {
@@ -61,7 +60,7 @@ namespace reexjungle.xcal.service.validators.concretes
         }
     }
 
-    public class DurationValidator: AbstractValidator<DURATION>
+    public class DurationValidator : AbstractValidator<DURATION>
     {
         public DurationValidator()
         {
@@ -69,23 +68,23 @@ namespace reexjungle.xcal.service.validators.concretes
         }
     }
 
-    public class PeriodValidator: AbstractValidator<PERIOD>
+    public class PeriodValidator : AbstractValidator<PERIOD>
     {
         public PeriodValidator()
         {
             var dtvalidator = new DateTimeValidator();
-            RuleFor(x => x.Start).SetValidator(dtvalidator).When(x => x.Start != null);
-            RuleFor(x => x.End).SetValidator(dtvalidator).Unless(x => x.Duration != null).When(x => x.End != null);
-            RuleFor(x => x.Duration).SetValidator(new DurationValidator()).Unless(x => x.End != null).When(x => x.Duration != null);
+            RuleFor(x => x.Start).SetValidator(dtvalidator).When(x => x.Start != default(DATE_TIME));
+            RuleFor(x => x.End).SetValidator(dtvalidator).Unless(x => x.Duration != default(DURATION)).When(x => x.End != default(DATE_TIME));
+            RuleFor(x => x.Duration).SetValidator(new DurationValidator()).Unless(x => x.End != default(DATE_TIME)).When(x => x.Duration != default(DURATION));
         }
     }
 
-
-    public class EmailValidator: AbstractValidator<URI>
+    public class EmailValidator : AbstractValidator<URI>
     {
-        public EmailValidator(): base()
+        public EmailValidator()
+            : base()
         {
-            RuleFor(x => x.Path).Must((x,y) => this.IsValid(x.Path)).When(x => !string.IsNullOrWhiteSpace(x.Path) 
+            RuleFor(x => x.Path).Must((x, y) => this.IsValid(x.Path)).When(x => !string.IsNullOrWhiteSpace(x.Path)
                 || !string.IsNullOrEmpty(x.Path));
         }
 
@@ -96,7 +95,7 @@ namespace reexjungle.xcal.service.validators.concretes
                 var pattern = @"^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$";
                 return Regex.IsMatch(email, pattern, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
             }
-            catch (ArgumentNullException) { throw;  }
+            catch (ArgumentNullException) { throw; }
             catch (ArgumentException) { throw; }
         }
     }
@@ -106,7 +105,7 @@ namespace reexjungle.xcal.service.validators.concretes
         public UriValidator()
             : base()
         {
-            RuleFor(x => x.Path).Must((x , y) => Uri.IsWellFormedUriString(y, UriKind.RelativeOrAbsolute)).When(x => x.Path != null);
+            RuleFor(x => x.Path).Must((x, y) => Uri.IsWellFormedUriString(y, UriKind.RelativeOrAbsolute)).When(x => x.Path != null);
         }
     }
 
@@ -120,8 +119,7 @@ namespace reexjungle.xcal.service.validators.concretes
         }
     }
 
-
-    public class RecurrenceValidator: AbstractValidator<RECUR>
+    public class RecurrenceValidator : AbstractValidator<RECUR>
     {
         public RecurrenceValidator()
             : base()
@@ -155,5 +153,4 @@ namespace reexjungle.xcal.service.validators.concretes
             RuleFor(x => x.SECOND).NotEqual(0).When(x => x.MINUTE == 0 && x.SECOND == 0);
         }
     }
-
 }

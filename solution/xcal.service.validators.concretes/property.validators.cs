@@ -201,8 +201,8 @@ namespace reexjungle.xcal.service.validators.concretes
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Start).SetValidator(new DateTimeValidator());
-            RuleFor(x => x.TimeZoneOffsetFrom).SetValidator(new UtcOffsetValidator()).When(x => x.TimeZoneOffsetFrom != null);
-            RuleFor(x => x.TimeZoneOffsetTo).SetValidator(new UtcOffsetValidator()).When(x => x.TimeZoneOffsetTo != null);
+            RuleFor(x => x.TimeZoneOffsetFrom).SetValidator(new UtcOffsetValidator()).When(x => x.TimeZoneOffsetFrom != default(UTC_OFFSET));
+            RuleFor(x => x.TimeZoneOffsetTo).SetValidator(new UtcOffsetValidator()).When(x => x.TimeZoneOffsetTo != default(UTC_OFFSET));
             RuleFor(x => x.RecurrenceRule).SetValidator(new RecurrenceValidator()).When(x => x.RecurrenceRule != null);
             RuleFor(x => x.RecurrenceDates).SetCollectionValidator(new RecurrenceDateValidator()).
                 Must((x, y) => y.AreUnique()).
@@ -221,8 +221,8 @@ namespace reexjungle.xcal.service.validators.concretes
         public TriggerValidator()
         {
             CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Duration).SetValidator(new DurationValidator()).When(x => x.Duration != null);
-            RuleFor(x => x.DateTime).SetValidator(new DateTimeValidator()).When(x => x.DateTime != null);
+            RuleFor(x => x.Duration).SetValidator(new DurationValidator()).When(x => x.Duration != default(DURATION));
+            RuleFor(x => x.DateTime).SetValidator(new DateTimeValidator()).When(x => x.DateTime != default(DATE_TIME));
             RuleFor(x => x.ValueType).NotEqual(VALUE.UNKNOWN);
         }
     }
