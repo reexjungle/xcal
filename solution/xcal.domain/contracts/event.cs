@@ -1,6 +1,6 @@
-﻿using System;
+﻿using reexjungle.xcal.domain.models;
+using System;
 using System.Collections.Generic;
-using reexjungle.xcal.domain.models;
 
 namespace reexjungle.xcal.domain.contracts
 {
@@ -9,11 +9,11 @@ namespace reexjungle.xcal.domain.contracts
     /// </summary>
     public interface IEVENT : ICOMPONENT
     {
-        string Uid {get; set;}
+        string Uid { get; set; }
 
         DATE_TIME Datestamp { get; set; }
 
-        DATE_TIME Start{get; set;}
+        DATE_TIME Start { get; set; }
 
         CLASS Classification { get; set; }
 
@@ -45,9 +45,9 @@ namespace reexjungle.xcal.domain.contracts
 
         RECUR RecurrenceRule { get; set; }
 
-        DATE_TIME End {get; set;}
+        DATE_TIME End { get; set; }
 
-        DURATION Duration {get; set;}
+        DURATION Duration { get; set; }
 
         List<ATTACH_BINARY> AttachmentBinaries { get; set; }
 
@@ -83,7 +83,4 @@ namespace reexjungle.xcal.domain.contracts
 
         List<TEVENT> GenerateRecurrences<TEVENT>() where TEVENT : class, IEVENT, new();
     }
-
-
-
 }

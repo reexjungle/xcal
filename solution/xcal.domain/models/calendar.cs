@@ -16,6 +16,8 @@ namespace reexjungle.xcal.domain.models
     [DataContract]
     public class VCALENDAR : ICALENDAR, IEquatable<VCALENDAR>, IContainsKey<string>
     {
+        public static readonly VCALENDAR Empty = new VCALENDAR();
+
         /// <summary>
         /// Gets or sets the product identifier. Neccesary as primary key in Ormlite
         /// </summary>
@@ -99,13 +101,14 @@ namespace reexjungle.xcal.domain.models
         /// </summary>
         [DataMember]
         [Ignore]
-        public List<XCOMPONENT> XComponents { get; set; }
+        public List<X_COMPONENT> XComponents { get; set; }
 
         /// <summary>
         /// Default Constructor of the iCalendar core object
         /// </summary>
         public VCALENDAR()
         {
+            this.Id = string.Empty;
             this.Version = "2.0";
             this.Calscale = CALSCALE.GREGORIAN;
             this.Events = new List<VEVENT>();
@@ -114,7 +117,7 @@ namespace reexjungle.xcal.domain.models
             this.Journals = new List<VJOURNAL>();
             this.FreeBusies = new List<VFREEBUSY>();
             this.IanaComponents = new List<IANA_COMPONENT>();
-            this.XComponents = new List<XCOMPONENT>();
+            this.XComponents = new List<X_COMPONENT>();
         }
 
         public bool Equals(VCALENDAR other)

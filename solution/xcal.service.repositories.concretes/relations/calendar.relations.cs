@@ -341,7 +341,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         /// <summary>
         /// Gets or sets the unique identifier of the related x-component entity
         /// </summary>
-        [ForeignKey(typeof(XCOMPONENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        [ForeignKey(typeof(X_COMPONENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public string XComponentId { get; set; }
 
         public bool Equals(REL_CALENDARS_XCS other)

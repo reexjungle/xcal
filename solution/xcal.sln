@@ -73,6 +73,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.servers.web.prod2", "x
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.service.operations.concretes", "xcal.service.operations.concretes\xcal.service.operations.concretes.csproj", "{BA751BD2-68A5-4E95-8DCC-B7FC98CC0DF6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "application", "application", "{C24D3A76-8AAD-4BD7-BFD7-5C3D7E07D1F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.application.itip", "xcal.application.rfc5546\xcal.application.itip.csproj", "{BE60A7D9-BF0F-4A6E-873D-E8BE627C8C0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -187,6 +191,10 @@ Global
 		{BA751BD2-68A5-4E95-8DCC-B7FC98CC0DF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA751BD2-68A5-4E95-8DCC-B7FC98CC0DF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA751BD2-68A5-4E95-8DCC-B7FC98CC0DF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE60A7D9-BF0F-4A6E-873D-E8BE627C8C0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE60A7D9-BF0F-4A6E-873D-E8BE627C8C0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE60A7D9-BF0F-4A6E-873D-E8BE627C8C0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE60A7D9-BF0F-4A6E-873D-E8BE627C8C0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -219,6 +227,7 @@ Global
 		{2CA95C26-3EA5-4CEB-B27F-BD538814031D} = {A6C8E01B-8688-4D61-AACF-E045B9BC68C6}
 		{F8C94EA7-B173-4FFA-94B8-2B69AD6BE7CD} = {A6C8E01B-8688-4D61-AACF-E045B9BC68C6}
 		{BA751BD2-68A5-4E95-8DCC-B7FC98CC0DF6} = {1FBDE8AA-3FC4-4A9F-A373-87883894B4DF}
+		{BE60A7D9-BF0F-4A6E-873D-E8BE627C8C0F} = {C24D3A76-8AAD-4BD7-BFD7-5C3D7E07D1F0}
 	EndGlobalSection
 	GlobalSection(CodealikeProperties) = postSolution
 		SolutionGuid = 1352b368-b41e-43bd-abe6-2b78282795b3

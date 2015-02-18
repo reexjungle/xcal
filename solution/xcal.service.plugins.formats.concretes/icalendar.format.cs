@@ -92,10 +92,10 @@ namespace reexjungle.xcal.service.plugins.formats.concretes
                     }
 
                     //X Components
-                    if (dto is XCOMPONENT) sw.WriteLine(dto as XCOMPONENT);
-                    if (dto is List<XCOMPONENT>)
+                    if (dto is X_COMPONENT) sw.WriteLine(dto as X_COMPONENT);
+                    if (dto is List<X_COMPONENT>)
                     {
-                        var xc = dto as List<XCOMPONENT>;
+                        var xc = dto as List<X_COMPONENT>;
                         xc.ForEach(x => sw.WriteLine(x));
                     }
 

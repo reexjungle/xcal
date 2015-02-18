@@ -1,24 +1,22 @@
-﻿using System;
+﻿using reexjungle.xcal.domain.contracts;
+using ServiceStack.DataAnnotations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
-using ServiceStack.DataAnnotations;
-using reexjungle.xcal.domain.contracts;
-
-
+using System.Text;
 
 namespace reexjungle.xcal.domain.models
 {
     [DataContract]
-    public class IANA_COMPONENT: IMISC_COMPONENT
+    public class IANA_COMPONENT : IMISC_COMPONENT
     {
         [DataMember]
         public string TokenName { get; set; }
 
         [DataMember]
         [Ignore]
-        List<IANA_PROPERTY> ContentLines { get; set; }
+        public List<IANA_PROPERTY> ContentLines { get; set; }
 
         public IANA_COMPONENT()
         {
@@ -33,20 +31,19 @@ namespace reexjungle.xcal.domain.models
             sb.AppendFormat("END:{0}", this.TokenName);
             return sb.ToString();
         }
-
     }
 
     [DataContract]
-    public class XCOMPONENT : IMISC_COMPONENT
+    public class X_COMPONENT : IMISC_COMPONENT
     {
         [DataMember]
         public string TokenName { get; set; }
 
         [DataMember]
         [Ignore]
-        List<X_PROPERTY> ContentLines { get; set; }
+        private List<X_PROPERTY> ContentLines { get; set; }
 
-        public XCOMPONENT()
+        public X_COMPONENT()
         {
             this.ContentLines = new List<X_PROPERTY>();
         }
@@ -59,6 +56,5 @@ namespace reexjungle.xcal.domain.models
             sb.AppendFormat("END:{0}", this.TokenName);
             return sb.ToString();
         }
-
     }
 }

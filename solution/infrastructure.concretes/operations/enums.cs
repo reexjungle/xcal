@@ -13,7 +13,14 @@ namespace reexjungle.infrastructure.concretes.operations
         rdbms,
         nosql,
         memory,
+        host,
         unknown
+    }
+
+    public enum HostType
+    {
+        azure,
+        amazonws
     }
 
     public enum OrmType

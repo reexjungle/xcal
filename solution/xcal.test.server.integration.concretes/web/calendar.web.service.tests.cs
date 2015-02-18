@@ -3,6 +3,7 @@ using reexjungle.infrastructure.concretes.operations;
 using reexjungle.infrastructure.contracts;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
+using reexjungle.xcal.service.operations.concretes.cached;
 using reexjungle.xcal.service.operations.concretes.live;
 using reexjungle.xcal.test.server.integration.contracts;
 using reexjungle.xcal.test.units.concretes;
@@ -78,6 +79,41 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
         }
 
         [Fact]
+        public void MaintainSingleCalendarCached()
+        {
+            this.TearDown();
+            this.Initialize();
+
+            var c1 = caltests.GenerateCalendarsOfSize(1).First();
+            var client = this.factory.GetClient();
+            client.Post(new AddCalendar { Calendar = c1 });
+            var f1 = client.Get(new FindCalendarCached { CalendarId = c1.Id });
+            Assert.Equal(f1.Calscale, c1.Calscale);
+            Assert.Equal(f1.ProdId, c1.ProdId);
+            Assert.Equal(f1.Method, c1.Method);
+            Assert.Equal(f1.Version, c1.Version);
+            Assert.Equal(f1.Id, c1.Id);
+
+            c1.Method = METHOD.REQUEST;
+            c1.Version = "3.0";
+            c1.Calscale = CALSCALE.HEBREW;
+            client.Put(new UpdateCalendar { Calendar = c1 });
+            var u1 = client.Get(new FindCalendarCached { CalendarId = c1.Id });
+            Assert.Equal(u1.Calscale, CALSCALE.HEBREW);
+            Assert.Equal(u1.Version, "3.0");
+            Assert.Equal(u1.Method, METHOD.REQUEST);
+            Assert.Equal(u1, c1);
+
+            client.Patch(new PatchCalendar { Scale = CALSCALE.JULIAN, CalendarId = c1.Id });
+            var p1 = client.Get(new FindCalendarCached { CalendarId = c1.Id });
+            Assert.Equal(p1.Calscale, CALSCALE.JULIAN);
+
+            client.Delete(new DeleteCalendar { CalendarId = c1.Id });
+            var d1 = client.Get(new FindCalendarCached { CalendarId = c1.Id });
+            Assert.Equal(d1, VCALENDAR.Empty);
+        }
+
+        [Fact]
         public void MaintainMultipleCalendars()
         {
             this.TearDown();
@@ -137,6 +173,69 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             Assert.Equal(rcals.Count(), 0);
 
             rcals = client.Get(new GetCalendars { Page = 3, Size = 50 });
+            Assert.Equal(rcals.Count(), 0);
+        }
+
+        [Fact]
+        public void MaintainMultipleCalendarsCached()
+        {
+            this.TearDown();
+            this.Initialize();
+
+            var cals = this.caltests.GenerateCalendarsOfSize(5).ToList();
+
+            //customize calendars
+            cals[0].Method = METHOD.PUBLISH;
+            cals[0].Version = "1.0";
+            cals[1].Method = METHOD.REQUEST;
+            cals[1].Version = "1.0";
+            cals[2].Method = METHOD.REFRESH;
+            cals[2].Version = "3.0";
+            cals[3].Method = METHOD.ADD;
+            cals[2].Version = "3.0";
+            cals[4].Method = METHOD.CANCEL;
+            cals[4].Version = "1.0";
+
+            var client = this.factory.GetClient();
+            client.Post(new AddCalendars { Calendars = cals.ToList() });
+            var keys = cals.Select(x => x.Id).ToList();
+
+            var rcals = client.Post(new FindCalendarsCached { CalendarIds = keys });
+            Assert.Equal(rcals.Count, 5);
+            Assert.Equal(rcals.Where(x => x.Calscale == CALSCALE.GREGORIAN).Count(), 5);
+            Assert.Equal(rcals.Where(x => x.ProdId == cals[0].ProdId).Count(), 5);
+            Assert.Equal(rcals.Where(x => x.Version == "1.0").Count(), 3);
+            Assert.Equal(rcals.Where(x => x.Version == "3.0").FirstOrDefault().Method, METHOD.REFRESH);
+
+            cals[3].Calscale = CALSCALE.ISLAMIC;
+            cals[4].Version = "2.0";
+            client.Put(new UpdateCalendars { Calendars = cals.ToList() });
+            rcals = client.Post(new FindCalendarsCached { CalendarIds = keys });
+            Assert.Equal(rcals.Where(x => x.Id == keys[3]).FirstOrDefault().Calscale, CALSCALE.ISLAMIC);
+            Assert.Equal(rcals.Where(x => x.Id == keys[4]).FirstOrDefault().Version, "2.0");
+            Assert.Equal(rcals.Where(x => x.Calscale == CALSCALE.GREGORIAN).Count(), 4);
+            Assert.Equal(rcals.Where(x => x.Version == "2.0").Count(), 2);
+
+            client.Patch(new PatchCalendars
+            {
+                Scale = CALSCALE.JULIAN,
+                CalendarIds = new List<string> { keys[0], keys[1], keys[2] }
+            });
+
+            rcals = client.Post(new FindCalendarsCached { CalendarIds = keys });
+            Assert.Equal(rcals.Where(x => x.Calscale == CALSCALE.JULIAN).Count(), 3);
+            Assert.Equal(rcals.Where(x => x.Id == keys[4]).FirstOrDefault().Calscale, CALSCALE.GREGORIAN);
+
+            rcals = client.Get(new GetCalendarsCached { Page = 1, Size = 2 });
+            Assert.Equal(rcals.Count(), 2);
+
+            rcals = client.Get(new GetCalendarsCached { Page = 1, Size = 10 });
+            Assert.Equal(rcals.Count(), 5);
+
+            rcals = client.Get(new GetCalendarsCached { Page = 2, Size = 5 });
+            Assert.Equal(rcals.Count(), 0);
+
+            rcals = client.Get(new GetCalendarsCached { Page = 3, Size = 50 });
             Assert.Equal(rcals.Count(), 0);
         }
 

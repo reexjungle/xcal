@@ -1,18 +1,19 @@
-﻿using System;
+﻿using reexjungle.foundation.essentials.concretes;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.models;
+using reexjungle.xcal.service.operations.concretes.live;
+using ServiceStack.FluentValidation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ServiceStack.FluentValidation;
-using reexjungle.foundation.essentials.concretes;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
 
 namespace reexjungle.xcal.service.validators.concretes
 {
-
-    public class EventValidator: AbstractValidator<VEVENT>
+    public class EventValidator : AbstractValidator<VEVENT>
     {
-        public  EventValidator(): base()
+        public EventValidator()
+            : base()
         {
             RuleFor(x => x.Url).SetValidator(new UriValidator()).When(x => x.Url != null);
             RuleFor(x => x.Location).SetValidator(new TextValidator()).When(x => x.Location != null);
@@ -23,7 +24,4 @@ namespace reexjungle.xcal.service.validators.concretes
             RuleFor(x => x.Organizer).SetValidator(new OrganizerValidator());
         }
     }
-
-
-
 }

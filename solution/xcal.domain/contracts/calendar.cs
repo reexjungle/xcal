@@ -69,7 +69,7 @@ namespace reexjungle.xcal.domain.models
         /// <summary>
         /// Gets or sets the X-components of the iCalendar core object
         /// </summary>
-        List<XCOMPONENT> XComponents { get; set; }
+        List<X_COMPONENT> XComponents { get; set; }
 
     }
 
