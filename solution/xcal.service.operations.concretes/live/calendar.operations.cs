@@ -124,4 +124,13 @@ namespace reexjungle.xcal.service.operations.concretes.live
 
         public int? Size { get; set; }
     }
+
+    [Route("/calendars/keys/{Page}/{Size}", "GET")]
+    [Route("/calendars/keys/page/{Page}/size/{Size}", "GET")]
+    public class GetCalendarKeys : IReturn<List<string>>, IPaginated<int>
+    {
+        public int? Page { get; set; }
+
+        public int? Size { get; set; }
+    }
 }

@@ -34,4 +34,13 @@ namespace reexjungle.xcal.service.operations.concretes.cached
 
         public int? Size { get; set; }
     }
+
+    [Route("/cached/calendars/events/keys/{Page}/{Size}", "GET")]
+    [Route("/cached/calendars/events/keys/page/{Page}/size/{Size}", "GET")]
+    public class GetEventKeysCached : IReturn<List<string>>, IPaginated<int>
+    {
+        public int? Page { get; set; }
+
+        public int? Size { get; set; }
+    }
 }

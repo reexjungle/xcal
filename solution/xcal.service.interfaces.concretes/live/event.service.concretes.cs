@@ -6,7 +6,9 @@ using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.interfaces.contracts.live;
 using reexjungle.xcal.service.operations.concretes.live;
 using reexjungle.xcal.service.repositories.contracts;
+using ServiceStack.Common;
 using ServiceStack.Logging;
+using ServiceStack.ServiceHost;
 using ServiceStack.ServiceInterface;
 using System;
 using System.Collections.Generic;
@@ -14,6 +16,7 @@ using System.Linq;
 
 namespace reexjungle.xcal.service.interfaces.concretes.live
 {
+    //[Authenticate]
     public class EventService : Service, IEventService
     {
         private ILogFactory logfactory;
@@ -65,6 +68,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
         {
             try
             {
+                var cacheKey = UrnId.Create<VEVENT>(request.Event.Id);
                 if (this.repository.ContainsKey(request.CalendarId))
                 {
                     if (!this.repository.EventRepository.ContainsKey(request.Event.Id))
@@ -74,6 +78,8 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                         this.repository.Save(calendar);
                     }
                 }
+
+                base.RequestContext.RemoveFromCache(base.Cache, cacheKey);
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -94,6 +100,8 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                         this.repository.Save(calendar);
                     }
                 }
+
+                base.RequestContext.RemoveFromCache(base.Cache, "urn:events");
             }
             catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -105,8 +113,11 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
         {
             try
             {
+                var cacheKey = UrnId.Create<VEVENT>(request.Event.Id);
                 if (this.repository.EventRepository.ContainsKey(request.Event.Id))
                     this.repository.EventRepository.Save(request.Event);
+
+                base.RequestContext.RemoveFromCache(base.Cache, cacheKey);
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -122,6 +133,8 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 {
                     this.repository.EventRepository.SaveAll(request.Events);
                 }
+
+                base.RequestContext.RemoveFromCache(base.Cache, "urn:events");
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -132,6 +145,8 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
         {
             try
             {
+                var cacheKey = UrnId.Create<VEVENT>(request.EventId);
+
                 var source = new VEVENT
                 {
                     Start = request.Start,
@@ -202,6 +217,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 var fieldexpr = fieldstr.CompileToExpressionFunc<VEVENT, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(VEVENT).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
 
                 this.repository.EventRepository.Patch(source, fieldexpr, request.EventId.ToSingleton());
+                base.RequestContext.RemoveFromCache(base.Cache, cacheKey);
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -281,6 +297,8 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 var fieldstr = string.Format("x => new {{ {0} }}", string.Join(", ", fieldlist.Select(x => string.Format("x.{0}", x))));
                 var fieldexpr = fieldstr.CompileToExpressionFunc<VEVENT, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(VEVENT).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
                 this.repository.EventRepository.Patch(source, fieldexpr, request.EventIds);
+
+                base.RequestContext.RemoveFromCache(base.Cache, "urn:events");
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -291,7 +309,9 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
         {
             try
             {
+                var cacheKey = UrnId.Create<VEVENT>(request.EventId);
                 this.repository.EventRepository.Erase(request.EventId);
+                base.RequestContext.RemoveFromCache(base.Cache, cacheKey);
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -303,6 +323,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             try
             {
                 this.repository.EventRepository.EraseAll(request.EventIds);
+                base.RequestContext.RemoveFromCache(base.Cache, "urn:events");
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -348,6 +369,22 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 else
                     events = this.repository.EventRepository.Get();
                 return !events.NullOrEmpty() ? events.ToList() : new List<VEVENT>();
+            }
+            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
+        }
+
+        public List<string> Get(GetEventKeys request)
+        {
+            try
+            {
+                IEnumerable<string> keys = null;
+                if (request.Page != null && request.Size != null)
+                    keys = this.repository.EventRepository.GetKeys((request.Page.Value - 1) * request.Size.Value, request.Size.Value);
+                else
+                    keys = this.repository.EventRepository.GetKeys();
+                return !keys.NullOrEmpty() ? keys.ToList() : new List<string>();
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }

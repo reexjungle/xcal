@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\SemanticGit.2.1.4\build\SemanticGit.props" Condition="Exists('..\packages\SemanticGit.2.1.4\build\SemanticGit.props')" />
+  <Import Project="..\packages\SemanticGit.2.1.6\build\SemanticGit.props" Condition="Exists('..\packages\SemanticGit.2.1.6\build\SemanticGit.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -22,7 +22,7 @@
     <IISExpressUseClassicPipelineMode />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <NuGetPackageImportStamp>e995b0fe</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>1f285488</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -44,6 +44,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DotNetOpenAuth">
+      <HintPath>..\packages\DotNetOpenAuth.Ultimate.4.3.4.13329\lib\net40-full\DotNetOpenAuth.dll</HintPath>
+    </Reference>
     <Reference Include="Elmah">
       <HintPath>..\packages\elmah.corelibrary.1.2.2\lib\Elmah.dll</HintPath>
     </Reference>
@@ -80,6 +83,12 @@
     <Reference Include="ServiceStack, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\ServiceStack.3.9.71\lib\net35\ServiceStack.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Authentication.OAuth2">
+      <HintPath>..\packages\ServiceStack.Authentication.OAuth2.3.9.71\lib\net35\ServiceStack.Authentication.OAuth2.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Authentication.OpenId">
+      <HintPath>..\packages\ServiceStack.Authentication.OpenId.3.9.71\lib\net35\ServiceStack.Authentication.OpenId.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.CacheAccess.Azure">
       <HintPath>..\packages\ServiceStack.Caching.Azure.3.9.71\lib\net40\ServiceStack.CacheAccess.Azure.dll</HintPath>
@@ -290,10 +299,10 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\SemanticGit.2.1.4\build\SemanticGit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SemanticGit.2.1.4\build\SemanticGit.props'))" />
-    <Error Condition="!Exists('..\packages\SemanticGit.2.1.4\build\SemanticGit.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SemanticGit.2.1.4\build\SemanticGit.targets'))" />
+    <Error Condition="!Exists('..\packages\SemanticGit.2.1.6\build\SemanticGit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SemanticGit.2.1.6\build\SemanticGit.props'))" />
+    <Error Condition="!Exists('..\packages\SemanticGit.2.1.6\build\SemanticGit.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SemanticGit.2.1.6\build\SemanticGit.targets'))" />
   </Target>
-  <Import Project="..\packages\SemanticGit.2.1.4\build\SemanticGit.targets" Condition="Exists('..\packages\SemanticGit.2.1.4\build\SemanticGit.targets')" />
+  <Import Project="..\packages\SemanticGit.2.1.6\build\SemanticGit.targets" Condition="Exists('..\packages\SemanticGit.2.1.6\build\SemanticGit.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

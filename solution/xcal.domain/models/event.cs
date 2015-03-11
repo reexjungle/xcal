@@ -24,6 +24,8 @@ namespace reexjungle.xcal.domain.models
         private DATE_TIME end;
         private DURATION duration;
 
+        public static readonly VEVENT Empty = new VEVENT();
+
         /// <summary>
         /// Gets or sets the unique identifier of the event..
         /// </summary>

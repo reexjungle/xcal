@@ -125,8 +125,8 @@ namespace reexjungle.foundation.essentials.concretes
         public static void MergeRange<TValue>(this List<TValue> list, IEnumerable<TValue> collection, IEqualityComparer<TValue> comparer = null)
         {
             var incoming = (comparer != null)
-                ? collection.ToArray().Except(list.Distinct(), comparer)
-                : collection.ToArray().Except(list.Distinct());
+                ? collection.Except(list.Distinct(), comparer)
+                : collection.Except(list.Distinct());
 
             if (!incoming.NullOrEmpty()) list.AddRange(incoming);
         }

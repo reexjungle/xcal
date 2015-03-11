@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
-using System.Security.AccessControl;
 
 namespace reexjungle.crosscut.security.extensions.concretes
 {
     /// <summary>
     /// Helper class that provides common security-related extended features
     /// </summary>
-    public static class SecurityExtensions
+    public static class FileSecurityExtensions
     {
         /// <summary>
         /// Sets the security on a file

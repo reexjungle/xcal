@@ -1,8 +1,6 @@
 ﻿using Funq;
 using MySql.Data.MySqlClient;
 using reexjungle.crosscut.operations.concretes;
-using reexjungle.foundation.essentials.concretes;
-using reexjungle.foundation.essentials.contracts;
 using reexjungle.infrastructure.concretes.operations;
 using reexjungle.infrastructure.contracts;
 using reexjungle.technical.data.concretes.extensions.ormlite.mysql;
@@ -14,10 +12,13 @@ using reexjungle.xcal.service.repositories.concretes.redis;
 using reexjungle.xcal.service.repositories.concretes.relations;
 using reexjungle.xcal.service.repositories.contracts;
 using reexjungle.xcal.service.validators.concretes;
+using ServiceStack.Authentication.OAuth2;
+using ServiceStack.Authentication.OpenId;
 using ServiceStack.CacheAccess;
 using ServiceStack.CacheAccess.Azure;
 using ServiceStack.CacheAccess.Memcached;
 using ServiceStack.CacheAccess.Providers;
+using ServiceStack.Configuration;
 using ServiceStack.Logging;
 using ServiceStack.Logging.Elmah;
 using ServiceStack.Logging.NLogger;
@@ -38,6 +39,13 @@ namespace reexjungle.xcal.application.server.web.local
     {
         public override void Configure(Container container)
         {
+            #region configure/inject resource manager
+
+            container.Register<IResourceManager>(x => new AppSettings());
+            var appsettings = container.Resolve<IResourceManager>();
+
+            #endregion configure/inject resource manager
+
             #region configure headers
 
             //Enable global CORS features on  Response headers
@@ -71,8 +79,52 @@ namespace reexjungle.xcal.application.server.web.local
             Plugins.Add(new CorsFeature());
             Plugins.Add(new AuthFeature(() =>
                 new AuthUserSession(),
-                new IAuthProvider[] { new BasicAuthProvider() }
-                ));
+                new IAuthProvider[]
+                {
+                    //built-in AuthProviders
+                    new BasicAuthProvider(),
+                    new DigestAuthProvider(appsettings),
+                    new CredentialsAuthProvider(),
+                    new TwitterAuthProvider(appsettings)
+                    {
+                        RedirectUrl = Properties.Settings.Default.local,
+                        CallbackUrl = string.Format("{0}auth/twitter", Properties.Settings.Default.local),
+                        ConsumerKey = Properties.Settings.Default.oauth_twitter_ConsumerKey,
+                        ConsumerSecret = Properties.Settings.Default.oauth_twitter_ConsumerSecret
+                    },
+                    new FacebookAuthProvider(appsettings)
+                    {
+                        RedirectUrl = Properties.Settings.Default.local,
+                        CallbackUrl = string.Format("{0}auth/facebook", Properties.Settings.Default.local),
+                        AppId = Properties.Settings.Default.oauth_facebook_AppId,
+                        AppSecret = Properties.Settings.Default.oauth_facebook_AppSecret,
+                        Permissions= new string[]{"email","read_stream", "offline_access"},
+                    },
+
+                    //OpenID AuthProviders
+                    new GoogleOpenIdOAuthProvider(appsettings),
+                    new YahooOpenIdOAuthProvider(appsettings),
+                    new MyOpenIdOAuthProvider(appsettings),
+
+                    //OAuth2 AuthProviders
+                    new GoogleOAuth2Provider(appsettings)
+                    {
+                        RedirectUrl = Properties.Settings.Default.local,
+                        CallbackUrl = string.Format("{0}auth/googleoauth", Properties.Settings.Default.local),
+                        ConsumerKey = Properties.Settings.Default.oauth_google_ConsumerKey,
+                        ConsumerSecret = Properties.Settings.Default.oauth_google_ConsumerSecret,
+                        AuthorizeUrl="https://accounts.google.com/o/oauth2/auth?prompt=consent",
+                        AccessTokenUrl="https://accounts.google.com/o/oauth2/token",
+                    },
+                    new LinkedInOAuth2Provider(appsettings)
+                    {
+                        RedirectUrl = Properties.Settings.Default.local,
+                        CallbackUrl = string.Format("{0}auth/linkedin", Properties.Settings.Default.local),
+                        ConsumerKey = Properties.Settings.Default.oauth_linkedin_ConsumerKey,
+                        ConsumerSecret = Properties.Settings.Default.oauth_linkedin_ConsumerSecret,
+                        //AuthorizeUrl = "https://www.linkedin.com/uas/oauth2/authorization"
+                    },
+                }));
 
             Plugins.Add(new RegistrationFeature());
 
@@ -106,7 +158,7 @@ namespace reexjungle.xcal.application.server.web.local
 
             #endregion inject rdbms provider
 
-            #region Create databases and corresponding tables
+            #region create databases and corresponding tables
 
             var dbfactory = container.Resolve<IDbConnectionFactory>();
 
@@ -169,7 +221,7 @@ namespace reexjungle.xcal.application.server.web.local
 
             #endregion create logger databases and tables
 
-            #endregion Create databases and corresponding tables
+            #endregion create databases and corresponding tables
 
             #region inject core repositories and create primary data sources on first run
 
@@ -355,16 +407,23 @@ namespace reexjungle.xcal.application.server.web.local
 
             #region inject miscelleaneous settings
 
-            this.Container.Register<TimeSpan?>(x => new TimeSpan(0, 0, 120));
+            this.Container.Register<TimeSpan?>(x => new TimeSpan(0, 2, 0));
 
             #endregion inject miscelleaneous settings
 
             #region inject user authentication repositories
 
             if (Properties.Settings.Default.auth_storage == StorageType.rdbms)
+            {
                 container.Register<IUserAuthRepository>(new OrmLiteAuthRepository(dbfactory));
+                var authrep = (OrmLiteAuthRepository)container.Resolve<IUserAuthRepository>();
+                if (Properties.Settings.Default.recreate_auth_tables) authrep.DropAndReCreateTables();
+                else authrep.CreateMissingTables();
+            }
             else if (Properties.Settings.Default.auth_storage == StorageType.nosql)
+            {
                 container.Register<IUserAuthRepository>(new RedisAuthRepository(container.Resolve<IRedisClientsManager>()));
+            }
             else if (Properties.Settings.Default.auth_storage == StorageType.memory)
             {
                 container.Register<IUserAuthRepository>(new InMemoryAuthRepository());

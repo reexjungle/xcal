@@ -150,5 +150,104 @@ namespace reexjungle.xcal.application.server.web.local.Properties {
                 return ((string)(this["azure_server"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:3105/")]
+        public string local {
+            get {
+                return ((string)(this["local"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool recreate_auth_tables {
+            get {
+                return ((bool)(this["recreate_auth_tables"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("dToWrTe15djJBAXJyBWXsb6iQ")]
+        public string oauth_twitter_ConsumerKey {
+            get {
+                return ((string)(this["oauth_twitter_ConsumerKey"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("aaeTQ4ynWvmnGF0U9kjQh7LS5svUad7YVpl6nVjSjWtWwqXdSD")]
+        public string oauth_twitter_ConsumerSecret {
+            get {
+                return ((string)(this["oauth_twitter_ConsumerSecret"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("529819727159657")]
+        public string oauth_facebook_AppId {
+            get {
+                return ((string)(this["oauth_facebook_AppId"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("9fababbeffa80add8a2f1ee608d2b09a")]
+        public string oauth_facebook_AppSecret {
+            get {
+                return ((string)(this["oauth_facebook_AppSecret"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1062386930271-eu7mdqe965b08tsf6c4790usl53dtu5l.apps.googleusercontent.com")]
+        public string oauth_google_ConsumerKey {
+            get {
+                return ((string)(this["oauth_google_ConsumerKey"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("g-1mITMd85yQYPCI6Xl2eAS8")]
+        public string oauth_google_ConsumerSecret {
+            get {
+                return ((string)(this["oauth_google_ConsumerSecret"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("xs")]
+        public string oauth_linkedin_ConsumerKey {
+            get {
+                return ((string)(this["oauth_linkedin_ConsumerKey"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("77l4kofoki9x6o")]
+        public string oauth_linkedin_ConsumerSecret {
+            get {
+                return ((string)(this["oauth_linkedin_ConsumerSecret"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("nNPTFQhHo8aMxBa9")]
+        public string Setting {
+            get {
+                return ((string)(this["Setting"]));
+            }
+        }
     }
 }

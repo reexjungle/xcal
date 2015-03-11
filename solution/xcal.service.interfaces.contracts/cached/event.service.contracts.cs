@@ -13,5 +13,7 @@ namespace reexjungle.xcal.service.interfaces.contracts.cached
         object Post(FindEventsCached request);
 
         object Get(GetEventsCached request);
+
+        object Get(GetEventKeysCached request);
     }
 }

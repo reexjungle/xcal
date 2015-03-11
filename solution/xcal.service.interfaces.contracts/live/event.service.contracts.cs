@@ -33,5 +33,7 @@ namespace reexjungle.xcal.service.interfaces.contracts.live
         List<VEVENT> Post(FindEvents request);
 
         List<VEVENT> Get(GetEvents request);
+
+        List<string> Get(GetEventKeys request);
     }
 }

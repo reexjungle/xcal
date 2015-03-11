@@ -9,6 +9,7 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using xs = System.Transactions;
 
 namespace reexjungle.technical.data.concretes.extensions.ormlite
 {
@@ -1902,6 +1903,8 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
 
         #endregion SaveAll operation without implicit transaction commit
 
+        #region MergeAll operations
+
         public static void MergeAll<T, Tkey>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities, IDbTransaction transaction)
             where Tkey : IEquatable<Tkey>, IComparable<Tkey>
             where T : class, IContainsKey<Tkey>, new()
@@ -1916,10 +1919,10 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             else db.SaveAll(entities, transaction);
         }
 
-        public static void MergeAll<T>(this IDbConnection redis, IEnumerable<T> entities, IEnumerable<T> oentities, IDbTransaction transaction)
+        public static void MergeAll<T>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities, IDbTransaction transaction)
     where T : class, IContainsKey<string>, new()
         {
-            redis.MergeAll<T, string>(entities, oentities, transaction);
+            db.MergeAll<T, string>(entities, oentities, transaction);
         }
 
         public static void MergeAll<T, Tkey>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities)
@@ -1936,11 +1939,15 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             else db.SaveAll(entities);
         }
 
-        public static void MergeAll<T>(this IDbConnection redis, IEnumerable<T> entities, IEnumerable<T> oentities)
+        public static void MergeAll<T>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities)
     where T : class, IContainsKey<string>, new()
         {
-            redis.MergeAll<T, string>(entities, oentities);
+            db.MergeAll<T, string>(entities, oentities);
         }
+
+        #endregion MergeAll operations
+
+        #region RemoveAll operations
 
         public static void RemoveAll<T, Tkey>(this IDbConnection db, IEnumerable<T> oentities)
             where Tkey : IEquatable<Tkey>, IComparable<Tkey>
@@ -1949,10 +1956,22 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             if (!oentities.NullOrEmpty()) db.DeleteByIds<T>(oentities.Select(y => y.Id).ToArray());
         }
 
-        public static void RemoveAll<T>(this IDbConnection redis, IEnumerable<T> oentities)
+        public static void RemoveAll<T>(this IDbConnection db, IEnumerable<T> oentities)
     where T : class, IContainsKey<string>, new()
         {
-            redis.RemoveAll<T, string>(oentities);
+            db.RemoveAll<T, string>(oentities);
+        }
+
+        #endregion RemoveAll operations
+
+        public static void TryEnlistTransaction(this IDbConnection db, xs.Transaction transaction)
+        {
+            var methodes = db.GetType().GetMethods();
+            var minfo = db.GetType().GetMethod("EnlistTransaction");
+            if (minfo != null)
+            {
+                minfo.Invoke(db, new object[] { transaction });
+            }
         }
     }
 }

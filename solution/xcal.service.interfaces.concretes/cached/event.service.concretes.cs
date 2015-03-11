@@ -15,7 +15,7 @@ using System.Text;
 
 namespace reexjungle.xcal.service.interfaces.concretes.cached
 {
-    public class CachedCalendarService : Service, ICachedCalendarService
+    public class CachedEventService : Service, ICachedEventService
     {
         public ICacheClient CacheClient { get; set; }
 
@@ -41,23 +41,22 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
 
         public TimeSpan? TimeToLive { get; set; }
 
-        public CachedCalendarService()
-            : base()
+        public CachedEventService()
         {
             this.TimeToLive = this.ResolveService<TimeSpan?>();
         }
 
-        public object Get(FindCalendarCached request)
+        public object Get(FindEventCached request)
         {
             try
             {
                 return base.RequestContext.ToOptimizedResultUsingCache(
-                this.CacheClient, UrnId.Create<VCALENDAR>(request.CalendarId),
+                this.CacheClient, UrnId.Create<VEVENT>(request.EventId),
                 () =>
                 {
-                    var result = this.ResolveService<CalendarService>()
-                        .Get(new FindCalendar { CalendarId = request.CalendarId });
-                    return result ?? VCALENDAR.Empty;
+                    var result = this.ResolveService<EventService>()
+                        .Get(new FindEvent { EventId = request.EventId });
+                    return result ?? VEVENT.Empty;
                 });
             }
             catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); throw; }
@@ -67,20 +66,20 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
-        public object Post(FindCalendarsCached request)
+        public object Post(FindEventsCached request)
         {
             try
             {
                 return base.RequestContext.ToOptimizedResultUsingCache(
                 this.CacheClient,
-                request.Page != null && request.Size != null ? string.Format("urn:calendars:{0}:{1}", request.Page, request.Size) : "urn:calendars",
+                request.Page != null && request.Size != null ? string.Format("urn:events:{0}:{1}", request.Page, request.Size) : "urn:events",
                 this.TimeToLive,
                 () =>
                 {
-                    return this.ResolveService<CalendarService>()
-                        .Post(new FindCalendars
+                    return this.ResolveService<EventService>()
+                        .Post(new FindEvents
                         {
-                            CalendarIds = request.CalendarIds,
+                            EventIds = request.EventIds,
                             Page = request.Page,
                             Size = request.Size
                         });
@@ -93,18 +92,18 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
-        public object Get(GetCalendarsCached request)
+        public object Get(GetEventsCached request)
         {
             try
             {
                 return base.RequestContext.ToOptimizedResultUsingCache(
                 this.CacheClient,
-                request.Page != null && request.Size != null ? string.Format("urn:calendars:{0}:{1}", request.Page, request.Size) : "urn:calendars",
+                request.Page != null && request.Size != null ? string.Format("urn:events:{0}:{1}", request.Page, request.Size) : "urn:events",
                 this.TimeToLive,
                 () =>
                 {
-                    return this.ResolveService<CalendarService>()
-                        .Get(new GetCalendars
+                    return this.ResolveService<EventService>()
+                        .Get(new GetEvents
                         {
                             Page = request.Page,
                             Size = request.Size
@@ -118,20 +117,18 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
-        public object Get(GetCalendarKeysCached request)
+        public object Get(GetEventKeysCached request)
         {
             try
             {
                 return base.RequestContext.ToOptimizedResultUsingCache(
                 this.CacheClient,
-                request.Page != null && request.Size != null ?
-                string.Format("urn:calendars:{0}:{1}", request.Page, request.Size) :
-                "urn:calendars",
+                request.Page != null && request.Size != null ? string.Format("urn:events:{0}:{1}", request.Page, request.Size) : "urn:events",
                 this.TimeToLive,
                 () =>
                 {
-                    return this.ResolveService<CalendarService>()
-                        .Get(new GetCalendarKeys
+                    return this.ResolveService<EventService>()
+                        .Get(new GetEventKeys
                         {
                             Page = request.Page,
                             Size = request.Size

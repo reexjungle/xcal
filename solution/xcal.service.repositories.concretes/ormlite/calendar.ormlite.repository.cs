@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
+using xs = System.Transactions;
 
 namespace reexjungle.xcal.service.repositories.concretes.ormlite
 {
@@ -235,25 +236,30 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
         /// <param name="entity">The entity to save</param>
         public void Save(VCALENDAR entity)
         {
-            try
+            using (var transaction = this.db.BeginTransaction())
             {
-                db.Save<VCALENDAR>(entity);
-                if (!entity.Events.NullOrEmpty())
+                try
                 {
-                    this.EventRepository.SaveAll(entity.Events.Distinct());
-                    var revents = entity.Events.Select(x => new REL_CALENDARS_EVENTS
+                    db.Save<VCALENDAR>(entity, transaction);
+                    if (!entity.Events.NullOrEmpty())
                     {
-                        Id = this.KeyGenerator.GetNextKey(),
-                        CalendarId = entity.Id,
-                        EventId = x.Id
-                    });
-                    var orevents = db.Select<REL_CALENDARS_EVENTS>(q => q.CalendarId == entity.Id);
-                    db.MergeAll(revents, orevents);
+                        this.EventRepository.SaveAll(entity.Events.Distinct());
+                        var revents = entity.Events.Select(x => new REL_CALENDARS_EVENTS
+                        {
+                            Id = this.KeyGenerator.GetNextKey(),
+                            CalendarId = entity.Id,
+                            EventId = x.Id
+                        });
+                        var orevents = db.Select<REL_CALENDARS_EVENTS>(q => q.CalendarId == entity.Id);
+                        db.MergeAll(revents, orevents, transaction);
+                    }
+
+                    transaction.Commit();
                 }
+                catch (ArgumentNullException) { transaction.Rollback(); throw; }
+                catch (InvalidOperationException) { transaction.Rollback(); throw; }
+                catch (ApplicationException) { transaction.Rollback(); throw; }
             }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
         }
 
         /// <summary>
@@ -294,44 +300,49 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
 
             #endregion construct anonymous fields using expression lambdas
 
-            try
+            using (var transaction = this.db.BeginTransaction())
             {
-                var okeys = (!keys.NullOrEmpty())
-                    ? db.SelectParam<VCALENDAR, string>(q => q.Id, p => Sql.In(p.Id, keys.ToArray()))
-                    : db.SelectParam<VCALENDAR>(q => q.Id);
-                if (!srelation.NullOrEmpty())
+                try
                 {
-                    Expression<Func<VCALENDAR, object>> eventsexpr = y => y.Events;
-                    if (selection.Contains(eventsexpr.GetMemberName()))
+                    var okeys = (!keys.NullOrEmpty())
+                        ? db.SelectParam<VCALENDAR, string>(q => q.Id, p => Sql.In(p.Id, keys.ToArray()))
+                        : db.SelectParam<VCALENDAR>(q => q.Id);
+                    if (!srelation.NullOrEmpty())
                     {
-                        this.EventRepository.SaveAll(source.Events.Distinct());
-                        if (!source.Events.NullOrEmpty())
+                        Expression<Func<VCALENDAR, object>> eventsexpr = y => y.Events;
+                        if (selection.Contains(eventsexpr.GetMemberName()))
                         {
-                            var revents = okeys.SelectMany(x => source.Events.Select(y => new REL_CALENDARS_EVENTS
+                            this.EventRepository.SaveAll(source.Events.Distinct());
+                            if (!source.Events.NullOrEmpty())
                             {
-                                Id = this.KeyGenerator.GetNextKey(),
-                                CalendarId = x,
-                                EventId = y.Id
-                            }));
-                            var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, okeys));
-                            db.MergeAll(revents, orevents);
+                                var revents = okeys.SelectMany(x => source.Events.Select(y => new REL_CALENDARS_EVENTS
+                                {
+                                    Id = this.KeyGenerator.GetNextKey(),
+                                    CalendarId = x,
+                                    EventId = y.Id
+                                }));
+                                var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, okeys));
+                                db.MergeAll(revents, orevents, transaction);
+                            }
                         }
                     }
+
+                    if (!sprimitives.NullOrEmpty())
+                    {
+                        var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
+
+                        var patchexpr = patchstr.CompileToExpressionFunc<VCALENDAR, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(VCALENDAR).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
+
+                        if (!okeys.NullOrEmpty()) db.UpdateOnly<VCALENDAR, object>(source, patchexpr, q => Sql.In(q.Id, okeys));
+                        else db.UpdateOnly<VCALENDAR, object>(source, patchexpr);
+                    }
+
+                    transaction.Commit();
                 }
-
-                if (!sprimitives.NullOrEmpty())
-                {
-                    var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
-
-                    var patchexpr = patchstr.CompileToExpressionFunc<VCALENDAR, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(VCALENDAR).Assembly.Location, typeof(IContainsKey<string>).Assembly.Location });
-
-                    if (!okeys.NullOrEmpty()) db.UpdateOnly<VCALENDAR, object>(source, patchexpr, q => Sql.In(q.Id, okeys));
-                    else db.UpdateOnly<VCALENDAR, object>(source, patchexpr);
-                }
+                catch (ArgumentNullException) { transaction.Rollback(); throw; }
+                catch (InvalidOperationException) { transaction.Rollback(); throw; }
+                catch (ApplicationException) { transaction.Rollback(); throw; }
             }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
         }
 
         /// <summary>
@@ -340,13 +351,17 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
         /// <param name="key">The unique identifier of the entity</param>
         public void Erase(string key)
         {
-            try
+            using (var transaction = this.db.BeginTransaction())
             {
-                db.Delete<VCALENDAR>(q => q.Id == key);
+                try
+                {
+                    db.Delete<VCALENDAR>(q => q.Id == key);
+                    transaction.Commit();
+                }
+                catch (ArgumentNullException) { transaction.Rollback(); throw; }
+                catch (InvalidOperationException) { transaction.Rollback(); throw; }
+                catch (ApplicationException) { transaction.Rollback(); throw; }
             }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
         }
 
         /// <summary>
@@ -355,28 +370,33 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
         /// <param name="entities">The entities to save</param>
         public void SaveAll(IEnumerable<VCALENDAR> entities)
         {
-            try
+            using (var transaction = this.db.BeginTransaction())
             {
-                var keys = entities.Select(x => x.Id).ToArray();
-                db.SaveAll(entities.Distinct());
-
-                var events = entities.Where(x => !x.Events.NullOrEmpty()).SelectMany(x => x.Events);
-                if (!events.NullOrEmpty())
+                try
                 {
-                    this.EventRepository.SaveAll(events.Distinct());
-                    var revents = entities.Where(x => !x.Events.NullOrEmpty()).SelectMany(c => c.Events.Select(x => new REL_CALENDARS_EVENTS
+                    var keys = entities.Select(x => x.Id).ToArray();
+                    db.SaveAll(entities.Distinct(), transaction);
+
+                    var events = entities.Where(x => !x.Events.NullOrEmpty()).SelectMany(x => x.Events);
+                    if (!events.NullOrEmpty())
                     {
-                        Id = this.KeyGenerator.GetNextKey(),
-                        CalendarId = c.Id,
-                        EventId = x.Id
-                    }));
-                    var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, keys));
-                    db.MergeAll(revents, orevents);
+                        this.EventRepository.SaveAll(events.Distinct());
+                        var revents = entities.Where(x => !x.Events.NullOrEmpty()).SelectMany(c => c.Events.Select(x => new REL_CALENDARS_EVENTS
+                        {
+                            Id = this.KeyGenerator.GetNextKey(),
+                            CalendarId = c.Id,
+                            EventId = x.Id
+                        }));
+                        var orevents = db.Select<REL_CALENDARS_EVENTS>(q => Sql.In(q.CalendarId, keys));
+                        db.MergeAll(revents, orevents, transaction);
+                    }
+
+                    transaction.Commit();
                 }
+                catch (ArgumentNullException) { transaction.Rollback(); throw; }
+                catch (InvalidOperationException) { transaction.Rollback(); throw; }
+                catch (ApplicationException) { transaction.Rollback(); throw; }
             }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
         }
 
         /// <summary>
@@ -385,14 +405,19 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
         /// <param name="keys">The unique identifier of the entity</param>
         public void EraseAll(IEnumerable<string> keys = null)
         {
-            try
+            using (var transaction = this.db.BeginTransaction())
             {
-                if (!keys.NullOrEmpty()) db.Delete<VCALENDAR>(q => Sql.In(q.Id, keys.ToArray()));
-                else db.DeleteAll<VCALENDAR>();
+                try
+                {
+                    if (!keys.NullOrEmpty()) db.Delete<VCALENDAR>(q => Sql.In(q.Id, keys.ToArray()));
+                    else db.DeleteAll<VCALENDAR>();
+
+                    transaction.Commit();
+                }
+                catch (ArgumentNullException) { transaction.Rollback(); throw; }
+                catch (InvalidOperationException) { transaction.Rollback(); throw; }
+                catch (ApplicationException) { transaction.Rollback(); throw; }
             }
-            catch (ArgumentNullException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (ApplicationException) { throw; }
         }
 
         /// <summary>

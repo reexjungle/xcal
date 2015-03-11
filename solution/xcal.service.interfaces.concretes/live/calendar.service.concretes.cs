@@ -18,6 +18,8 @@ using System.Linq;
 
 namespace reexjungle.xcal.service.interfaces.concretes.live
 {
+    /// <summary> Represents a service for iCalendar instances. </summary>
+    //[Authenticate]
     public class CalendarService : Service, ICalendarService
     {
         private ILogFactory logfactory;
@@ -30,6 +32,9 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             get { return (log != null) ? this.log : this.logfactory.GetLogger(this.GetType()); }
         }
 
+        /// <summary> Gets or sets the factory instance for logging operations. </summary>
+        /// <exception cref="ArgumentNullException"> Thrown when one or more required arguments are null.</exception>
+        /// <value> The factory instance. </value>
         public ILogFactory LogFactory
         {
             get { return this.logfactory; }
@@ -41,6 +46,9 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             }
         }
 
+        /// <summary> Gets or sets the calendar repository. </summary>
+        /// <exception cref="ArgumentNullException"> Thrown when one or more required arguments are null.</exception>
+        /// <value> The calendar repository. </value>
         public ICalendarRepository CalendarRepository
         {
             get { return this.repository; }
@@ -51,6 +59,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             }
         }
 
+        /// <summary> Default constructor.</summary>
         public CalendarService()
             : base()
         {
@@ -58,6 +67,9 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             this.LogFactory = this.TryResolve<ILogFactory>();
         }
 
+        /// <summary> Constructor.</summary>
+        /// <param name="repository"> The calendar repository. </param>
+        /// <param name="logger"> The factory instance to use for logging operations. </param>
         public CalendarService(ICalendarRepository repository, ILogFactory logger)
             : base()
         {
@@ -65,20 +77,29 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             this.LogFactory = logger;
         }
 
+        /// <summary> Adds an iCalendar instance to the service repository. </summary>
+        /// <exception cref="InvalidOperationException">Thrown when the requested operation is invalid.</exception>
+        /// <exception cref="ApplicationException"> Thrown when an Application error condition occurs. </exception>
+        /// <param name="request"> The request to add the iCalendar instance </param>
         public void Post(AddCalendar request)
         {
             try
             {
+                var cacheKey = UrnId.Create<VCALENDAR>(request.Calendar.Id);
                 if (!this.repository.ContainsKey(request.Calendar.Id))
                     this.repository.Save(request.Calendar);
 
-                base.RequestContext.RemoveFromCache(base.Cache, "urn:calendars");
+                base.RequestContext.RemoveFromCache(base.Cache, cacheKey);
             }
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
+        /// <summary>  Adds an iCalendar instances to the service repository.</summary>
+        /// <exception cref="InvalidOperationException"> Thrown when the requested operation is invalid.</exception>
+        /// <exception cref="ApplicationException">Thrown when an Application error condition occurs.</exception>
+        /// <param name="request"> The request to add iCalendar instancxes.</param>
         public void Post(AddCalendars request)
         {
             try
@@ -96,6 +117,10 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
+        /// <summary> Updates an iCalendar instance in the repository.</summary>
+        /// <exception cref="InvalidOperationException"> Thrown when the requested operation is invalid.</exception>
+        /// <exception cref="ApplicationException"> Thrown when an Application error condition occurs.</exception>
+        /// <param name="request"> The request to update the iCalendar instance.</param>
         public void Put(UpdateCalendar request)
         {
             try
@@ -112,6 +137,10 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
+        /// <summary> Updates iCalendar instances in the web repository.</summary>
+        /// <exception cref="InvalidOperationException"> Thrown when the requested operation is invalid.</exception>
+        /// <exception cref="ApplicationException"> Thrown when an Application error condition occurs.</exception>
+        /// <param name="request"> The request to update the iCalendar instances.</param>
         public void Put(UpdateCalendars request)
         {
             try
@@ -130,6 +159,10 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
+        /// <summary> Patches an iCalendar instance in the service repository.</summary>
+        /// <exception cref="InvalidOperationException"> Thrown when the requested operation is invalid.</exception>
+        /// <exception cref="ApplicationException"> Thrown when an Application error condition occurs.</exception>
+        /// <param name="request"> The request to patch an iCalendar instance</param>
         public void Patch(PatchCalendar request)
         {
             try
@@ -173,6 +206,11 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
+        /// <summary> Patches the given request.</summary>
+        /// <exception cref="ArgumentNullException">Thrown when one or more required arguments are null.</exception>
+        /// <exception cref="InvalidOperationException"> Thrown when the requested operation is invalid.</exception>
+        /// <exception cref="ApplicationException"> Thrown when an Application error condition occurs.</exception>
+        /// <param name="request"> The request to patch iCalendar instances.</param>
         public void Patch(PatchCalendars request)
         {
             try
@@ -216,6 +254,10 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
+        /// <summary> Deletes a given iCalendar instance from service repository.</summary>
+        /// <exception cref="InvalidOperationException"> Thrown when the requested operation is invalid.</exception>
+        /// <exception cref="ApplicationException">Thrown when an Application error condition occurs.</exception>
+        /// <param name="request"> The request to delete the iCalendar instance.</param>
         public void Delete(DeleteCalendar request)
         {
             try
@@ -230,6 +272,10 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
+        /// <summary> Deletes given iCalendar instances from the service repository.</summary>
+        /// <exception cref="InvalidOperationException"> Thrown when the requested operation is invalid.</exception>
+        /// <exception cref="ApplicationException">Thrown when an Application error condition occurs.</exception>
+        /// <param name="request"> The request to delete.</param>
         public void Delete(DeleteCalendars request)
         {
             try
@@ -242,6 +288,11 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
+        /// <summary> Gets the requested iCalendar instance.</summary>
+        /// <exception cref="InvalidOperationException"> Thrown when the requested operation is invalid.</exception>
+        /// <exception cref="ApplicationException"> Thrown when an Application error condition occurs.</exception>
+        /// <param name="request"> The request to retrieve the iCalendar instance.</param>
+        /// <returns> A VCALENDAR object when found; otherwise null.</returns>
         public VCALENDAR Get(FindCalendar request)
         {
             try
@@ -253,6 +304,12 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
+        /// <summary> Gets the requested iCalendar instances specified by keys</summary>
+        /// <exception cref="ArgumentNullException"> Thrown when one or more required arguments are null.</exception>
+        /// <exception cref="InvalidOperationException"> Thrown when the requested operation is invalid.</exception>
+        /// <exception cref="ApplicationException"> Thrown when an Application error condition occurs.</exception>
+        /// <param name="request"> The request to retrieve iCalendar instances.</param>
+        /// <returns>A list of found VCALENDAR objects; otherwise an empty list</returns>
         public List<VCALENDAR> Post(FindCalendars request)
         {
             try
@@ -270,6 +327,11 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
         }
 
+        /// <summary> Gets paginated set of iCalendar instances.</summary>
+        /// <exception cref="InvalidOperationException"> Thrown when the requested operation is invalid.</exception>
+        /// <exception cref="ApplicationException"> Thrown when an Application error condition occurs.</exception>
+        /// <param name="request"> The request to get.</param>
+        /// <returns>A list of found VCALENDAR objects per result page; otherwise an empty list.</returns>
         public List<VCALENDAR> Get(GetCalendars request)
         {
             try
@@ -285,6 +347,25 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
             catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
+        }
+
+        /// <summary> Gets the requested iCalendar IDs.</summary>
+        /// <param name="request"> The request to get.</param>
+        /// <returns>A list of found VCALENDAR IDs per result page; otherwise an empty list.</returns>
+        public List<string> Get(GetCalendarKeys request)
+        {
+            try
+            {
+                IEnumerable<string> keys = null;
+                if (request.Page != null && request.Size != null)
+                    keys = this.repository.GetKeys((request.Page.Value - 1) * request.Size.Value, request.Size.Value);
+                else keys = this.repository.GetKeys();
+                return !keys.NullOrEmpty() ? keys.ToList() : new List<string>();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

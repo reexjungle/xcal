@@ -224,5 +224,14 @@ namespace reexjungle.xcal.service.operations.concretes.live
         public int? Size { get; set; }
     }
 
+    [Route("/calendars/events/keys/{Page}/{Size}", "GET")]
+    [Route("/calendars/events/keys/page/{Page}/size/{Size}", "GET")]
+    public class GetEventKeys : IReturn<List<string>>, IPaginated<int>
+    {
+        public int? Page { get; set; }
+
+        public int? Size { get; set; }
+    }
+
     #endregion Search-Create-Update-Patch-Delete(SCRUPD) operations
 }
