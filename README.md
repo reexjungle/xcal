@@ -53,43 +53,39 @@ PM> Install-Package xcal.service.interfaces.concretes -Pre
 
 ### Contents of Download Package
 
-The download package contains source codes and project files of xCal. It is also worth mentioning here that xCal is a .NET project and thus source files are logically associated to respective project files (\*.csproj), which in turn are linked to a single solution file (\*.sln) as illustrated below: 
+The download package contains source codes and project files of xCal. It is also worth mentioning here that xCal is a .NET-based solution. Hence its source files are logically organized as projects grouped under a single solution. Each project is compiled to its reespective assembly (*dll) files. The solution structure is illustrated below: 
 
 ```
 solution/
-├── application/
-|   ├── xcal.application.server.web.dev1.csproj
-|   ├── xcal.application.server.web.dev2.csproj
-|   ├── xcal.application.server.web.prod1.csproj
-|   ├── xcal.application.server.web.prod2.csproj
-|   ├── xcal.application.server.web.local.csproj
+├── servers/
+|   ├── xcal.server.web.dev1
+|   ├── xcal.servers.web.dev2
+|   ├── xcal.servers.web.prod1
+|   ├── xcal.servers.web.prod2
+|   ├── xcal.servers.web.local
 ├── crosscut/
-|   ├── crosscut.operations.concretes.csproj
-|   ├── crosscut.operations.contracts.csproj
-|   ├── crosscut.security.concretes.csproj
+|   ├── crosscut.operations.concretes
+|   ├── crosscut.operations.contracts
+|   ├── crosscut.security.concretes
 ├── domain/
-|   ├── xcal.domain.csproj
-├── foundation/
-|   ├── foundation.essential.concretes.csproj
-|   ├── foundation.essential.contracts.csproj
-├── infrastructure/
-|   ├── infrastructure.essential.concretes.csproj
-|   ├── infrastructure.essential.contracts.csproj
+|   ├── xcal.domain
 ├── service/
-|   ├── xcal.service.clients.concretes.csproj
-|   ├── xcal.service.formats.concretes.csproj
-|   ├── xcal.service.interfaces.concretes.csproj
-|   ├── xcal.service.interfaces.contracts.csproj
-|   ├── xcal.service.repositories.concretes.csproj
-|   ├── xcal.service.repositories.contracts.csproj
-|   ├── xcal.service.validators.concretes.csproj
+|   ├── xcal.service.clients.concretes
+|   ├── xcal.service.formats.concretes
+|   ├── xcal.service.interfaces.concretes
+|   ├── xcal.service.interfaces.contracts
+|   ├── xcal.service.operations.contracts
+|   ├── xcal.service.repositories.concretes
+|   ├── xcal.service.repositories.contracts
+|   ├── xcal.service.validators.concretes
 ├── technical/
-|   ├── technical.data.concretes.csproj
-|   ├── technical.data.contracts.csproj
+|   ├── technical.data.concretes
+|   ├── technical.data.contracts
 ├── tests/
-|   ├── xcal.test.server.integration.contracts.csproj
-|   ├── xcal.test.server.integration.concretes.csproj
-
+|   ├── xcal.test.server.integration.contracts
+|   ├── xcal.test.server.integration.concretes
+|   ├── xcal.test.units.contracts
+|   ├── xcal.test.units.concretes
 ```
 
 ### Development Tools for xCal
