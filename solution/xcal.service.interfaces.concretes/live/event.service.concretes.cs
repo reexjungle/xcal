@@ -16,7 +16,6 @@ using System.Linq;
 
 namespace reexjungle.xcal.service.interfaces.concretes.live
 {
-    //[Authenticate]
     public class EventService : Service, IEventService
     {
         private ILogFactory logfactory;

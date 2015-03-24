@@ -71,7 +71,6 @@
     <Compile Include="live\admin.operations.cs" />
     <Compile Include="live\calendar.operations.cs" />
     <Compile Include="live\events.operations.cs" />
-    <Compile Include="live\rfc5546.operations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

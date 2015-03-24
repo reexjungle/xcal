@@ -77,56 +77,6 @@ namespace reexjungle.xcal.application.server.web.local
             Plugins.Add(new MsgPackFormat());
             Plugins.Add(new iCalendarFormat());
             Plugins.Add(new CorsFeature());
-            Plugins.Add(new AuthFeature(() =>
-                new AuthUserSession(),
-                new IAuthProvider[]
-                {
-                    //built-in AuthProviders
-                    new BasicAuthProvider(),
-                    new DigestAuthProvider(appsettings),
-                    new CredentialsAuthProvider(),
-                    new TwitterAuthProvider(appsettings)
-                    {
-                        RedirectUrl = Properties.Settings.Default.local,
-                        CallbackUrl = string.Format("{0}auth/twitter", Properties.Settings.Default.local),
-                        ConsumerKey = Properties.Settings.Default.oauth_twitter_ConsumerKey,
-                        ConsumerSecret = Properties.Settings.Default.oauth_twitter_ConsumerSecret
-                    },
-                    new FacebookAuthProvider(appsettings)
-                    {
-                        RedirectUrl = Properties.Settings.Default.local,
-                        CallbackUrl = string.Format("{0}auth/facebook", Properties.Settings.Default.local),
-                        AppId = Properties.Settings.Default.oauth_facebook_AppId,
-                        AppSecret = Properties.Settings.Default.oauth_facebook_AppSecret,
-                        Permissions= new string[]{"email","read_stream", "offline_access"},
-                    },
-
-                    //OpenID AuthProviders
-                    new GoogleOpenIdOAuthProvider(appsettings),
-                    new YahooOpenIdOAuthProvider(appsettings),
-                    new MyOpenIdOAuthProvider(appsettings),
-
-                    //OAuth2 AuthProviders
-                    new GoogleOAuth2Provider(appsettings)
-                    {
-                        RedirectUrl = Properties.Settings.Default.local,
-                        CallbackUrl = string.Format("{0}auth/googleoauth", Properties.Settings.Default.local),
-                        ConsumerKey = Properties.Settings.Default.oauth_google_ConsumerKey,
-                        ConsumerSecret = Properties.Settings.Default.oauth_google_ConsumerSecret,
-                        AuthorizeUrl="https://accounts.google.com/o/oauth2/auth?prompt=consent",
-                        AccessTokenUrl="https://accounts.google.com/o/oauth2/token",
-                    },
-                    new LinkedInOAuth2Provider(appsettings)
-                    {
-                        RedirectUrl = Properties.Settings.Default.local,
-                        CallbackUrl = string.Format("{0}auth/linkedin", Properties.Settings.Default.local),
-                        ConsumerKey = Properties.Settings.Default.oauth_linkedin_ConsumerKey,
-                        ConsumerSecret = Properties.Settings.Default.oauth_linkedin_ConsumerSecret,
-                        //AuthorizeUrl = "https://www.linkedin.com/uas/oauth2/authorization"
-                    },
-                }));
-
-            Plugins.Add(new RegistrationFeature());
 
             #endregion configure plugins
 
@@ -410,26 +360,6 @@ namespace reexjungle.xcal.application.server.web.local
             this.Container.Register<TimeSpan?>(x => new TimeSpan(0, 2, 0));
 
             #endregion inject miscelleaneous settings
-
-            #region inject user authentication repositories
-
-            if (Properties.Settings.Default.auth_storage == StorageType.rdbms)
-            {
-                container.Register<IUserAuthRepository>(new OrmLiteAuthRepository(dbfactory));
-                var authrep = (OrmLiteAuthRepository)container.Resolve<IUserAuthRepository>();
-                if (Properties.Settings.Default.recreate_auth_tables) authrep.DropAndReCreateTables();
-                else authrep.CreateMissingTables();
-            }
-            else if (Properties.Settings.Default.auth_storage == StorageType.nosql)
-            {
-                container.Register<IUserAuthRepository>(new RedisAuthRepository(container.Resolve<IRedisClientsManager>()));
-            }
-            else if (Properties.Settings.Default.auth_storage == StorageType.memory)
-            {
-                container.Register<IUserAuthRepository>(new InMemoryAuthRepository());
-            }
-
-            #endregion inject user authentication repositories
         }
 
         public ApplicationHost()

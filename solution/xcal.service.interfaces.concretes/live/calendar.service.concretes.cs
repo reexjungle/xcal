@@ -19,7 +19,6 @@ using System.Linq;
 namespace reexjungle.xcal.service.interfaces.concretes.live
 {
     /// <summary> Represents a service for iCalendar instances. </summary>
-    //[Authenticate]
     public class CalendarService : Service, ICalendarService
     {
         private ILogFactory logfactory;

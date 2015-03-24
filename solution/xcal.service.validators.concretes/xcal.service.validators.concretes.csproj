@@ -88,7 +88,6 @@
     </Compile>
     <Compile Include="property.validators.cs" />
     <Compile Include="request.dtos.validators.cs" />
-    <Compile Include="itip_validators.cs" />
     <Compile Include="timezone.validators.cs" />
     <Compile Include="value.validators.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
