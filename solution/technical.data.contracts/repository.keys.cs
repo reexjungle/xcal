@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace reexjungle.technical.data.contracts
 {
@@ -20,6 +18,4 @@ namespace reexjungle.technical.data.contracts
         /// <returns></returns>
         IEnumerable<TKey> GetKeys(int? skip = null, int? take = null);
     }
-
- 
 }

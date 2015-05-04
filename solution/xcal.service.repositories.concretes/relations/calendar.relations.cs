@@ -1,8 +1,8 @@
-﻿using System;
-using ServiceStack.OrmLite;
+﻿using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
-using reexjungle.xcal.domain.models;
-using reexjungle.foundation.essentials.contracts;
+using ServiceStack.OrmLite;
+using System;
 
 namespace reexjungle.xcal.service.repositories.concretes.relations
 {
@@ -48,18 +48,18 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_CALENDARS_EVENTS x, REL_CALENDARS_EVENTS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_CALENDARS_EVENTS x, REL_CALENDARS_EVENTS y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
 
-    public class REL_CALENDARS_TODOS: IEquatable<REL_CALENDARS_TODOS>, IContainsKey<string>
+    public class REL_CALENDARS_TODOS : IEquatable<REL_CALENDARS_TODOS>, IContainsKey<string>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the calendar-todo relation
@@ -101,13 +101,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_CALENDARS_TODOS x, REL_CALENDARS_TODOS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_CALENDARS_TODOS x, REL_CALENDARS_TODOS y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -154,13 +154,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_CALENDARS_FREEBUSIES x, REL_CALENDARS_FREEBUSIES y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_CALENDARS_FREEBUSIES x, REL_CALENDARS_FREEBUSIES y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -207,13 +207,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_CALENDARS_JOURNALS x, REL_CALENDARS_JOURNALS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_CALENDARS_JOURNALS x, REL_CALENDARS_JOURNALS y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -260,13 +260,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_CALENDARS_TIMEZONES x, REL_CALENDARS_TIMEZONES y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_CALENDARS_TIMEZONES x, REL_CALENDARS_TIMEZONES y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -313,13 +313,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_CALENDARS_IANACS x, REL_CALENDARS_IANACS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_CALENDARS_IANACS x, REL_CALENDARS_IANACS y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -366,13 +366,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_CALENDARS_XCS x, REL_CALENDARS_XCS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_CALENDARS_XCS x, REL_CALENDARS_XCS y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }

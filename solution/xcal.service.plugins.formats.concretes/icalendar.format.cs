@@ -1,33 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using ServiceStack.WebHost.Endpoints;
-using ServiceStack.ServiceHost;
+﻿using reexjungle.xcal.domain.models;
 using ServiceStack.Common.Web;
-using reexjungle.xcal.domain.models;
-
+using ServiceStack.ServiceHost;
+using ServiceStack.WebHost.Endpoints;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace reexjungle.xcal.service.plugins.formats.concretes
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
-    public class iCalendarFormat: IPlugin
+    public class iCalendarFormat : IPlugin
     {
         private const string mime_type = "text/calendar";
         private const string ext = "ics";
 
         public void Register(IAppHost appHost)
         {
-            appHost.ContentTypeFilters.Register(mime_type, iCalendarFormat.SerializeToStream, iCalendarFormat.DeserializeFromStream);
+            appHost.ContentTypeFilters.Register(mime_type, SerializeToStream, DeserializeFromStream);
             appHost.ResponseFilters.Add((req, res, dto) =>
                 {
                     if (req.ResponseContentType.Equals(mime_type, StringComparison.OrdinalIgnoreCase))
                         res.AddHeader(HttpHeaders.ContentDisposition,
                         string.Format("attachment;filename={0}.{1}", req.OperationName, ext));
-         
                 });
         }
 
@@ -41,18 +37,18 @@ namespace reexjungle.xcal.service.plugins.formats.concretes
         {
             using (var sw = new StreamWriter(stream))
             {
-                if(dto != null)
+                if (dto != null)
                 {
                     //calendars
-                    if(dto is VCALENDAR) sw.WriteLine(dto as VCALENDAR);
-                    if(dto is List<VCALENDAR>)
+                    if (dto is VCALENDAR) sw.WriteLine(dto as VCALENDAR);
+                    if (dto is List<VCALENDAR>)
                     {
                         var cals = dto as List<VCALENDAR>;
                         cals.ForEach(x => sw.WriteLine(x));
                     }
 
                     //events
-                    if(dto is  VEVENT) sw.WriteLine(dto as VEVENT);
+                    if (dto is VEVENT) sw.WriteLine(dto as VEVENT);
                     if (dto is List<VEVENT>)
                     {
                         var events = dto as List<VEVENT>;
@@ -98,15 +94,13 @@ namespace reexjungle.xcal.service.plugins.formats.concretes
                         var xc = dto as List<X_COMPONENT>;
                         xc.ForEach(x => sw.WriteLine(x));
                     }
-
                 }
-            } 
+            }
         }
 
         public static object DeserializeFromStream(Type type, Stream stream)
         {
             throw new NotImplementedException();
         }
-
     }
 }

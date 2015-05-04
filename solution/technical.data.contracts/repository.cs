@@ -1,7 +1,6 @@
-﻿using reexjungle.infrastructure.contracts;
+﻿using reexjungle.xmisc.infrastructure.contracts;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace reexjungle.technical.data.contracts

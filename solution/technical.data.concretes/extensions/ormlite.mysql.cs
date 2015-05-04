@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using ServiceStack.OrmLite;
 using System.Data;
-using ServiceStack.OrmLite;
 
 namespace reexjungle.technical.data.concretes.extensions.ormlite.mysql
 {
@@ -23,12 +19,11 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite.mysql
             if (overwrite) db.DropSchema(db_name);
             db.Exec(x =>
                 {
-                    x.CommandText = (overwrite) 
-                        ? string.Format("CREATE SCHEMA {0}", db_name) 
-                        : string.Format("CREATE SCHEMA IF NOT EXISTS {0}", db_name) ;
+                    x.CommandText = (overwrite)
+                        ? string.Format("CREATE SCHEMA {0}", db_name)
+                        : string.Format("CREATE SCHEMA IF NOT EXISTS {0}", db_name);
                     x.ExecuteNonQuery();
                 });
-
         }
     }
 }

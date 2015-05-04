@@ -1,18 +1,9 @@
-﻿using reexjungle.foundation.essentials.concretes;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.infrastructure.concretes.operations;
-using reexjungle.infrastructure.contracts;
-using reexjungle.infrastructure.io.concretes;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
-using reexjungle.xcal.service.interfaces.contracts.live;
+﻿using reexjungle.xcal.service.interfaces.contracts.live;
 using reexjungle.xcal.service.operations.concretes.live;
 using reexjungle.xcal.service.repositories.contracts;
 using ServiceStack.Logging;
 using ServiceStack.ServiceInterface;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace reexjungle.xcal.service.interfaces.concretes.live
 {

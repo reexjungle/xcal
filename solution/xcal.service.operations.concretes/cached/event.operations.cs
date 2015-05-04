@@ -1,10 +1,7 @@
-﻿using reexjungle.infrastructure.contracts;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.infrastructure.contracts;
 using ServiceStack.ServiceHost;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace reexjungle.xcal.service.operations.concretes.cached
 {

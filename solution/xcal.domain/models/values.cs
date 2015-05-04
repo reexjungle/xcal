@@ -1,8 +1,8 @@
-﻿using reexjungle.foundation.essentials.concretes;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.infrastructure.concretes.operations;
-using reexjungle.xcal.domain.contracts;
+﻿using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.extensions;
+using reexjungle.xmisc.foundation.concretes;
+using reexjungle.xmisc.foundation.contracts;
+using reexjungle.xmisc.infrastructure.concretes.operations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -124,7 +124,7 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public static bool operator ==(BINARY x, BINARY y)
         {
-            if ((object)y == null) return object.Equals(x, y);
+            if ((object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
@@ -138,7 +138,7 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public static bool operator !=(BINARY x, BINARY y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !(x.Equals(y));
         }
 
@@ -340,7 +340,7 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public static bool operator ==(DATE a, DATE b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
@@ -354,7 +354,7 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public static bool operator !=(DATE a, DATE b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -567,7 +567,7 @@ namespace reexjungle.xcal.domain.models
             this.minute = (uint)datetime.Minute;
             this.second = (uint)datetime.Second;
             this.tzid = null;
-            this.time_type = contracts.TimeType.Unknown;
+            this.time_type = TimeType.Unknown;
             if (tzinfo != null)
             {
                 this.tzid = new TZID(null, tzinfo.Id);
@@ -591,7 +591,7 @@ namespace reexjungle.xcal.domain.models
             this.minute = (uint)datetime.Minute;
             this.second = (uint)datetime.Second;
             this.tzid = null;
-            this.time_type = contracts.TimeType.Unknown;
+            this.time_type = TimeType.Unknown;
             if (tzid != null)
             {
                 this.tzid = tzid;
@@ -877,13 +877,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(DATE_TIME a, DATE_TIME b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(DATE_TIME a, DATE_TIME b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -949,7 +949,7 @@ namespace reexjungle.xcal.domain.models
             this.minute = (uint)datetime.Minute;
             this.second = (uint)datetime.Second;
             this.tzid = null;
-            this.format = contracts.TimeType.Unknown;
+            this.format = TimeType.Unknown;
             if (tzinfo != null)
             {
                 this.tzid = new TZID(null, tzinfo.Id);
@@ -1099,13 +1099,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(TIME a, TIME b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(TIME a, TIME b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -1310,13 +1310,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(DURATION a, DURATION b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(DURATION a, DURATION b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -1419,13 +1419,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(WEEKDAYNUM a, WEEKDAYNUM b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(WEEKDAYNUM a, WEEKDAYNUM b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -1607,13 +1607,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(UTC_OFFSET a, UTC_OFFSET b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(UTC_OFFSET a, UTC_OFFSET b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -1650,7 +1650,7 @@ namespace reexjungle.xcal.domain.models
             this.type = PeriodType.Start;
 
             var parts = value.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts == null || parts.Length != 2) throw new FormatException("Invalid this format");
+            if (parts == null || parts.Length != 2) throw new FormatException("Invalid PERIOD format");
 
             try
             {
@@ -1787,13 +1787,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(PERIOD a, PERIOD b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(PERIOD a, PERIOD b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -2078,7 +2078,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("BYSECOND=");
                 foreach (var val in this.BYSECOND)
                 {
-                    if (val != this.BYSECOND.Last()) sb.AppendFormat("{0}, ", val);
+                    if (val != this.BYSECOND.Last()) sb.AppendFormat("{0},", val);
                     else sb.AppendFormat("{0};", val);
                 }
             }
@@ -2088,7 +2088,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("BYMINUTE=");
                 foreach (var val in this.BYMINUTE)
                 {
-                    if (val != this.BYMINUTE.Last()) sb.AppendFormat("{0}, ", val);
+                    if (val != this.BYMINUTE.Last()) sb.AppendFormat("{0},", val);
                     else sb.AppendFormat("{0};", val);
                 }
             }
@@ -2098,7 +2098,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("BYHOUR=");
                 foreach (var val in this.BYHOUR)
                 {
-                    if (val != this.BYHOUR.Last()) sb.AppendFormat("{0}, ", val);
+                    if (val != this.BYHOUR.Last()) sb.AppendFormat("{0},", val);
                     else sb.AppendFormat("{0};", val);
                 }
             }
@@ -2108,7 +2108,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("BYDAY=");
                 foreach (var val in this.BYDAY)
                 {
-                    if (val != this.BYDAY.Last()) sb.AppendFormat("{0}, ", val);
+                    if (val != this.BYDAY.Last()) sb.AppendFormat("{0},", val);
                     else sb.AppendFormat("{0};", val);
                 }
             }
@@ -2118,7 +2118,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("BYMONTHDAY=");
                 foreach (var val in this.BYMONTHDAY)
                 {
-                    if (val != this.BYMONTHDAY.Last()) sb.AppendFormat("{0}, ", val);
+                    if (val != this.BYMONTHDAY.Last()) sb.AppendFormat("{0},", val);
                     else sb.AppendFormat("{0};", val);
                 }
             }
@@ -2128,7 +2128,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("BYYEARDAY=");
                 foreach (var val in this.BYYEARDAY)
                 {
-                    if (val != this.BYYEARDAY.Last()) sb.AppendFormat("{0}, ", val);
+                    if (val != this.BYYEARDAY.Last()) sb.AppendFormat("{0},", val);
                     else sb.AppendFormat("{0};", val);
                 }
             }
@@ -2138,7 +2138,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("BYWEEKNO=");
                 foreach (var val in this.BYWEEKNO)
                 {
-                    if (val != this.BYWEEKNO.Last()) sb.AppendFormat("{0}, ", val);
+                    if (val != this.BYWEEKNO.Last()) sb.AppendFormat("{0},", val);
                     else sb.AppendFormat("{0};", val);
                 }
             }
@@ -2148,7 +2148,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("BYMONTH=");
                 foreach (var val in this.BYMONTH)
                 {
-                    if (val != this.BYMONTH.Last()) sb.AppendFormat("{0}, ", val);
+                    if (val != this.BYMONTH.Last()) sb.AppendFormat("{0},", val);
                     else sb.AppendFormat("{0};", val);
                 }
             }
@@ -2156,17 +2156,17 @@ namespace reexjungle.xcal.domain.models
             if (!this.BYSETPOS.NullOrEmpty())
             {
                 sb.AppendFormat("BYSETPOS=");
-                foreach (var m in this.BYMONTH)
+                foreach (var m in this.BYSETPOS)
                 {
                     if (m != this.BYSETPOS.Last())
                     {
-                        if (m < 0) sb.AppendFormat("-{0}, ", m);
-                        else if (m > 0) sb.AppendFormat("+{0}, ", m);
-                        else sb.AppendFormat("{0}, ", m);
+                        if (m < 0) sb.AppendFormat("{0},", m);
+                        else if (m > 0) sb.AppendFormat("+{0},", m);
+                        else sb.AppendFormat("{0},", m);
                     }
                     else
                     {
-                        if (m < 0) sb.AppendFormat("-{0};", m);
+                        if (m < 0) sb.AppendFormat("{0};", m);
                         else if (m > 0) sb.AppendFormat("+{0};", m);
                         else sb.AppendFormat("{0};", m);
                     }
@@ -2196,13 +2196,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(RECUR a, RECUR b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(RECUR a, RECUR b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -2279,13 +2279,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(URI x, URI y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(URI x, URI y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }

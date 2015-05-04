@@ -1,9 +1,8 @@
-﻿using reexjungle.foundation.essentials.concretes;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.infrastructure.concretes.operations;
-using reexjungle.infrastructure.io.concretes;
-using reexjungle.xcal.domain.contracts;
+﻿using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.extensions;
+using reexjungle.xmisc.foundation.concretes;
+using reexjungle.xmisc.foundation.contracts;
+using reexjungle.xmisc.infrastructure.concretes.operations;
 using ServiceStack.DataAnnotations;
 using System;
 using System.Collections.Generic;
@@ -79,7 +78,7 @@ namespace reexjungle.xcal.domain.models
         public LOCATION Location { get; set; }
 
         [DataMember]
-        [StringLength(int.MaxValue)]
+        [Ignore]
         public ORGANIZER Organizer { get; set; }
 
         [DataMember]
@@ -105,7 +104,7 @@ namespace reexjungle.xcal.domain.models
         public RECURRENCE_ID RecurrenceId { get; set; }
 
         [DataMember]
-        [StringLength(int.MaxValue)]
+        [Ignore]
         public RECUR RecurrenceRule { get; set; }
 
         [DataMember]
@@ -338,13 +337,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(VEVENT a, VEVENT b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(VEVENT a, VEVENT b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 

@@ -1,9 +1,9 @@
 ﻿using Funq;
 using MySql.Data.MySqlClient;
+using NLog;
 using reexjungle.crosscut.operations.concretes;
-using reexjungle.infrastructure.concretes.operations;
-using reexjungle.infrastructure.contracts;
 using reexjungle.technical.data.concretes.extensions.ormlite.mysql;
+using reexjungle.xcal.application.server.web.local.Properties;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.interfaces.concretes.live;
 using reexjungle.xcal.service.plugins.formats.concretes;
@@ -12,8 +12,8 @@ using reexjungle.xcal.service.repositories.concretes.redis;
 using reexjungle.xcal.service.repositories.concretes.relations;
 using reexjungle.xcal.service.repositories.contracts;
 using reexjungle.xcal.service.validators.concretes;
-using ServiceStack.Authentication.OAuth2;
-using ServiceStack.Authentication.OpenId;
+using reexjungle.xmisc.infrastructure.concretes.operations;
+using reexjungle.xmisc.infrastructure.contracts;
 using ServiceStack.CacheAccess;
 using ServiceStack.CacheAccess.Azure;
 using ServiceStack.CacheAccess.Memcached;
@@ -25,13 +25,12 @@ using ServiceStack.Logging.NLogger;
 using ServiceStack.OrmLite;
 using ServiceStack.Plugins.MsgPack;
 using ServiceStack.Redis;
-using ServiceStack.ServiceInterface;
-using ServiceStack.ServiceInterface.Auth;
 using ServiceStack.ServiceInterface.Cors;
 using ServiceStack.ServiceInterface.Validation;
 using ServiceStack.WebHost.Endpoints;
 using System;
 using System.Data;
+using System.Diagnostics;
 
 namespace reexjungle.xcal.application.server.web.local
 {
@@ -103,7 +102,7 @@ namespace reexjungle.xcal.application.server.web.local
 
             container.Register<IOrmLiteDialectProvider>(MySqlDialect.Provider);
             container.Register<IDbConnectionFactory>(new OrmLiteConnectionFactory(
-                Properties.Settings.Default.mysql_server,
+                Settings.Default.mysql_server,
                 container.Resolve<IOrmLiteDialectProvider>()));
 
             #endregion inject rdbms provider
@@ -119,24 +118,24 @@ namespace reexjungle.xcal.application.server.web.local
                 dbfactory.Run(x =>
                 {
                     //create NLog database and table
-                    x.CreateSchemaIfNotExists(Properties.Settings.Default.nlog_db_name, Properties.Settings.Default.overwrite_db);
-                    x.ChangeDatabase(Properties.Settings.Default.nlog_db_name);
-                    x.ConnectionString = string.Format("{0}; Database={1}", Properties.Settings.Default.mysql_server, Properties.Settings.Default.nlog_db_name);
+                    x.CreateSchemaIfNotExists(Settings.Default.nlog_db_name, Settings.Default.overwrite_db);
+                    x.ChangeDatabase(Settings.Default.nlog_db_name);
+                    x.ConnectionString = string.Format("{0}; Database={1}", Settings.Default.mysql_server, Settings.Default.nlog_db_name);
                     x.CreateTableIfNotExists<NlogTable>();
 
                     //create elmah database, table and stored procedures
-                    x.CreateSchemaIfNotExists(Properties.Settings.Default.elmah_db_name, Properties.Settings.Default.overwrite_db);
-                    x.ChangeDatabase(Properties.Settings.Default.elmah_db_name);
-                    x.ConnectionString = string.Format("{0}; Database={1}", Properties.Settings.Default.mysql_server, Properties.Settings.Default.elmah_db_name);
+                    x.CreateSchemaIfNotExists(Settings.Default.elmah_db_name, Settings.Default.overwrite_db);
+                    x.ChangeDatabase(Settings.Default.elmah_db_name);
+                    x.ConnectionString = string.Format("{0}; Database={1}", Settings.Default.mysql_server, Settings.Default.elmah_db_name);
 
                     //execute initialization script on first run
-                    if (!x.TableExists(Properties.Settings.Default.elmah_error_table))
+                    if (!x.TableExists(Settings.Default.elmah_error_table))
                     {
                         //execute creation of stored procedures
-                        x.ExecuteSql(Properties.Resources.elmah_mysql_CreateLogTable);
-                        x.ExecuteSql(Properties.Resources.elmah_mysql_GetErrorXml);
-                        x.ExecuteSql(Properties.Resources.elmah_mysql_GetErrorsXml);
-                        x.ExecuteSql(Properties.Resources.elmah_mysql_LogError);
+                        x.ExecuteSql(Resources.elmah_mysql_CreateLogTable);
+                        x.ExecuteSql(Resources.elmah_mysql_GetErrorXml);
+                        x.ExecuteSql(Resources.elmah_mysql_GetErrorsXml);
+                        x.ExecuteSql(Resources.elmah_mysql_LogError);
 
                         //call "create table" stored procedure
                         x.Exec(cmd =>
@@ -148,25 +147,25 @@ namespace reexjungle.xcal.application.server.web.local
                     }
                 });
             }
-            catch (NLog.NLogConfigurationException ex)
+            catch (NLogConfigurationException ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                Debug.WriteLine(ex.ToString());
             }
-            catch (MySql.Data.MySqlClient.MySqlException ex)
+            catch (MySqlException ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                Debug.WriteLine(ex.ToString());
             }
-            catch (NLog.NLogRuntimeException ex)
+            catch (NLogRuntimeException ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                Debug.WriteLine(ex.ToString());
             }
             catch (InvalidOperationException ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
+                Debug.WriteLine(ex.Message);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
+                Debug.WriteLine(ex.Message);
             }
 
             #endregion create logger databases and tables
@@ -175,7 +174,7 @@ namespace reexjungle.xcal.application.server.web.local
 
             #region inject core repositories and create primary data sources on first run
 
-            if (Properties.Settings.Default.main_storage == StorageType.rdbms)
+            if (Settings.Default.main_storage == StorageType.rdbms)
             {
                 #region create main database and tables
 
@@ -183,9 +182,9 @@ namespace reexjungle.xcal.application.server.web.local
                 {
                     dbfactory.Run(x =>
                     {
-                        x.CreateSchemaIfNotExists(Properties.Settings.Default.main_db_name, false);
-                        x.ChangeDatabase(Properties.Settings.Default.main_db_name);
-                        x.ConnectionString = string.Format("{0}; Database={1}", Properties.Settings.Default.mysql_server, Properties.Settings.Default.main_db_name);
+                        x.CreateSchemaIfNotExists(Settings.Default.main_db_name, false);
+                        x.ChangeDatabase(Settings.Default.main_db_name);
+                        x.ConnectionString = string.Format("{0}; Database={1}", Settings.Default.mysql_server, Settings.Default.main_db_name);
 
                         //Create core tables
                         x.CreateTableIfNotExists(typeof(VCALENDAR), typeof(VEVENT), typeof(VTODO), typeof(VFREEBUSY), typeof(FREEBUSY_INFO), typeof(VJOURNAL), typeof(VTIMEZONE), typeof(STANDARD), typeof(DAYLIGHT), typeof(IANA_PROPERTY), typeof(IANA_COMPONENT), typeof(X_PROPERTY), typeof(X_COMPONENT), typeof(AUDIO_ALARM), typeof(DISPLAY_ALARM), typeof(EMAIL_ALARM), typeof(ATTENDEE), typeof(ORGANIZER), typeof(RECUR), typeof(COMMENT), typeof(RELATEDTO), typeof(ATTACH_BINARY), typeof(ATTACH_URI), typeof(CONTACT), typeof(RDATE), typeof(EXDATE), typeof(REQUEST_STATUS), typeof(RESOURCES), typeof(TZNAME));
@@ -258,7 +257,7 @@ namespace reexjungle.xcal.application.server.web.local
 
                 #endregion inject ormlite repositories
             }
-            else if (Properties.Settings.Default.main_storage == StorageType.nosql)
+            else if (Settings.Default.main_storage == StorageType.nosql)
             {
                 #region inject redis repositories
 
@@ -307,7 +306,7 @@ namespace reexjungle.xcal.application.server.web.local
 
                 //register cache client to redis server running on linux.
                 //NOTE: Redis Server must already be installed on the local machine and must be running
-                container.Register<IRedisClientsManager>(x => new BasicRedisClientManager(Properties.Settings.Default.redis_server));
+                container.Register<IRedisClientsManager>(x => new BasicRedisClientManager(Settings.Default.redis_server));
 
                 try
                 {
@@ -329,28 +328,28 @@ namespace reexjungle.xcal.application.server.web.local
 
             #region inject cached providers
 
-            if (Properties.Settings.Default.cache_storage == StorageType.nosql)
+            if (Settings.Default.cache_storage == StorageType.nosql)
             {
                 //register cache client to redis server running on linux or windows.
                 //NOTE: Redis Server must already be installed on the remote machine and must be running
-                container.Register<IRedisClientsManager>(x => new BasicRedisClientManager(Properties.Settings.Default.redis_server));
+                container.Register<IRedisClientsManager>(x => new BasicRedisClientManager(Settings.Default.redis_server));
                 var cachedclient = container.Resolve<IRedisClientsManager>().GetCacheClient();
                 if (cachedclient != null) container.Register<ICacheClient>(x => cachedclient);
             }
-            else if (Properties.Settings.Default.cache_storage == StorageType.memory)
+            else if (Settings.Default.cache_storage == StorageType.memory)
             {
                 //try memcached first
                 //NOTE: Memcached Server must already be installed on the remote machine and must be running
-                container.Register<ICacheClient>(x => new MemcachedClientCache(new string[] { Properties.Settings.Default.memcached_server }));
+                container.Register<ICacheClient>(x => new MemcachedClientCache(new string[] { Settings.Default.memcached_server }));
                 var cachedclient = container.Resolve<ICacheClient>();
 
                 //no Memcached server on host machine; use in-memory cache by default
                 if (cachedclient == null) container.Register<ICacheClient>(x => new MemoryCacheClient());
             }
-            else if (Properties.Settings.Default.cache_storage == StorageType.host)
+            else if (Settings.Default.cache_storage == StorageType.host)
             {
                 //connect to hosted azure service
-                container.Register<ICacheClient>(x => new AzureCacheClient(Properties.Settings.Default.azure_server));
+                container.Register<ICacheClient>(x => new AzureCacheClient(Settings.Default.azure_server));
             }
 
             #endregion inject cached providers
@@ -363,7 +362,7 @@ namespace reexjungle.xcal.application.server.web.local
         }
 
         public ApplicationHost()
-            : base(Properties.Settings.Default.service_name, typeof(EventService).Assembly)
+            : base(Settings.Default.service_name, typeof(EventService).Assembly)
         {
             #region set up mono compliant settings
 

@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using reexjungle.technical.data.contracts;
+using reexjungle.xcal.domain.models;
 using ServiceStack.OrmLite;
 using ServiceStack.Redis;
-using reexjungle.xcal.domain.models;
-using reexjungle.technical.data.contracts;
+using System.Collections.Generic;
 
 namespace reexjungle.xcal.service.repositories.contracts
 {
-    public interface ICalendarRepository:
+    public interface ICalendarRepository :
         IReadRepository<VCALENDAR, string>,
         IWriteRepository<VCALENDAR, string>,
         IReadRepositoryKeys<string>
@@ -32,7 +31,7 @@ namespace reexjungle.xcal.service.repositories.contracts
         IEnumerable<VCALENDAR> HydrateAll(IEnumerable<VCALENDAR> dry);
 
         /// <summary>
-        /// Depopulates aggregate entities from a calendar 
+        /// Depopulates aggregate entities from a calendar
         /// </summary>
         /// <param name="full">The calendar to be depopulated</param>
         /// <returns>A depopulated calendar</returns>
@@ -51,7 +50,6 @@ namespace reexjungle.xcal.service.repositories.contracts
         /// </summary>
         IDbConnectionFactory DbConnectionFactory { get; set; }
     }
-
 
     /// <summary>
     /// Specifies an interface for a repository of calendars hosted on a NoSQL Redis data source

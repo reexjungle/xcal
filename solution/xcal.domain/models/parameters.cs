@@ -1,5 +1,5 @@
-﻿using reexjungle.foundation.essentials.concretes;
-using reexjungle.xcal.domain.contracts;
+﻿using reexjungle.xcal.domain.contracts;
+using reexjungle.xmisc.foundation.concretes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,13 +76,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(TZID a, TZID b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(TZID a, TZID b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -173,13 +173,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(FMTTYPE a, FMTTYPE b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(FMTTYPE a, FMTTYPE b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -267,13 +267,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(LANGUAGE a, LANGUAGE b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(LANGUAGE a, LANGUAGE b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -347,7 +347,7 @@ namespace reexjungle.xcal.domain.models
         public bool Equals(DELEGATE other)
         {
             if (other == null) return false;
-            return this.Addresses.AreDuplicatesOf(other.Addresses);
+            return this.Addresses.IsEqualOf(other.Addresses);
         }
 
         public override bool Equals(object obj)
@@ -363,13 +363,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(DELEGATE x, DELEGATE y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(DELEGATE x, DELEGATE y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -451,7 +451,7 @@ namespace reexjungle.xcal.domain.models
         public bool Equals(MEMBER other)
         {
             if (other == null) return false;
-            return this.Addresses.AreDuplicatesOf(other.Addresses);
+            return this.Addresses.IsEqualOf(other.Addresses);
         }
 
         public override bool Equals(object obj)
@@ -467,13 +467,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(MEMBER a, MEMBER b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(MEMBER a, MEMBER b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }

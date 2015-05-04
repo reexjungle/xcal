@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.Serialization;
+﻿using reexjungle.xcal.domain.contracts;
+using reexjungle.xmisc.foundation.concretes;
+using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.foundation.essentials.concretes;
-
-
+using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Text;
 
 namespace reexjungle.xcal.domain.models
 {
     [DataContract]
-    public class VJOURNAL: IJOURNAL, IEquatable<VJOURNAL>, IContainsKey<string>
+    public class VJOURNAL : IJOURNAL, IEquatable<VJOURNAL>, IContainsKey<string>
     {
         [DataMember]
         public string Id
@@ -60,7 +57,6 @@ namespace reexjungle.xcal.domain.models
         public URI Url { get; set; }
 
         [DataMember]
-
         public RECURRENCE_ID RecurrenceId { get; set; }
 
         [DataMember]
@@ -149,13 +145,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(VJOURNAL a, VJOURNAL b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(VJOURNAL a, VJOURNAL b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 

@@ -1,5 +1,5 @@
-﻿using reexjungle.foundation.essentials.concretes;
-using reexjungle.foundation.essentials.contracts;
+﻿using reexjungle.xmisc.foundation.concretes;
+using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.Common.Utils;
 using ServiceStack.OrmLite;
 using System;
@@ -9,7 +9,6 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using xs = System.Transactions;
 
 namespace reexjungle.technical.data.concretes.extensions.ormlite
 {
@@ -1963,15 +1962,5 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         }
 
         #endregion RemoveAll operations
-
-        public static void TryEnlistTransaction(this IDbConnection db, xs.Transaction transaction)
-        {
-            var methodes = db.GetType().GetMethods();
-            var minfo = db.GetType().GetMethod("EnlistTransaction");
-            if (minfo != null)
-            {
-                minfo.Invoke(db, new object[] { transaction });
-            }
-        }
     }
 }

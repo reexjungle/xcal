@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using reexjungle.xcal.domain.models;
-using System;
+﻿using reexjungle.xcal.domain.models;
+using System.Collections.Generic;
 
 namespace reexjungle.xcal.domain.contracts
 {
@@ -14,10 +13,10 @@ namespace reexjungle.xcal.domain.contracts
     /// Specifies the contract for identifying properties that contain a character encoding of inline binary data.
     /// The character encoding is based on the Base64 encoding
     /// </summary>
-    public interface IBINARY : IVALUE 
+    public interface IBINARY : IVALUE
     {
         /// <summary>
-        /// Gets or sets the Base64 value of this type. 
+        /// Gets or sets the Base64 value of this type.
         /// </summary>
         string Value { get; set; }
 
@@ -31,10 +30,10 @@ namespace reexjungle.xcal.domain.contracts
     /// Specifies the contract for identifying properties that contain a calendar date.
     /// Format: [YYYYMMDD] where YYYY is 4-digit year, MM is 2-digit month and DD is 2-digit day
     /// </summary>
-    public interface IDATE : IVALUE 
+    public interface IDATE : IVALUE
     {
         /// <summary>
-        /// Gets the 4-digit representation of a full year e.g. 2013 
+        /// Gets the 4-digit representation of a full year e.g. 2013
         /// </summary>
         uint FULLYEAR { get; }
 
@@ -46,17 +45,16 @@ namespace reexjungle.xcal.domain.contracts
         /// <summary>
         /// Gets the 2-digit representation of a month-day
         /// </summary>
-        uint MDAY { get;}
-
+        uint MDAY { get; }
     }
 
     /// <summary>
     /// Specifies the contract for identifying values that specify a precise calendar date and time of the date
-    /// Format: [YYYYMMSS]&quot;T&quot;[HHMMSS]&quot;Z&quot; 
+    /// Format: [YYYYMMSS]&quot;T&quot;[HHMMSS]&quot;Z&quot;
     /// where YYYY is 4-digit year, MM is 2-digit month and DD is 2-digit day
-    /// 
+    ///
     /// </summary>
-    public interface IDATE_TIME : IDATE, ITIME  { }
+    public interface IDATE_TIME : IDATE, ITIME { }
 
     /// <summary>
     /// Specifies the contract for identifying properties that contain a duration of time
@@ -67,17 +65,17 @@ namespace reexjungle.xcal.domain.contracts
         /// <summary>
         /// Gets the duration in weeks
         /// </summary>
-        int WEEKS { get;}
+        int WEEKS { get; }
 
         /// <summary>
         /// Gets the duration in hours
         /// </summary>
-        int HOURS { get;}
+        int HOURS { get; }
 
         /// <summary>
         /// Gets the duration in minutes
         /// </summary>
-        int MINUTES { get;}
+        int MINUTES { get; }
 
         /// <summary>
         /// Gets the duration in seconds
@@ -88,15 +86,13 @@ namespace reexjungle.xcal.domain.contracts
         /// Gets the duration in days
         /// </summary>
         int DAYS { get; }
-
     }
 
     /// <summary>
     /// Specifies a contract for identifying properties that contain a precise period of time
     /// </summary>
-    public interface IPERIOD : IVALUE 
+    public interface IPERIOD : IVALUE
     {
-    
         /// <summary>
         /// Gets or sets the start of the period
         /// </summary>
@@ -105,12 +101,12 @@ namespace reexjungle.xcal.domain.contracts
         /// <summary>
         /// Gets or sets the end of the period.
         /// </summary>
-        DATE_TIME End { get;}
+        DATE_TIME End { get; }
 
         /// <summary>
         /// Gets or sets the duration of the period.
         /// </summary>
-        DURATION Duration { get;}
+        DURATION Duration { get; }
     }
 
     /// <summary>
@@ -134,7 +130,6 @@ namespace reexjungle.xcal.domain.contracts
     /// </summary>
     public interface IRECUR : IVALUE
     {
-
         /// <summary>
         /// Gets or sets the frequency of the recurrence rule.
         /// This property is REQUIRED and must not occur more than once.
@@ -162,7 +157,7 @@ namespace reexjungle.xcal.domain.contracts
 
         /// <summary>
         /// Gets or sets the collection of seconds within a minute.
-        /// Valid values are 0 to 60. 
+        /// Valid values are 0 to 60.
         /// </summary>
         /// <remarks>Normally, the seconds range is from 0 to 59 but the extra 60th second accounts for a leap second, which ma ybe ignored by a non-supporting system. </remarks>
         List<uint> BYSECOND { get; set; }
@@ -180,12 +175,12 @@ namespace reexjungle.xcal.domain.contracts
         List<uint> BYHOUR { get; set; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         List<WEEKDAYNUM> BYDAY { get; set; }
 
         /// <summary>
-        /// Gets or sets the collection of days of the month. 
+        /// Gets or sets the collection of days of the month.
         /// Valid values are 1 to 31 or -31 to -1.
         /// Negative values represent the day position from the end of the month e.g -10 is the tenth to the last day of the month
         /// </summary>
@@ -207,7 +202,7 @@ namespace reexjungle.xcal.domain.contracts
         List<int> BYWEEKNO { get; set; }
 
         /// <summary>
-        /// Gets or sets the collection of months of the year. 
+        /// Gets or sets the collection of months of the year.
         /// Valid values are 1 to 12.
         /// </summary>
         List<uint> BYMONTH { get; set; }
@@ -217,7 +212,7 @@ namespace reexjungle.xcal.domain.contracts
         /// The default day is MO.
         /// </summary>
         /// <remarks>
-        /// This is used significantly when a weekly recurrence rule has an interval greater than 1 and a BYDAY rule is specified. 
+        /// This is used significantly when a weekly recurrence rule has an interval greater than 1 and a BYDAY rule is specified.
         /// Also, it is significantly used when a BYWEEKNO rule in a YEARLY rule is specified.
         /// </remarks>
         WEEKDAY WKST { get; set; }
@@ -232,14 +227,12 @@ namespace reexjungle.xcal.domain.contracts
         /// FRREQ = MONTHLY; BYDAY = MO, TU, WE, TH, FR; BYSETPOS = -1
         /// </remarks>
         List<int> BYSETPOS { get; set; }
-
-    
     }
 
     /// <summary>
-    /// Specifies the contract for identifying properties that contain a time of the day 
-    /// Format 1 (Local Time): [HHMMSS] 
-    /// Format 2 (UTC Time): [HHMMSS]&quot;Z&quot; 
+    /// Specifies the contract for identifying properties that contain a time of the day
+    /// Format 1 (Local Time): [HHMMSS]
+    /// Format 2 (UTC Time): [HHMMSS]&quot;Z&quot;
     /// where HH is 2-digit hour, MM is 2-digit minute, SS is 2-digit second and Z is UTC zone indicator
     /// </summary>
     public interface ITIME : IVALUE
@@ -257,26 +250,25 @@ namespace reexjungle.xcal.domain.contracts
         /// <summary>
         /// Gets or sets the 2-digit representation of a second
         /// </summary>
-        uint SECOND { get;}
+        uint SECOND { get; }
 
-        TimeType Type { get;}
+        TimeType Type { get; }
 
-        TZID TimeZoneId { get;}
-
+        TZID TimeZoneId { get; }
     }
 
     /// <summary>
     /// Specifies the contract for identifying properties that contain a uniform resource identifier (URI) type of reference to the property value
     /// </summary>
-    public interface IURI : IVALUE 
+    public interface IURI : IVALUE
     {
         string Path { get; set; }
     }
 
     /// <summary>
-    /// Specifies the contract for identifying properties that contain an offset from UTC to local time 
+    /// Specifies the contract for identifying properties that contain an offset from UTC to local time
     /// </summary>
-    public interface IUTC_OFFSET : IVALUE 
+    public interface IUTC_OFFSET : IVALUE
     {
         /// <summary>
         /// Gets or sets the 2-digit representation of an hour
@@ -293,5 +285,4 @@ namespace reexjungle.xcal.domain.contracts
         /// </summary>
         int SECOND { get; }
     }
-
 }

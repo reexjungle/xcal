@@ -1,4 +1,4 @@
-﻿using reexjungle.infrastructure.contracts;
+﻿using reexjungle.xmisc.infrastructure.contracts;
 using ServiceStack.ServiceHost;
 
 namespace reexjungle.xcal.service.operations.concretes.live

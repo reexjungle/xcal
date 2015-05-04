@@ -1,11 +1,8 @@
-﻿using reexjungle.foundation.essentials.contracts;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
 using ServiceStack.OrmLite;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace reexjungle.xcal.service.repositories.concretes.relations
 {
@@ -53,13 +50,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_TIMEZONES_STANDARDS x, REL_TIMEZONES_STANDARDS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_TIMEZONES_STANDARDS x, REL_TIMEZONES_STANDARDS y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -106,13 +103,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_TIMEZONES_DAYLIGHT x, REL_TIMEZONES_DAYLIGHT y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_TIMEZONES_DAYLIGHT x, REL_TIMEZONES_DAYLIGHT y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -154,13 +151,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_STANDARDS_RECURS x, REL_STANDARDS_RECURS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_STANDARDS_RECURS x, REL_STANDARDS_RECURS y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -198,13 +195,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_STANDARDS_COMMENTS x, REL_STANDARDS_COMMENTS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_STANDARDS_COMMENTS x, REL_STANDARDS_COMMENTS y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -242,13 +239,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_STANDARDS_RDATES x, REL_STANDARDS_RDATES y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_STANDARDS_RDATES x, REL_STANDARDS_RDATES y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -286,13 +283,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_STANDARDS_TZNAMES x, REL_STANDARDS_TZNAMES y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_STANDARDS_TZNAMES x, REL_STANDARDS_TZNAMES y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -334,13 +331,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_DAYLIGHT_RECURS x, REL_DAYLIGHT_RECURS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_DAYLIGHT_RECURS x, REL_DAYLIGHT_RECURS y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -378,13 +375,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_DAYLIGHTS_COMMENTS x, REL_DAYLIGHTS_COMMENTS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_DAYLIGHTS_COMMENTS x, REL_DAYLIGHTS_COMMENTS y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -422,13 +419,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_DAYLIGHTS_RDATES x, REL_DAYLIGHTS_RDATES y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_DAYLIGHTS_RDATES x, REL_DAYLIGHTS_RDATES y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -466,13 +463,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_DAYLIGHTS_TZNAMES x, REL_DAYLIGHTS_TZNAMES y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_DAYLIGHTS_TZNAMES x, REL_DAYLIGHTS_TZNAMES y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }

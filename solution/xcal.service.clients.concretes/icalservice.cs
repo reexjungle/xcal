@@ -2,10 +2,7 @@
 using ServiceStack.ServiceClient.Web;
 using ServiceStack.ServiceHost;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace reexjungle.xcal.service.clients.concretes
 {

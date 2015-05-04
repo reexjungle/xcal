@@ -1,9 +1,8 @@
-﻿using reexjungle.foundation.essentials.contracts;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
 using ServiceStack.OrmLite;
 using System;
-using System.Data;
 using System.Runtime.Serialization;
 
 namespace reexjungle.xcal.service.repositories.concretes.relations
@@ -50,13 +49,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_ATTACHBINS x, REL_EVENTS_ATTACHBINS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_ATTACHBINS x, REL_EVENTS_ATTACHBINS y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -103,13 +102,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_ATTACHURIS x, REL_EVENTS_ATTACHURIS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_ATTACHURIS x, REL_EVENTS_ATTACHURIS y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -156,13 +155,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_RECURS x, REL_EVENTS_RECURS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_RECURS x, REL_EVENTS_RECURS y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -209,13 +208,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_ORGANIZERS x, REL_EVENTS_ORGANIZERS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_ORGANIZERS x, REL_EVENTS_ORGANIZERS y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -262,13 +261,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_ATTENDEES x, REL_EVENTS_ATTENDEES y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_ATTENDEES x, REL_EVENTS_ATTENDEES y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -315,13 +314,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_COMMENTS x, REL_EVENTS_COMMENTS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_COMMENTS x, REL_EVENTS_COMMENTS y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -368,13 +367,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_CONTACTS x, REL_EVENTS_CONTACTS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_CONTACTS x, REL_EVENTS_CONTACTS y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -421,13 +420,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_RDATES x, REL_EVENTS_RDATES y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_RDATES x, REL_EVENTS_RDATES y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -474,13 +473,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_EXDATES x, REL_EVENTS_EXDATES y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_EXDATES x, REL_EVENTS_EXDATES y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -527,13 +526,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_RELATEDTOS x, REL_EVENTS_RELATEDTOS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_RELATEDTOS x, REL_EVENTS_RELATEDTOS y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -580,13 +579,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_REQSTATS x, REL_EVENTS_REQSTATS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_REQSTATS x, REL_EVENTS_REQSTATS y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -636,13 +635,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_RESOURCES x, REL_EVENTS_RESOURCES y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_RESOURCES x, REL_EVENTS_RESOURCES y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -689,13 +688,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_AUDIO_ALARMS x, REL_EVENTS_AUDIO_ALARMS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_AUDIO_ALARMS x, REL_EVENTS_AUDIO_ALARMS y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -742,13 +741,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_DISPLAY_ALARMS x, REL_EVENTS_DISPLAY_ALARMS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_DISPLAY_ALARMS x, REL_EVENTS_DISPLAY_ALARMS y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -795,13 +794,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_EMAIL_ALARMS x, REL_EVENTS_EMAIL_ALARMS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_EMAIL_ALARMS x, REL_EVENTS_EMAIL_ALARMS y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -848,13 +847,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_IANA_PROPERTIES x, REL_EVENTS_IANA_PROPERTIES y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_IANA_PROPERTIES x, REL_EVENTS_IANA_PROPERTIES y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -901,13 +900,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EVENTS_X_PROPERTIES x, REL_EVENTS_X_PROPERTIES y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EVENTS_X_PROPERTIES x, REL_EVENTS_X_PROPERTIES y)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }

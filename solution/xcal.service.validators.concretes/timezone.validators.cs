@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.foundation.concretes;
 using ServiceStack.FluentValidation;
-using reexjungle.foundation.essentials.concretes;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
 
 namespace reexjungle.xcal.service.validators.concretes
 {
@@ -14,17 +9,15 @@ namespace reexjungle.xcal.service.validators.concretes
         public TimeZoneValidator()
             : base()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null);
             RuleFor(x => x.Url).SetValidator(new UriValidator()).When(x => x.Url != null);
             RuleFor(x => x.StandardTimes).SetCollectionValidator(new ObservanceValidator()).
-                Must((x, y) => y.AreUnique()).
+                Must((x, y) => y.IsSet()).
                 When(x => !x.StandardTimes.NullOrEmpty());
             RuleFor(x => x.DaylightTimes).SetCollectionValidator(new ObservanceValidator()).
-                Must((x, y) => y.AreUnique()).
+                Must((x, y) => y.IsSet()).
                 When(x => !x.DaylightTimes.NullOrEmpty());
         }
     }
-
-
 }

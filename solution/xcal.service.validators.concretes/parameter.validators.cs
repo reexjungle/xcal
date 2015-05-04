@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.foundation.concretes;
 using ServiceStack.FluentValidation;
-using reexjungle.foundation.essentials.concretes;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
 
 namespace reexjungle.xcal.service.validators.concretes
 {
-
-    public class LanguageValidator: AbstractValidator<LANGUAGE>
+    public class LanguageValidator : AbstractValidator<LANGUAGE>
     {
-        public LanguageValidator(): base()
+        public LanguageValidator()
+            : base()
         {
             RuleFor(x => x.Tag).NotNull();
         }
@@ -23,13 +18,13 @@ namespace reexjungle.xcal.service.validators.concretes
         public TimeZoneIdValidator()
             : base()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
-            RuleFor(x =>x.Prefix).NotNull().When(x => x.GloballyUnique = false);
+            CascadeMode = CascadeMode.StopOnFirstFailure;
+            RuleFor(x => x.Prefix).NotNull().When(x => x.GloballyUnique = false);
             RuleFor(x => x.Suffix).NotNull();
         }
     }
 
-    public class DelegateValidator: AbstractValidator<DELEGATE>
+    public class DelegateValidator : AbstractValidator<DELEGATE>
     {
         public DelegateValidator()
         {
@@ -37,7 +32,7 @@ namespace reexjungle.xcal.service.validators.concretes
         }
     }
 
-    public class FormatTypeValidator: AbstractValidator<FMTTYPE>
+    public class FormatTypeValidator : AbstractValidator<FMTTYPE>
     {
         public FormatTypeValidator()
         {
@@ -47,9 +42,10 @@ namespace reexjungle.xcal.service.validators.concretes
         }
     }
 
-    public class MemberValidator: AbstractValidator<MEMBER>
+    public class MemberValidator : AbstractValidator<MEMBER>
     {
-        public MemberValidator(): base()
+        public MemberValidator()
+            : base()
         {
             RuleFor(x => x.Addresses).SetCollectionValidator(new UriValidator()).When(x => !x.Addresses.NullOrEmpty());
         }

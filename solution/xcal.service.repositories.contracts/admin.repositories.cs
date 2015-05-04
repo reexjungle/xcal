@@ -1,10 +1,7 @@
-﻿using reexjungle.infrastructure.contracts;
-using reexjungle.technical.data.contracts;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.technical.data.contracts;
+using reexjungle.xmisc.infrastructure.contracts;
 using ServiceStack.OrmLite;
 using ServiceStack.Redis;
-using System;
-using System.Collections.Generic;
 
 namespace reexjungle.xcal.service.repositories.contracts
 {

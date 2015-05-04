@@ -1,6 +1,6 @@
-﻿using reexjungle.foundation.essentials.concretes;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.xcal.domain.contracts;
+﻿using reexjungle.xcal.domain.contracts;
+using reexjungle.xmisc.foundation.concretes;
+using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
 using System;
 using System.Collections.Generic;
@@ -96,13 +96,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(ATTACH_BINARY a, ATTACH_BINARY b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(ATTACH_BINARY a, ATTACH_BINARY b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if (a == null || b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -210,13 +210,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(ATTACH_URI a, ATTACH_URI b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(ATTACH_URI a, ATTACH_URI b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if (a == null || b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -305,13 +305,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(CATEGORIES a, CATEGORIES b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(CATEGORIES a, CATEGORIES b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if (a == null || b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -410,13 +410,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(TEXTUAL a, TEXTUAL b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(TEXTUAL a, TEXTUAL b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if (a == null || b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -658,13 +658,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(GEO a, GEO b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(GEO a, GEO b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -773,13 +773,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(RESOURCES a, RESOURCES b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(RESOURCES a, RESOURCES b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if (a == null || b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -992,13 +992,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(PRIORITY a, PRIORITY b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(PRIORITY a, PRIORITY b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -1162,13 +1162,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(TZNAME a, TZNAME b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(TZNAME a, TZNAME b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -1374,13 +1374,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(ATTENDEE a, ATTENDEE b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(ATTENDEE a, ATTENDEE b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -1489,13 +1489,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(ORGANIZER a, ORGANIZER b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(ORGANIZER a, ORGANIZER b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if (a == null || b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -1594,13 +1594,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(RECURRENCE_ID a, RECURRENCE_ID b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(RECURRENCE_ID a, RECURRENCE_ID b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if (a == null || b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -1678,13 +1678,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(RELATEDTO a, RELATEDTO b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(RELATEDTO a, RELATEDTO b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if (a == null || b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -1782,13 +1782,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(EXDATE a, EXDATE b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(EXDATE a, EXDATE b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if (a == null || b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -1938,13 +1938,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(RDATE a, RDATE b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(RDATE a, RDATE b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if (a == null || b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -2048,13 +2048,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(TRIGGER a, TRIGGER b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(TRIGGER a, TRIGGER b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if (a == null || b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -2237,7 +2237,7 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(STATCODE a, STATCODE b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
@@ -2351,13 +2351,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(REQUEST_STATUS a, REQUEST_STATUS b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(REQUEST_STATUS a, REQUEST_STATUS b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if (a == null || b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }

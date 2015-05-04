@@ -1,14 +1,10 @@
-﻿using reexjungle.infrastructure.contracts;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.repositories.concretes.relations;
 using reexjungle.xcal.service.repositories.contracts;
+using reexjungle.xmisc.infrastructure.contracts;
 using ServiceStack.OrmLite;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 
 namespace reexjungle.xcal.service.repositories.concretes.ormlite
 {

@@ -1,14 +1,13 @@
 ﻿using FizzWare.NBuilder;
-using reexjungle.infrastructure.concretes.operations;
-using reexjungle.infrastructure.contracts;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.operations.concretes.cached;
 using reexjungle.xcal.service.operations.concretes.live;
+using reexjungle.xcal.test.server.integration.concretes.Properties;
 using reexjungle.xcal.test.server.integration.contracts;
 using reexjungle.xcal.test.units.concretes;
-using reexjungle.xcal.test.units.contracts;
-using System;
+using reexjungle.xmisc.infrastructure.concretes.operations;
+using reexjungle.xmisc.infrastructure.contracts;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -512,7 +511,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
         public CalendarRemoteWebServiceTestsDev1()
             : base()
         {
-            this.factory.BaseUri = Properties.Settings.Default.remote_dev1_uri;
+            this.factory.BaseUri = Settings.Default.remote_dev1_uri;
         }
     }
 
@@ -521,7 +520,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
         public CalendarRemoteWebServiceTestsDev2()
             : base()
         {
-            this.factory.BaseUri = Properties.Settings.Default.remote_dev2_uri;
+            this.factory.BaseUri = Settings.Default.remote_dev2_uri;
         }
     }
 
@@ -530,7 +529,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
         public CalendarLocalWebServiceTests()
             : base()
         {
-            this.factory.BaseUri = Properties.Settings.Default.localhost_uri;
+            this.factory.BaseUri = Settings.Default.localhost_uri;
         }
     }
 }

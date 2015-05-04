@@ -1,13 +1,11 @@
-﻿using reexjungle.foundation.essentials.concretes;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.infrastructure.contracts;
-using reexjungle.technical.data.concretes.extensions.redis;
+﻿using reexjungle.technical.data.concretes.extensions.redis;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.repositories.concretes.relations;
 using reexjungle.xcal.service.repositories.contracts;
+using reexjungle.xmisc.foundation.concretes;
+using reexjungle.xmisc.infrastructure.contracts;
 using ServiceStack.Common;
 using ServiceStack.Redis;
-using ServiceStack.Redis.Generic;
 using System;
 using System.Collections.Generic;
 using System.Linq;

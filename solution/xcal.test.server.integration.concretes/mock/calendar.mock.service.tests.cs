@@ -1,22 +1,17 @@
-﻿using reexjungle.xcal.test.server.integration.contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
+﻿using Funq;
+using reexjungle.xcal.test.server.integration.contracts;
 
 namespace reexjungle.xcal.test.server.integration.concretes.mock
 {
     public class CalendarMockServiceTests : IMockServiceIntegrationTests
     {
-        private Funq.Container container = new Funq.Container();
+        private Container container = new Container();
 
         public CalendarMockServiceTests()
         {
         }
 
-        public Funq.Container Container
+        public Container Container
         {
             get { return this.container; }
         }

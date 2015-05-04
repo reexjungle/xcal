@@ -1,14 +1,12 @@
 ﻿using FizzWare.NBuilder;
-using reexjungle.infrastructure.concretes.operations;
-using reexjungle.infrastructure.contracts;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.test.units.contracts;
+using reexjungle.xmisc.infrastructure.concretes.operations;
+using reexjungle.xmisc.infrastructure.contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace reexjungle.xcal.test.units.concretes

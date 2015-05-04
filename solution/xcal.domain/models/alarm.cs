@@ -1,10 +1,9 @@
-﻿using reexjungle.foundation.essentials.concretes;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.xcal.domain.contracts;
+﻿using reexjungle.xcal.domain.contracts;
+using reexjungle.xmisc.foundation.concretes;
+using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using System.Text;
 
@@ -96,13 +95,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(AUDIO_ALARM a, AUDIO_ALARM b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(AUDIO_ALARM a, AUDIO_ALARM b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -185,13 +184,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(DISPLAY_ALARM a, DISPLAY_ALARM b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(DISPLAY_ALARM a, DISPLAY_ALARM b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if (a == null || b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -308,13 +307,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(EMAIL_ALARM a, EMAIL_ALARM b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(EMAIL_ALARM a, EMAIL_ALARM b)
         {
-            if (a == null || b == null) return !object.Equals(a, b);
+            if (a == null || b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }

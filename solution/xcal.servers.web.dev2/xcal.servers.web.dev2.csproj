@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\SemanticGit.2.1.6\build\SemanticGit.props" Condition="Exists('..\packages\SemanticGit.2.1.6\build\SemanticGit.props')" />
+  <Import Project="..\packages\SemanticGit.2.1.18\build\SemanticGit.props" Condition="Exists('..\packages\SemanticGit.2.1.18\build\SemanticGit.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -20,7 +20,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
-    <NuGetPackageImportStamp>af6189ab</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>e9b3dcf3</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -110,6 +110,22 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="xmisc.foundation.concretes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\xmisc.foundation.concretes.1.0.5-rc-445bfc1\lib\net40\xmisc.foundation.concretes.dll</HintPath>
+    </Reference>
+    <Reference Include="xmisc.foundation.contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\xmisc.foundation.contracts.1.0.1-rc-2e281b3\lib\net40\xmisc.foundation.contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="xmisc.infrastructure.concretes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\xmisc.infrastructure.concretes.1.0.2-rc-3781b50\lib\net40\xmisc.infrastructure.concretes.dll</HintPath>
+    </Reference>
+    <Reference Include="xmisc.infrastructure.contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\xmisc.infrastructure.contracts.1.0.1-rc-2e281b3\lib\net40\xmisc.infrastructure.contracts.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\Elmah.txt" />
@@ -166,22 +182,6 @@
     <ProjectReference Include="..\crosscut.operations.contracts\crosscut.operations.contracts.csproj">
       <Project>{4117dc99-ea03-4b8f-a808-368feaa3c5f2}</Project>
       <Name>crosscut.operations.contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\foundation.essentials.concretes\foundation.essentials.concretes.csproj">
-      <Project>{eedf1367-a0fc-400a-a649-716261252b9e}</Project>
-      <Name>foundation.essentials.concretes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\foundation.essentials.contracts\foundation.essentials.contracts.csproj">
-      <Project>{0188be5c-bafa-4fac-b068-11dcf7cd918e}</Project>
-      <Name>foundation.essentials.contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\infrastructure.concretes\infrastructure.concretes.csproj">
-      <Project>{9b9036f7-c547-43d3-b1ec-bb0c5965dc12}</Project>
-      <Name>infrastructure.concretes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\infrastructure.contracts\infrastructure.contracts.csproj">
-      <Project>{82ed5f70-e1d9-456e-8686-c59306312726}</Project>
-      <Name>infrastructure.contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\technical.data.concretes\technical.data.concretes.csproj">
       <Project>{b4a2596a-5689-4ec9-bd01-0b2ff4453dad}</Project>
@@ -255,10 +255,10 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\SemanticGit.2.1.6\build\SemanticGit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SemanticGit.2.1.6\build\SemanticGit.props'))" />
-    <Error Condition="!Exists('..\packages\SemanticGit.2.1.6\build\SemanticGit.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SemanticGit.2.1.6\build\SemanticGit.targets'))" />
+    <Error Condition="!Exists('..\packages\SemanticGit.2.1.18\build\SemanticGit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SemanticGit.2.1.18\build\SemanticGit.props'))" />
+    <Error Condition="!Exists('..\packages\SemanticGit.2.1.18\build\SemanticGit.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SemanticGit.2.1.18\build\SemanticGit.targets'))" />
   </Target>
-  <Import Project="..\packages\SemanticGit.2.1.6\build\SemanticGit.targets" Condition="Exists('..\packages\SemanticGit.2.1.6\build\SemanticGit.targets')" />
+  <Import Project="..\packages\SemanticGit.2.1.18\build\SemanticGit.targets" Condition="Exists('..\packages\SemanticGit.2.1.18\build\SemanticGit.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

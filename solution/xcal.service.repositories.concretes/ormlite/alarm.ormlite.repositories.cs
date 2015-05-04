@@ -1,11 +1,11 @@
-﻿using reexjungle.foundation.essentials.concretes;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.infrastructure.contracts;
-using reexjungle.infrastructure.io.concretes;
-using reexjungle.technical.data.concretes.extensions.ormlite;
+﻿using reexjungle.technical.data.concretes.extensions.ormlite;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.repositories.concretes.relations;
 using reexjungle.xcal.service.repositories.contracts;
+using reexjungle.xmisc.foundation.concretes;
+using reexjungle.xmisc.foundation.contracts;
+using reexjungle.xmisc.infrastructure.concretes.io;
+using reexjungle.xmisc.infrastructure.contracts;
 using ServiceStack.OrmLite;
 using System;
 using System.Collections.Generic;

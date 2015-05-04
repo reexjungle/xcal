@@ -5,9 +5,8 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace reexjungle.crosscut.security.policies.concretes
 {
-    public class TrustAllCertificatePolicy: ICertificatePolicy
+    public class TrustAllCertificatePolicy : ICertificatePolicy
     {
-
         public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate, WebRequest request, int certificateProblem)
         {
             return true;
@@ -35,12 +34,12 @@ namespace reexjungle.crosscut.security.policies.concretes
 
         public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate, WebRequest request, int certificateProblem)
         {
-            return certificate.GetCertHashString() == this.hash.Replace(System.Environment.NewLine, string.Empty);
+            return certificate.GetCertHashString() == this.hash.Replace(Environment.NewLine, string.Empty);
         }
 
         public bool CertificateValidation(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
-            return certificate.GetCertHashString() == hash.Replace(System.Environment.NewLine, string.Empty);
+            return certificate.GetCertHashString() == hash.Replace(Environment.NewLine, string.Empty);
         }
     }
 
@@ -60,14 +59,12 @@ namespace reexjungle.crosscut.security.policies.concretes
 
         public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate, WebRequest request, int certificateProblem)
         {
-            return (certificate as X509Certificate2).Thumbprint == this.thumbprint.Replace(System.Environment.NewLine, string.Empty);
+            return (certificate as X509Certificate2).Thumbprint == this.thumbprint.Replace(Environment.NewLine, string.Empty);
         }
 
         public bool CertificateValidation(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
-            return (certificate as X509Certificate2).Thumbprint == thumbprint.Replace(System.Environment.NewLine, string.Empty);
+            return (certificate as X509Certificate2).Thumbprint == thumbprint.Replace(Environment.NewLine, string.Empty);
         }
     }
-
-
 }

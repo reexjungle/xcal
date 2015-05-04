@@ -1,10 +1,8 @@
-﻿using reexjungle.foundation.essentials.contracts;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
 using ServiceStack.OrmLite;
 using System;
-using System.Data;
-using System.Runtime.Serialization;
 
 namespace reexjungle.xcal.service.repositories.concretes.relations
 {
@@ -50,13 +48,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_AALARMS_ATTACHBINS x, REL_AALARMS_ATTACHBINS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_AALARMS_ATTACHBINS x, REL_AALARMS_ATTACHBINS y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -103,13 +101,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_AALARMS_ATTACHURIS x, REL_AALARMS_ATTACHURIS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_AALARMS_ATTACHURIS x, REL_AALARMS_ATTACHURIS y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -156,13 +154,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EALARMS_ATTENDEES x, REL_EALARMS_ATTENDEES y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EALARMS_ATTENDEES x, REL_EALARMS_ATTENDEES y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -209,13 +207,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EALARMS_ATTACHBINS x, REL_EALARMS_ATTACHBINS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EALARMS_ATTACHBINS x, REL_EALARMS_ATTACHBINS y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }
@@ -262,13 +260,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
 
         public static bool operator ==(REL_EALARMS_ATTACHURIS x, REL_EALARMS_ATTACHURIS y)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
+            if ((object)x == null || (object)y == null) return Equals(x, y);
             return x.Equals(y);
         }
 
         public static bool operator !=(REL_EALARMS_ATTACHURIS x, REL_EALARMS_ATTACHURIS y)
         {
-            if (x == null || y == null) return !object.Equals(x, y);
+            if (x == null || y == null) return !Equals(x, y);
             return !x.Equals(y);
         }
     }

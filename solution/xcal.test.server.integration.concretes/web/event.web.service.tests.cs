@@ -1,13 +1,14 @@
 ﻿using FizzWare.NBuilder;
-using reexjungle.foundation.essentials.concretes;
-using reexjungle.infrastructure.concretes.operations;
-using reexjungle.infrastructure.contracts;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.operations.concretes.cached;
 using reexjungle.xcal.service.operations.concretes.live;
+using reexjungle.xcal.test.server.integration.concretes.Properties;
 using reexjungle.xcal.test.server.integration.contracts;
 using reexjungle.xcal.test.units.concretes;
+using reexjungle.xmisc.foundation.concretes;
+using reexjungle.xmisc.infrastructure.concretes.operations;
+using reexjungle.xmisc.infrastructure.contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -175,14 +176,27 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
             e1.Duration = new DURATION(0, 1, 2, 30);
             e1.Priority = new PRIORITY(PRIORITYLEVEL.MEDIUM);
             e1.Description.Text = string.Format("{0} >>Updated<<", e1.Description.Text);
-            var len = e1.Description.Text.Length;
+            e1.RecurrenceRule = new RECUR
+            {
+                Id = "test123",
+                FREQ = FREQ.DAILY,
+                INTERVAL = 1,
+                UNTIL = new DATE_TIME(2014, 06, 30, 06, 0, 0, TimeType.Utc),
+                BYHOUR = new List<uint> { 9, 12, 15, 18, 21 },
+                BYMINUTE = new List<uint> { 5, 10, 15, 20, 25 },
+                BYSETPOS = new List<int> { 2, -2 }
+            };
+
+            var Rx = e1.GenerateRecurrences<VEVENT>();
+
+            var e1string = e1.ToString();
 
             e2.Start = new DATE_TIME(new DateTime(2014, 6, 16, 10, 30, 0, 0, DateTimeKind.Local));
             e2.Duration = new DURATION(0, 1, 10, 00);
             e2.Priority = new PRIORITY(PRIORITYLEVEL.LOW);
             e2.Description.Text = string.Format("{0} >>Updated<<", e2.Description.Text);
 
-            client.Put(new UpdateEvents { Events = new List<VEVENT> { e1, e2 } });
+            client.Put(new UpdateEvents { Events = new List<VEVENT> { e1, e2 }.Concat(Rx).ToList() });
 
             var r2 = client.Post(new FindEvents { EventIds = new List<string> { e1.Id, e2.Id } });
             var u1 = r2.Where(x => x == e1).FirstOrDefault();
@@ -233,7 +247,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
                 Assert.Equal(result.Transparency, TRANSP.OPAQUE);
                 Assert.Equal(result.Classification, CLASS.CONFIDENTIAL);
                 Assert.Equal(result.Priority, new PRIORITY(PRIORITYLEVEL.HIGH));
-                Assert.Equal(result.Attendees.AreDuplicatesOf(u1.Attendees), true);
+                Assert.Equal(result.Attendees.IsEqualOf(u1.Attendees), true);
             }
 
             client.Patch(new PatchEvents
@@ -257,7 +271,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
                 Assert.Equal(result.Classification, CLASS.PRIVATE);
                 Assert.Equal(result.Priority, new PRIORITY(PRIORITYLEVEL.MEDIUM));
                 Assert.Equal(result.Attendees.Count, u1.Attendees.Count());
-                Assert.Equal(result.Attendees.AreDuplicatesOf(u1.Attendees), true);
+                Assert.Equal(result.Attendees.IsEqualOf(u1.Attendees), true);
             }
 
             //client.Delete(new DeleteEvents { EventIds = keys });
@@ -349,7 +363,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
                 Assert.Equal(result.Transparency, TRANSP.OPAQUE);
                 Assert.Equal(result.Classification, CLASS.CONFIDENTIAL);
                 Assert.Equal(result.Priority, new PRIORITY(PRIORITYLEVEL.HIGH));
-                Assert.Equal(result.Attendees.AreDuplicatesOf(u1.Attendees), true);
+                Assert.Equal(result.Attendees.IsEqualOf(u1.Attendees), true);
             }
 
             client.Patch(new PatchEvents
@@ -373,7 +387,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
                 Assert.Equal(result.Classification, CLASS.PRIVATE);
                 Assert.Equal(result.Priority, new PRIORITY(PRIORITYLEVEL.MEDIUM));
                 Assert.Equal(result.Attendees.Count, u1.Attendees.Count());
-                Assert.Equal(result.Attendees.AreDuplicatesOf(u1.Attendees), true);
+                Assert.Equal(result.Attendees.IsEqualOf(u1.Attendees), true);
             }
 
             client.Delete(new DeleteEvents { EventIds = keys });
@@ -403,8 +417,8 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
 
             var re1 = client.Get(new FindEvent { EventId = e1.Id });
             Assert.Equal(re1, e1);
-            Assert.Equal(re1.AudioAlarms.AreDuplicatesOf(e1.AudioAlarms), true);
-            Assert.NotEqual(re1.EmailAlarms.AreDuplicatesOf(e1.EmailAlarms), false);
+            Assert.Equal(re1.AudioAlarms.IsEqualOf(e1.AudioAlarms), true);
+            Assert.NotEqual(re1.EmailAlarms.IsEqualOf(e1.EmailAlarms), false);
 
             ////remove email alarm and update
             e1.AudioAlarms.FirstOrDefault().AttachmentUri.FormatType = new FMTTYPE("file", "video");
@@ -453,8 +467,8 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
 
             var re1 = client.Get(new FindEventCached { EventId = e1.Id });
             Assert.Equal(re1, e1);
-            Assert.Equal(re1.AudioAlarms.AreDuplicatesOf(e1.AudioAlarms), true);
-            Assert.NotEqual(re1.EmailAlarms.AreDuplicatesOf(e1.EmailAlarms), false);
+            Assert.Equal(re1.AudioAlarms.IsEqualOf(e1.AudioAlarms), true);
+            Assert.NotEqual(re1.EmailAlarms.IsEqualOf(e1.EmailAlarms), false);
 
             ////remove email alarm and update
             e1.AudioAlarms.FirstOrDefault().AttachmentUri.FormatType = new FMTTYPE("file", "video");
@@ -487,7 +501,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
         public EventRemoteWebServiceTestsDev1()
             : base()
         {
-            this.factory.BaseUri = Properties.Settings.Default.remote_dev1_uri;
+            this.factory.BaseUri = Settings.Default.remote_dev1_uri;
         }
     }
 
@@ -496,7 +510,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
         public EventRemoteWebServiceTestsDev2()
             : base()
         {
-            this.factory.BaseUri = Properties.Settings.Default.remote_dev2_uri;
+            this.factory.BaseUri = Settings.Default.remote_dev2_uri;
         }
     }
 
@@ -505,7 +519,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
         public EventLocalWebServiceTests()
             : base()
         {
-            this.factory.BaseUri = Properties.Settings.Default.localhost_uri;
+            this.factory.BaseUri = Settings.Default.localhost_uri;
         }
     }
 }

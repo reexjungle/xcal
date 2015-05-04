@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.Serialization;
+﻿using reexjungle.xcal.domain.contracts;
+using reexjungle.xmisc.foundation.concretes;
+using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.foundation.essentials.concretes;
-
+using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Text;
 
 namespace reexjungle.xcal.domain.models
 {
     [DataContract]
-    public class VFREEBUSY: IFREEBUSY, IEquatable<VFREEBUSY>, IContainsKey<string>
+    public class VFREEBUSY : IFREEBUSY, IEquatable<VFREEBUSY>, IContainsKey<string>
     {
         [DataMember]
-        public string Id 
+        public string Id
         {
             get { return this.Uid; }
             set { this.Uid = value; }
@@ -86,13 +85,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator ==(VFREEBUSY a, VFREEBUSY b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(VFREEBUSY a, VFREEBUSY b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -113,7 +112,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("DTEND;{0}:{1}", this.End.TimeZoneId.ToString(), this.End.ToString()).AppendLine();
             else
                 sb.AppendFormat("DTEND:{0}", this.End.ToString()).AppendLine();
-           
+
             if (!this.Attachments.NullOrEmpty())
             {
                 foreach (var attachment in this.Attachments) if (attachment != null) sb.Append(attachment.ToString()).AppendLine();
@@ -142,7 +141,5 @@ namespace reexjungle.xcal.domain.models
             sb.Append("END:VFREEBUSY");
             return sb.ToString();
         }
-
-
     }
 }

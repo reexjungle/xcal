@@ -1,5 +1,4 @@
-﻿using Funq;
-using ServiceStack.Service;
+﻿using ServiceStack.Service;
 
 namespace reexjungle.xcal.test.server.integration.contracts
 {

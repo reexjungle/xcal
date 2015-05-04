@@ -13,9 +13,8 @@ namespace reexjungle.xcal.service.repositories.contracts
     /// </summary>
     public interface IAudioAlarmRepository :
         IReadRepository<AUDIO_ALARM, string>,
-        IWriteRepository<AUDIO_ALARM, string> 
+        IWriteRepository<AUDIO_ALARM, string>
     {
-
         /// <summary>
         /// Populates a sparse email alarm entity with details from its consitutent entities
         /// </summary>

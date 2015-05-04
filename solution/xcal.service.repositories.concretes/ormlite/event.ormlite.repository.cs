@@ -1,21 +1,17 @@
-﻿using reexjungle.crosscut.operations.concretes;
-using reexjungle.foundation.essentials.concretes;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.infrastructure.concretes.operations;
-using reexjungle.infrastructure.contracts;
-using reexjungle.infrastructure.io.concretes;
-using reexjungle.technical.data.concretes.extensions.ormlite;
-using reexjungle.technical.data.contracts;
+﻿using reexjungle.technical.data.concretes.extensions.ormlite;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.repositories.concretes.relations;
 using reexjungle.xcal.service.repositories.contracts;
+using reexjungle.xmisc.foundation.concretes;
+using reexjungle.xmisc.foundation.contracts;
+using reexjungle.xmisc.infrastructure.concretes.io;
+using reexjungle.xmisc.infrastructure.contracts;
 using ServiceStack.OrmLite;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Security;
 
 namespace reexjungle.xcal.service.repositories.concretes.ormlite
 {
@@ -1235,7 +1231,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                              join e in full on r.EventId equals e.Id
                                              where e.Id == x.Id
                                              select y;
-                            if (!xattendees.NullOrEmpty()) x.Attendees.AddRange(xattendees);
+                            if (!xattendees.NullOrEmpty()) x.Attendees.MergeRange(xattendees);
                         }
 
                         if (!attachbins.NullOrEmpty())

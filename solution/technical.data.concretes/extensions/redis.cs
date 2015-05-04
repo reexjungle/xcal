@@ -1,10 +1,9 @@
-﻿using reexjungle.foundation.essentials.concretes;
-using reexjungle.foundation.essentials.contracts;
+﻿using reexjungle.xmisc.foundation.concretes;
+using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace reexjungle.technical.data.concretes.extensions.redis
 {

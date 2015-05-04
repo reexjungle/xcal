@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using reexjungle.technical.data.contracts;
+using reexjungle.xcal.domain.models;
 using ServiceStack.OrmLite;
 using ServiceStack.Redis;
-using reexjungle.xcal.domain.models;
-using reexjungle.technical.data.contracts;
+using System.Collections.Generic;
 
 namespace reexjungle.xcal.service.repositories.contracts
 {
-    
     /// <summary>
     /// Specifies a general interface for a repository of events
     /// </summary>
-    public interface IEventRepository: 
+    public interface IEventRepository :
         IReadRepository<VEVENT, string>,
         IWriteRepository<VEVENT, string>,
         IReadRepositoryKeys<string>
@@ -58,19 +56,18 @@ namespace reexjungle.xcal.service.repositories.contracts
         /// <param name="full">The events to depopulate</param>
         /// <returns>Depopulated events</returns>
         IEnumerable<VEVENT> DehydrateAll(IEnumerable<VEVENT> full);
-    } 
+    }
 
     /// <summary>
     /// Specifies an interface for a repository of events connected to an ORMlite source
     /// </summary>
-    public interface IEventOrmLiteRepository: IEventRepository
+    public interface IEventOrmLiteRepository : IEventRepository
     {
         /// <summary>
         /// Gets or sets the connection factory of ORMLite datasources
         /// </summary>
         IDbConnectionFactory DbConnectionFactory { get; set; }
     }
-
 
     /// <summary>
     /// Specifies an interface for a repository of events connected to a NoSQL Redis source
@@ -82,5 +79,4 @@ namespace reexjungle.xcal.service.repositories.contracts
         /// </summary>
         IRedisClientsManager RedisClientsManager { get; set; }
     }
-
 }

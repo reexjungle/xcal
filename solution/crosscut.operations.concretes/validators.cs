@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ServiceStack.FluentValidation;
+﻿using ServiceStack.FluentValidation;
 using ServiceStack.FluentValidation.Results;
 using ServiceStack.FluentValidation.Validators;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace reexjungle.crosscut.operations.concretes
 {
-    public abstract class AbstractCompositeValidator<T>: AbstractValidator<T>
+    public abstract class AbstractCompositeValidator<T> : AbstractValidator<T>
     {
-        List<IValidator> validators = new List<IValidator>();
+        private List<IValidator> validators = new List<IValidator>();
 
         protected void RegisterBaseValidator<TBase>(IValidator<TBase> validator)
         {
@@ -20,18 +19,17 @@ namespace reexjungle.crosscut.operations.concretes
 
         public override ValidationResult Validate(ValidationContext<T> context)
         {
-
             var berrors = base.Validate(context).Errors;
             var oerrors = validators.SelectMany(x => x.Validate(context).Errors);
             var combined = berrors.Concat(oerrors);
             return new ValidationResult(combined);
-        } 
+        }
     }
 
-    public class PolymorphicCollectionValidator<TBase>: NoopPropertyValidator
+    public class PolymorphicCollectionValidator<TBase> : NoopPropertyValidator
     {
-        IValidator<TBase> validator;
-        Dictionary<Type, IValidator> deriveds; 
+        private IValidator<TBase> validator;
+        private Dictionary<Type, IValidator> deriveds;
 
         public PolymorphicCollectionValidator(IValidator<TBase> validator = null)
         {
@@ -40,9 +38,9 @@ namespace reexjungle.crosscut.operations.concretes
         }
 
         public PolymorphicCollectionValidator<TBase> Add<TDerived>(IValidator<TDerived> validator)
-            where TDerived: TBase
+            where TDerived : TBase
         {
-            if (!this.deriveds.ContainsKey(typeof(TDerived))) 
+            if (!this.deriveds.ContainsKey(typeof(TDerived)))
                 this.deriveds.Add(typeof(TDerived), validator);
             return this;
         }
@@ -53,7 +51,7 @@ namespace reexjungle.crosscut.operations.concretes
             if (collection == null) return Enumerable.Empty<ValidationFailure>();
             if (!collection.Any()) return Enumerable.Empty<ValidationFailure>();
 
-            foreach(var item in collection)
+            foreach (var item in collection)
             {
                 if (!deriveds.ContainsKey(item.GetType())) continue;
                 var derived = deriveds[item.GetType()];
@@ -61,7 +59,7 @@ namespace reexjungle.crosscut.operations.concretes
                 return collectionValidator.Validate(context);
             }
 
-            if(this.validator != null)
+            if (this.validator != null)
             {
                 var baseCollectionValidator = new ChildCollectionValidatorAdaptor(this.validator);
                 return baseCollectionValidator.Validate(context);

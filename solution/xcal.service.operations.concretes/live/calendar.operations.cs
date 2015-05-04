@@ -1,6 +1,6 @@
-﻿using reexjungle.infrastructure.contracts;
-using reexjungle.xcal.domain.contracts;
+﻿using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.infrastructure.contracts;
 using ServiceStack.ServiceHost;
 using System.Collections.Generic;
 
