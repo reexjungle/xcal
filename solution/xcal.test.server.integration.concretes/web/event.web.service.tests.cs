@@ -24,7 +24,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.web
         protected AlarmUnitTests altests = new AlarmUnitTests();
         protected JsonWebServiceTestFactory factory = null;
 
-        public EventWebServicesTests()
+        protected EventWebServicesTests()
         {
             this.factory = new JsonWebServiceTestFactory(null);
         }
