@@ -7,907 +7,924 @@ using System.Runtime.Serialization;
 
 namespace reexjungle.xcal.service.repositories.concretes.relations
 {
-    public class REL_EVENTS_ATTACHBINS : IEquatable<REL_EVENTS_ATTACHBINS>, IContainsKey<string>
+    public class REL_EVENTS_ATTACHBINS : IEquatable<REL_EVENTS_ATTACHBINS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(ATTACH_BINARY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AttachmentId { get; set; }
+        public Guid AttachmentId { get; set; }
 
         public bool Equals(REL_EVENTS_ATTACHBINS other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.AttachmentId.Equals(other.AttachmentId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return EventId == other.EventId && AttachmentId == other.AttachmentId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_ATTACHBINS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_ATTACHBINS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.AttachmentId.GetHashCode();
+            unchecked
+            {
+                return (EventId.GetHashCode() * 397) ^ AttachmentId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_ATTACHBINS x, REL_EVENTS_ATTACHBINS y)
+        public static bool operator ==(REL_EVENTS_ATTACHBINS left, REL_EVENTS_ATTACHBINS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_ATTACHBINS x, REL_EVENTS_ATTACHBINS y)
+        public static bool operator !=(REL_EVENTS_ATTACHBINS left, REL_EVENTS_ATTACHBINS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_EVENTS_ATTACHURIS : IEquatable<REL_EVENTS_ATTACHURIS>, IContainsKey<string>
+    public class REL_EVENTS_ATTACHURIS : IEquatable<REL_EVENTS_ATTACHURIS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(ATTACH_URI), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AttachmentId { get; set; }
+        public Guid AttachmentId { get; set; }
 
         public bool Equals(REL_EVENTS_ATTACHURIS other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.AttachmentId.Equals(other.AttachmentId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return EventId == other.EventId && AttachmentId == other.AttachmentId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_ATTACHURIS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_ATTACHURIS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.AttachmentId.GetHashCode();
+            unchecked
+            {
+                return (EventId.GetHashCode() * 397) ^ AttachmentId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_ATTACHURIS x, REL_EVENTS_ATTACHURIS y)
+        public static bool operator ==(REL_EVENTS_ATTACHURIS left, REL_EVENTS_ATTACHURIS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_ATTACHURIS x, REL_EVENTS_ATTACHURIS y)
+        public static bool operator !=(REL_EVENTS_ATTACHURIS left, REL_EVENTS_ATTACHURIS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_EVENTS_RECURS : IEquatable<REL_EVENTS_RECURS>, IContainsKey<string>
+    public class REL_EVENTS_RECURS : IEquatable<REL_EVENTS_RECURS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(RECUR), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string RecurId { get; set; }
+        public Guid RecurId { get; set; }
 
         public bool Equals(REL_EVENTS_RECURS other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.RecurId.Equals(other.RecurId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return EventId == other.EventId && RecurId == other.RecurId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_RECURS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_RECURS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.RecurId.GetHashCode();
+            unchecked
+            {
+                return (EventId.GetHashCode() * 397) ^ RecurId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_RECURS x, REL_EVENTS_RECURS y)
+        public static bool operator ==(REL_EVENTS_RECURS left, REL_EVENTS_RECURS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_RECURS x, REL_EVENTS_RECURS y)
+        public static bool operator !=(REL_EVENTS_RECURS left, REL_EVENTS_RECURS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_EVENTS_ORGANIZERS : IEquatable<REL_EVENTS_ORGANIZERS>, IContainsKey<string>
+    public class REL_EVENTS_ORGANIZERS : IEquatable<REL_EVENTS_ORGANIZERS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(ORGANIZER), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string OrganizerId { get; set; }
+        public Guid OrganizerId { get; set; }
 
         public bool Equals(REL_EVENTS_ORGANIZERS other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.OrganizerId.Equals(other.OrganizerId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return EventId.Equals(other.EventId) && OrganizerId.Equals(other.OrganizerId);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_ORGANIZERS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_ORGANIZERS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.OrganizerId.GetHashCode();
+            unchecked
+            {
+                return (EventId.GetHashCode() * 397) ^ OrganizerId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_ORGANIZERS x, REL_EVENTS_ORGANIZERS y)
+        public static bool operator ==(REL_EVENTS_ORGANIZERS left, REL_EVENTS_ORGANIZERS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_ORGANIZERS x, REL_EVENTS_ORGANIZERS y)
+        public static bool operator !=(REL_EVENTS_ORGANIZERS left, REL_EVENTS_ORGANIZERS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_EVENTS_ATTENDEES : IEquatable<REL_EVENTS_ATTENDEES>, IContainsKey<string>
+    public class REL_EVENTS_ATTENDEES : IEquatable<REL_EVENTS_ATTENDEES>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(ATTENDEE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AttendeeId { get; set; }
+        public Guid AttendeeId { get; set; }
 
         public bool Equals(REL_EVENTS_ATTENDEES other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.AttendeeId.Equals(other.AttendeeId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return EventId == other.EventId && AttendeeId == other.AttendeeId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_ATTENDEES;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_ATTENDEES)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.AttendeeId.GetHashCode();
+            unchecked
+            {
+                return (EventId.GetHashCode() * 397) ^ AttendeeId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_ATTENDEES x, REL_EVENTS_ATTENDEES y)
+        public static bool operator ==(REL_EVENTS_ATTENDEES left, REL_EVENTS_ATTENDEES right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_ATTENDEES x, REL_EVENTS_ATTENDEES y)
+        public static bool operator !=(REL_EVENTS_ATTENDEES left, REL_EVENTS_ATTENDEES right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_EVENTS_COMMENTS : IEquatable<REL_EVENTS_COMMENTS>, IContainsKey<string>
+    public class REL_EVENTS_COMMENTS : IEquatable<REL_EVENTS_COMMENTS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-comment relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related comment entity
         /// </summary>
         [ForeignKey(typeof(COMMENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string CommentId { get; set; }
+        public Guid CommentId { get; set; }
 
         public bool Equals(REL_EVENTS_COMMENTS other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.CommentId.Equals(other.CommentId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return EventId == other.EventId && CommentId == other.CommentId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_COMMENTS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_COMMENTS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.CommentId.GetHashCode();
+            unchecked
+            {
+                return (EventId.GetHashCode() * 397) ^ CommentId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_COMMENTS x, REL_EVENTS_COMMENTS y)
+        public static bool operator ==(REL_EVENTS_COMMENTS left, REL_EVENTS_COMMENTS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_COMMENTS x, REL_EVENTS_COMMENTS y)
+        public static bool operator !=(REL_EVENTS_COMMENTS left, REL_EVENTS_COMMENTS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_EVENTS_CONTACTS : IEquatable<REL_EVENTS_CONTACTS>, IContainsKey<string>
+    public class REL_EVENTS_CONTACTS : IEquatable<REL_EVENTS_CONTACTS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-contact relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related contact entity
         /// </summary>
         [ForeignKey(typeof(CONTACT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string ContactId { get; set; }
+        public Guid ContactId { get; set; }
 
         public bool Equals(REL_EVENTS_CONTACTS other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.ContactId.Equals(other.ContactId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return EventId == other.EventId && ContactId == other.ContactId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_CONTACTS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_CONTACTS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.ContactId.GetHashCode();
+            unchecked
+            {
+                return (EventId.GetHashCode() * 397) ^ ContactId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_CONTACTS x, REL_EVENTS_CONTACTS y)
+        public static bool operator ==(REL_EVENTS_CONTACTS left, REL_EVENTS_CONTACTS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_CONTACTS x, REL_EVENTS_CONTACTS y)
+        public static bool operator !=(REL_EVENTS_CONTACTS left, REL_EVENTS_CONTACTS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_EVENTS_RDATES : IEquatable<REL_EVENTS_RDATES>, IContainsKey<string>
+    public class REL_EVENTS_RDATES : IEquatable<REL_EVENTS_RDATES>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-recurrence date relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related recurrence date entity
         /// </summary>
         [ForeignKey(typeof(RDATE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string RecurrenceDateId { get; set; }
+        public Guid RecurrenceDateId { get; set; }
 
         public bool Equals(REL_EVENTS_RDATES other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.RecurrenceDateId.Equals(other.RecurrenceDateId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return EventId == other.EventId && RecurrenceDateId == other.RecurrenceDateId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_RDATES;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_RDATES)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.RecurrenceDateId.GetHashCode();
+            unchecked
+            {
+                return (EventId.GetHashCode() * 397) ^ RecurrenceDateId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_RDATES x, REL_EVENTS_RDATES y)
+        public static bool operator ==(REL_EVENTS_RDATES left, REL_EVENTS_RDATES right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_RDATES x, REL_EVENTS_RDATES y)
+        public static bool operator !=(REL_EVENTS_RDATES left, REL_EVENTS_RDATES right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_EVENTS_EXDATES : IEquatable<REL_EVENTS_EXDATES>, IContainsKey<string>
+    public class REL_EVENTS_EXDATES : IEquatable<REL_EVENTS_EXDATES>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-exception date relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related exception date entity
         /// </summary>
         [ForeignKey(typeof(EXDATE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string ExceptionDateId { get; set; }
+        public Guid ExceptionDateId { get; set; }
 
         public bool Equals(REL_EVENTS_EXDATES other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.ExceptionDateId.Equals(other.ExceptionDateId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return ExceptionDateId == other.ExceptionDateId && EventId == other.EventId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_EXDATES;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_EXDATES)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.ExceptionDateId.GetHashCode();
+            unchecked
+            {
+                return (ExceptionDateId.GetHashCode() * 397) ^ EventId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_EXDATES x, REL_EVENTS_EXDATES y)
+        public static bool operator ==(REL_EVENTS_EXDATES left, REL_EVENTS_EXDATES right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_EXDATES x, REL_EVENTS_EXDATES y)
+        public static bool operator !=(REL_EVENTS_EXDATES left, REL_EVENTS_EXDATES right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_EVENTS_RELATEDTOS : IEquatable<REL_EVENTS_RELATEDTOS>, IContainsKey<string>
+    public class REL_EVENTS_RELATEDTOS : IEquatable<REL_EVENTS_RELATEDTOS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-related to relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the relation entity
         /// </summary>
         [ForeignKey(typeof(RELATEDTO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string RelatedToId { get; set; }
+        public Guid RelatedToId { get; set; }
 
         public bool Equals(REL_EVENTS_RELATEDTOS other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.RelatedToId.Equals(other.RelatedToId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return EventId == other.EventId && RelatedToId == other.RelatedToId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_RELATEDTOS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_RELATEDTOS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.RelatedToId.GetHashCode();
+            unchecked
+            {
+                return (EventId.GetHashCode() * 397) ^ RelatedToId.GetHashCode() * 397;
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_RELATEDTOS x, REL_EVENTS_RELATEDTOS y)
+        public static bool operator ==(REL_EVENTS_RELATEDTOS left, REL_EVENTS_RELATEDTOS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_RELATEDTOS x, REL_EVENTS_RELATEDTOS y)
+        public static bool operator !=(REL_EVENTS_RELATEDTOS left, REL_EVENTS_RELATEDTOS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_EVENTS_REQSTATS : IEquatable<REL_EVENTS_REQSTATS>, IContainsKey<string>
+    public class REL_EVENTS_REQSTATS : IEquatable<REL_EVENTS_REQSTATS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-request status relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related request status entity
         /// </summary>
         [ForeignKey(typeof(REQUEST_STATUS), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string ReqStatsId { get; set; }
+        public Guid ReqStatsId { get; set; }
 
         public bool Equals(REL_EVENTS_REQSTATS other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.ReqStatsId.Equals(other.ReqStatsId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return EventId == other.EventId && ReqStatsId == other.ReqStatsId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_REQSTATS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_REQSTATS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.ReqStatsId.GetHashCode();
+            unchecked
+            {
+                return (EventId.GetHashCode() * 397) ^ ReqStatsId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_REQSTATS x, REL_EVENTS_REQSTATS y)
+        public static bool operator ==(REL_EVENTS_REQSTATS left, REL_EVENTS_REQSTATS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_REQSTATS x, REL_EVENTS_REQSTATS y)
+        public static bool operator !=(REL_EVENTS_REQSTATS left, REL_EVENTS_REQSTATS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_EVENTS_RESOURCES : IEquatable<REL_EVENTS_RESOURCES>, IContainsKey<string>
+    public class REL_EVENTS_RESOURCES : IEquatable<REL_EVENTS_RESOURCES>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-resources relation
         /// </summary>
         [DataMember]
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related resources-entity
         /// </summary>
         [DataMember]
         [ForeignKey(typeof(RESOURCES), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string ResourcesId { get; set; }
+        public Guid ResourcesId { get; set; }
 
         public bool Equals(REL_EVENTS_RESOURCES other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.ResourcesId.Equals(other.ResourcesId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return EventId == other.EventId && ResourcesId == other.ResourcesId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_RESOURCES;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_RESOURCES)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.ResourcesId.GetHashCode();
+            unchecked
+            {
+                return (EventId.GetHashCode() * 397) ^ ResourcesId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_RESOURCES x, REL_EVENTS_RESOURCES y)
+        public static bool operator ==(REL_EVENTS_RESOURCES left, REL_EVENTS_RESOURCES right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_RESOURCES x, REL_EVENTS_RESOURCES y)
+        public static bool operator !=(REL_EVENTS_RESOURCES left, REL_EVENTS_RESOURCES right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_EVENTS_AUDIO_ALARMS : IEquatable<REL_EVENTS_AUDIO_ALARMS>, IContainsKey<string>
+    public class REL_EVENTS_AUDIO_ALARMS : IEquatable<REL_EVENTS_AUDIO_ALARMS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-alarm relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related alarm entity
         /// </summary>
         [ForeignKey(typeof(AUDIO_ALARM), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AlarmId { get; set; }
+        public Guid AlarmId { get; set; }
 
         public bool Equals(REL_EVENTS_AUDIO_ALARMS other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.AlarmId.Equals(other.AlarmId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return AlarmId == other.AlarmId && EventId == other.EventId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_AUDIO_ALARMS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_AUDIO_ALARMS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.AlarmId.GetHashCode();
+            unchecked
+            {
+                return (AlarmId.GetHashCode() * 397) ^ EventId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_AUDIO_ALARMS x, REL_EVENTS_AUDIO_ALARMS y)
+        public static bool operator ==(REL_EVENTS_AUDIO_ALARMS left, REL_EVENTS_AUDIO_ALARMS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_AUDIO_ALARMS x, REL_EVENTS_AUDIO_ALARMS y)
+        public static bool operator !=(REL_EVENTS_AUDIO_ALARMS left, REL_EVENTS_AUDIO_ALARMS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_EVENTS_DISPLAY_ALARMS : IEquatable<REL_EVENTS_DISPLAY_ALARMS>, IContainsKey<string>
+    public class REL_EVENTS_DISPLAY_ALARMS : IEquatable<REL_EVENTS_DISPLAY_ALARMS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-alarm relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related alarm entity
         /// </summary>
         [ForeignKey(typeof(DISPLAY_ALARM), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AlarmId { get; set; }
+        public Guid AlarmId { get; set; }
 
         public bool Equals(REL_EVENTS_DISPLAY_ALARMS other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.AlarmId.Equals(other.AlarmId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return EventId == other.EventId && AlarmId == other.AlarmId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_DISPLAY_ALARMS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_DISPLAY_ALARMS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.AlarmId.GetHashCode();
+            unchecked
+            {
+                return (EventId.GetHashCode() * 397) ^ AlarmId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_DISPLAY_ALARMS x, REL_EVENTS_DISPLAY_ALARMS y)
+        public static bool operator ==(REL_EVENTS_DISPLAY_ALARMS left, REL_EVENTS_DISPLAY_ALARMS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_DISPLAY_ALARMS x, REL_EVENTS_DISPLAY_ALARMS y)
+        public static bool operator !=(REL_EVENTS_DISPLAY_ALARMS left, REL_EVENTS_DISPLAY_ALARMS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_EVENTS_EMAIL_ALARMS : IEquatable<REL_EVENTS_EMAIL_ALARMS>, IContainsKey<string>
+    public class REL_EVENTS_EMAIL_ALARMS : IEquatable<REL_EVENTS_EMAIL_ALARMS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-alarm relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related alarm entity
         /// </summary>
         [ForeignKey(typeof(EMAIL_ALARM), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AlarmId { get; set; }
+        public Guid AlarmId { get; set; }
 
         public bool Equals(REL_EVENTS_EMAIL_ALARMS other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.AlarmId.Equals(other.AlarmId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return EventId == other.EventId && AlarmId == other.AlarmId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_EMAIL_ALARMS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_EMAIL_ALARMS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.AlarmId.GetHashCode();
+            unchecked
+            {
+                return (EventId.GetHashCode() * 397) ^ AlarmId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_EMAIL_ALARMS x, REL_EVENTS_EMAIL_ALARMS y)
+        public static bool operator ==(REL_EVENTS_EMAIL_ALARMS left, REL_EVENTS_EMAIL_ALARMS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_EMAIL_ALARMS x, REL_EVENTS_EMAIL_ALARMS y)
+        public static bool operator !=(REL_EVENTS_EMAIL_ALARMS left, REL_EVENTS_EMAIL_ALARMS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_EVENTS_IANA_PROPERTIES : IEquatable<REL_EVENTS_IANA_PROPERTIES>, IContainsKey<string>
+    public class REL_EVENTS_IANA_PROPERTIES : IEquatable<REL_EVENTS_IANA_PROPERTIES>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-iana property relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related alarm entity
         /// </summary>
         [ForeignKey(typeof(IANA_PROPERTY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string IanaPropertyId { get; set; }
+        public Guid IanaPropertyId { get; set; }
 
         public bool Equals(REL_EVENTS_IANA_PROPERTIES other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.IanaPropertyId.Equals(other.IanaPropertyId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return EventId == other.EventId && IanaPropertyId == other.IanaPropertyId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_IANA_PROPERTIES;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_IANA_PROPERTIES)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.IanaPropertyId.GetHashCode();
+            unchecked
+            {
+                return (EventId.GetHashCode() * 397) ^ IanaPropertyId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_IANA_PROPERTIES x, REL_EVENTS_IANA_PROPERTIES y)
+        public static bool operator ==(REL_EVENTS_IANA_PROPERTIES left, REL_EVENTS_IANA_PROPERTIES right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_IANA_PROPERTIES x, REL_EVENTS_IANA_PROPERTIES y)
+        public static bool operator !=(REL_EVENTS_IANA_PROPERTIES left, REL_EVENTS_IANA_PROPERTIES right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_EVENTS_X_PROPERTIES : IEquatable<REL_EVENTS_X_PROPERTIES>, IContainsKey<string>
+    public class REL_EVENTS_X_PROPERTIES : IEquatable<REL_EVENTS_X_PROPERTIES>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-x property relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related alarm entity
         /// </summary>
         [ForeignKey(typeof(X_PROPERTY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string XPropertyId { get; set; }
+        public Guid XPropertyId { get; set; }
 
         public bool Equals(REL_EVENTS_X_PROPERTIES other)
         {
-            if (other == null) return false;
-            return (this.EventId.Equals(other.EventId, StringComparison.OrdinalIgnoreCase) &&
-                this.XPropertyId.Equals(other.XPropertyId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return EventId == other.EventId && XPropertyId == other.XPropertyId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_EVENTS_IANA_PROPERTIES;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_EVENTS_X_PROPERTIES)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.EventId.GetHashCode() ^ this.XPropertyId.GetHashCode();
+            unchecked
+            {
+                return (EventId.GetHashCode() * 397) ^ XPropertyId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_EVENTS_X_PROPERTIES x, REL_EVENTS_X_PROPERTIES y)
+        public static bool operator ==(REL_EVENTS_X_PROPERTIES left, REL_EVENTS_X_PROPERTIES right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_EVENTS_X_PROPERTIES x, REL_EVENTS_X_PROPERTIES y)
+        public static bool operator !=(REL_EVENTS_X_PROPERTIES left, REL_EVENTS_X_PROPERTIES right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.infrastructure.contracts;
+using System;
 using System.Collections.Generic;
 
 namespace reexjungle.xcal.domain.contracts
@@ -8,7 +10,7 @@ namespace reexjungle.xcal.domain.contracts
     /// </summary>
     public interface IEVENT : ICOMPONENT
     {
-        string Uid { get; set; }
+        Guid Uid { get; set; }
 
         DATE_TIME Datestamp { get; set; }
 
@@ -76,10 +78,10 @@ namespace reexjungle.xcal.domain.contracts
 
         List<EMAIL_ALARM> EmailAlarms { get; set; }
 
-        Dictionary<string, IANA_PROPERTY> IANAProperties { get; set; }
+        Dictionary<Guid, IANA_PROPERTY> IANAProperties { get; set; }
 
-        Dictionary<string, X_PROPERTY> XProperties { get; set; }
+        Dictionary<Guid, X_PROPERTY> XProperties { get; set; }
 
-        List<TEVENT> GenerateRecurrences<TEVENT>() where TEVENT : class, IEVENT, new();
+        List<TEVENT> GenerateRecurrences<TEVENT>(IKeyGenerator<Guid> keyGenerator) where TEVENT : class, IEVENT, new();
     }
 }

@@ -6,16 +6,11 @@ using System.Linq.Expressions;
 namespace reexjungle.technical.data.contracts
 {
     /// <summary>
-    /// Specifies the interface for repositories
-    /// </summary>
-    public interface IRepository { }
-
-    /// <summary>
     /// Specifies the interface for read-only operations on a repository
     /// </summary>
     /// <typeparam name="TEntity">Type of entity to read from repository</typeparam>
     /// <typeparam name="TKey">Type of unique identifier for for retrieving entities</typeparam>
-    public interface IReadRepository<out TEntity, in TKey> : IRepository
+    public interface IReadRepository<out TEntity, in TKey>
         where TKey : IEquatable<TKey>, IComparable<TKey>
     {
         /// <summary>
@@ -57,7 +52,7 @@ namespace reexjungle.technical.data.contracts
         /// Optimistic if at least one entity found,
         /// Pessimistic if all entities are found</param>
         /// <returns>True if the entities are found, otherwise false</returns>
-        bool ContainsKeys(IEnumerable<TKey> keys, ExpectationMode mode = ExpectationMode.optimistic);
+        bool ContainsKeys(IEnumerable<TKey> keys, ExpectationMode mode = ExpectationMode.Optimistic);
     }
 
     /// <summary>
@@ -65,14 +60,9 @@ namespace reexjungle.technical.data.contracts
     /// </summary>
     /// <typeparam name="TEntity">Type of entity to write to repository</typeparam>
     /// <typeparam name="TKey">Type of unique identifier for writing entities</typeparam>
-    public interface IWriteRepository<TEntity, TKey> : IRepository
+    public interface IWriteRepository<TEntity, in TKey>
        where TKey : IEquatable<TKey>, IComparable<TKey>
     {
-        /// <summary>
-        /// Gets the provider of identifiers
-        /// </summary>
-        IKeyGenerator<TKey> KeyGenerator { get; set; }
-
         /// <summary>
         /// Inserts a new entity or updates an existing one in the repository
         /// </summary>

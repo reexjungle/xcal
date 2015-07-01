@@ -8,44 +8,30 @@ using System.Data;
 
 namespace reexjungle.xcal.service.repositories.concretes.ormlite
 {
-    public class AdminOrmLiteRepository : IAdminOrmLiteRepository
+    public class AdminOrmLiteRepository : IAdminRepository, IOrmLiteRepository
     {
         private IDbConnection conn;
-        private IDbConnectionFactory factory = null;
+        private readonly IDbConnectionFactory factory;
 
         private IDbConnection db
         {
-            get { return (this.conn) ?? (conn = factory.OpenDbConnection()); }
+            get { return (conn) ?? (conn = factory.OpenDbConnection()); }
         }
 
         public IDbConnectionFactory DbConnectionFactory
         {
-            get { return this.factory; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("Null factory");
-                this.factory = value;
-            }
-        }
-
-        public AdminOrmLiteRepository()
-        {
+            get { return factory; }
         }
 
         public AdminOrmLiteRepository(IDbConnectionFactory factory)
         {
-            this.DbConnectionFactory = factory;
-        }
-
-        public AdminOrmLiteRepository(IDbConnection connection)
-        {
-            if (connection == null) throw new ArgumentNullException("connection");
-            this.conn = connection;
+            if (factory == null) throw new ArgumentNullException("factory");
+            this.factory = factory;
         }
 
         public void Dispose()
         {
-            if (this.conn != null) this.conn.Dispose();
+            if (conn != null) conn.Dispose();
         }
 
         private void RecreateTables(IDbConnectionFactory factory)
@@ -66,14 +52,12 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                     }
                     catch (ApplicationException)
                     {
-                        try { transaction.Rollback(); }
-                        catch (Exception) { }
+                        transaction.Rollback();
                         throw;
                     }
                     catch (InvalidOperationException)
                     {
-                        try { transaction.Rollback(); }
-                        catch (Exception) { }
+                        transaction.Rollback();
                         throw;
                     }
                 }
@@ -121,14 +105,12 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                     }
                     catch (ApplicationException)
                     {
-                        try { transaction.Rollback(); }
-                        catch (Exception) { }
+                        transaction.Rollback();
                         throw;
                     }
                     catch (InvalidOperationException)
                     {
-                        try { transaction.Rollback(); }
-                        catch (Exception) { }
+                        transaction.Rollback();
                         throw;
                     }
                 }
@@ -137,14 +119,8 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
 
         public void Flush(FlushMode mode = FlushMode.soft)
         {
-            try
-            {
-                if (mode == FlushMode.hard) this.RecreateTables(this.DbConnectionFactory);
-                else this.DeleteAllRowsFromTables(this.DbConnectionFactory);
-            }
-            catch (ApplicationException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
+            if (mode == FlushMode.hard) RecreateTables(factory);
+            else DeleteAllRowsFromTables(factory);
         }
     }
 }

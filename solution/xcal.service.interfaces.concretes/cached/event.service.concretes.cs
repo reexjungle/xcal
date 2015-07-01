@@ -18,21 +18,21 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
 
         private ILogFactory logfactory;
 
-        private ILog log = null;
+        private ILog log;
 
         private ILog logger
         {
-            get { return (log != null) ? this.log : this.logfactory.GetLogger(this.GetType()); }
+            get { return log ?? (log = logfactory.GetLogger(GetType())); }
         }
 
         public ILogFactory LogFactory
         {
-            get { return this.logfactory; }
+            get { return logfactory; }
             set
             {
                 if (value == null) throw new ArgumentNullException("Logger");
-                this.logfactory = value;
-                this.log = logfactory.GetLogger(this.GetType());
+                logfactory = value;
+                log = logfactory.GetLogger(GetType());
             }
         }
 
@@ -40,40 +40,40 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
 
         public CachedEventService()
         {
-            this.TimeToLive = this.ResolveService<TimeSpan?>();
+            TimeToLive = ResolveService<TimeSpan?>();
         }
 
         public object Get(FindEventCached request)
         {
             try
             {
-                return base.RequestContext.ToOptimizedResultUsingCache(
-                this.CacheClient, UrnId.Create<VEVENT>(request.EventId),
+                return RequestContext.ToOptimizedResultUsingCache(
+                CacheClient, UrnId.Create<VEVENT>(request.EventId),
                 () =>
                 {
-                    var result = this.ResolveService<EventService>()
+                    var result = ResolveService<EventService>()
                         .Get(new FindEvent { EventId = request.EventId });
                     return result ?? VEVENT.Empty;
                 });
             }
-            catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ArgumentException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ArgumentNullException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ArgumentException ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
         }
 
         public object Post(FindEventsCached request)
         {
             try
             {
-                return base.RequestContext.ToOptimizedResultUsingCache(
-                this.CacheClient,
+                return RequestContext.ToOptimizedResultUsingCache(
+                CacheClient,
                 request.Page != null && request.Size != null ? string.Format("urn:events:{0}:{1}", request.Page, request.Size) : "urn:events",
-                this.TimeToLive,
+                TimeToLive,
                 () =>
                 {
-                    return this.ResolveService<EventService>()
+                    return ResolveService<EventService>()
                         .Post(new FindEvents
                         {
                             EventIds = request.EventIds,
@@ -82,24 +82,24 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
                         });
                 });
             }
-            catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ArgumentException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ArgumentNullException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ArgumentException ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
         }
 
         public object Get(GetEventsCached request)
         {
             try
             {
-                return base.RequestContext.ToOptimizedResultUsingCache(
-                this.CacheClient,
+                return RequestContext.ToOptimizedResultUsingCache(
+                CacheClient,
                 request.Page != null && request.Size != null ? string.Format("urn:events:{0}:{1}", request.Page, request.Size) : "urn:events",
-                this.TimeToLive,
+                TimeToLive,
                 () =>
                 {
-                    return this.ResolveService<EventService>()
+                    return ResolveService<EventService>()
                         .Get(new GetEvents
                         {
                             Page = request.Page,
@@ -107,24 +107,24 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
                         });
                 });
             }
-            catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ArgumentException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ArgumentNullException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ArgumentException ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
         }
 
         public object Get(GetEventKeysCached request)
         {
             try
             {
-                return base.RequestContext.ToOptimizedResultUsingCache(
-                this.CacheClient,
+                return RequestContext.ToOptimizedResultUsingCache(
+                CacheClient,
                 request.Page != null && request.Size != null ? string.Format("urn:events:{0}:{1}", request.Page, request.Size) : "urn:events",
-                this.TimeToLive,
+                TimeToLive,
                 () =>
                 {
-                    return this.ResolveService<EventService>()
+                    return ResolveService<EventService>()
                         .Get(new GetEventKeys
                         {
                             Page = request.Page,
@@ -132,11 +132,11 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
                         });
                 });
             }
-            catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ArgumentException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ArgumentNullException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ArgumentException ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
         }
     }
 }

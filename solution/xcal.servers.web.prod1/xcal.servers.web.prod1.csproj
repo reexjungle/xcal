@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\SemanticGit.2.1.19\build\SemanticGit.props" Condition="Exists('..\packages\SemanticGit.2.1.19\build\SemanticGit.props')" />
+  <Import Project="..\packages\SemanticGit.2.1.22\build\SemanticGit.props" Condition="Exists('..\packages\SemanticGit.2.1.22\build\SemanticGit.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -20,7 +20,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
-    <NuGetPackageImportStamp>582cc2d0</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>17f29501</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,13 +49,13 @@
     <Reference Include="MsgPack">
       <HintPath>..\packages\ServiceStack.Plugins.MsgPack.3.9.71\lib\net40\MsgPack.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data, Version=6.9.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+    <Reference Include="MySql.Data, Version=6.9.6.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MySql.Data.6.9.5\lib\net45\MySql.Data.dll</HintPath>
+      <HintPath>..\packages\MySql.Data.6.9.6\lib\net45\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=3.2.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NLog.3.2.0.0\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.0.0\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack">
       <HintPath>..\packages\ServiceStack.3.9.71\lib\net35\ServiceStack.dll</HintPath>
@@ -109,21 +109,21 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
-    <Reference Include="xmisc.foundation.concretes">
-      <HintPath>..\packages\xmisc.foundation.concretes.1.0.5-rc-445bfc1\lib\net40\xmisc.foundation.concretes.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="xmisc.foundation.concretes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\xmisc.foundation.concretes.1.0.45-rc-95879ee\lib\net40\xmisc.foundation.concretes.dll</HintPath>
     </Reference>
     <Reference Include="xmisc.foundation.contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\xmisc.foundation.contracts.1.0.1-rc-2e281b3\lib\net40\xmisc.foundation.contracts.dll</HintPath>
+      <HintPath>..\packages\xmisc.foundation.contracts.1.0.45-rc-95879ee\lib\net40\xmisc.foundation.contracts.dll</HintPath>
     </Reference>
     <Reference Include="xmisc.infrastructure.concretes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\xmisc.infrastructure.concretes.1.0.2-rc-3781b50\lib\net40\xmisc.infrastructure.concretes.dll</HintPath>
+      <HintPath>..\packages\xmisc.infrastructure.concretes.1.0.48-rc-b067185\lib\net40\xmisc.infrastructure.concretes.dll</HintPath>
     </Reference>
     <Reference Include="xmisc.infrastructure.contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\xmisc.infrastructure.contracts.1.0.1-rc-2e281b3\lib\net40\xmisc.infrastructure.contracts.dll</HintPath>
+      <HintPath>..\packages\xmisc.infrastructure.contracts.1.0.48-rc-b067185\lib\net40\xmisc.infrastructure.contracts.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +173,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -250,10 +251,10 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\SemanticGit.2.1.19\build\SemanticGit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SemanticGit.2.1.19\build\SemanticGit.props'))" />
-    <Error Condition="!Exists('..\packages\SemanticGit.2.1.19\build\SemanticGit.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SemanticGit.2.1.19\build\SemanticGit.targets'))" />
+    <Error Condition="!Exists('..\packages\SemanticGit.2.1.22\build\SemanticGit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SemanticGit.2.1.22\build\SemanticGit.props'))" />
+    <Error Condition="!Exists('..\packages\SemanticGit.2.1.22\build\SemanticGit.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SemanticGit.2.1.22\build\SemanticGit.targets'))" />
   </Target>
-  <Import Project="..\packages\SemanticGit.2.1.19\build\SemanticGit.targets" Condition="Exists('..\packages\SemanticGit.2.1.19\build\SemanticGit.targets')" />
+  <Import Project="..\packages\SemanticGit.2.1.22\build\SemanticGit.targets" Condition="Exists('..\packages\SemanticGit.2.1.22\build\SemanticGit.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

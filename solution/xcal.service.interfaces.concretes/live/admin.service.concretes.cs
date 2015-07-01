@@ -16,42 +16,42 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
 
         private ILog logger
         {
-            get { return (log != null) ? this.log : this.logfactory.GetLogger(this.GetType()); }
+            get { return (log != null) ? log : logfactory.GetLogger(GetType()); }
         }
 
         public ILogFactory LogFactory
         {
-            get { return this.logfactory; }
+            get { return logfactory; }
             set
             {
                 if (value == null) throw new ArgumentNullException("Logger");
-                this.logfactory = value;
-                this.log = logfactory.GetLogger(this.GetType());
+                logfactory = value;
+                log = logfactory.GetLogger(GetType());
             }
         }
 
         public IAdminRepository AdminRepository
         {
-            get { return this.repository; }
+            get { return repository; }
             set
             {
                 if (value == null) throw new ArgumentNullException("AdminRepository");
-                this.repository = value;
+                repository = value;
             }
         }
 
         public AdminService()
             : base()
         {
-            this.AdminRepository = this.TryResolve<IAdminRepository>();
-            this.LogFactory = this.TryResolve<ILogFactory>();
+            AdminRepository = TryResolve<IAdminRepository>();
+            LogFactory = TryResolve<ILogFactory>();
         }
 
         public AdminService(IAdminRepository repository, ILogFactory logger)
             : base()
         {
-            this.AdminRepository = repository;
-            this.LogFactory = logger;
+            AdminRepository = repository;
+            LogFactory = logger;
         }
 
         public void Post(FlushDatabase request)
@@ -59,13 +59,13 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             try
             {
                 if (request.Mode != null && request.Mode.HasValue)
-                    this.AdminRepository.Flush(request.Mode.Value);
+                    AdminRepository.Flush(request.Mode.Value);
                 else
-                    this.AdminRepository.Flush();
+                    AdminRepository.Flush();
             }
-            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
         }
     }
 }

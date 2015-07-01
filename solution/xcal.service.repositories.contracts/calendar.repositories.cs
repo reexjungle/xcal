@@ -1,21 +1,18 @@
 ﻿using reexjungle.technical.data.contracts;
 using reexjungle.xcal.domain.models;
-using ServiceStack.OrmLite;
-using ServiceStack.Redis;
+using System;
 using System.Collections.Generic;
 
 namespace reexjungle.xcal.service.repositories.contracts
 {
+    /// <summary>
+    /// Specifies a contract for calendar repositories
+    /// </summary>
     public interface ICalendarRepository :
-        IReadRepository<VCALENDAR, string>,
-        IWriteRepository<VCALENDAR, string>,
-        IReadRepositoryKeys<string>
+        IReadRepository<VCALENDAR, Guid>,
+        IWriteRepository<VCALENDAR, Guid>,
+        IReadRepositoryKeys<Guid>
     {
-        /// <summary>
-        /// Gets or sets the repository of addressing the event aggregate root
-        /// </summary>
-        IEventRepository EventRepository { get; set; }
-
         /// <summary>
         /// Populates a sparse calendar entity with details from its consitutent entities
         /// </summary>
@@ -38,27 +35,5 @@ namespace reexjungle.xcal.service.repositories.contracts
         VCALENDAR Dehydrate(VCALENDAR full);
 
         IEnumerable<VCALENDAR> DehydrateAll(IEnumerable<VCALENDAR> full);
-    }
-
-    /// <summary>
-    /// Specifies an interface for a repository of calendars hosted on a relational data source
-    /// </summary>
-    public interface ICalendarOrmLiteRepository : ICalendarRepository
-    {
-        /// <summary>
-        /// Gets the connection factory of ORMLite datasources
-        /// </summary>
-        IDbConnectionFactory DbConnectionFactory { get; set; }
-    }
-
-    /// <summary>
-    /// Specifies an interface for a repository of calendars hosted on a NoSQL Redis data source
-    /// </summary>
-    public interface ICalendarRedisRepository : ICalendarRepository
-    {
-        /// <summary>
-        /// Gets the Redis client manager
-        /// </summary>
-        IRedisClientsManager RedisClientsManager { get; set; }
     }
 }

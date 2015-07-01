@@ -13,23 +13,22 @@ namespace reexjungle.xcal.domain.models
     /// Represents a core Calendar type
     /// </summary>
     [DataContract]
-    public class VCALENDAR : ICALENDAR, IEquatable<VCALENDAR>, IContainsKey<string>
+    public class VCALENDAR : ICALENDAR, IEquatable<VCALENDAR>, IContainsKey<Guid>
     {
         public static readonly VCALENDAR Empty = new VCALENDAR();
 
         /// <summary>
-        /// Gets or sets the product identifier. Neccesary as primary key in Ormlite
+        /// Gets or sets the product identifier. Neccesary as primary key in datastore
         /// </summary>
         [DataMember]
         [Index(Unique = true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier for the product that created the iCalendar object.
         /// This property is REQUIRED. This identifier should be guaranteed to be a globally unique identifier (GUID)
         /// </summary>
         [DataMember]
-        [Index(Unique = false)]
         public string ProdId { get; set; }
 
         /// <summary>
@@ -107,64 +106,62 @@ namespace reexjungle.xcal.domain.models
         /// </summary>
         public VCALENDAR()
         {
-            this.Id = string.Empty;
-            this.Version = "2.0";
-            this.Calscale = CALSCALE.GREGORIAN;
-            this.Events = new List<VEVENT>();
-            this.TimeZones = new List<VTIMEZONE>();
-            this.ToDos = new List<VTODO>();
-            this.Journals = new List<VJOURNAL>();
-            this.FreeBusies = new List<VFREEBUSY>();
-            this.IanaComponents = new List<IANA_COMPONENT>();
-            this.XComponents = new List<X_COMPONENT>();
+            Version = "2.0";
+            Calscale = CALSCALE.GREGORIAN;
+            Events = new List<VEVENT>();
+            TimeZones = new List<VTIMEZONE>();
+            ToDos = new List<VTODO>();
+            Journals = new List<VJOURNAL>();
+            FreeBusies = new List<VFREEBUSY>();
+            IanaComponents = new List<IANA_COMPONENT>();
+            XComponents = new List<X_COMPONENT>();
         }
 
         public bool Equals(VCALENDAR other)
         {
-            if (other == null) return false;
-            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Id.Equals(other.Id);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return this.Equals(obj as VCALENDAR);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((VCALENDAR)obj);
         }
 
         public override int GetHashCode()
         {
-            return
-                this.ProdId.GetHashCode() ^ this.Version.GetHashCode() ^ this.Method.GetHashCode() ^
-                this.Events.GetHashCode();
+            return Id.GetHashCode();
         }
 
-        public static bool operator ==(VCALENDAR a, VCALENDAR b)
+        public static bool operator ==(VCALENDAR left, VCALENDAR right)
         {
-            if ((object)a == null || (object)b == null) return Equals(a, b);
-            return a.Equals(b);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(VCALENDAR a, VCALENDAR b)
+        public static bool operator !=(VCALENDAR left, VCALENDAR right)
         {
-            if ((object)a == null || (object)b == null) return !Equals(a, b);
-            return !a.Equals(b);
+            return !Equals(left, right);
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:VCALENDAR").AppendLine();
-            sb.AppendFormat("VERSION:{0}", this.Version.ToString()).AppendLine();
-            sb.AppendFormat("PRODID:{0}", this.ProdId.ToString()).AppendLine();
-            if (this.Calscale != default(CALSCALE)) sb.AppendFormat("CALSCALE:{0}", this.Calscale.ToString()).AppendLine();
-            if (this.Method != default(METHOD)) sb.AppendFormat("METHOD:{0}", this.Method.ToString()).AppendLine();
-            if (!this.Events.NullOrEmpty()) this.Events.ForEach(x => sb.Append(x.ToString()).AppendLine());
-            if (!this.ToDos.NullOrEmpty()) this.ToDos.ForEach(x => sb.Append(x.ToString()).AppendLine());
-            if (!this.FreeBusies.NullOrEmpty()) this.FreeBusies.ForEach(x => sb.Append(x.ToString()).AppendLine());
-            if (!this.Journals.NullOrEmpty()) this.Journals.ForEach(x => sb.Append(x.ToString()).AppendLine());
-            if (!this.TimeZones.NullOrEmpty()) this.TimeZones.ForEach(x => sb.Append(x.ToString()).AppendLine());
-            if (!this.IanaComponents.NullOrEmpty()) this.IanaComponents.ForEach(x => sb.Append(x.ToString()).AppendLine());
-            if (!this.XComponents.NullOrEmpty()) this.XComponents.ForEach(x => sb.Append(x.ToString()).AppendLine());
+            sb.AppendFormat("VERSION:{0}", Version.ToString()).AppendLine();
+            sb.AppendFormat("PRODID:{0}", ProdId.ToString()).AppendLine();
+            if (Calscale != default(CALSCALE)) sb.AppendFormat("CALSCALE:{0}", Calscale.ToString()).AppendLine();
+            if (Method != default(METHOD)) sb.AppendFormat("METHOD:{0}", Method.ToString()).AppendLine();
+            if (!Events.NullOrEmpty()) Events.ForEach(x => sb.Append(x.ToString()).AppendLine());
+            if (!ToDos.NullOrEmpty()) ToDos.ForEach(x => sb.Append(x.ToString()).AppendLine());
+            if (!FreeBusies.NullOrEmpty()) FreeBusies.ForEach(x => sb.Append(x.ToString()).AppendLine());
+            if (!Journals.NullOrEmpty()) Journals.ForEach(x => sb.Append(x.ToString()).AppendLine());
+            if (!TimeZones.NullOrEmpty()) TimeZones.ForEach(x => sb.Append(x.ToString()).AppendLine());
+            if (!IanaComponents.NullOrEmpty()) IanaComponents.ForEach(x => sb.Append(x.ToString()).AppendLine());
+            if (!XComponents.NullOrEmpty()) XComponents.ForEach(x => sb.Append(x.ToString()).AppendLine());
             sb.Append("END:VCALENDAR");
             return sb.ToString().FoldLines(75);
         }

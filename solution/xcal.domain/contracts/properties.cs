@@ -181,7 +181,7 @@ namespace reexjungle.xcal.domain.contracts
         DATE_TIME DateTime {get; set;}
 
         //Selector
-        VALUE ValueType { get; set; }
+        VALUE Value { get; set; }
 
     }
 

@@ -2,6 +2,7 @@
 using reexjungle.xcal.domain.models;
 using reexjungle.xmisc.infrastructure.contracts;
 using ServiceStack.ServiceHost;
+using System;
 using System.Collections.Generic;
 
 namespace reexjungle.xcal.service.operations.concretes.live
@@ -11,7 +12,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
     [Route("/calendars/{CalendarId}/events/add", "POST")]
     public class AddEvent : IReturnVoid
     {
-        public string CalendarId { get; set; }
+        public Guid CalendarId { get; set; }
 
         public VEVENT Event { get; set; }
     }
@@ -19,7 +20,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
     [Route("/calendars/{CalendarId}/events/batch/add", "POST")]
     public class AddEvents : IReturnVoid
     {
-        public string CalendarId { get; set; }
+        public Guid CalendarId { get; set; }
 
         public List<VEVENT> Events { get; set; }
     }
@@ -39,7 +40,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
     [Route("/calendars/events/{EventId}/patch", "PATCH")]
     public class PatchEvent : IReturnVoid
     {
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
 
         public DATE_TIME Datestamp { get; set; }
 
@@ -105,15 +106,15 @@ namespace reexjungle.xcal.service.operations.concretes.live
 
         public List<EMAIL_ALARM> EmailAlarms { get; set; }
 
-        public Dictionary<string, IANA_PROPERTY> IANAProperties { get; set; }
+        public Dictionary<Guid, IANA_PROPERTY> IANAProperties { get; set; }
 
-        public Dictionary<string, X_PROPERTY> XProperties { get; set; }
+        public Dictionary<Guid, X_PROPERTY> XProperties { get; set; }
     }
 
     [Route("/calendars/events/batch/patch", "PATCH")]
     public class PatchEvents : IReturnVoid
     {
-        public List<string> EventIds { get; set; }
+        public List<Guid> EventIds { get; set; }
 
         public DATE_TIME Datestamp { get; set; }
 
@@ -179,27 +180,27 @@ namespace reexjungle.xcal.service.operations.concretes.live
 
         public List<EMAIL_ALARM> EmailAlarms { get; set; }
 
-        public Dictionary<string, IANA_PROPERTY> IANAProperties { get; set; }
+        public Dictionary<Guid, IANA_PROPERTY> IANAProperties { get; set; }
 
-        public Dictionary<string, X_PROPERTY> XProperties { get; set; }
+        public Dictionary<Guid, X_PROPERTY> XProperties { get; set; }
     }
 
     [Route("/calendars/events/{EventId}/delete", "DELETE")]
     public class DeleteEvent : IReturnVoid
     {
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
     }
 
     [Route("/calendars/events/batch/delete", "DELETE")]
     public class DeleteEvents : IReturnVoid
     {
-        public List<string> EventIds { get; set; }
+        public List<Guid> EventIds { get; set; }
     }
 
     [Route("/calendars/events/{EventId}/find", "GET")]
     public class FindEvent : IReturn<VEVENT>
     {
-        public string EventId { get; set; }
+        public Guid EventId { get; set; }
     }
 
     [Route("/calendars/events/batch/find", "POST")]
@@ -208,7 +209,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
     [Route("/calendars/events/batch/find/page/{Page}/size/{Size}", "POST")]
     public class FindEvents : IReturn<List<VEVENT>>, IPaginated<int>
     {
-        public List<string> EventIds { get; set; }
+        public List<Guid> EventIds { get; set; }
 
         public int? Page { get; set; }
 
@@ -226,7 +227,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
 
     [Route("/calendars/events/keys/{Page}/{Size}", "GET")]
     [Route("/calendars/events/keys/page/{Page}/size/{Size}", "GET")]
-    public class GetEventKeys : IReturn<List<string>>, IPaginated<int>
+    public class GetEventKeys : IReturn<List<Guid>>, IPaginated<int>
     {
         public int? Page { get; set; }
 

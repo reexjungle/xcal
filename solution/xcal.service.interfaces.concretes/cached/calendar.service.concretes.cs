@@ -22,17 +22,17 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
 
         private ILog logger
         {
-            get { return (log != null) ? this.log : this.logfactory.GetLogger(this.GetType()); }
+            get { return (log != null) ? log : logfactory.GetLogger(GetType()); }
         }
 
         public ILogFactory LogFactory
         {
-            get { return this.logfactory; }
+            get { return logfactory; }
             set
             {
                 if (value == null) throw new ArgumentNullException("Logger");
-                this.logfactory = value;
-                this.log = logfactory.GetLogger(this.GetType());
+                logfactory = value;
+                log = logfactory.GetLogger(GetType());
             }
         }
 
@@ -41,40 +41,40 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
         public CachedCalendarService()
             : base()
         {
-            this.TimeToLive = this.ResolveService<TimeSpan?>();
+            TimeToLive = ResolveService<TimeSpan?>();
         }
 
         public object Get(FindCalendarCached request)
         {
             try
             {
-                return base.RequestContext.ToOptimizedResultUsingCache(
-                this.CacheClient, UrnId.Create<VCALENDAR>(request.CalendarId),
+                return RequestContext.ToOptimizedResultUsingCache(
+                CacheClient, UrnId.Create<VCALENDAR>(request.CalendarId),
                 () =>
                 {
-                    var result = this.ResolveService<CalendarService>()
+                    var result = ResolveService<CalendarService>()
                         .Get(new FindCalendar { CalendarId = request.CalendarId });
                     return result ?? VCALENDAR.Empty;
                 });
             }
-            catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ArgumentException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ArgumentNullException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ArgumentException ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
         }
 
         public object Post(FindCalendarsCached request)
         {
             try
             {
-                return base.RequestContext.ToOptimizedResultUsingCache(
-                this.CacheClient,
+                return RequestContext.ToOptimizedResultUsingCache(
+                CacheClient,
                 request.Page != null && request.Size != null ? string.Format("urn:calendars:{0}:{1}", request.Page, request.Size) : "urn:calendars",
-                this.TimeToLive,
+                TimeToLive,
                 () =>
                 {
-                    return this.ResolveService<CalendarService>()
+                    return ResolveService<CalendarService>()
                         .Post(new FindCalendars
                         {
                             CalendarIds = request.CalendarIds,
@@ -83,24 +83,24 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
                         });
                 });
             }
-            catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ArgumentException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ArgumentNullException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ArgumentException ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
         }
 
         public object Get(GetCalendarsCached request)
         {
             try
             {
-                return base.RequestContext.ToOptimizedResultUsingCache(
-                this.CacheClient,
+                return RequestContext.ToOptimizedResultUsingCache(
+                CacheClient,
                 request.Page != null && request.Size != null ? string.Format("urn:calendars:{0}:{1}", request.Page, request.Size) : "urn:calendars",
-                this.TimeToLive,
+                TimeToLive,
                 () =>
                 {
-                    return this.ResolveService<CalendarService>()
+                    return ResolveService<CalendarService>()
                         .Get(new GetCalendars
                         {
                             Page = request.Page,
@@ -108,26 +108,26 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
                         });
                 });
             }
-            catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ArgumentException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ArgumentNullException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ArgumentException ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
         }
 
         public object Get(GetCalendarKeysCached request)
         {
             try
             {
-                return base.RequestContext.ToOptimizedResultUsingCache(
-                this.CacheClient,
+                return RequestContext.ToOptimizedResultUsingCache(
+                CacheClient,
                 request.Page != null && request.Size != null ?
                 string.Format("urn:calendars:{0}:{1}", request.Page, request.Size) :
                 "urn:calendars",
-                this.TimeToLive,
+                TimeToLive,
                 () =>
                 {
-                    return this.ResolveService<CalendarService>()
+                    return ResolveService<CalendarService>()
                         .Get(new GetCalendarKeys
                         {
                             Page = request.Page,
@@ -135,11 +135,11 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
                         });
                 });
             }
-            catch (ArgumentNullException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ArgumentException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (InvalidOperationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { this.logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { this.logger.Error(ex.ToString()); throw; }
+            catch (ArgumentNullException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ArgumentException ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
         }
     }
 }

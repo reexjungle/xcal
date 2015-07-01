@@ -2,6 +2,7 @@
 using reexjungle.xcal.domain.models;
 using reexjungle.xmisc.infrastructure.contracts;
 using ServiceStack.ServiceHost;
+using System;
 using System.Collections.Generic;
 
 namespace reexjungle.xcal.service.operations.concretes.live
@@ -33,7 +34,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
     [Route("/calendars/{CalendarId}/patch", "PATCH")]
     public class PatchCalendar : IReturnVoid
     {
-        public string CalendarId { get; set; }
+        public Guid CalendarId { get; set; }
 
         public string Version { get; set; }
 
@@ -61,7 +62,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
     [Route("/calendars/batch/patch", "PATCH")]
     public class PatchCalendars : IReturnVoid
     {
-        public List<string> CalendarIds { get; set; }
+        public List<Guid> CalendarIds { get; set; }
 
         public string Version { get; set; }
 
@@ -89,19 +90,19 @@ namespace reexjungle.xcal.service.operations.concretes.live
     [Route("/calendars/{CalendarId}/delete", "DELETE")]
     public class DeleteCalendar : IReturnVoid
     {
-        public string CalendarId { get; set; }
+        public Guid CalendarId { get; set; }
     }
 
     [Route("/calendars/batch/delete", "DELETE")]
     public class DeleteCalendars : IReturnVoid
     {
-        public List<string> CalendarIds { get; set; }
+        public List<Guid> CalendarIds { get; set; }
     }
 
     [Route("/calendars/{CalendarId}/find", "GET")]
     public class FindCalendar : IReturn<VCALENDAR>
     {
-        public string CalendarId { get; set; }
+        public Guid CalendarId { get; set; }
     }
 
     [Route("/calendars/batch/find", "POST")]
@@ -109,7 +110,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
     [Route("/calendars/batch/find/page/{Page}/size/{Size}", "POST")]
     public class FindCalendars : IReturn<List<VCALENDAR>>, IPaginated<int>
     {
-        public List<string> CalendarIds { get; set; }
+        public List<Guid> CalendarIds { get; set; }
 
         public int? Page { get; set; }
 
@@ -127,7 +128,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
 
     [Route("/calendars/keys/{Page}/{Size}", "GET")]
     [Route("/calendars/keys/page/{Page}/size/{Size}", "GET")]
-    public class GetCalendarKeys : IReturn<List<string>>, IPaginated<int>
+    public class GetCalendarKeys : IReturn<List<Guid>>, IPaginated<int>
     {
         public int? Page { get; set; }
 

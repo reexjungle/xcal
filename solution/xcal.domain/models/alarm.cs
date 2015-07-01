@@ -10,10 +10,10 @@ using System.Text;
 namespace reexjungle.xcal.domain.models
 {
     [DataContract]
-    public class AUDIO_ALARM : IAUDIO_ALARM, IEquatable<AUDIO_ALARM>, IContainsKey<string>
+    public class AUDIO_ALARM : IAUDIO_ALARM, IEquatable<AUDIO_ALARM>, IContainsKey<Guid>
     {
         [DataMember]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         [DataMember]
         public ACTION Action { get; set; }
@@ -38,59 +38,62 @@ namespace reexjungle.xcal.domain.models
         public AUDIO_ALARM()
             : base()
         {
-            this.Action = ACTION.AUDIO;
+            Action = ACTION.AUDIO;
         }
 
         public AUDIO_ALARM(ACTION action, TRIGGER trigger, ATTACH_BINARY attachbin = null, ATTACH_URI attachuri = null)
         {
-            this.Action = action;
-            this.Trigger = trigger;
-            this.AttachmentBinary = attachbin;
-            this.AttachmentUri = attachuri;
+            Action = action;
+            Trigger = trigger;
+            AttachmentBinary = attachbin;
+            AttachmentUri = attachuri;
         }
 
         public AUDIO_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, ATTACH_BINARY attachbin = null, ATTACH_URI attachuri = null)
         {
-            this.Action = action;
-            this.Trigger = trigger;
-            this.Duration = duration;
-            this.Repeat = repeat;
-            this.AttachmentBinary = attachbin;
-            this.AttachmentUri = attachuri;
+            Action = action;
+            Trigger = trigger;
+            Duration = duration;
+            Repeat = repeat;
+            AttachmentBinary = attachbin;
+            AttachmentUri = attachuri;
         }
 
         public bool Equals(AUDIO_ALARM other)
         {
-            if (other == null) return false;
-            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Id.Equals(other.Id);
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:VALARM").AppendLine();
-            sb.AppendFormat("ACTION:{0}", this.Action.ToString()).AppendLine();
-            if (this.Trigger != null) sb.Append(this.Trigger.ToString()).AppendLine();
-            if (this.Duration != default(DURATION))
+            sb.AppendFormat("ACTION:{0}", Action).AppendLine();
+            if (Trigger != null) sb.Append(Trigger).AppendLine();
+            if (Duration != default(DURATION))
             {
-                sb.AppendFormat("DURATION:{0}", this.Duration.ToString()).AppendLine();
-                sb.AppendFormat("REPEAT:{0}", this.Repeat.ToString()).AppendLine();
+                sb.AppendFormat("DURATION:{0}", Duration).AppendLine();
+                sb.AppendFormat("REPEAT:{0}", Repeat).AppendLine();
             }
-            if (this.AttachmentBinary != null) sb.Append(this.AttachmentBinary.ToString()).AppendLine();
-            else if (this.AttachmentUri != null) sb.Append(this.AttachmentUri.ToString()).AppendLine();
+            if (AttachmentBinary != null) sb.Append(AttachmentBinary).AppendLine();
+            else if (AttachmentUri != null) sb.Append(AttachmentUri).AppendLine();
             sb.Append("END:VALARM");
             return sb.ToString();
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return this.Equals(obj as AUDIO_ALARM);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((AUDIO_ALARM)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.Id.GetHashCode();
+            return Id.GetHashCode();
         }
 
         public static bool operator ==(AUDIO_ALARM a, AUDIO_ALARM b)
@@ -107,10 +110,10 @@ namespace reexjungle.xcal.domain.models
     }
 
     [DataContract]
-    public class DISPLAY_ALARM : IDISPLAY_ALARM, IEquatable<DISPLAY_ALARM>, IContainsKey<string>
+    public class DISPLAY_ALARM : IDISPLAY_ALARM, IEquatable<DISPLAY_ALARM>, IContainsKey<Guid>
     {
         [DataMember]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         [DataMember]
         public ACTION Action { get; set; }
@@ -130,42 +133,43 @@ namespace reexjungle.xcal.domain.models
         public DISPLAY_ALARM()
             : base()
         {
-            this.Action = ACTION.DISPLAY;
+            Action = ACTION.DISPLAY;
         }
 
         public DISPLAY_ALARM(ACTION action, TRIGGER trigger, DESCRIPTION description)
         {
-            this.Action = action;
-            this.Trigger = trigger;
-            this.Description = description;
+            Action = action;
+            Trigger = trigger;
+            Description = description;
         }
 
         public DISPLAY_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, DESCRIPTION description = null)
         {
-            this.Action = action;
-            this.Trigger = trigger;
-            this.Duration = duration;
-            this.Repeat = repeat;
-            this.Description = description;
+            Action = action;
+            Trigger = trigger;
+            Duration = duration;
+            Repeat = repeat;
+            Description = description;
         }
 
         public bool Equals(DISPLAY_ALARM other)
         {
-            if (other == null) return false;
-            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Id.Equals(other.Id);
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:VALARM").AppendLine();
-            sb.AppendFormat("ACTION:{0}", this.Action.ToString()).AppendLine();
-            if (this.Description != null) sb.AppendFormat("{0}", this.Description.ToString()).AppendLine();
-            if (this.Trigger != null) sb.Append(this.Trigger.ToString()).AppendLine();
-            if (this.Duration != default(DURATION))
+            sb.AppendFormat("ACTION:{0}", Action).AppendLine();
+            if (Description != null) sb.AppendFormat("{0}", Description).AppendLine();
+            if (Trigger != null) sb.Append(Trigger).AppendLine();
+            if (Duration != default(DURATION))
             {
-                sb.AppendFormat("DURATION:{0}", this.Duration.ToString()).AppendLine();
-                sb.AppendFormat("REPEAT:{0}", this.Repeat.ToString()).AppendLine();
+                sb.AppendFormat("DURATION:{0}", Duration).AppendLine();
+                sb.AppendFormat("REPEAT:{0}", Repeat).AppendLine();
             }
             sb.Append("END:VALARM");
             return sb.ToString();
@@ -173,13 +177,15 @@ namespace reexjungle.xcal.domain.models
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return this.Equals(obj as DISPLAY_ALARM);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((DISPLAY_ALARM)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.Id.GetHashCode();
+            return Id.GetHashCode();
         }
 
         public static bool operator ==(DISPLAY_ALARM a, DISPLAY_ALARM b)
@@ -196,10 +202,10 @@ namespace reexjungle.xcal.domain.models
     }
 
     [DataContract]
-    public class EMAIL_ALARM : IEMAIL_ALARM, IEquatable<EMAIL_ALARM>, IContainsKey<string>
+    public class EMAIL_ALARM : IEMAIL_ALARM, IEquatable<EMAIL_ALARM>, IContainsKey<Guid>
     {
         [DataMember]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         [DataMember]
         public ACTION Action { get; set; }
@@ -234,75 +240,78 @@ namespace reexjungle.xcal.domain.models
         public EMAIL_ALARM()
             : base()
         {
-            this.Action = ACTION.EMAIL;
-            this.Attendees = new List<ATTENDEE>();
-            this.AttachmentBinaries = new List<ATTACH_BINARY>();
-            this.AttachmentUris = new List<ATTACH_URI>();
+            Action = ACTION.EMAIL;
+            Attendees = new List<ATTENDEE>();
+            AttachmentBinaries = new List<ATTACH_BINARY>();
+            AttachmentUris = new List<ATTACH_URI>();
         }
 
         public EMAIL_ALARM(ACTION action, TRIGGER trigger, DESCRIPTION description, SUMMARY summary,
             List<ATTENDEE> attendees, List<ATTACH_BINARY> attachbins = null, List<ATTACH_URI> attachuris = null)
         {
-            this.Action = action;
-            this.Trigger = trigger;
-            this.Description = description;
-            this.Summary = summary;
-            this.Attendees = attendees;
-            this.AttachmentBinaries = attachbins;
-            this.AttachmentUris = attachuris;
+            Action = action;
+            Trigger = trigger;
+            Description = description;
+            Summary = summary;
+            Attendees = attendees;
+            AttachmentBinaries = attachbins;
+            AttachmentUris = attachuris;
         }
 
         public EMAIL_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, DESCRIPTION description, SUMMARY summary,
             List<ATTENDEE> attendees, List<ATTACH_BINARY> attachbins = null, List<ATTACH_URI> attachuris = null)
         {
-            this.Action = action;
-            this.Trigger = trigger;
-            this.Duration = duration;
-            this.Repeat = repeat;
-            this.Description = description;
-            this.Summary = summary;
-            this.Attendees = attendees;
-            this.AttachmentBinaries = attachbins;
-            this.AttachmentUris = attachuris;
+            Action = action;
+            Trigger = trigger;
+            Duration = duration;
+            Repeat = repeat;
+            Description = description;
+            Summary = summary;
+            Attendees = attendees;
+            AttachmentBinaries = attachbins;
+            AttachmentUris = attachuris;
         }
 
         public bool Equals(EMAIL_ALARM other)
         {
-            if (other == null) return false;
-            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Id.Equals(other.Id);
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:VALARM").AppendLine();
-            sb.AppendFormat("ACTION:{0}", this.Action.ToString()).AppendLine();
-            if (this.Description != null) sb.AppendFormat("{0}", this.Description.ToString()).AppendLine();
-            if (this.Summary != null) sb.AppendFormat("{0}", this.Summary.ToString()).AppendLine();
-            if (this.Trigger != null) sb.Append(this.Trigger.ToString()).AppendLine();
-            if (this.Duration != default(DURATION) && this.Repeat != -1)
+            sb.AppendFormat("ACTION:{0}", Action).AppendLine();
+            if (Description != null) sb.AppendFormat("{0}", Description).AppendLine();
+            if (Summary != null) sb.AppendFormat("{0}", Summary).AppendLine();
+            if (Trigger != null) sb.Append(Trigger).AppendLine();
+            if (Duration != default(DURATION) && Repeat != -1)
             {
-                sb.AppendFormat("DURATION:{0}", this.Duration.ToString()).AppendLine();
-                sb.AppendFormat("REPEAT:{0}", this.Repeat.ToString()).AppendLine();
+                sb.AppendFormat("DURATION:{0}", Duration).AppendLine();
+                sb.AppendFormat("REPEAT:{0}", Repeat).AppendLine();
             }
-            foreach (var attendee in this.Attendees) sb.Append(attendee.ToString()).AppendLine();
-            if (!this.AttachmentBinaries.NullOrEmpty())
-                foreach (var attachment in this.AttachmentBinaries) sb.Append(attachment.ToString()).AppendLine();
-            else if (!this.AttachmentUris.NullOrEmpty())
-                foreach (var attachment in this.AttachmentUris) sb.Append(attachment.ToString()).AppendLine();
+            foreach (var attendee in Attendees) sb.Append(attendee).AppendLine();
+            if (!AttachmentBinaries.NullOrEmpty())
+                foreach (var attachment in AttachmentBinaries) sb.Append(attachment).AppendLine();
+            else if (!AttachmentUris.NullOrEmpty())
+                foreach (var attachment in AttachmentUris) sb.Append(attachment).AppendLine();
             sb.Append("END:VALARM");
             return sb.ToString();
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return this.Equals(obj as EMAIL_ALARM);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((EMAIL_ALARM)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.Id.GetHashCode();
+            return Id.GetHashCode();
         }
 
         public static bool operator ==(EMAIL_ALARM a, EMAIL_ALARM b)

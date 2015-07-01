@@ -1,36 +1,32 @@
 ﻿using FizzWare.NBuilder;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.test.units.contracts;
-using reexjungle.xmisc.infrastructure.concretes.operations;
 using reexjungle.xmisc.infrastructure.contracts;
+using System;
 using System.Collections.Generic;
 
 namespace reexjungle.xcal.test.units.concretes
 {
-    public class CalendarUnitTests : ICalendarUnitTests
+    public class CalendarUnitTest : ICalendarUnitTest
     {
-        public IGuidKeyGenerator KeyGen { get; set; }
+        private readonly IKeyGenerator<Guid> guidKeyGenerator;
+        private readonly IKeyGenerator<string> fpiKeyGenerator;
 
-        public IFPIKeyGenerator FPIKeyGen { get; set; }
-
-        public CalendarUnitTests()
+        public CalendarUnitTest(IKeyGenerator<Guid> guidKeyGenerator, IKeyGenerator<string> fpiKeyGenerator)
         {
-            this.KeyGen = new GuidKeyGenerator();
-            this.FPIKeyGen = Builder<StringFPIKeyGenerator>
-                .CreateNew()
-                .With(x => x.Owner = Pick<string>.RandomItemFrom(new List<string> { "reexjungle", "reexmonkey" }))
-                .And(x => x.Authority = Pick<Authority>.RandomItemFrom(new List<Authority> { Authority.ISO, Authority.None, Authority.NonStandard }))
-                .And(x => x.Description = "Test iCalendar Service Provider")
-                .And(x => x.LanguageId = Pick<string>.RandomItemFrom(new List<string> { "EN", "FR", "DE" }))
-                .Build();
+            if (guidKeyGenerator == null) throw new ArgumentNullException("guidKeyGenerator");
+            if (fpiKeyGenerator == null) throw new ArgumentNullException("fpiKeyGenerator");
+
+            this.guidKeyGenerator = guidKeyGenerator;
+            this.fpiKeyGenerator = fpiKeyGenerator;
         }
 
         public IEnumerable<VCALENDAR> GenerateCalendarsOfSize(int n)
         {
             return Builder<VCALENDAR>.CreateListOfSize(5)
                 .All()
-                    .With(x => x.ProdId = this.FPIKeyGen.GetNextKey())
-                    .And(x => x.Id = this.KeyGen.GetNextKey())
+                    .With(x => x.ProdId = fpiKeyGenerator.GetNext())
+                    .And(x => x.Id = guidKeyGenerator.GetNext())
                 .Build();
         }
     }

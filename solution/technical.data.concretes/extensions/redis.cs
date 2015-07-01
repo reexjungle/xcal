@@ -9,7 +9,7 @@ namespace reexjungle.technical.data.concretes.extensions.redis
 {
     public static class RedisExtensions
     {
-        public static string CreateUrn<T>(this string key)
+        public static string CreateUrn<T>(this Guid key)
         {
             return string.Format("urn:{0}:{1}", typeof(T).Name.ToLowerInvariant(), key);
         }
@@ -30,9 +30,9 @@ namespace reexjungle.technical.data.concretes.extensions.redis
         }
 
         public static void MergeAll<T>(this IRedisClient redis, IEnumerable<T> entities, IEnumerable<T> oentities, IRedisTransaction transaction)
-    where T : class, IContainsKey<string>, new()
+    where T : class, IContainsKey<Guid>, new()
         {
-            redis.MergeAll<T, string>(entities, oentities, transaction);
+            redis.MergeAll<T, Guid>(entities, oentities, transaction);
         }
 
         public static void RemoveAll<T, Tkey>(this IRedisClient redis, IEnumerable<T> oentities, IRedisTransaction transaction)
@@ -43,9 +43,9 @@ namespace reexjungle.technical.data.concretes.extensions.redis
         }
 
         public static void RemoveAll<T>(this IRedisClient redis, IEnumerable<T> oentities, IRedisTransaction transaction)
-where T : class, IContainsKey<string>, new()
+where T : class, IContainsKey<Guid>, new()
         {
-            redis.RemoveAll<T, string>(oentities, transaction);
+            redis.RemoveAll<T, Guid>(oentities, transaction);
         }
     }
 }

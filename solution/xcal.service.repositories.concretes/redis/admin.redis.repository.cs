@@ -5,49 +5,34 @@ using System;
 
 namespace reexjungle.xcal.service.repositories.concretes.redis
 {
-    public class AdminRedisRepository : IAdminRedisRepository
+    public class AdminRedisRepository : IAdminRepository, IRedisRepository
     {
-        private IRedisClientsManager manager;
-        private IRedisClient client = null;
+        private readonly IRedisClientsManager manager;
+        private IRedisClient client;
 
         private IRedisClient redis
         {
             get
             {
-                return (client != null) ? client : this.manager.GetClient();
+                return client ?? (client = manager.GetClient());
             }
         }
 
         public IRedisClientsManager RedisClientsManager
         {
-            get { return this.manager; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("RedisClientsManager");
-                this.manager = value;
-                this.client = manager.GetClient();
-            }
-        }
-
-        public AdminRedisRepository()
-        {
+            get { return manager; }
         }
 
         public AdminRedisRepository(IRedisClientsManager manager)
         {
-            this.RedisClientsManager = manager;
-        }
-
-        public AdminRedisRepository(IRedisClient client)
-        {
-            if (client == null) throw new ArgumentNullException("IRedisClient");
-            this.client = client;
+            if (manager == null) throw new ArgumentNullException("manager");
+            this.manager = manager;
         }
 
         public void Flush(FlushMode mode = FlushMode.soft)
         {
-            if (mode == FlushMode.soft) this.client.FlushDb();
-            else this.client.FlushAll();
+            if (mode == FlushMode.soft) client.FlushDb();
+            else client.FlushAll();
         }
     }
 }

@@ -11,9 +11,19 @@ using Xunit;
 
 namespace reexjungle.xcal.test.units.concretes
 {
-    public class EventUnitTests : IEventUnitTests
+    public class EventUnitTest : IEventUnitTest
     {
-        public IGuidKeyGenerator KeyGen { get; set; }
+        private readonly IKeyGenerator<Guid> keyGenerator;
+
+        public EventUnitTest()
+        {
+            keyGenerator = new SequentialGuidKeyGenerator();
+        }
+
+        public EventUnitTest(IKeyGenerator<Guid> keyGenerator)
+        {
+            this.keyGenerator = keyGenerator;
+        }
 
         public IEnumerable<VEVENT> GenerateEventsOfSize(int n)
         {
@@ -22,11 +32,11 @@ namespace reexjungle.xcal.test.units.concretes
 
             return Builder<VEVENT>.CreateListOfSize(n)
                 .All()
-                .With(x => x.Uid = this.KeyGen.GetNextKey())
+                .With(x => x.Uid = keyGenerator.GetNext())
                 .And(x => x.Organizer = new ORGANIZER
                 {
-                    Id = this.KeyGen.GetNextKey(),
-                    CN = Pick<string>.RandomItemFrom(new string[] { "Caesar", "Koba", "Cornelia", "Blue Eyes", "Grey", "Ash" }),
+                    Id = keyGenerator.GetNext(),
+                    CN = Pick<string>.RandomItemFrom(new[] { "Caesar", "Koba", "Cornelia", "Blue Eyes", "Grey", "Ash" }),
                     Address = new URI("organizer@apes.ju"),
                     Language = new LANGUAGE("en")
                 })
@@ -57,11 +67,6 @@ namespace reexjungle.xcal.test.units.concretes
                 .Build();
         }
 
-        public EventUnitTests()
-        {
-            this.KeyGen = new GuidKeyGenerator();
-        }
-
         public void RandomlyAttendEvents(ref IEnumerable<VEVENT> events, IEnumerable<ATTENDEE> attendees)
         {
             var atts = attendees.ToList(); var max = atts.Count;
@@ -73,7 +78,7 @@ namespace reexjungle.xcal.test.units.concretes
         [Fact]
         public void CheckRecurrenceRuleForDifferentTimeTypes()
         {
-            var events = this.GenerateEventsOfSize(3).ToArray();
+            var events = GenerateEventsOfSize(3).ToArray();
             var x = events[0];
             x.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0, TimeType.LocalAndTimeZone, new TZID("America", "New_York"));
             x.End = new DATE_TIME(2014, 9, 1, 11, 30, 0, TimeType.LocalAndTimeZone, new TZID("America", "New_York"));
@@ -83,21 +88,21 @@ namespace reexjungle.xcal.test.units.concretes
                 INTERVAL = 1,
             };
 
-            var Rx = x.GenerateRecurrences<VEVENT>();
+            var Rx = x.GenerateRecurrences<VEVENT>(keyGenerator);
             Assert.Equal(Rx.First().Start.Type, TimeType.LocalAndTimeZone);
             Assert.Equal(Rx.First().End.Type, TimeType.LocalAndTimeZone);
             Assert.Equal(Rx.First().End.TimeZoneId, new TZID("America", "New_York"));
 
             var y = events[1];
-            y.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0, TimeType.Local);
-            y.End = new DATE_TIME(2014, 9, 1, 11, 30, 0, TimeType.Local);
+            y.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0);
+            y.End = new DATE_TIME(2014, 9, 1, 11, 30, 0);
             y.RecurrenceRule = new RECUR
             {
                 FREQ = FREQ.DAILY,
                 UNTIL = new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeType.Utc)
             };
 
-            var Ry = y.GenerateRecurrences<VEVENT>();
+            var Ry = y.GenerateRecurrences<VEVENT>(keyGenerator);
             Assert.Equal(Ry.First().Start.Type, TimeType.Local);
             Assert.Equal(Ry.First().End.Type, TimeType.Local);
             Assert.Equal(Ry.First().End.TimeZoneId, null);
@@ -112,7 +117,7 @@ namespace reexjungle.xcal.test.units.concretes
                 INTERVAL = 1
             };
 
-            var Rz = z.GenerateRecurrences<VEVENT>();
+            var Rz = z.GenerateRecurrences<VEVENT>(keyGenerator);
             Assert.Equal(Rz.First().Start.Type, TimeType.Utc);
             Assert.Equal(Rz.First().End.Type, TimeType.Utc);
             Assert.Equal(Rz.First().End.TimeZoneId, null);
@@ -121,7 +126,7 @@ namespace reexjungle.xcal.test.units.concretes
         [Fact]
         public void CheckSecondlyRecurrenceRule()
         {
-            var events = this.GenerateEventsOfSize(1).ToArray();
+            var events = GenerateEventsOfSize(1).ToArray();
             var x = events[0];
             x.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0, TimeType.Utc);
             x.End = new DATE_TIME(2014, 9, 1, 11, 30, 0, TimeType.Utc);
@@ -132,7 +137,7 @@ namespace reexjungle.xcal.test.units.concretes
                 UNTIL = new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeType.Utc)
             };
 
-            var Rx = x.GenerateRecurrences<VEVENT>();
+            var Rx = x.GenerateRecurrences<VEVENT>(keyGenerator);
             Assert.Equal(Rx.Count, 29);
             Assert.Equal(Rx.Last().Start, new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeType.Utc));
 
@@ -148,7 +153,7 @@ namespace reexjungle.xcal.test.units.concretes
                 BYMONTH = new List<uint> { 1, 3, 9, 7 }
             };
 
-            Rx = x.GenerateRecurrences<VEVENT>();
+            Rx = x.GenerateRecurrences<VEVENT>(keyGenerator);
             Assert.Equal(Rx.Count, 122);
             Assert.Equal(Rx.Last().Start, new DATE_TIME(2014, 09, 30, 9, 0, 0, TimeType.Utc));
 
@@ -161,7 +166,7 @@ namespace reexjungle.xcal.test.units.concretes
                 BYYEARDAY = new List<int> { -31, 36, 38, 40 }
             };
 
-            Rx = x.GenerateRecurrences<VEVENT>();
+            Rx = x.GenerateRecurrences<VEVENT>(keyGenerator);
             Assert.Equal(Rx.First().Start.MDAY, 5u);
             Assert.Equal(Rx.Last().Start.MONTH, 12u);
 
@@ -174,7 +179,7 @@ namespace reexjungle.xcal.test.units.concretes
                 BYMONTHDAY = new List<int> { 1, -1 }
             };
 
-            Rx = x.GenerateRecurrences<VEVENT>();
+            Rx = x.GenerateRecurrences<VEVENT>(keyGenerator);
             Assert.Equal(Rx.Count(), 23);
             Assert.Equal(Rx.First().Start, new DATE_TIME(2014, 1, 31, 9, 0, 0, TimeType.Utc));
             Assert.Equal(Rx.Last().End, new DATE_TIME(2014, 12, 31, 11, 30, 0, TimeType.Utc));
@@ -197,7 +202,7 @@ namespace reexjungle.xcal.test.units.concretes
                 }
             };
 
-            Rx = x.GenerateRecurrences<VEVENT>();
+            Rx = x.GenerateRecurrences<VEVENT>(keyGenerator);
             Assert.Equal(Rx.Count(), 20);
             Assert.Equal(Rx.First().Start, new DATE_TIME(2014, 11, 03, 10, 15, 0, TimeType.Utc));
             Assert.Equal(Rx.Last().Start, new DATE_TIME(2014, 11, 28, 10, 15, 0, TimeType.Utc));
@@ -215,7 +220,7 @@ namespace reexjungle.xcal.test.units.concretes
                 BYSECOND = new List<uint> { 30 }
             };
 
-            Rx = x.GenerateRecurrences<VEVENT>();
+            Rx = x.GenerateRecurrences<VEVENT>(keyGenerator);
             Assert.Equal(Rx.Count(), 6);
             Assert.Equal(Rx.ElementAt(1).Start, new DATE_TIME(2014, 12, 01, 9, 20, 30, TimeType.Utc));
             Assert.Equal(Rx.ElementAt(3).Start, new DATE_TIME(2014, 12, 01, 10, 15, 30, TimeType.Utc));
@@ -224,7 +229,7 @@ namespace reexjungle.xcal.test.units.concretes
         [Fact]
         public void CheckMinutelyRecurrenceRule()
         {
-            var events = this.GenerateEventsOfSize(1).ToArray();
+            var events = GenerateEventsOfSize(1).ToArray();
             var x = events[0];
             x.Start = new DATE_TIME(2014, 01, 02, 08, 30, 00, TimeType.Utc);
             x.End = new DATE_TIME(2014, 01, 02, 11, 30, 00, TimeType.Utc);
@@ -239,7 +244,7 @@ namespace reexjungle.xcal.test.units.concretes
             };
 
             x.RecurrenceRule.BYSETPOS = new List<int> { 1, -1 };
-            var Rx = x.GenerateRecurrences<VEVENT>();
+            var Rx = x.GenerateRecurrences<VEVENT>(keyGenerator);
             Assert.Equal(Rx.Count, 14);
             Assert.Equal(Rx.First().Start, new DATE_TIME(2014, 1, 02, 08, 30, 45, TimeType.Utc));
             Assert.Equal(Rx.Last().Start, new DATE_TIME(2014, 1, 02, 08, 45, 00, TimeType.Utc));
@@ -248,7 +253,7 @@ namespace reexjungle.xcal.test.units.concretes
         [Fact]
         public void CheckHourlyRecurrenceRule()
         {
-            var events = this.GenerateEventsOfSize(1).ToArray();
+            var events = GenerateEventsOfSize(1).ToArray();
             var x = events[0];
             x.Start = new DATE_TIME(2014, 1, 1, 9, 0, 0, TimeType.Utc);
             x.End = new DATE_TIME(2014, 1, 1, 11, 30, 0, TimeType.Utc);
@@ -263,7 +268,7 @@ namespace reexjungle.xcal.test.units.concretes
                 BYSETPOS = new List<int> { 1, -1 }
             };
 
-            var Rx = x.GenerateRecurrences<VEVENT>();
+            var Rx = x.GenerateRecurrences<VEVENT>(keyGenerator);
             Assert.Equal(Rx.Count, 6);
             Assert.Equal(Rx.First().Start, new DATE_TIME(2014, 1, 1, 9, 5, 0, TimeType.Utc));
             Assert.Equal(Rx.Last().Start, new DATE_TIME(2014, 1, 1, 11, 25, 0, TimeType.Utc));
@@ -273,7 +278,7 @@ namespace reexjungle.xcal.test.units.concretes
         [Fact]
         public void CheckDailyRecurrenceRule()
         {
-            var events = this.GenerateEventsOfSize(1).ToArray();
+            var events = GenerateEventsOfSize(1).ToArray();
             var x = events[0];
             x.Start = new DATE_TIME(2014, 06, 15, 06, 0, 0, TimeType.Utc);
             x.End = new DATE_TIME(2014, 06, 15, 08, 45, 0, TimeType.Utc);
@@ -288,7 +293,7 @@ namespace reexjungle.xcal.test.units.concretes
                 BYSETPOS = new List<int> { 2, -2 }
             };
 
-            var Rx = x.GenerateRecurrences<VEVENT>();
+            var Rx = x.GenerateRecurrences<VEVENT>(keyGenerator);
             Assert.Equal(Rx.Count, 10);
             Assert.Equal(Rx.First().Start, new DATE_TIME(2014, 06, 15, 09, 10, 0, TimeType.Utc));
             Assert.Equal(Rx.Last().Start, new DATE_TIME(2014, 06, 15, 21, 20, 0, TimeType.Utc));
@@ -297,7 +302,7 @@ namespace reexjungle.xcal.test.units.concretes
         [Fact]
         public void CheckWeeklyRecurrenceRule()
         {
-            var events = this.GenerateEventsOfSize(1).ToArray();
+            var events = GenerateEventsOfSize(1).ToArray();
             var x = events[0];
             x.Start = new DATE_TIME(2014, 12, 1, 10, 0, 0, TimeType.Utc);
             x.End = new DATE_TIME(2014, 12, 1, 15, 30, 0, TimeType.Utc);
@@ -327,7 +332,7 @@ namespace reexjungle.xcal.test.units.concretes
                 BYSETPOS = new List<int> { 2, -1 }
             };
 
-            var Rx = x.GenerateRecurrences<VEVENT>();
+            var Rx = x.GenerateRecurrences<VEVENT>(keyGenerator);
             Assert.Equal(Rx.Count, 2);
             Assert.Equal(Rx.First().Start, new DATE_TIME(2014, 12, 02, 10, 00, 0, TimeType.Utc));
             Assert.Equal(Rx.Last().Start, new DATE_TIME(2014, 12, 30, 10, 00, 0, TimeType.Utc));
@@ -336,7 +341,7 @@ namespace reexjungle.xcal.test.units.concretes
         [Fact]
         public void CheckMonthlyRecurrenceRule()
         {
-            var events = this.GenerateEventsOfSize(1).ToArray();
+            var events = GenerateEventsOfSize(1).ToArray();
             var x = events[0];
             x.Start = new DATE_TIME(2014, 1, 1, 9, 0, 0, TimeType.Utc);
             x.End = new DATE_TIME(2014, 1, 1, 11, 30, 0, TimeType.Utc);
@@ -358,7 +363,7 @@ namespace reexjungle.xcal.test.units.concretes
                 BYSETPOS = new List<int> { -1 }
             };
 
-            var Rx = x.GenerateRecurrences<VEVENT>();
+            var Rx = x.GenerateRecurrences<VEVENT>(keyGenerator);
             Assert.Equal(Rx.Count, 12);
             Assert.Equal(Rx.ElementAt(7).Start, new DATE_TIME(2014, 08, 29, 09, 00, 0, TimeType.Utc));
         }
@@ -366,7 +371,7 @@ namespace reexjungle.xcal.test.units.concretes
         [Fact]
         public void CheckYearlyRecurrenceRule()
         {
-            var events = this.GenerateEventsOfSize(1).ToArray();
+            var events = GenerateEventsOfSize(1).ToArray();
             var x = events[0];
             x.Start = new DATE_TIME(2014, 1, 1, 7, 0, 0, TimeType.Utc);
             x.End = new DATE_TIME(2014, 1, 1, 10, 15, 0, TimeType.Utc);
@@ -390,7 +395,7 @@ namespace reexjungle.xcal.test.units.concretes
                 BYSETPOS = new List<int> { -1 }
             };
 
-            var Rx = x.GenerateRecurrences<VEVENT>();
+            var Rx = x.GenerateRecurrences<VEVENT>(keyGenerator);
             Assert.Equal(Rx.Count, 6);
             Assert.Equal(Rx.ElementAt(0).Start, new DATE_TIME(2014, 03, 25, 07, 00, 0, TimeType.Utc));
             Assert.Equal(Rx.ElementAt(1).Start, new DATE_TIME(2014, 09, 25, 07, 00, 0, TimeType.Utc));

@@ -6,639 +6,651 @@ using System;
 
 namespace reexjungle.xcal.service.repositories.concretes.relations
 {
-    public class REL_JOURNALS_ATTACHBINS : IEquatable<REL_JOURNALS_ATTACHBINS>, IContainsKey<string>
+    public class REL_JOURNALS_ATTACHBINS : IEquatable<REL_JOURNALS_ATTACHBINS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VJOURNAL), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string JournalId { get; set; }
+        public Guid JournalId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(ATTACH_BINARY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AttachmentId { get; set; }
+        public Guid AttachmentId { get; set; }
 
         public bool Equals(REL_JOURNALS_ATTACHBINS other)
         {
-            if (other == null) return false;
-            return (this.JournalId.Equals(other.JournalId, StringComparison.OrdinalIgnoreCase) &&
-                this.AttachmentId.Equals(other.AttachmentId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return JournalId == other.JournalId && AttachmentId == other.AttachmentId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_JOURNALS_ATTACHBINS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_JOURNALS_ATTACHBINS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.JournalId.GetHashCode() ^ this.AttachmentId.GetHashCode();
+            unchecked
+            {
+                return (JournalId.GetHashCode() * 397) ^ AttachmentId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_JOURNALS_ATTACHBINS x, REL_JOURNALS_ATTACHBINS y)
+        public static bool operator ==(REL_JOURNALS_ATTACHBINS left, REL_JOURNALS_ATTACHBINS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_JOURNALS_ATTACHBINS x, REL_JOURNALS_ATTACHBINS y)
+        public static bool operator !=(REL_JOURNALS_ATTACHBINS left, REL_JOURNALS_ATTACHBINS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_JOURNALS_ATTACHURIS : IEquatable<REL_JOURNALS_ATTACHURIS>, IContainsKey<string>
+    public class REL_JOURNALS_ATTACHURIS : IEquatable<REL_JOURNALS_ATTACHURIS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VJOURNAL), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string JournalId { get; set; }
+        public Guid JournalId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(ATTACH_URI), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AttachmentId { get; set; }
+        public Guid AttachmentId { get; set; }
 
         public bool Equals(REL_JOURNALS_ATTACHURIS other)
         {
-            if (other == null) return false;
-            return (this.JournalId.Equals(other.JournalId, StringComparison.OrdinalIgnoreCase) &&
-                this.AttachmentId.Equals(other.AttachmentId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return JournalId == other.JournalId && AttachmentId == other.AttachmentId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_JOURNALS_ATTACHURIS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_JOURNALS_ATTACHURIS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.JournalId.GetHashCode() ^ this.AttachmentId.GetHashCode();
+            unchecked
+            {
+                return (JournalId.GetHashCode() * 397) ^ AttachmentId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_JOURNALS_ATTACHURIS x, REL_JOURNALS_ATTACHURIS y)
+        public static bool operator ==(REL_JOURNALS_ATTACHURIS left, REL_JOURNALS_ATTACHURIS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_JOURNALS_ATTACHURIS x, REL_JOURNALS_ATTACHURIS y)
+        public static bool operator !=(REL_JOURNALS_ATTACHURIS left, REL_JOURNALS_ATTACHURIS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_JOURNALS_RECURS : IEquatable<REL_JOURNALS_RECURS>, IContainsKey<string>
+    public class REL_JOURNALS_RECURS : IEquatable<REL_JOURNALS_RECURS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VJOURNAL), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string JournalId { get; set; }
+        public Guid JournalId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(RECUR), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string RecurId { get; set; }
+        public Guid RecurId { get; set; }
 
         public bool Equals(REL_JOURNALS_RECURS other)
         {
-            if (other == null) return false;
-            return (this.JournalId.Equals(other.JournalId, StringComparison.OrdinalIgnoreCase) &&
-                this.RecurId.Equals(other.RecurId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return JournalId == other.JournalId && RecurId == other.RecurId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_JOURNALS_RECURS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_JOURNALS_RECURS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.JournalId.GetHashCode() ^ this.RecurId.GetHashCode();
+            unchecked
+            {
+                return (JournalId.GetHashCode() * 397) ^ RecurId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_JOURNALS_RECURS x, REL_JOURNALS_RECURS y)
+        public static bool operator ==(REL_JOURNALS_RECURS left, REL_JOURNALS_RECURS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_JOURNALS_RECURS x, REL_JOURNALS_RECURS y)
+        public static bool operator !=(REL_JOURNALS_RECURS left, REL_JOURNALS_RECURS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_JOURNALS_ORGANIZERS : IEquatable<REL_JOURNALS_ORGANIZERS>, IContainsKey<string>
+    public class REL_JOURNALS_ORGANIZERS : IEquatable<REL_JOURNALS_ORGANIZERS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VJOURNAL), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string JournalId { get; set; }
+        public Guid JournalId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(ORGANIZER), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string OrganizerId { get; set; }
+        public Guid OrganizerId { get; set; }
 
         public bool Equals(REL_JOURNALS_ORGANIZERS other)
         {
-            if (other == null) return false;
-            return (this.JournalId.Equals(other.JournalId, StringComparison.OrdinalIgnoreCase) &&
-                this.OrganizerId.Equals(other.OrganizerId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return JournalId == other.JournalId && OrganizerId == other.OrganizerId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_JOURNALS_ORGANIZERS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_JOURNALS_ORGANIZERS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.JournalId.GetHashCode() ^ this.OrganizerId.GetHashCode();
+            unchecked
+            {
+                return (JournalId.GetHashCode() * 397) ^ OrganizerId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_JOURNALS_ORGANIZERS x, REL_JOURNALS_ORGANIZERS y)
+        public static bool operator ==(REL_JOURNALS_ORGANIZERS left, REL_JOURNALS_ORGANIZERS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_JOURNALS_ORGANIZERS x, REL_JOURNALS_ORGANIZERS y)
+        public static bool operator !=(REL_JOURNALS_ORGANIZERS left, REL_JOURNALS_ORGANIZERS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_JOURNALS_ATTENDEES : IEquatable<REL_JOURNALS_ATTENDEES>, IContainsKey<string>
+    public class REL_JOURNALS_ATTENDEES : IEquatable<REL_JOURNALS_ATTENDEES>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VJOURNAL), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string JournalId { get; set; }
+        public Guid JournalId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(ATTENDEE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AttendeeId { get; set; }
+        public Guid AttendeeId { get; set; }
 
         public bool Equals(REL_JOURNALS_ATTENDEES other)
         {
-            if (other == null) return false;
-            return (this.JournalId.Equals(other.JournalId, StringComparison.OrdinalIgnoreCase) &&
-                this.AttendeeId.Equals(other.AttendeeId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return JournalId == other.JournalId && AttendeeId == other.AttendeeId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_JOURNALS_ATTENDEES;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_JOURNALS_ATTENDEES)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.JournalId.GetHashCode() ^ this.AttendeeId.GetHashCode();
+            unchecked
+            {
+                return (JournalId.GetHashCode() * 397) ^ AttendeeId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_JOURNALS_ATTENDEES x, REL_JOURNALS_ATTENDEES y)
+        public static bool operator ==(REL_JOURNALS_ATTENDEES left, REL_JOURNALS_ATTENDEES right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_JOURNALS_ATTENDEES x, REL_JOURNALS_ATTENDEES y)
+        public static bool operator !=(REL_JOURNALS_ATTENDEES left, REL_JOURNALS_ATTENDEES right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_JOURNALS_COMMENTS : IEquatable<REL_JOURNALS_COMMENTS>, IContainsKey<string>
+    public class REL_JOURNALS_COMMENTS : IEquatable<REL_JOURNALS_COMMENTS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-comment relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VJOURNAL), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string JournalId { get; set; }
+        public Guid JournalId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related comment entity
         /// </summary>
         [ForeignKey(typeof(COMMENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string CommentId { get; set; }
+        public Guid AttendeeId { get; set; }
 
         public bool Equals(REL_JOURNALS_COMMENTS other)
         {
-            if (other == null) return false;
-            return (this.JournalId.Equals(other.JournalId, StringComparison.OrdinalIgnoreCase) &&
-                this.CommentId.Equals(other.CommentId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return JournalId == other.JournalId && AttendeeId == other.AttendeeId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_JOURNALS_COMMENTS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_JOURNALS_COMMENTS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.JournalId.GetHashCode() ^ this.CommentId.GetHashCode();
+            unchecked
+            {
+                return (JournalId.GetHashCode() * 397) ^ AttendeeId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_JOURNALS_COMMENTS x, REL_JOURNALS_COMMENTS y)
+        public static bool operator ==(REL_JOURNALS_COMMENTS left, REL_JOURNALS_COMMENTS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_JOURNALS_COMMENTS x, REL_JOURNALS_COMMENTS y)
+        public static bool operator !=(REL_JOURNALS_COMMENTS left, REL_JOURNALS_COMMENTS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_JOURNALS_CONTACTS : IEquatable<REL_JOURNALS_CONTACTS>, IContainsKey<string>
+    public class REL_JOURNALS_CONTACTS : IEquatable<REL_JOURNALS_CONTACTS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-contact relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VJOURNAL), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string JournalId { get; set; }
+        public Guid JournalId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related contact entity
         /// </summary>
         [ForeignKey(typeof(CONTACT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string ContactId { get; set; }
+        public Guid ContactId { get; set; }
 
         public bool Equals(REL_JOURNALS_CONTACTS other)
         {
-            if (other == null) return false;
-            return (this.JournalId.Equals(other.JournalId, StringComparison.OrdinalIgnoreCase) &&
-                this.ContactId.Equals(other.ContactId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return JournalId == other.JournalId && ContactId == other.ContactId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_JOURNALS_CONTACTS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_JOURNALS_CONTACTS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.JournalId.GetHashCode() ^ this.ContactId.GetHashCode();
+            unchecked
+            {
+                return (JournalId.GetHashCode() * 397) ^ ContactId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_JOURNALS_CONTACTS x, REL_JOURNALS_CONTACTS y)
+        public static bool operator ==(REL_JOURNALS_CONTACTS left, REL_JOURNALS_CONTACTS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_JOURNALS_CONTACTS x, REL_JOURNALS_CONTACTS y)
+        public static bool operator !=(REL_JOURNALS_CONTACTS left, REL_JOURNALS_CONTACTS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_JOURNALS_RDATES : IEquatable<REL_JOURNALS_RDATES>, IContainsKey<string>
+    public class REL_JOURNALS_RDATES : IEquatable<REL_JOURNALS_RDATES>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-recurrence date relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VJOURNAL), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string JournalId { get; set; }
+        public Guid JournalId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related recurrence date entity
         /// </summary>
         [ForeignKey(typeof(RDATE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string RecurrenceDateId { get; set; }
+        public Guid RecurrenceDateId { get; set; }
 
         public bool Equals(REL_JOURNALS_RDATES other)
         {
-            if (other == null) return false;
-            return (this.JournalId.Equals(other.JournalId, StringComparison.OrdinalIgnoreCase) &&
-                this.RecurrenceDateId.Equals(other.RecurrenceDateId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return JournalId == other.JournalId && RecurrenceDateId == other.RecurrenceDateId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_JOURNALS_RDATES;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_JOURNALS_RDATES)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.JournalId.GetHashCode() ^ this.RecurrenceDateId.GetHashCode();
+            unchecked
+            {
+                return (JournalId.GetHashCode() * 397) ^ RecurrenceDateId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_JOURNALS_RDATES x, REL_JOURNALS_RDATES y)
+        public static bool operator ==(REL_JOURNALS_RDATES left, REL_JOURNALS_RDATES right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_JOURNALS_RDATES x, REL_JOURNALS_RDATES y)
+        public static bool operator !=(REL_JOURNALS_RDATES left, REL_JOURNALS_RDATES right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_JOURNALS_EXDATES : IEquatable<REL_JOURNALS_EXDATES>, IContainsKey<string>
+    public class REL_JOURNALS_EXDATES : IEquatable<REL_JOURNALS_EXDATES>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-exception date relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VJOURNAL), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string JournalId { get; set; }
+        public Guid JournalId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related exception date entity
         /// </summary>
         [ForeignKey(typeof(EXDATE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string ExceptionDateId { get; set; }
+        public Guid ExceptionDateId { get; set; }
 
         public bool Equals(REL_JOURNALS_EXDATES other)
         {
-            if (other == null) return false;
-            return (this.JournalId.Equals(other.JournalId, StringComparison.OrdinalIgnoreCase) &&
-                this.ExceptionDateId.Equals(other.ExceptionDateId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return JournalId == other.JournalId && ExceptionDateId == other.ExceptionDateId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_JOURNALS_EXDATES;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_JOURNALS_EXDATES)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.JournalId.GetHashCode() ^ this.ExceptionDateId.GetHashCode();
+            unchecked
+            {
+                return (JournalId.GetHashCode() * 397) ^ ExceptionDateId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_JOURNALS_EXDATES x, REL_JOURNALS_EXDATES y)
+        public static bool operator ==(REL_JOURNALS_EXDATES left, REL_JOURNALS_EXDATES right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_JOURNALS_EXDATES x, REL_JOURNALS_EXDATES y)
+        public static bool operator !=(REL_JOURNALS_EXDATES left, REL_JOURNALS_EXDATES right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_JOURNALS_RELATEDTOS : IEquatable<REL_JOURNALS_RELATEDTOS>, IContainsKey<string>
+    public class REL_JOURNALS_RELATEDTOS : IEquatable<REL_JOURNALS_RELATEDTOS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-related to relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VJOURNAL), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string JournalId { get; set; }
+        public Guid JournalId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the relation entity
         /// </summary>
         [ForeignKey(typeof(RELATEDTO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string RelatedToId { get; set; }
+        public int ExceptionDateId { get; set; }
 
         public bool Equals(REL_JOURNALS_RELATEDTOS other)
         {
-            if (other == null) return false;
-            return (this.JournalId.Equals(other.JournalId, StringComparison.OrdinalIgnoreCase) &&
-                this.RelatedToId.Equals(other.RelatedToId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return JournalId == other.JournalId && ExceptionDateId == other.ExceptionDateId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_JOURNALS_RELATEDTOS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_JOURNALS_RELATEDTOS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.JournalId.GetHashCode() ^ this.RelatedToId.GetHashCode();
+            unchecked
+            {
+                return (JournalId.GetHashCode() * 397) ^ ExceptionDateId;
+            }
         }
 
-        public static bool operator ==(REL_JOURNALS_RELATEDTOS x, REL_JOURNALS_RELATEDTOS y)
+        public static bool operator ==(REL_JOURNALS_RELATEDTOS left, REL_JOURNALS_RELATEDTOS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_JOURNALS_RELATEDTOS x, REL_JOURNALS_RELATEDTOS y)
+        public static bool operator !=(REL_JOURNALS_RELATEDTOS left, REL_JOURNALS_RELATEDTOS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_JOURNALS_REQSTATS : IEquatable<REL_JOURNALS_REQSTATS>, IContainsKey<string>
+    public class REL_JOURNALS_REQSTATS : IEquatable<REL_JOURNALS_REQSTATS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-request status relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VJOURNAL), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string JournalId { get; set; }
+        public Guid JournalId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related request status entity
         /// </summary>
         [ForeignKey(typeof(REQUEST_STATUS), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string ReqStatsId { get; set; }
+        public Guid ReqStatsId { get; set; }
 
         public bool Equals(REL_JOURNALS_REQSTATS other)
         {
-            if (other == null) return false;
-            return (this.JournalId.Equals(other.JournalId, StringComparison.OrdinalIgnoreCase) &&
-                this.ReqStatsId.Equals(other.ReqStatsId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return JournalId == other.JournalId && ReqStatsId == other.ReqStatsId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_JOURNALS_REQSTATS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_JOURNALS_REQSTATS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.JournalId.GetHashCode() ^ this.ReqStatsId.GetHashCode();
+            unchecked
+            {
+                return (JournalId.GetHashCode() * 397) ^ ReqStatsId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_JOURNALS_REQSTATS x, REL_JOURNALS_REQSTATS y)
+        public static bool operator ==(REL_JOURNALS_REQSTATS left, REL_JOURNALS_REQSTATS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_JOURNALS_REQSTATS x, REL_JOURNALS_REQSTATS y)
+        public static bool operator !=(REL_JOURNALS_REQSTATS left, REL_JOURNALS_REQSTATS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_JOURNALS_RESOURCES : IEquatable<REL_JOURNALS_RESOURCES>, IContainsKey<string>
+    public class REL_JOURNALS_RESOURCES : IEquatable<REL_JOURNALS_RESOURCES>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-resources relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VJOURNAL), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string JournalId { get; set; }
+        public Guid JournalId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related resources-entity
         /// </summary>
         [ForeignKey(typeof(RESOURCES), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string ResourcesId { get; set; }
+        public Guid ResourcesId { get; set; }
 
         public bool Equals(REL_JOURNALS_RESOURCES other)
         {
-            if (other == null) return false;
-            return (this.JournalId.Equals(other.JournalId, StringComparison.OrdinalIgnoreCase) &&
-                this.ResourcesId.Equals(other.ResourcesId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return JournalId == other.JournalId && ResourcesId == other.ResourcesId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_JOURNALS_RESOURCES;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_JOURNALS_RESOURCES)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.JournalId.GetHashCode() ^ this.ResourcesId.GetHashCode();
+            unchecked
+            {
+                return (JournalId.GetHashCode() * 397) ^ ResourcesId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_JOURNALS_RESOURCES x, REL_JOURNALS_RESOURCES y)
+        public static bool operator ==(REL_JOURNALS_RESOURCES left, REL_JOURNALS_RESOURCES right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_JOURNALS_RESOURCES x, REL_JOURNALS_RESOURCES y)
+        public static bool operator !=(REL_JOURNALS_RESOURCES left, REL_JOURNALS_RESOURCES right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 }

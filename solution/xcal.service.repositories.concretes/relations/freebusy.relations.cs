@@ -6,321 +6,327 @@ using System;
 
 namespace reexjungle.xcal.service.repositories.concretes.relations
 {
-    public class REL_FREEBUSIES_ATTACHBINS : IEquatable<REL_FREEBUSIES_ATTACHBINS>, IContainsKey<string>
+    public class REL_FREEBUSIES_ATTACHBINS : IEquatable<REL_FREEBUSIES_ATTACHBINS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VFREEBUSY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string FreeBusyId { get; set; }
+        public Guid FreeBusyId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(ATTACH_BINARY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AttachmentId { get; set; }
+        public Guid AttachmentId { get; set; }
 
         public bool Equals(REL_FREEBUSIES_ATTACHBINS other)
         {
-            if (other == null) return false;
-            return (this.FreeBusyId.Equals(other.FreeBusyId, StringComparison.OrdinalIgnoreCase) &&
-                this.AttachmentId.Equals(other.AttachmentId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return FreeBusyId == other.FreeBusyId && AttachmentId == other.AttachmentId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_FREEBUSIES_ATTACHBINS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_FREEBUSIES_ATTACHBINS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.FreeBusyId.GetHashCode() ^ this.AttachmentId.GetHashCode();
+            unchecked
+            {
+                return (FreeBusyId.GetHashCode() * 397) ^ AttachmentId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_FREEBUSIES_ATTACHBINS x, REL_FREEBUSIES_ATTACHBINS y)
+        public static bool operator ==(REL_FREEBUSIES_ATTACHBINS left, REL_FREEBUSIES_ATTACHBINS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_FREEBUSIES_ATTACHBINS x, REL_FREEBUSIES_ATTACHBINS y)
+        public static bool operator !=(REL_FREEBUSIES_ATTACHBINS left, REL_FREEBUSIES_ATTACHBINS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_FREEBUSIES_ATTACHURIS : IEquatable<REL_FREEBUSIES_ATTACHURIS>, IContainsKey<string>
+    public class REL_FREEBUSIES_ATTACHURIS : IEquatable<REL_FREEBUSIES_ATTACHURIS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VFREEBUSY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string FreeBusyId { get; set; }
+        public Guid FreeBusyId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(ATTACH_URI), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AttachmentId { get; set; }
+        public Guid AttachmentId { get; set; }
 
         public bool Equals(REL_FREEBUSIES_ATTACHURIS other)
         {
-            if (other == null) return false;
-            return (this.FreeBusyId.Equals(other.FreeBusyId, StringComparison.OrdinalIgnoreCase) &&
-                this.AttachmentId.Equals(other.AttachmentId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return FreeBusyId == other.FreeBusyId && AttachmentId == other.AttachmentId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_FREEBUSIES_ATTACHURIS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_FREEBUSIES_ATTACHURIS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.FreeBusyId.GetHashCode() ^ this.AttachmentId.GetHashCode();
+            unchecked
+            {
+                return (FreeBusyId.GetHashCode() * 397) ^ AttachmentId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_FREEBUSIES_ATTACHURIS x, REL_FREEBUSIES_ATTACHURIS y)
+        public static bool operator ==(REL_FREEBUSIES_ATTACHURIS left, REL_FREEBUSIES_ATTACHURIS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_FREEBUSIES_ATTACHURIS x, REL_FREEBUSIES_ATTACHURIS y)
+        public static bool operator !=(REL_FREEBUSIES_ATTACHURIS left, REL_FREEBUSIES_ATTACHURIS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_FREEBUSIES_ATTENDEES : IEquatable<REL_FREEBUSIES_ATTENDEES>, IContainsKey<string>
+    public class REL_FREEBUSIES_ATTENDEES : IEquatable<REL_FREEBUSIES_ATTENDEES>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VFREEBUSY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string FreeBusyId { get; set; }
+        public Guid FreeBusyId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(ATTENDEE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AttendeeId { get; set; }
+        public Guid AttendeeId { get; set; }
 
         public bool Equals(REL_FREEBUSIES_ATTENDEES other)
         {
-            if (other == null) return false;
-            return (this.FreeBusyId.Equals(other.FreeBusyId, StringComparison.OrdinalIgnoreCase) &&
-                this.AttendeeId.Equals(other.AttendeeId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return FreeBusyId == other.FreeBusyId && AttendeeId == other.AttendeeId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_FREEBUSIES_ATTENDEES;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_FREEBUSIES_ATTENDEES)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.FreeBusyId.GetHashCode() ^ this.AttendeeId.GetHashCode();
+            unchecked
+            {
+                return (FreeBusyId.GetHashCode() * 397) ^ AttendeeId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_FREEBUSIES_ATTENDEES x, REL_FREEBUSIES_ATTENDEES y)
+        public static bool operator ==(REL_FREEBUSIES_ATTENDEES left, REL_FREEBUSIES_ATTENDEES right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_FREEBUSIES_ATTENDEES x, REL_FREEBUSIES_ATTENDEES y)
+        public static bool operator !=(REL_FREEBUSIES_ATTENDEES left, REL_FREEBUSIES_ATTENDEES right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_FREEBUSIES_COMMENTS : IEquatable<REL_FREEBUSIES_COMMENTS>, IContainsKey<string>
+    public class REL_FREEBUSIES_COMMENTS : IEquatable<REL_FREEBUSIES_COMMENTS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-comment relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VFREEBUSY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string FreeBusyId { get; set; }
+        public Guid FreeBusyId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related comment entity
         /// </summary>
         [ForeignKey(typeof(COMMENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string CommentId { get; set; }
+        public Guid AttendeeId { get; set; }
 
         public bool Equals(REL_FREEBUSIES_COMMENTS other)
         {
-            if (other == null) return false;
-            return (this.FreeBusyId.Equals(other.FreeBusyId, StringComparison.OrdinalIgnoreCase) &&
-                this.CommentId.Equals(other.CommentId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return FreeBusyId == other.FreeBusyId && AttendeeId == other.AttendeeId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_FREEBUSIES_COMMENTS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_FREEBUSIES_COMMENTS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.FreeBusyId.GetHashCode() ^ this.CommentId.GetHashCode();
+            unchecked
+            {
+                return (FreeBusyId.GetHashCode() * 397) ^ AttendeeId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_FREEBUSIES_COMMENTS x, REL_FREEBUSIES_COMMENTS y)
+        public static bool operator ==(REL_FREEBUSIES_COMMENTS left, REL_FREEBUSIES_COMMENTS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_FREEBUSIES_COMMENTS x, REL_FREEBUSIES_COMMENTS y)
+        public static bool operator !=(REL_FREEBUSIES_COMMENTS left, REL_FREEBUSIES_COMMENTS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_FREEBUSIES_INFOS : IEquatable<REL_FREEBUSIES_INFOS>, IContainsKey<string>
+    public class REL_FREEBUSIES_INFOS : IEquatable<REL_FREEBUSIES_INFOS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-contact relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VFREEBUSY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string FreeBusyId { get; set; }
+        public Guid FreeBusyId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related contact entity
         /// </summary>
         [ForeignKey(typeof(FREEBUSY_INFO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string InfoId { get; set; }
+        public Guid InfoId { get; set; }
 
         public bool Equals(REL_FREEBUSIES_INFOS other)
         {
-            if (other == null) return false;
-            return (this.FreeBusyId.Equals(other.FreeBusyId, StringComparison.OrdinalIgnoreCase) &&
-                this.InfoId.Equals(other.InfoId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return FreeBusyId == other.FreeBusyId && string.Equals(InfoId, other.InfoId);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_FREEBUSIES_INFOS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_FREEBUSIES_INFOS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.FreeBusyId.GetHashCode() ^ this.InfoId.GetHashCode();
+            unchecked
+            {
+                return (FreeBusyId.GetHashCode() * 397) ^ (InfoId != null ? InfoId.GetHashCode() : 0);
+            }
         }
 
-        public static bool operator ==(REL_FREEBUSIES_INFOS x, REL_FREEBUSIES_INFOS y)
+        public static bool operator ==(REL_FREEBUSIES_INFOS left, REL_FREEBUSIES_INFOS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_FREEBUSIES_INFOS x, REL_FREEBUSIES_INFOS y)
+        public static bool operator !=(REL_FREEBUSIES_INFOS left, REL_FREEBUSIES_INFOS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_FREEBUSIES_REQSTATS : IEquatable<REL_FREEBUSIES_REQSTATS>, IContainsKey<string>
+    public class REL_FREEBUSIES_REQSTATS : IEquatable<REL_FREEBUSIES_REQSTATS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-request status relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VFREEBUSY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string FreeBusyId { get; set; }
+        public Guid FreeBusyId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related request status entity
         /// </summary>
         [ForeignKey(typeof(REQUEST_STATUS), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string ReqStatsId { get; set; }
+        public Guid ReqStatsId { get; set; }
 
         public bool Equals(REL_FREEBUSIES_REQSTATS other)
         {
-            if (other == null) return false;
-            return (this.FreeBusyId.Equals(other.FreeBusyId, StringComparison.OrdinalIgnoreCase) &&
-                this.ReqStatsId.Equals(other.ReqStatsId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return FreeBusyId == other.FreeBusyId && ReqStatsId == other.ReqStatsId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_FREEBUSIES_REQSTATS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_FREEBUSIES_REQSTATS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.FreeBusyId.GetHashCode() ^ this.ReqStatsId.GetHashCode();
+            unchecked
+            {
+                return (FreeBusyId.GetHashCode() * 397) ^ ReqStatsId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_FREEBUSIES_REQSTATS x, REL_FREEBUSIES_REQSTATS y)
+        public static bool operator ==(REL_FREEBUSIES_REQSTATS left, REL_FREEBUSIES_REQSTATS right)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_FREEBUSIES_REQSTATS x, REL_FREEBUSIES_REQSTATS y)
+        public static bool operator !=(REL_FREEBUSIES_REQSTATS left, REL_FREEBUSIES_REQSTATS right)
         {
-            if ((object)x == null || (object)y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 }

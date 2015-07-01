@@ -82,7 +82,7 @@ namespace reexjungle.xcal.service.validators.concretes
         public EmailValidator()
             : base()
         {
-            RuleFor(x => x.Path).Must((x, y) => this.IsValid(x.Path)).When(x => !string.IsNullOrWhiteSpace(x.Path)
+            RuleFor(x => x.Path).Must((x, y) => IsValid(x.Path)).When(x => !string.IsNullOrWhiteSpace(x.Path)
                 || !string.IsNullOrEmpty(x.Path));
         }
 

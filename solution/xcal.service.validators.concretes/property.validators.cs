@@ -218,7 +218,7 @@ namespace reexjungle.xcal.service.validators.concretes
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Duration).SetValidator(new DurationValidator()).When(x => x.Duration != default(DURATION));
             RuleFor(x => x.DateTime).SetValidator(new DateTimeValidator()).When(x => x.DateTime != default(DATE_TIME));
-            RuleFor(x => x.ValueType).NotEqual(VALUE.UNKNOWN);
+            RuleFor(x => x.Value).NotEqual(VALUE.UNKNOWN);
         }
     }
 }

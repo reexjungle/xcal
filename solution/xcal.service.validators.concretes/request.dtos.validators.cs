@@ -1,6 +1,7 @@
 ﻿using reexjungle.xcal.service.operations.concretes.live;
 using reexjungle.xmisc.foundation.concretes;
 using ServiceStack.FluentValidation;
+using System;
 
 namespace reexjungle.xcal.service.validators.concretes
 {
@@ -51,7 +52,7 @@ namespace reexjungle.xcal.service.validators.concretes
         public PatchCalendarValidator()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.CalendarId).Must((x, y) => !string.IsNullOrEmpty(y) || !string.IsNullOrWhiteSpace(y));
+            RuleFor(x => x.CalendarId).Must((x, y) => y != Guid.Empty);
         }
     }
 
@@ -69,7 +70,7 @@ namespace reexjungle.xcal.service.validators.concretes
         public DeleteCalendarValidator()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.CalendarId).Must((x, y) => !string.IsNullOrEmpty(y) || !string.IsNullOrWhiteSpace(y));
+            RuleFor(x => x.CalendarId).Must((x, y) => y != Guid.Empty);
         }
     }
 
@@ -87,7 +88,7 @@ namespace reexjungle.xcal.service.validators.concretes
         public FindCalendarValidator()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.CalendarId).Must((x, y) => !string.IsNullOrEmpty(y) || !string.IsNullOrWhiteSpace(y));
+            RuleFor(x => x.CalendarId).Must((x, y) => y != Guid.Empty);
         }
     }
 
@@ -105,8 +106,8 @@ namespace reexjungle.xcal.service.validators.concretes
         public GetCalendarsValidator()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Page).GreaterThan(0).When(x => x.Page != null && x.Page.HasValue);
-            RuleFor(x => x.Size).GreaterThan(0).When(x => x.Size != null && x.Size.HasValue);
+            RuleFor(x => x.Page).GreaterThan(0).When(x => x.Page != null);
+            RuleFor(x => x.Size).GreaterThan(0).When(x => x.Size != null);
         }
     }
 
@@ -119,7 +120,7 @@ namespace reexjungle.xcal.service.validators.concretes
         public AddEventValidator()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.CalendarId).Must((x, y) => !string.IsNullOrEmpty(x.CalendarId) || !string.IsNullOrWhiteSpace(x.CalendarId));
+            RuleFor(x => x.CalendarId).Must((x, y) => x.CalendarId != Guid.Empty);
             RuleFor(x => x.Event).NotNull();
             RuleFor(x => x.Event).SetValidator(new EventValidator()).When(x => x.Event != null);
         }
@@ -130,7 +131,7 @@ namespace reexjungle.xcal.service.validators.concretes
         public AddEventsValidator()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.CalendarId).Must((x, y) => !string.IsNullOrEmpty(x.CalendarId) || !string.IsNullOrWhiteSpace(x.CalendarId));
+            RuleFor(x => x.CalendarId).Must((x, y) => x.CalendarId != Guid.Empty);
             RuleFor(x => x.Events).NotNull();
             RuleFor(x => x.Events).SetCollectionValidator(new EventValidator()).When(x => !x.Events.NullOrEmpty());
         }

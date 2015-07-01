@@ -11,12 +11,12 @@ namespace reexjungle.xcal.test.server.integration.concretes
 
         public JsonWebServiceTestFactory(string baseUri)
         {
-            this.BaseUri = baseUri;
+            BaseUri = baseUri;
         }
 
         public JsonServiceClient GetClient()
         {
-            return this.client ?? (this.client = new JsonServiceClient(this.BaseUri));
+            return client ?? (client = new JsonServiceClient(BaseUri));
         }
     }
 
@@ -28,12 +28,12 @@ namespace reexjungle.xcal.test.server.integration.concretes
 
         public XmlWebServiceTestFactory(string baseUri)
         {
-            this.BaseUri = baseUri;
+            BaseUri = baseUri;
         }
 
         public XmlServiceClient GetClient()
         {
-            return this.client ?? (this.client = new XmlServiceClient(this.BaseUri));
+            return client ?? (client = new XmlServiceClient(BaseUri));
         }
     }
 
@@ -43,14 +43,14 @@ namespace reexjungle.xcal.test.server.integration.concretes
 
         public JsvWebServicesTestFactory(string baseUri)
         {
-            this.BaseUri = baseUri;
+            BaseUri = baseUri;
         }
 
         public string BaseUri { get; set; }
 
         public JsvServiceClient GetClient()
         {
-            return this.client ?? (this.client = new JsvServiceClient(this.BaseUri));
+            return client ?? (client = new JsvServiceClient(BaseUri));
         }
     }
 }

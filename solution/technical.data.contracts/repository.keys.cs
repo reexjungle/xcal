@@ -7,7 +7,7 @@ namespace reexjungle.technical.data.contracts
     /// Specifies the interface for retrieving keys from a non-relational repository
     /// </summary>
     /// <typeparam name="TKey">The type of referencing key</typeparam>
-    public interface IReadRepositoryKeys<out TKey> : IRepository
+    public interface IReadRepositoryKeys<out TKey>
         where TKey : IEquatable<TKey>, IComparable<TKey>
     {
         /// <summary>

@@ -3,6 +3,7 @@ using reexjungle.xcal.domain.extensions;
 using reexjungle.xmisc.foundation.concretes;
 using reexjungle.xmisc.foundation.contracts;
 using reexjungle.xmisc.infrastructure.concretes.operations;
+using reexjungle.xmisc.infrastructure.contracts;
 using ServiceStack.DataAnnotations;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace reexjungle.xcal.domain.models
     /// Specifes the VEVENT component of the iCalendar Core Object
     /// </summary>
     [DataContract]
-    public class VEVENT : IEVENT, IEquatable<VEVENT>, IComparable<VEVENT>, IContainsKey<string>
+    public class VEVENT : IEVENT, IEquatable<VEVENT>, IComparable<VEVENT>, IContainsKey<Guid>
     {
         private DATE_TIME start;
         private DATE_TIME end;
@@ -30,18 +31,20 @@ namespace reexjungle.xcal.domain.models
         /// </summary>
         [DataMember]
         [Index(Unique = true)]
-        public string Id
-        {
-            get { return this.Uid; }
-            set { this.Uid = value; }
-        }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of a non-recurrent event.
         /// </summary>
         [DataMember]
-        [Index(Unique = false)]
-        public string Uid { get; set; }
+        public Guid Uid
+        {
+            get { return Id; }
+            set
+            {
+                Id = value;
+            }
+        }
 
         [DataMember]
         [Index(Unique = false)]
@@ -50,11 +53,11 @@ namespace reexjungle.xcal.domain.models
         [DataMember]
         public DATE_TIME Start
         {
-            get { return this.start; }
+            get { return start; }
             set
             {
-                this.start = value;
-                this.end = this.start + this.duration;
+                start = value;
+                end = start + duration;
             }
         }
 
@@ -110,22 +113,22 @@ namespace reexjungle.xcal.domain.models
         [DataMember]
         public DATE_TIME End
         {
-            get { return this.end; }
+            get { return end; }
             set
             {
-                this.end = value;
-                this.duration = this.end - this.start;
+                end = value;
+                duration = end - start;
             }
         }
 
         [DataMember]
         public DURATION Duration
         {
-            get { return this.duration; }
+            get { return duration; }
             set
             {
-                this.duration = value;
-                this.end = this.start + this.duration;
+                duration = value;
+                end = start + duration;
             }
         }
 
@@ -187,164 +190,161 @@ namespace reexjungle.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public Dictionary<string, IANA_PROPERTY> IANAProperties { get; set; }
+        public Dictionary<Guid, IANA_PROPERTY> IANAProperties { get; set; }
 
         [DataMember]
         [Ignore]
-        public Dictionary<string, X_PROPERTY> XProperties { get; set; }
+        public Dictionary<Guid, X_PROPERTY> XProperties { get; set; }
 
         public VEVENT()
         {
-            this.RecurrenceId = null;
-            this.Datestamp = new DATE_TIME(DateTime.UtcNow);
-            this.Created = this.Datestamp;
-            this.LastModified = this.Datestamp;
-            this.AttachmentBinaries = new List<ATTACH_BINARY>();
-            this.AttachmentUris = new List<ATTACH_URI>();
-            this.Attendees = new List<ATTENDEE>();
-            this.Categories = new CATEGORIES();
-            this.Contacts = new List<CONTACT>();
-            this.Comments = new List<COMMENT>();
-            this.ExceptionDates = new List<EXDATE>();
-            this.RequestStatuses = new List<REQUEST_STATUS>();
-            this.RelatedTos = new List<RELATEDTO>();
-            this.RecurrenceDates = new List<RDATE>();
-            this.AudioAlarms = new List<AUDIO_ALARM>();
-            this.DisplayAlarms = new List<DISPLAY_ALARM>();
-            this.EmailAlarms = new List<EMAIL_ALARM>();
-            this.IANAProperties = new Dictionary<string, IANA_PROPERTY>();
-            this.XProperties = new Dictionary<string, X_PROPERTY>();
+            RecurrenceId = null;
+            Datestamp = new DATE_TIME(DateTime.UtcNow);
+            Created = Datestamp;
+            LastModified = Datestamp;
+            AttachmentBinaries = new List<ATTACH_BINARY>();
+            AttachmentUris = new List<ATTACH_URI>();
+            Attendees = new List<ATTENDEE>();
+            Categories = new CATEGORIES();
+            Contacts = new List<CONTACT>();
+            Comments = new List<COMMENT>();
+            ExceptionDates = new List<EXDATE>();
+            RequestStatuses = new List<REQUEST_STATUS>();
+            RelatedTos = new List<RELATEDTO>();
+            RecurrenceDates = new List<RDATE>();
+            AudioAlarms = new List<AUDIO_ALARM>();
+            DisplayAlarms = new List<DISPLAY_ALARM>();
+            EmailAlarms = new List<EMAIL_ALARM>();
+            IANAProperties = new Dictionary<Guid, IANA_PROPERTY>();
+            XProperties = new Dictionary<Guid, X_PROPERTY>();
         }
 
-        public VEVENT(DATE_TIME dtstamp, string uid, DATE_TIME start, DATE_TIME end, PRIORITY priority, ORGANIZER organizer = null, LOCATION location = null,
+        public VEVENT(DATE_TIME dtstamp, Guid uid, DATE_TIME start, DATE_TIME end, PRIORITY priority, ORGANIZER organizer = null, LOCATION location = null,
             STATUS status = STATUS.NEEDS_ACTION, SUMMARY summary = null, TRANSP transparency = TRANSP.TRANSPARENT,
             RECURRENCE_ID recurid = null, RECUR rrule = null, List<ATTENDEE> attendees = null, CATEGORIES categories = null, List<RELATEDTO> relatedtos = null)
         {
-            this.Datestamp = dtstamp;
-            this.Uid = uid;
-            this.Start = start;
-            this.Organizer = organizer;
-            this.Location = location;
-            this.Priority = priority;
-            this.Status = status;
-            this.Summary = summary;
-            this.Transparency = transparency;
-            this.RecurrenceId = recurid;
-            this.RecurrenceRule = rrule;
+            Datestamp = dtstamp;
+            Uid = uid;
+            Start = start;
+            Organizer = organizer;
+            Location = location;
+            Priority = priority;
+            Status = status;
+            Summary = summary;
+            Transparency = transparency;
+            RecurrenceId = recurid;
+            RecurrenceRule = rrule;
             this.end = end;
-            this.Attendees = attendees;
-            this.Categories = categories;
-            this.RelatedTos = relatedtos;
+            Attendees = attendees;
+            Categories = categories;
+            RelatedTos = relatedtos;
         }
 
-        public VEVENT(DATE_TIME dtstamp, string uid, DATE_TIME start, DURATION duration, PRIORITY priority, ORGANIZER organizer = null, LOCATION location = null,
+        public VEVENT(DATE_TIME dtstamp, Guid uid, DATE_TIME start, DURATION duration, PRIORITY priority, ORGANIZER organizer = null, LOCATION location = null,
              STATUS status = STATUS.NEEDS_ACTION, SUMMARY summary = null, TRANSP transparency = TRANSP.TRANSPARENT, RECURRENCE_ID recurid = null, RECUR rrule = null, List<ATTENDEE> attendees = null, CATEGORIES categories = null, List<RELATEDTO> relatedtos = null)
         {
-            this.Datestamp = dtstamp;
-            this.Uid = uid;
-            this.Start = start;
-            this.Organizer = organizer;
-            this.Location = location;
-            this.Priority = priority;
-            this.Status = status;
-            this.Summary = summary;
-            this.Transparency = transparency;
-            this.RecurrenceId = recurid;
-            this.RecurrenceRule = rrule;
-            this.Duration = duration;
-            this.Attendees = attendees;
-            this.Categories = categories;
-            this.RelatedTos = relatedtos;
+            Datestamp = dtstamp;
+            Uid = uid;
+            Start = start;
+            Organizer = organizer;
+            Location = location;
+            Priority = priority;
+            Status = status;
+            Summary = summary;
+            Transparency = transparency;
+            RecurrenceId = recurid;
+            RecurrenceRule = rrule;
+            Duration = duration;
+            Attendees = attendees;
+            Categories = categories;
+            RelatedTos = relatedtos;
         }
 
         public VEVENT(IEVENT value)
         {
             if (value == null) throw new ArgumentNullException("value");
-            this.Uid = value.Uid;
-            this.RecurrenceId = value.RecurrenceId;
-            this.Start = value.Start;
-            this.Organizer = value.Organizer;
-            this.Location = value.Location;
-            this.Sequence = value.Sequence;
-            this.Priority = value.Priority;
-            this.Status = value.Status;
-            this.Position = value.Position;
-            this.Classification = value.Classification;
-            this.Transparency = value.Transparency;
-            this.Summary = value.Summary;
-            this.Description = value.Description;
-            this.Transparency = value.Transparency;
-            this.RecurrenceId = value.RecurrenceId;
-            this.RecurrenceRule = value.RecurrenceRule;
-            this.end = value.End;
-            this.duration = value.Duration;
-            this.AttachmentBinaries = value.AttachmentBinaries;
-            this.AttachmentUris = value.AttachmentUris;
-            this.Comments = value.Comments;
-            this.Contacts = value.Contacts;
-            this.ExceptionDates = value.ExceptionDates;
-            this.RecurrenceDates = value.RecurrenceDates;
-            this.RequestStatuses = value.RequestStatuses;
-            this.Attendees = value.Attendees;
-            this.Categories = value.Categories;
-            this.RelatedTos = value.RelatedTos;
-            this.AudioAlarms = value.AudioAlarms;
-            this.DisplayAlarms = value.DisplayAlarms;
-            this.EmailAlarms = value.EmailAlarms;
-            this.IANAProperties = value.IANAProperties;
-            this.XProperties = value.XProperties;
+            Uid = value.Uid;
+            RecurrenceId = value.RecurrenceId;
+            Start = value.Start;
+            Organizer = value.Organizer;
+            Location = value.Location;
+            Sequence = value.Sequence;
+            Priority = value.Priority;
+            Status = value.Status;
+            Position = value.Position;
+            Classification = value.Classification;
+            Transparency = value.Transparency;
+            Summary = value.Summary;
+            Description = value.Description;
+            Transparency = value.Transparency;
+            RecurrenceId = value.RecurrenceId;
+            RecurrenceRule = value.RecurrenceRule;
+            end = value.End;
+            duration = value.Duration;
+            AttachmentBinaries = value.AttachmentBinaries;
+            AttachmentUris = value.AttachmentUris;
+            Comments = value.Comments;
+            Contacts = value.Contacts;
+            ExceptionDates = value.ExceptionDates;
+            RecurrenceDates = value.RecurrenceDates;
+            RequestStatuses = value.RequestStatuses;
+            Attendees = value.Attendees;
+            Categories = value.Categories;
+            RelatedTos = value.RelatedTos;
+            AudioAlarms = value.AudioAlarms;
+            DisplayAlarms = value.DisplayAlarms;
+            EmailAlarms = value.EmailAlarms;
+            IANAProperties = value.IANAProperties;
+            XProperties = value.XProperties;
         }
 
         public bool Equals(VEVENT other)
         {
-            bool equals = false;
-
             //primary reference
-            equals = this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase);
+            var equals = Uid.Equals(other.Uid);
 
-            if (equals && this.RecurrenceId != null && other.RecurrenceId != null) equals = this.RecurrenceId == other.RecurrenceId;
+            if (equals && RecurrenceId != null && other.RecurrenceId != null)
+                equals = RecurrenceId == other.RecurrenceId;
 
             //secondary reference if both events are equal by Uid/Recurrence Id
-            if (equals) equals = this.Sequence == other.Sequence;
+            if (equals) equals = Sequence == other.Sequence;
 
             //tie-breaker
-            if (equals) equals = this.Datestamp == other.Datestamp;
+            if (equals)
+                equals = Datestamp == other.Datestamp;
 
             return equals;
         }
 
-        public int CompareTo(VEVENT other)
-        {
-            var compare = this.Uid.CompareTo(other.Uid);
-            if (compare == 0) compare = this.Sequence.CompareTo(other.Sequence);
-            if (compare == 0) compare = this.Datestamp.CompareTo(other.Datestamp);
-            return compare;
-        }
-
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return this.Equals(obj as VEVENT);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((VEVENT)obj);
         }
 
         public override int GetHashCode()
         {
-            var hash = this.Uid.GetHashCode();
-            if (this.RecurrenceId != null) hash = hash ^ this.RecurrenceId.GetHashCode();
-            hash = hash ^ this.Sequence.GetHashCode() ^ this.Datestamp.GetHashCode();
-            return hash;
+            return Id.GetHashCode();
         }
 
-        public static bool operator ==(VEVENT a, VEVENT b)
+        public static bool operator ==(VEVENT left, VEVENT right)
         {
-            if ((object)a == null || (object)b == null) return Equals(a, b);
-            return a.Equals(b);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(VEVENT a, VEVENT b)
+        public static bool operator !=(VEVENT left, VEVENT right)
         {
-            if ((object)a == null || (object)b == null) return !Equals(a, b);
-            return !a.Equals(b);
+            return !Equals(left, right);
+        }
+
+        public int CompareTo(VEVENT other)
+        {
+            var compare = Id.CompareTo(other.Id);
+            if (compare == 0) compare = Sequence.CompareTo(other.Sequence);
+            if (compare == 0) compare = Datestamp.CompareTo(other.Datestamp);
+            return compare;
         }
 
         public static bool operator <(VEVENT a, VEVENT b)
@@ -363,138 +363,143 @@ namespace reexjungle.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:VEVENT").AppendLine();
-            sb.AppendFormat("DTSTAMP:{0}", this.Datestamp.ToString()).AppendLine();
-            sb.AppendFormat("UID:{0}", this.Uid.ToString()).AppendLine();
-            if (this.Start.TimeZoneId != null)
-                sb.AppendFormat("DTSTART;{0}:{1}", this.Start.TimeZoneId.ToString(), this.Start.ToString()).AppendLine();
+            sb.AppendFormat("DTSTAMP:{0}", Datestamp.ToString()).AppendLine();
+            sb.AppendFormat("UID:{0}", Uid.ToString()).AppendLine();
+            if (Start.TimeZoneId != null)
+                sb.AppendFormat("DTSTART;{0}:{1}", Start.TimeZoneId.ToString(), Start.ToString()).AppendLine();
             else
-                sb.AppendFormat("DTSTART:{0}", this.Start.ToString()).AppendLine();
-            if (this.Classification != CLASS.UNKNOWN) sb.AppendFormat("CLASS:{0}", this.Classification.ToString()).AppendLine();
-            sb.AppendFormat("CREATED:{0}", this.Created.ToString()).AppendLine();
-            if (this.Description != null) sb.Append(this.Description.ToString()).AppendLine();
-            if (this.Position != default(GEO)) sb.Append(this.Position.ToString()).AppendLine();
-            sb.AppendFormat("LAST-MODIFIED:{0}", this.LastModified.ToString()).AppendLine();
-            if (this.Location != null) sb.Append(this.Location.ToString()).AppendLine();
-            if (this.Organizer != null) sb.Append(this.Organizer.ToString()).AppendLine();
-            if (this.Priority != default(PRIORITY)) sb.Append(this.Priority.ToString()).AppendLine();
-            sb.AppendFormat("SEQUENCE:{0}", this.Sequence.ToString()).AppendLine();
-            if (this.Status != STATUS.UNKNOWN) sb.AppendFormat("STATUS:{0}", this.Status.ToString()).AppendLine();
-            if (this.Summary != null) sb.Append(this.Summary.ToString()).AppendLine();
-            if (this.Transparency != TRANSP.UNKNOWN) sb.AppendFormat("TRANSP:{0}", this.Transparency.ToString()).AppendLine();
-            if (this.Url != null) sb.AppendFormat("URL:{0}", this.Url.ToString()).AppendLine();
-            if (this.RecurrenceId != null) sb.Append(this.RecurrenceId.ToString()).AppendLine();
-            if (this.RecurrenceRule != null) sb.AppendFormat("RRULE:{0}", this.RecurrenceRule.ToString()).AppendLine();
-            if (this.End != default(DATE_TIME))
+                sb.AppendFormat("DTSTART:{0}", Start.ToString()).AppendLine();
+            if (Classification != CLASS.UNKNOWN) sb.AppendFormat("CLASS:{0}", Classification.ToString()).AppendLine();
+            sb.AppendFormat("CREATED:{0}", Created.ToString()).AppendLine();
+            if (Description != null) sb.Append(Description.ToString()).AppendLine();
+            if (Position != default(GEO)) sb.Append(Position.ToString()).AppendLine();
+            sb.AppendFormat("LAST-MODIFIED:{0}", LastModified.ToString()).AppendLine();
+            if (Location != null) sb.Append(Location.ToString()).AppendLine();
+            if (Organizer != null) sb.Append(Organizer.ToString()).AppendLine();
+            if (Priority != default(PRIORITY)) sb.Append(Priority.ToString()).AppendLine();
+            sb.AppendFormat("SEQUENCE:{0}", Sequence.ToString()).AppendLine();
+            if (Status != STATUS.UNKNOWN) sb.AppendFormat("STATUS:{0}", Status.ToString()).AppendLine();
+            if (Summary != null) sb.Append(Summary.ToString()).AppendLine();
+            if (Transparency != TRANSP.UNKNOWN) sb.AppendFormat("TRANSP:{0}", Transparency.ToString()).AppendLine();
+            if (Url != null) sb.AppendFormat("URL:{0}", Url.ToString()).AppendLine();
+            if (RecurrenceId != null) sb.Append(RecurrenceId.ToString()).AppendLine();
+            if (RecurrenceRule != null) sb.AppendFormat("RRULE:{0}", RecurrenceRule.ToString()).AppendLine();
+            if (End != default(DATE_TIME))
             {
-                if (this.End.TimeZoneId != null)
-                    sb.AppendFormat("DTEND;{0}:{1}", this.End.TimeZoneId.ToString(), this.End.ToString()).AppendLine();
+                if (End.TimeZoneId != null)
+                    sb.AppendFormat("DTEND;{0}:{1}", End.TimeZoneId.ToString(), End.ToString()).AppendLine();
                 else
-                    sb.AppendFormat("DTEND:{0}", this.End.ToString()).AppendLine();
+                    sb.AppendFormat("DTEND:{0}", End.ToString()).AppendLine();
             }
-            else if (this.Duration != default(DURATION)) sb.Append(this.Duration.ToString()).AppendLine();
+            else if (Duration != default(DURATION)) sb.Append(Duration.ToString()).AppendLine();
 
-            if (!this.AttachmentBinaries.NullOrEmpty())
+            if (!AttachmentBinaries.NullOrEmpty())
             {
-                foreach (var attachment in this.AttachmentBinaries) if (attachment != null) sb.Append(attachment.ToString()).AppendLine();
+                foreach (var attachment in AttachmentBinaries) if (attachment != null) sb.Append(attachment.ToString()).AppendLine();
             }
 
-            if (!this.Attendees.NullOrEmpty())
+            if (!Attendees.NullOrEmpty())
             {
-                foreach (var attendee in this.Attendees)
+                foreach (var attendee in Attendees)
                 {
                     if (attendee != null) sb.Append(attendee.ToString()).AppendLine();
                 }
             }
 
-            if (this.Categories != null && !this.Categories.Values.NullOrEmpty()) sb.Append(this.Categories.ToString()).AppendLine();
+            if (Categories != null && !Categories.Values.NullOrEmpty()) sb.Append(Categories.ToString()).AppendLine();
 
-            if (!this.Comments.NullOrEmpty())
+            if (!Comments.NullOrEmpty())
             {
                 foreach (var comment in Comments) if (comment != null) sb.Append(comment.ToString()).AppendLine();
             }
 
-            if (!this.Contacts.NullOrEmpty())
+            if (!Contacts.NullOrEmpty())
             {
-                foreach (var contact in this.Contacts) if (contact != null) sb.Append(contact.ToString()).AppendLine();
+                foreach (var contact in Contacts) if (contact != null) sb.Append(contact.ToString()).AppendLine();
             }
 
-            if (!this.ExceptionDates.NullOrEmpty())
+            if (!ExceptionDates.NullOrEmpty())
             {
-                foreach (var exdate in this.ExceptionDates) if (exdate != null) sb.Append(exdate.ToString()).AppendLine();
+                foreach (var exdate in ExceptionDates) if (exdate != null) sb.Append(exdate.ToString()).AppendLine();
             }
 
-            if (!this.RequestStatuses.NullOrEmpty())
+            if (!RequestStatuses.NullOrEmpty())
             {
-                foreach (var reqstat in this.RequestStatuses) if (reqstat != null) sb.Append(reqstat.ToString()).AppendLine();
+                foreach (var reqstat in RequestStatuses) if (reqstat != null) sb.Append(reqstat.ToString()).AppendLine();
             }
 
-            if (!this.RelatedTos.NullOrEmpty())
+            if (!RelatedTos.NullOrEmpty())
             {
-                foreach (var relatedto in this.RelatedTos) if (relatedto != null) sb.Append(relatedto.ToString()).AppendLine();
+                foreach (var relatedto in RelatedTos) if (relatedto != null) sb.Append(relatedto.ToString()).AppendLine();
             }
 
-            if (!this.Resources.NullOrEmpty())
+            if (!Resources.NullOrEmpty())
             {
-                foreach (var resource in this.Resources) if (resource != null) sb.Append(resource.ToString()).AppendLine();
+                foreach (var resource in Resources) if (resource != null) sb.Append(resource.ToString()).AppendLine();
             }
 
-            if (!this.RecurrenceDates.NullOrEmpty())
+            if (!RecurrenceDates.NullOrEmpty())
             {
-                foreach (var rdate in this.RecurrenceDates) if (rdate != null) sb.Append(rdate.ToString()).AppendLine();
+                foreach (var rdate in RecurrenceDates) if (rdate != null) sb.Append(rdate.ToString()).AppendLine();
             }
 
-            if (!this.AudioAlarms.NullOrEmpty())
+            if (!AudioAlarms.NullOrEmpty())
             {
-                foreach (var alarm in this.AudioAlarms) if (alarm != null) sb.Append(alarm.ToString()).AppendLine();
+                foreach (var alarm in AudioAlarms) if (alarm != null) sb.Append(alarm.ToString()).AppendLine();
             }
-            if (!this.DisplayAlarms.NullOrEmpty())
+            if (!DisplayAlarms.NullOrEmpty())
             {
-                foreach (var alarm in this.DisplayAlarms) if (alarm != null) sb.Append(alarm.ToString()).AppendLine();
+                foreach (var alarm in DisplayAlarms) if (alarm != null) sb.Append(alarm.ToString()).AppendLine();
             }
-            if (!this.EmailAlarms.NullOrEmpty())
+            if (!EmailAlarms.NullOrEmpty())
             {
-                foreach (var alarm in this.EmailAlarms) if (alarm != null) sb.Append(alarm.ToString()).AppendLine();
+                foreach (var alarm in EmailAlarms) if (alarm != null) sb.Append(alarm.ToString()).AppendLine();
             }
-            if (!this.IANAProperties.NullOrEmpty())
+            if (!IANAProperties.NullOrEmpty())
             {
-                foreach (var iana in this.IANAProperties.Values) if (iana != null) sb.Append(iana.ToString()).AppendLine();
+                foreach (var iana in IANAProperties.Values) if (iana != null) sb.Append(iana.ToString()).AppendLine();
             }
 
-            if (!this.XProperties.NullOrEmpty())
+            if (!XProperties.NullOrEmpty())
             {
-                foreach (var xprop in this.XProperties.Values) if (xprop != null) sb.Append(xprop.ToString()).AppendLine();
+                foreach (var xprop in XProperties.Values) if (xprop != null) sb.Append(xprop.ToString()).AppendLine();
             }
 
             sb.Append("END:VEVENT");
             return sb.ToString().ToUtf8String();
         }
 
-        public List<TEVENT> GenerateRecurrences<TEVENT>() where TEVENT : class, IEVENT, new()
+        public List<TEVENT> GenerateRecurrences<TEVENT>(IKeyGenerator<Guid> keyGenerator)
+            where TEVENT : class, IEVENT, new()
         {
             var recurs = new List<TEVENT>();
-            var dates = this.Start.GenerateRecurrences(this.RecurrenceRule);
-            if (!this.RecurrenceDates.NullOrEmpty())
+            var dates = Start.GenerateRecurrences(RecurrenceRule);
+            if (!RecurrenceDates.NullOrEmpty())
             {
-                var rdates = this.RecurrenceDates.Where(x => !x.DateTimes.NullOrEmpty()).SelectMany(x => x.DateTimes);
-                var rperiods = this.RecurrenceDates.Where(x => !x.Periods.NullOrEmpty()).SelectMany(x => x.Periods);
+                var rdates = RecurrenceDates.Where(x => !x.DateTimes.NullOrEmpty()).SelectMany(x => x.DateTimes).ToList();
+                var rperiods = RecurrenceDates.Where(x => !x.Periods.NullOrEmpty()).SelectMany(x => x.Periods).ToList();
+
                 if (!rdates.NullOrEmpty()) dates.AddRange(rdates);
                 if (!rperiods.NullOrEmpty()) dates.AddRange(rperiods.Select(x => x.Start));
             }
 
-            if (!this.ExceptionDates.NullOrEmpty())
+            if (!ExceptionDates.NullOrEmpty())
             {
-                var exdates = this.ExceptionDates.Where(x => !x.DateTimes.NullOrEmpty()).SelectMany(x => x.DateTimes);
+                var exdates = ExceptionDates.Where(x => !x.DateTimes.NullOrEmpty()).SelectMany(x => x.DateTimes).ToList();
                 if (!exdates.NullOrEmpty()) dates = dates.Except(exdates).ToList();
             }
 
-            var count = 0;
+            int count = 0;
             foreach (var recurrence in dates)
             {
-                var instance = new VEVENT();
-                instance.Id = string.Format("{0}-{1}", this.Id, ++count);
-                instance.Start = recurrence;
-                instance.End = recurrence + this.Duration;
-                instance.RecurrenceRule = null;
+                var instance = new VEVENT
+                {
+                    Id = keyGenerator.GetNext(),
+                    Start = recurrence,
+                    End = recurrence + Duration,
+                    RecurrenceRule = null
+                };
+
                 instance.RecurrenceId = new RECURRENCE_ID
                 {
                     Id = instance.Id,

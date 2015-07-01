@@ -1,6 +1,7 @@
 ﻿using reexjungle.xcal.domain.models;
 using reexjungle.xmisc.foundation.concretes;
 using ServiceStack.FluentValidation;
+using System;
 
 namespace reexjungle.xcal.service.validators.concretes
 {
@@ -8,7 +9,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public CalendarValidator()
         {
-            RuleFor(x => x.Id).Must((x, y) => !string.IsNullOrEmpty(x.Id) || !string.IsNullOrWhiteSpace(x.Id));
+            RuleFor(x => x.Id).Must((x, y) => x.Id != Guid.Empty);
             RuleFor(x => x.ProdId).Must((x, y) => !string.IsNullOrEmpty(x.ProdId) || !string.IsNullOrWhiteSpace(x.ProdId));
             RuleFor(x => x.Version).Must((x, y) => !string.IsNullOrEmpty(x.ProdId) || !string.IsNullOrWhiteSpace(x.ProdId));
             RuleFor(x => x.Events).NotNull();

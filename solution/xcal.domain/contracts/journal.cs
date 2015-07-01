@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
+using System.Collections.Generic;
 
 namespace reexjungle.xcal.domain.contracts
 {
-    public interface IJOURNAL: ICOMPONENT
+    public interface IJOURNAL : ICOMPONENT
     {
         string Uid { get; set; }
 

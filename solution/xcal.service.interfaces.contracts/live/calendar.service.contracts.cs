@@ -1,5 +1,6 @@
 ﻿using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.operations.concretes.live;
+using System;
 using System.Collections.Generic;
 
 namespace reexjungle.xcal.service.interfaces.contracts.live
@@ -83,6 +84,6 @@ namespace reexjungle.xcal.service.interfaces.contracts.live
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        List<string> Get(GetCalendarKeys request);
+        List<Guid> Get(GetCalendarKeys request);
     }
 }

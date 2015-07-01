@@ -36,7 +36,7 @@ namespace reexjungle.xcal.application.server.web.dev1
             #region configure headers
 
             //Enable global CORS features on  Response headers
-            base.SetConfig(new EndpointHostConfig
+            SetConfig(new EndpointHostConfig
             {
                 GlobalResponseHeaders =
                 {
@@ -82,7 +82,7 @@ namespace reexjungle.xcal.application.server.web.dev1
 
             #region inject key generators
 
-            container.Register<IGuidKeyGenerator>(new GuidKeyGenerator());
+            container.Register<IKeyGenerator<Guid>>(new SequentialGuidKeyGenerator());
 
             #endregion inject key generators
 
@@ -181,65 +181,46 @@ namespace reexjungle.xcal.application.server.web.dev1
             }
             catch (MySqlException ex)
             {
-                container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.StackTrace, ex);
+                container.Resolve<ILogFactory>().GetLogger(GetType()).Error(ex.StackTrace, ex);
             }
             catch (InvalidOperationException ex)
             {
-                container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString(), ex);
+                container.Resolve<ILogFactory>().GetLogger(GetType()).Error(ex.ToString(), ex);
             }
             catch (Exception ex)
             {
-                container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString(), ex);
+                container.Resolve<ILogFactory>().GetLogger(GetType()).Error(ex.ToString(), ex);
             }
 
             #endregion create main database and tables
 
             #region inject ormlite repositories
 
-            container.Register<ICalendarRepository>(x => new CalendarOrmLiteRepository
-            {
-                KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
-                DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
-                EventRepository = x.Resolve<IEventRepository>(),
-            });
+            container.Register<IAudioAlarmRepository>(x => new AudioAlarmOrmLiteRepository(
+                    x.Resolve<IKeyGenerator<Guid>>(),
+                    x.Resolve<IDbConnectionFactory>()));
 
-            var ar = new AudioAlarmOrmLiteRepository()
-            {
-                KeyGenerator = container.Resolve<IGuidKeyGenerator>(),
-                DbConnectionFactory = container.Resolve<IDbConnectionFactory>(),
-            };
+            container.Register<IDisplayAlarmRepository>(x => new DisplayAlarmOrmLiteRepository(
+                x.Resolve<IDbConnectionFactory>()));
 
-            container.Register<IEventRepository>(x => new EventOrmLiteRepository
-            {
-                KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
-                DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
-                AudioAlarmRepository = x.Resolve<IAudioAlarmRepository>(),
-                DisplayAlarmRepository = x.Resolve<IDisplayAlarmRepository>(),
-                EmailAlarmRepository = x.Resolve<IEmailAlarmRepository>(),
-            });
+            container.Register<IEmailAlarmRepository>(x => new EmailAlarmOrmLiteRepository(
+                x.Resolve<IKeyGenerator<Guid>>(),
+                x.Resolve<IDbConnectionFactory>()));
 
-            container.Register<IAudioAlarmRepository>(x => new AudioAlarmOrmLiteRepository
-            {
-                KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
-                DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
-            });
+            container.Register<IEventRepository>(x => new EventOrmLiteRepository(
+                    x.Resolve<IKeyGenerator<Guid>>(),
+                    x.Resolve<IAudioAlarmRepository>(),
+                    x.Resolve<IDisplayAlarmRepository>(),
+                    x.Resolve<IEmailAlarmRepository>(),
+                    x.Resolve<IDbConnectionFactory>()));
 
-            container.Register<IDisplayAlarmRepository>(x => new DisplayAlarmOrmLiteRepository
-            {
-                KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
-                DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
-            });
+            container.Register<ICalendarRepository>(x => new CalendarOrmLiteRepository(
+                    x.Resolve<IKeyGenerator<Guid>>(),
+                    x.Resolve<IEventRepository>(),
+                    x.Resolve<IDbConnectionFactory>()));
 
-            container.Register<IEmailAlarmRepository>(x => new EmailAlarmOrmLiteRepository
-            {
-                KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
-                DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
-            });
-
-            container.Register<IAdminRepository>(x => new AdminOrmLiteRepository
-            {
-                DbConnectionFactory = x.Resolve<IDbConnectionFactory>(),
-            });
+            container.Register<IAdminRepository>(x => new AdminOrmLiteRepository(
+                x.Resolve<IDbConnectionFactory>()));
 
             #endregion inject ormlite repositories
 

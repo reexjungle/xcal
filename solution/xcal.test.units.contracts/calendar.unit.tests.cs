@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace reexjungle.xcal.test.units.contracts
 {
-    public interface ICalendarUnitTests : IUnitTests
+    public interface ICalendarUnitTest
     {
         IEnumerable<VCALENDAR> GenerateCalendarsOfSize(int n);
     }

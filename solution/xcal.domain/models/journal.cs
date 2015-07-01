@@ -10,17 +10,29 @@ using System.Text;
 namespace reexjungle.xcal.domain.models
 {
     [DataContract]
-    public class VJOURNAL : IJOURNAL, IEquatable<VJOURNAL>, IContainsKey<string>
+    public class VJOURNAL : IJOURNAL, IEquatable<VJOURNAL>, IContainsKey<Guid>
     {
+        /// <summary>
+        /// Gets or sets the unique identifier of the journal.
+        /// </summary>
         [DataMember]
-        public string Id
-        {
-            get { return this.Uid; }
-            set { this.Uid = value; }
-        }
+        [Index(Unique = true)]
+        public Guid Id { get; set; }
 
+        /// <summary>
+        /// Gets or sets the unique identifier of a non-recurrent journal.
+        /// </summary>
         [DataMember]
-        public string Uid { get; set; }
+        public string Uid
+        {
+            get { return Id.ToString(); }
+            set
+            {
+                Id = !string.IsNullOrWhiteSpace(value)
+                    ? new Guid(value)
+                    : Guid.NewGuid();
+            }
+        }
 
         [DataMember]
         public DATE_TIME Datestamp { get; set; }
@@ -112,131 +124,127 @@ namespace reexjungle.xcal.domain.models
 
         public bool Equals(VJOURNAL other)
         {
-            bool equals = false;
+            var equals = Id.Equals(other.Id);
 
-            //primary reference
-            equals = this.Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase);
+            if (equals && RecurrenceId != null && other.RecurrenceId != null)
+                equals = RecurrenceId == other.RecurrenceId;
 
-            if (equals && this.RecurrenceId != null && other.RecurrenceId != null) equals = this.RecurrenceId == other.RecurrenceId;
+            if (equals) equals = Sequence == other.Sequence;
 
-            //secondary reference if both events are equal by Uid/Recurrence Id
-            if (equals) equals = this.Sequence == other.Sequence;
-
-            //tie-breaker
-            if (equals) equals = this.Datestamp == other.Datestamp;
+            if (equals)
+                equals = Datestamp == other.Datestamp;
 
             return equals;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            if (!(obj is VJOURNAL)) return false;
-            return this.Equals(obj as VJOURNAL);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((VJOURNAL)obj);
         }
 
         public override int GetHashCode()
         {
-            var hash = this.Uid.GetHashCode();
-            if (this.RecurrenceId != null) hash = hash ^ this.RecurrenceId.GetHashCode();
-            hash = hash ^ this.Sequence.GetHashCode() ^ this.Datestamp.GetHashCode();
+            var hash = Id.GetHashCode();
+            if (RecurrenceId != null) hash = hash ^ RecurrenceId.GetHashCode();
+            hash = hash ^ Sequence.GetHashCode() ^ Datestamp.GetHashCode();
             return hash;
         }
 
-        public static bool operator ==(VJOURNAL a, VJOURNAL b)
+        public static bool operator ==(VJOURNAL left, VJOURNAL right)
         {
-            if ((object)a == null || (object)b == null) return Equals(a, b);
-            return a.Equals(b);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(VJOURNAL a, VJOURNAL b)
+        public static bool operator !=(VJOURNAL left, VJOURNAL right)
         {
-            if ((object)a == null || (object)b == null) return !Equals(a, b);
-            return !a.Equals(b);
+            return !Equals(left, right);
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:VJOURNAL").AppendLine();
-            sb.AppendFormat("DTSTAMP:{0}", this.Datestamp).AppendLine();
-            sb.AppendFormat("UID:{0}", this.Uid).AppendLine();
-            if (this.Start.TimeZoneId != null)
-                sb.AppendFormat("DTSTART;{0}:{1}", this.Start.TimeZoneId, this.Start).AppendLine();
+            sb.AppendFormat("DTSTAMP:{0}", Datestamp).AppendLine();
+            sb.AppendFormat("UID:{0}", Uid).AppendLine();
+            if (Start.TimeZoneId != null)
+                sb.AppendFormat("DTSTART;{0}:{1}", Start.TimeZoneId, Start).AppendLine();
             else
-                sb.AppendFormat("DTSTART:{0}", this.Start).AppendLine();
-            if (this.Classification != CLASS.UNKNOWN) sb.AppendFormat("CLASS:{0}", this.Classification).AppendLine();
-            sb.AppendFormat("CREATED:{0}", this.Created).AppendLine();
-            if (this.Description != null) sb.Append(this.Description).AppendLine();
-            sb.AppendFormat("LAST-MODIFIED:{0}", this.LastModified).AppendLine();
-            if (this.Organizer != null) sb.Append(this.Organizer).AppendLine();
-            sb.AppendFormat("SEQUENCE:{0}", this.Sequence).AppendLine();
-            if (this.Status != STATUS.UNKNOWN) sb.AppendFormat("STATUS:{0}", this.Status).AppendLine();
-            if (this.Summary != null) sb.Append(this.Summary).AppendLine();
-            if (this.Url != null) sb.AppendFormat("URL:{0}", this.Url).AppendLine();
-            if (this.RecurrenceId != null) sb.Append(this.RecurrenceId).AppendLine();
-            if (this.RecurrenceRule != null) sb.AppendFormat("RRULE:{0}", this.RecurrenceRule).AppendLine();
+                sb.AppendFormat("DTSTART:{0}", Start).AppendLine();
+            if (Classification != CLASS.UNKNOWN) sb.AppendFormat("CLASS:{0}", Classification).AppendLine();
+            sb.AppendFormat("CREATED:{0}", Created).AppendLine();
+            if (Description != null) sb.Append(Description).AppendLine();
+            sb.AppendFormat("LAST-MODIFIED:{0}", LastModified).AppendLine();
+            if (Organizer != null) sb.Append(Organizer).AppendLine();
+            sb.AppendFormat("SEQUENCE:{0}", Sequence).AppendLine();
+            if (Status != STATUS.UNKNOWN) sb.AppendFormat("STATUS:{0}", Status).AppendLine();
+            if (Summary != null) sb.Append(Summary).AppendLine();
+            if (Url != null) sb.AppendFormat("URL:{0}", Url).AppendLine();
+            if (RecurrenceId != null) sb.Append(RecurrenceId).AppendLine();
+            if (RecurrenceRule != null) sb.AppendFormat("RRULE:{0}", RecurrenceRule).AppendLine();
 
-            if (!this.Attachments.NullOrEmpty())
+            if (!Attachments.NullOrEmpty())
             {
-                foreach (var attachment in this.Attachments) if (attachment != null) sb.Append(attachment).AppendLine();
+                foreach (var attachment in Attachments) if (attachment != null) sb.Append(attachment).AppendLine();
             }
 
-            if (!this.Attendees.NullOrEmpty())
+            if (!Attendees.NullOrEmpty())
             {
-                foreach (var attendee in this.Attendees) if (attendee != null) sb.Append(attendee).AppendLine();
+                foreach (var attendee in Attendees) if (attendee != null) sb.Append(attendee).AppendLine();
             }
 
-            if (this.Categories != null && !this.Categories.Values.NullOrEmpty()) sb.Append(this.Categories).AppendLine();
+            if (Categories != null && !Categories.Values.NullOrEmpty()) sb.Append(Categories).AppendLine();
 
-            if (!this.Comments.NullOrEmpty())
+            if (!Comments.NullOrEmpty())
             {
                 foreach (var comment in Comments) if (comment != null) sb.Append(comment).AppendLine();
             }
 
-            if (!this.Contacts.NullOrEmpty())
+            if (!Contacts.NullOrEmpty())
             {
-                foreach (var contact in this.Contacts) if (contact != null) sb.Append(contact).AppendLine();
+                foreach (var contact in Contacts) if (contact != null) sb.Append(contact).AppendLine();
             }
 
-            if (!this.ExceptionDates.NullOrEmpty())
+            if (!ExceptionDates.NullOrEmpty())
             {
-                foreach (var exdate in this.ExceptionDates) if (exdate != null) sb.Append(exdate).AppendLine();
+                foreach (var exdate in ExceptionDates) if (exdate != null) sb.Append(exdate).AppendLine();
             }
 
-            if (!this.RequestStatuses.NullOrEmpty())
+            if (!RequestStatuses.NullOrEmpty())
             {
-                foreach (var reqstat in this.RequestStatuses) if (reqstat != null) sb.Append(reqstat).AppendLine();
+                foreach (var reqstat in RequestStatuses) if (reqstat != null) sb.Append(reqstat).AppendLine();
             }
 
-            if (!this.RelatedTos.NullOrEmpty())
+            if (!RelatedTos.NullOrEmpty())
             {
-                foreach (var relatedto in this.RelatedTos) if (relatedto != null) sb.Append(relatedto).AppendLine();
+                foreach (var relatedto in RelatedTos) if (relatedto != null) sb.Append(relatedto).AppendLine();
             }
 
-            if (!this.Resources.NullOrEmpty())
+            if (!Resources.NullOrEmpty())
             {
-                foreach (var resource in this.Resources) if (resource != null) sb.Append(resource).AppendLine();
+                foreach (var resource in Resources) if (resource != null) sb.Append(resource).AppendLine();
             }
 
-            if (!this.Resources.NullOrEmpty())
+            if (!Resources.NullOrEmpty())
             {
-                foreach (var resource in this.Resources) if (resource != null) sb.Append(resource).AppendLine();
+                foreach (var resource in Resources) if (resource != null) sb.Append(resource).AppendLine();
             }
 
-            if (!this.RecurrenceDates.NullOrEmpty())
+            if (!RecurrenceDates.NullOrEmpty())
             {
-                foreach (var rdate in this.RecurrenceDates) if (rdate != null) sb.Append(rdate).AppendLine();
+                foreach (var rdate in RecurrenceDates) if (rdate != null) sb.Append(rdate).AppendLine();
             }
 
-            if (!this.IANA.NullOrEmpty())
+            if (!IANA.NullOrEmpty())
             {
-                foreach (var iana in this.IANA) if (iana != null) sb.Append(iana).AppendLine();
+                foreach (var iana in IANA) if (iana != null) sb.Append(iana).AppendLine();
             }
 
-            if (!this.NonStandard.NullOrEmpty())
+            if (!NonStandard.NullOrEmpty())
             {
-                foreach (var xprop in this.NonStandard) if (xprop != null) sb.Append(xprop).AppendLine();
+                foreach (var xprop in NonStandard) if (xprop != null) sb.Append(xprop).AppendLine();
             }
 
             sb.Append("END:VJOURNAL");

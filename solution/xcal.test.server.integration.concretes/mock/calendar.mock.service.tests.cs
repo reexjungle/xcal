@@ -13,7 +13,7 @@ namespace reexjungle.xcal.test.server.integration.concretes.mock
 
         public Container Container
         {
-            get { return this.container; }
+            get { return container; }
         }
 
         public void Configure()

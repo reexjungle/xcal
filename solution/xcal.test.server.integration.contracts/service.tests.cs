@@ -3,16 +3,12 @@ using reexjungle.xcal.test.units.contracts;
 
 namespace reexjungle.xcal.test.server.integration.contracts
 {
-    public interface IIntegrationTests : ITests { }
-
-    public interface IWebServiceIntegrationTests : IIntegrationTests
+    public interface IWebServiceIntegrationTests
     {
-        void Initialize();
-
         void TearDown();
     }
 
-    public interface IMockServiceIntegrationTests : IIntegrationTests
+    public interface IMockServiceIntegrationTests
     {
         Container Container { get; }
 

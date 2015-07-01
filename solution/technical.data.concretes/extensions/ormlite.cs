@@ -92,8 +92,8 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
                 while (dataReader.Read())
                 {
                     if (dataReader.FieldCount > 1) break;
-                    var row = (TParam)dataReader[0];
-                    to.Add(row);
+
+                    to.Add((TParam)dataReader[0]);
                 }
             }
             return to;
@@ -237,12 +237,12 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             }
         }
 
-        public static List<string> SelectParam<TModel>(this IDbConnection db,
-    Expression<Func<TModel, string>> param,
+        public static List<Guid> SelectParam<TModel>(this IDbConnection db,
+    Expression<Func<TModel, Guid>> param,
     int? skip = null,
     int? rows = null)
         {
-            return db.SelectParam<TModel, string>(param, skip, rows);
+            return db.SelectParam<TModel, Guid>(param, skip, rows);
         }
 
         public static List<TParam> SelectParam<TModel, TParam>(this IDbConnection db,
@@ -254,8 +254,8 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             var ev = OrmLiteConfig.DialectProvider.ExpressionVisitor<TModel>();
 
             var tname = GetQuotedTableName<TModel>();
-            var pname = (param.Body != null) ? (param.Body as MemberExpression).Member.Name : null;
-            if (pname == null) return new List<TParam>();
+            var pname = param.Body != null ? (param.Body as MemberExpression).Member.Name : null;
+            if (string.IsNullOrWhiteSpace(pname)) return new List<TParam>();
 
             ev.Skip = skip;
             ev.Rows = rows;
@@ -268,13 +268,13 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             }
         }
 
-        public static List<string> SelectParam<TModel>(this IDbConnection db,
-            Expression<Func<TModel, string>> param,
+        public static List<Guid> SelectParam<TModel>(this IDbConnection db,
+            Expression<Func<TModel, Guid>> param,
             Expression<Func<TModel, bool>> predicate,
             int? skip = null,
             int? rows = null)
         {
-            return db.SelectParam<TModel, string>(param, predicate, skip, rows);
+            return db.SelectParam<TModel, Guid>(param, predicate, skip, rows);
         }
 
         public static List<TParam> SelectParam<TModel, TParam>(this IDbConnection db,
@@ -368,16 +368,16 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         /// <returns>The list of comined records of the first POCO table.</returns>
         public static List<T1> Select<T1, T2, R12>(this IDbConnection db,
 
-            Expression<Func<R12, string>> R12_FK1,
+            Expression<Func<R12, Guid>> R12_FK1,
             Expression<Func<T1, bool>> P1,
-            Expression<Func<R12, string>> R12_FK2,
+            Expression<Func<R12, Guid>> R12_FK2,
             JoinMode mode = JoinMode.INNER,
             bool quoted = true,
             int? skip = null,
             int? rows = null)
             where T1 : new()
         {
-            return db.Select<T1, T2, R12, string>(R12_FK1, P1, R12_FK2, mode, quoted, skip, rows);
+            return db.Select<T1, T2, R12, Guid>(R12_FK1, P1, R12_FK2, mode, quoted, skip, rows);
         }
 
         /// <summary>
@@ -491,8 +491,8 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         /// <param name="rows">The number of row records to return.</param>
         /// <returns>The list of comined records of the first POCO table.</returns>
         public static List<T1> Select<T1, T2, R12>(this IDbConnection db,
-            Expression<Func<R12, string>> R12_FK1,
-            Expression<Func<R12, string>> R12_FK2,
+            Expression<Func<R12, Guid>> R12_FK1,
+            Expression<Func<R12, Guid>> R12_FK2,
             Expression<Func<T2, bool>> P2,
             JoinMode mode = JoinMode.INNER,
             bool quoted = true,
@@ -500,7 +500,7 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             int? rows = null)
             where T1 : new()
         {
-            return db.Select<T1, T2, R12, string>(R12_FK1, R12_FK2, P2, mode, quoted, skip, rows);
+            return db.Select<T1, T2, R12, Guid>(R12_FK1, R12_FK2, P2, mode, quoted, skip, rows);
         }
 
         /// <summary>
@@ -617,9 +617,9 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         /// <param name="rows">The number of row records to return.</param>
         /// <returns>The list of comined records of the first POCO table.</returns>
         public static List<T1> Select<T1, T2, R12>(this IDbConnection db,
-            Expression<Func<R12, string>> R12_FK1,
+            Expression<Func<R12, Guid>> R12_FK1,
             Expression<Func<T1, bool>> P1,
-            Expression<Func<R12, string>> R12_FK2,
+            Expression<Func<R12, Guid>> R12_FK2,
             Expression<Func<T2, bool>> P2,
             Conjunctor C1 = Conjunctor.AND,
             JoinMode mode = JoinMode.INNER,
@@ -628,7 +628,7 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             int? rows = null)
             where T1 : new()
         {
-            return db.Select<T1, T2, R12, string>(R12_FK1, P1, R12_FK2, P2, C1, mode, quoted, skip, rows);
+            return db.Select<T1, T2, R12, Guid>(R12_FK1, P1, R12_FK2, P2, C1, mode, quoted, skip, rows);
         }
 
         /// <summary>
@@ -761,18 +761,18 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         /// <param name="rows">The number of row records to return.</param>
         /// <returns>The list of comined records of the first POCO table.</returns>
         public static List<T1> Select<T1, T2, T3, R12, R13>(this IDbConnection db,
-            Expression<Func<R12, string>> R12_FK1,
+            Expression<Func<R12, Guid>> R12_FK1,
             Expression<Func<T1, bool>> P1,
-            Expression<Func<R12, string>> R12_FK2,
-            Expression<Func<R13, string>> R13_FK1,
-            Expression<Func<R13, string>> R13_FK3,
+            Expression<Func<R12, Guid>> R12_FK2,
+            Expression<Func<R13, Guid>> R13_FK1,
+            Expression<Func<R13, Guid>> R13_FK3,
             JoinMode mode = JoinMode.INNER,
             bool quoted = true,
             int? skip = null,
             int? rows = null)
             where T1 : new()
         {
-            return db.Select<T1, T2, T3, R12, R13, string>(R12_FK1, P1, R12_FK2, R13_FK1, R13_FK3, mode, quoted, skip, rows);
+            return db.Select<T1, T2, T3, R12, R13, Guid>(R12_FK1, P1, R12_FK2, R13_FK1, R13_FK3, mode, quoted, skip, rows);
         }
 
         /// <summary>
@@ -914,18 +914,18 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         /// <param name="rows">The number of row records to return.</param>
         /// <returns>The list of comined records of the first POCO table.</returns>
         public static List<T1> Select<T1, T2, T3, R12, R13>(this IDbConnection db,
-            Expression<Func<R12, string>> R12_FK1,
-            Expression<Func<R12, string>> R12_FK2,
+            Expression<Func<R12, Guid>> R12_FK1,
+            Expression<Func<R12, Guid>> R12_FK2,
             Expression<Func<T2, bool>> P2,
-            Expression<Func<R13, string>> R13_FK1,
-            Expression<Func<R13, string>> R13_FK3,
+            Expression<Func<R13, Guid>> R13_FK1,
+            Expression<Func<R13, Guid>> R13_FK3,
             JoinMode mode = JoinMode.INNER,
             bool quoted = true,
             int? skip = null,
             int? rows = null)
             where T1 : new()
         {
-            return db.Select<T1, T2, T3, R12, R13, string>(R12_FK1, R12_FK2, P2, R13_FK1, R13_FK3, mode, quoted, skip, rows);
+            return db.Select<T1, T2, T3, R12, R13, Guid>(R12_FK1, R12_FK2, P2, R13_FK1, R13_FK3, mode, quoted, skip, rows);
         }
 
         /// <summary>
@@ -1068,10 +1068,10 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         /// <param name="rows">The number of row records to return.</param>
         /// <returns>The list of comined records of the first POCO table.</returns>
         public static List<T1> Select<T1, T2, T3, R12, R13>(this IDbConnection db,
-            Expression<Func<R12, string>> R12_FK1,
-            Expression<Func<R12, string>> R12_FK2,
-            Expression<Func<R13, string>> R13_FK1,
-            Expression<Func<R13, string>> R13_FK3,
+            Expression<Func<R12, Guid>> R12_FK1,
+            Expression<Func<R12, Guid>> R12_FK2,
+            Expression<Func<R13, Guid>> R13_FK1,
+            Expression<Func<R13, Guid>> R13_FK3,
             Expression<Func<T3, bool>> P3,
             JoinMode mode = JoinMode.INNER,
             bool quoted = true,
@@ -1079,7 +1079,7 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             int? rows = null)
             where T1 : new()
         {
-            return db.Select<T1, T2, T3, R12, R13, string>(R12_FK1, R12_FK2, R13_FK1, R13_FK3, P3, mode, quoted, skip, rows);
+            return db.Select<T1, T2, T3, R12, R13, Guid>(R12_FK1, R12_FK2, R13_FK1, R13_FK3, P3, mode, quoted, skip, rows);
         }
 
         /// <summary>
@@ -1224,12 +1224,12 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         /// <param name="rows">The number of row records to return.</param>
         /// <returns>The list of comined records of the first POCO table.</returns>
         public static List<T1> Select<T1, T2, T3, R12, R13>(this IDbConnection db,
-            Expression<Func<R12, string>> R12_FK1,
+            Expression<Func<R12, Guid>> R12_FK1,
             Expression<Func<T1, bool>> P1,
-            Expression<Func<R12, string>> R12_FK2,
+            Expression<Func<R12, Guid>> R12_FK2,
             Expression<Func<T2, bool>> P2,
-            Expression<Func<R13, string>> R13_FK1,
-            Expression<Func<R13, string>> R13_FK3,
+            Expression<Func<R13, Guid>> R13_FK1,
+            Expression<Func<R13, Guid>> R13_FK3,
             Conjunctor C1 = Conjunctor.AND,
             JoinMode mode = JoinMode.INNER,
             bool quoted = true,
@@ -1237,7 +1237,7 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             int? rows = null)
             where T1 : new()
         {
-            return db.Select<T1, T2, T3, R12, R13, string>(R12_FK1, P1, R12_FK2, P2, R13_FK1, R13_FK3, C1, mode, quoted, skip, rows);
+            return db.Select<T1, T2, T3, R12, R13, Guid>(R12_FK1, P1, R12_FK2, P2, R13_FK1, R13_FK3, C1, mode, quoted, skip, rows);
         }
 
         /// <summary>
@@ -1391,11 +1391,11 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         /// <param name="rows">The number of row records to return.</param>
         /// <returns>The list of comined records of the first POCO table.</returns>
         public static List<T1> Select<T1, T2, T3, R12, R13>(this IDbConnection db,
-            Expression<Func<R12, string>> R12_FK1,
-            Expression<Func<R12, string>> R12_FK2,
+            Expression<Func<R12, Guid>> R12_FK1,
+            Expression<Func<R12, Guid>> R12_FK2,
             Expression<Func<T2, bool>> P2,
-            Expression<Func<R13, string>> R13_FK1,
-            Expression<Func<R13, string>> R13_FK3,
+            Expression<Func<R13, Guid>> R13_FK1,
+            Expression<Func<R13, Guid>> R13_FK3,
             Expression<Func<T3, bool>> P3,
             Conjunctor C1,
             JoinMode mode = JoinMode.INNER,
@@ -1404,7 +1404,7 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             int? rows = null)
             where T1 : new()
         {
-            return db.Select<T1, T2, T3, R12, R13, string>(R12_FK1, R12_FK2, P2, R13_FK1, R13_FK3, P3, C1, mode, quoted, skip, rows);
+            return db.Select<T1, T2, T3, R12, R13, Guid>(R12_FK1, R12_FK2, P2, R13_FK1, R13_FK3, P3, C1, mode, quoted, skip, rows);
         }
 
         /// <summary>
@@ -1559,10 +1559,10 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         /// <param name="rows">The number of row records to return.</param>
         /// <returns>The list of comined records of the first POCO table.</returns>
         public static List<T1> Select<T1, T2, T3, R12, R13>(this IDbConnection db,
-            Expression<Func<R12, string>> R12_FK1,
-            Expression<Func<R12, string>> R12_FK2,
-            Expression<Func<R13, string>> R13_FK1,
-            Expression<Func<R13, string>> R13_FK3,
+            Expression<Func<R12, Guid>> R12_FK1,
+            Expression<Func<R12, Guid>> R12_FK2,
+            Expression<Func<R13, Guid>> R13_FK1,
+            Expression<Func<R13, Guid>> R13_FK3,
             Expression<Func<T1, bool>> P1,
             Expression<Func<T3, bool>> P3,
             Conjunctor C1 = Conjunctor.AND,
@@ -1572,7 +1572,7 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             int? rows = null)
             where T1 : new()
         {
-            return db.Select<T1, T2, T3, R12, R13, string>(R12_FK1, P1, R12_FK2, R13_FK1, R13_FK3, P3, C1, mode, quoted, skip, rows);
+            return db.Select<T1, T2, T3, R12, R13, Guid>(R12_FK1, P1, R12_FK2, R13_FK1, R13_FK3, P3, C1, mode, quoted, skip, rows);
         }
 
         /// <summary>
@@ -1728,12 +1728,12 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         /// <param name="rows">The number of row records to return.</param>
         /// <returns>The list of comined records of the first POCO table.</returns>
         public static List<T1> Select<T1, T2, T3, R12, R13>(this IDbConnection db,
-            Expression<Func<R12, string>> R12_FK1,
+            Expression<Func<R12, Guid>> R12_FK1,
             Expression<Func<T1, bool>> P1,
-            Expression<Func<R12, string>> R12_FK2,
+            Expression<Func<R12, Guid>> R12_FK2,
             Expression<Func<T2, bool>> P2,
-            Expression<Func<R13, string>> R13_FK1,
-            Expression<Func<R13, string>> R13_FK3,
+            Expression<Func<R13, Guid>> R13_FK1,
+            Expression<Func<R13, Guid>> R13_FK3,
             Expression<Func<T3, bool>> P3,
             Conjunctor C1 = Conjunctor.AND,
             Conjunctor C2 = Conjunctor.AND,
@@ -1743,7 +1743,7 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             int? rows = null)
             where T1 : new()
         {
-            return db.Select<T1, T2, T3, R12, R13, string, string, string>(R12_FK1, P1, R12_FK2, P2, R13_FK1, R13_FK3, P3, C1, C2, mode, quoted, skip, rows);
+            return db.Select<T1, T2, T3, R12, R13, Guid, Guid, Guid>(R12_FK1, P1, R12_FK2, P2, R13_FK1, R13_FK3, P3, C1, C2, mode, quoted, skip, rows);
         }
 
         /// <summary>
@@ -1787,7 +1787,7 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
             where K : IComparable<K>, IComparable
             where T1 : new()
         {
-            return db.Select<T1, T2, T3, R12, R13, K, K, K>(R12_FK1, P1, R12_FK2, P2, R13_FK1, R13_FK3, P3, C1, C2, mode, quoted, skip, rows);
+            return db.Select(R12_FK1, P1, R12_FK2, P2, R13_FK1, R13_FK3, P3, C1, C2, mode, quoted, skip, rows);
         }
 
         /// <summary>
@@ -1919,29 +1919,31 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         }
 
         public static void MergeAll<T>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities, IDbTransaction transaction)
-    where T : class, IContainsKey<string>, new()
+    where T : class, IContainsKey<Guid>, new()
         {
-            db.MergeAll<T, string>(entities, oentities, transaction);
+            db.MergeAll<T, Guid>(entities, oentities, transaction);
         }
 
         public static void MergeAll<T, Tkey>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities)
             where Tkey : IEquatable<Tkey>, IComparable<Tkey>
             where T : class, IContainsKey<Tkey>, new()
         {
-            if (!oentities.NullOrEmpty())
+            var oentitylist = oentities as T[] ?? oentities.ToArray();
+            if (!oentitylist.NullOrEmpty())
             {
-                var incoming = entities.Except(oentities).ToArray();
+                var entitylist = entities as T[] ?? entities.ToArray();
+                var incoming = entitylist.Except(oentitylist).ToArray();
                 if (!incoming.NullOrEmpty()) db.SaveAll(incoming);
-                var outgoing = oentities.Except(entities).ToArray();
+                var outgoing = oentitylist.Except(entitylist).ToArray();
                 if (!outgoing.NullOrEmpty()) db.DeleteByIds<T>(outgoing.Select(y => y.Id).ToArray());
             }
             else db.SaveAll(entities);
         }
 
         public static void MergeAll<T>(this IDbConnection db, IEnumerable<T> entities, IEnumerable<T> oentities)
-    where T : class, IContainsKey<string>, new()
+    where T : class, IContainsKey<Guid>, new()
         {
-            db.MergeAll<T, string>(entities, oentities);
+            db.MergeAll<T, Guid>(entities, oentities);
         }
 
         #endregion MergeAll operations
@@ -1956,9 +1958,9 @@ namespace reexjungle.technical.data.concretes.extensions.ormlite
         }
 
         public static void RemoveAll<T>(this IDbConnection db, IEnumerable<T> oentities)
-    where T : class, IContainsKey<string>, new()
+    where T : class, IContainsKey<Guid>, new()
         {
-            db.RemoveAll<T, string>(oentities);
+            db.RemoveAll<T, Guid>(oentities);
         }
 
         #endregion RemoveAll operations

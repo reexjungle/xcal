@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace reexjungle.xcal.test.units.contracts
 {
-    public interface IEventUnitTests : IUnitTests
+    public interface IEventUnitTest
     {
         IEnumerable<VEVENT> GenerateEventsOfSize(int n);
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace reexjungle.xcal.test.units.contracts
 {
-    public interface IAlarmUnitTests : IUnitTests
+    public interface IAlarmUnitTest
     {
         IEnumerable<AUDIO_ALARM> GenerateAudioAlarmsOfSize(int n);
 
