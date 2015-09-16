@@ -8,7 +8,7 @@ What is xCal?
 
 Why xCal?
 =========
-First of all, xCal is **free** - yes  *'free' as in 'free air'* and not *'free' as in 'free beer'* because the best things inlife such as air and sunshine are free. 
+First of all, xCal is **free** - yes  *'free' as in 'free air'* and not *'free' as in 'free beer'* because the best things in life such as air and sunshine are free!
 
 Secondly, xCal gives you total control over your calendar information because you are responsible for the storage and maintenance of your calendar on your own machine.
 
@@ -20,7 +20,7 @@ Thirdly, you enjoy distributing calendar information in multiple data formats:
 * [JSV](http://mono.servicestack.net/docs/text-serializers/jsv-format) 
 * [XML](http://en.wikipedia.org/wiki/XML)
 
-Fourthly for developers, xCal takes away the burdden of *reinventing the wheel*. Why should you homebrew a non-standard calendaring and scheduling system, when xCal already provides an implementation of the [Internet Calendaring and Scheduling Core Object Specification (RFC 5545)](http://tools.ietf.org/html/rfc5545).
+Fourthly for developers, xCal takes away the burdden of *reinventing the wheel*. Why should you homebrew a non-standard calendaring and scheduling system, when xCal already provides an implementation of the [Internet Calendaring and Scheduling Core Object Specification (RFC 5545)](http://tools.ietf.org/html/rfc5545)?
 
 Finally, you gain the awesome [benefits][1] of using xCal as an open source software such as low costs, quality improvement through continuous community input, business agility and mitigation of business risks. 
 
@@ -81,7 +81,7 @@ xcal.sln/
 
 ### Development Tools for xCal
 
-xCal is written entirely in C# - therefore it is recommended to use a specialized IDE such as [Microsoft Visual Studio][5] whose editor, debugger and compiler features facilitate rapid application development. As a matter of fact, Microsoft now  offers [Visual Studio Community 2013][6] at no cost to an unlimited number of users developing open source projects. In any case, if Visual Studio does not suit your tastes, please feel free to use other third-party tools e.g. [Xamarin Studio / Monodevelop](http://www.monodevelop.com/download/). 
+xCal is written entirely in C# - therefore it is recommended to use a specialized IDE such as [Microsoft Visual Studio][5] whose editor, debugger and compiler features facilitate rapid application development. As a matter of fact, Microsoft now  offers [Visual Studio Community][6] versions at no cost to an unlimited number of users developing open source projects. In any case, if Visual Studio does not suit your tastes, please feel free to use other third-party tools e.g. [Xamarin Studio / Monodevelop](http://www.monodevelop.com/download/). 
 
 *For the remainder of this Get Started section and for the sake of simplicity, it would be assumed you use Visual Studio 2013 for software development.*
 
