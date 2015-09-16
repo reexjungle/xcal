@@ -1,18 +1,18 @@
 What is xCal?
 ============
-The xCal project is a **free and open source software (FOSS)** project that basically does 2 things:
+ xCal is a **free and open source software (FOSS)** that:
 
-1. Implements the [Internet Calendaring and Scheduling Core Object Specification (RFC 5545)](http://tools.ietf.org/html/rfc5545), such that calendaring and scheduling information (events, to-dos, journals and free/busy) can be represented and exchanged in [iCalendar](http://en.wikipedia.org/wiki/ICalendar) and other data formats independently of calendar service or protocol.
+1. Allows you to exchange calendaring and scheduling information (events, to-dos, journals and free/busy) in the iCalendar [iCalendar](http://en.wikipedia.org/wiki/ICalendar) data format independently of calendar service or protocol.
 
-2. Develops a software service library to facilitate the setup and hosting of [REST](http://en.wikipedia.org/wiki/Representational_state_transfer)-ful calendar services, in which operations to access and edit distributed calendar data are exposed by means of an [API](http://en.wikipedia.org/wiki/Application_programming_interface).
+2. Operates on a [REST](http://en.wikipedia.org/wiki/Representational_state_transfer)-ful calendar services, in which operations to access and edit distributed calendar data are exposed by means of an [API](http://en.wikipedia.org/wiki/Application_programming_interface).
 
 Why xCal?
 =========
-First of all, xCal is **free** - yes  *'free' as in 'free air'* and not *'free' as in 'free beer'*. 
+First of all, xCal is **free** - yes  *'free' as in 'free air'* and not *'free' as in 'free beer'* because the best things inlife such as air and sunshine are free. 
 
-Secondly, xCal allows you **to host and maintain your calendar data on your own server** - that is, you have total control over your calendar information and thus in no way is your private data shared with third parties.
+Secondly, xCal gives you total control over your calendar information because you are responsible for the storage and maintenance of your calendar on your own machine.
 
-Thirdly, you shall enjoy distributing calendar information in multiple data formats that include: 
+Thirdly, you enjoy distributing calendar information in multiple data formats: 
 * [iCalendar](http://en.wikipedia.org/wiki/ICalendar) 
 * [CSV](http://en.wikipedia.org/wiki/Comma-separated_values)
 * [MessagePack](http://msgpack.org/)
@@ -20,9 +20,9 @@ Thirdly, you shall enjoy distributing calendar information in multiple data form
 * [JSV](http://mono.servicestack.net/docs/text-serializers/jsv-format) 
 * [XML](http://en.wikipedia.org/wiki/XML)
 
-Fourthly, xCal discourages you from *reinventing the wheel*. Instead of creating your own custom calendaring and scheduling system, it offers you a firsthand implementation of the internet standard (RFC 5545), thus freeing up the potential development time you could have wasted, in order to concentrate on other important tasks at hand.
+Fourthly for developers, xCal takes away the burdden of *reinventing the wheel*. Why should you homebrew a non-standard calendaring and scheduling system, when xCal already provides an implementation of the [Internet Calendaring and Scheduling Core Object Specification (RFC 5545)](http://tools.ietf.org/html/rfc5545).
 
-Finally, you gain the awesome [benefits][1] of using xCal as an open source software. These include low costs, quality improvement through continuous community input, business agility and mitigation of business risks. 
+Finally, you gain the awesome [benefits][1] of using xCal as an open source software such as low costs, quality improvement through continuous community input, business agility and mitigation of business risks. 
 
 Table of Contents
 =================
@@ -37,55 +37,46 @@ Table of Contents
 
 Get Started 
 ===========
-To get started on the xCal, you might want to choose one of the following options:
+To get started on the xCal, you might want to choose any of the following options:
 
-1. Preview a [demo][2] of xCal web serivices. 
+1. Preview a [demo][2] of xCal web serivices in operation. 
 2. Download the master repository [ZIP][3] file from GitHub.
 3. [Clone][4] the master repository on desktop using the Github application. 
-4. Download core xCal service interface binaries (i.e. libraries and dependencies of *xcal.service.interfaces.concretes*) as a raw Nuget package from the [Nuget Gallery](https://www.nuget.org/packages/xcal.service.interfaces.concretes/) 
-5. Install core xCal service interface binaries via the Project Mangager Console in Visual studio e.g.
+4. Download core xCal binaries from the [Nuget Gallery](https://www.nuget.org/packages/xcal.service.interfaces.concretes/) 
+5. Install core xCal service interface binaries in Visual studio e.g by means of the via the Project Mangager Console:
 
 ```
 PM> Install-Package xcal.service.interfaces.concretes -Pre
 ```
-###### Note: xCal service interface binaries are not standalone binaries; they should be referenced by application servers e.g. web servers, windows services using the [Service Stack V3 Web Services Framework](https://github.com/ServiceStackV3/ServiceStackV3/wiki).
 
+### Source Code Structure
 
-### Contents of Download Package
-
-The download package contains source codes and project files of xCal. It is also worth mentioning here that xCal is a .NET-based solution. Hence its source files are logically organized as projects grouped under a single solution. Each project is compiled to its reespective assembly (*dll) files. The solution structure is illustrated below: 
+If you are interested in making a fork of xCal, then this section is for you. xCal is a .NET-based solution made to run on Windows and Unix-based systems (via Mono). Hence, its source files are logically arranged in similar hierarchies as in Visual Studio/Projects. That is: 
 
 ```
-solution/
+xcal.sln/
 ├── servers/
-|   ├── xcal.server.web.dev1
-|   ├── xcal.servers.web.dev2
-|   ├── xcal.servers.web.prod1
-|   ├── xcal.servers.web.prod2
-|   ├── xcal.servers.web.local
+|   ├── xcal.server.web.dev1.csproj
+|   ├── xcal.servers.web.dev2.csproj
+|   ├── xcal.servers.web.prod1.csproj
+|   ├── xcal.servers.web.local.csproj
 ├── crosscut/
-|   ├── crosscut.operations.concretes
-|   ├── crosscut.operations.contracts
-|   ├── crosscut.security.concretes
+|   ├── xcal.crosscut.concretes.csproj
+|   ├── xcal.crosscut.contracts.csproj
 ├── domain/
-|   ├── xcal.domain
+|   ├── xcal.domain.csproj
 ├── service/
-|   ├── xcal.service.clients.concretes
-|   ├── xcal.service.formats.concretes
-|   ├── xcal.service.interfaces.concretes
-|   ├── xcal.service.interfaces.contracts
-|   ├── xcal.service.operations.contracts
-|   ├── xcal.service.repositories.concretes
-|   ├── xcal.service.repositories.contracts
-|   ├── xcal.service.validators.concretes
-├── technical/
-|   ├── technical.data.concretes
-|   ├── technical.data.contracts
+|   ├── xcal.service.clients.concretes.csproj
+|   ├── xcal.service.interfaces.concretes.csproj
+|   ├── xcal.service.interfaces.contracts.csproj
+|   ├── xcal.service.operations.contracts.csproj
+|   ├── xcal.service.plugins.formats.concretes.csproj
+|   ├── xcal.service.repositories.concretes.csproj
+|   ├── xcal.service.repositories.contracts.csproj
+|   ├── xcal.service.validators.concretes.csproj
 ├── tests/
-|   ├── xcal.test.server.integration.contracts
-|   ├── xcal.test.server.integration.concretes
-|   ├── xcal.test.units.contracts
-|   ├── xcal.test.units.concretes
+|   ├── xcal.test.concretes.csproj
+|   ├── xcal.test.contracts.csproj
 ```
 
 ### Development Tools for xCal
