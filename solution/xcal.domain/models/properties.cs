@@ -328,6 +328,7 @@ namespace reexjungle.xcal.domain.models
         /// <summary>
         /// ID of the Comment to the Calendar Component
         /// </summary>
+        [DataMember]
         public Guid Id { get; set; }
 
         /// <summary>
@@ -565,8 +566,8 @@ namespace reexjungle.xcal.domain.models
     [DataContract]
     public struct GEO : IGEO, IEquatable<GEO>, IContainsKey<Guid>
     {
-        private readonly float longitude;
-        private readonly float latitude;
+        private float longitude;
+        private float latitude;
         private Guid id;
 
         [DataMember]
@@ -583,6 +584,7 @@ namespace reexjungle.xcal.domain.models
         public float Longitude
         {
             get { return longitude; }
+            set { longitude = value; }
         }
 
         /// <summary>
@@ -592,6 +594,10 @@ namespace reexjungle.xcal.domain.models
         public float Latitude
         {
             get { return latitude; }
+            set
+            {
+                latitude = value;
+            }
         }
 
         public GEO(IGEO geo)
@@ -1279,9 +1285,6 @@ namespace reexjungle.xcal.domain.models
         [DataMember]
         public PARTSTAT Participation { get; set; }
 
-        /// <summary>
-        ///  Rapid Serial Visual Presentation expectation: will be or not
-        /// </summary>
         [DataMember]
         public BOOLEAN Rsvp { get; set; }
 
@@ -1337,38 +1340,6 @@ namespace reexjungle.xcal.domain.models
             SentBy = null;
             CN = null;
             Directory = null;
-        }
-
-        /// <summary>
-        /// Constructor, defining all parameters defining the current Attendee for domestical Puposes (no language specification)
-        /// </summary>
-        /// <param name="address">Address of the Current Attendee</param>
-        /// <param name="cutype">Calendat User Type of the Attendee</param>
-        /// <param name="member">Membership type of the Attendee</param>
-        /// <param name="role">Participation Role of the Attendee</param>
-        /// <param name="partstat">Participation Status of the attendee</param>
-        /// <param name="rsvp"> Rapid serial visual presentation expectation</param>
-        /// <param name="delegatee">Delegatee for the current Attendee</param>
-        /// <param name="delegator">Delegation of the current Attendee</param>
-        /// <param name="sentby">Organisation sendin the Current Attendee</param>
-        /// <param name="name">Name of the current Attendee</param>
-        /// <param name="dir">Reference to a directory entry associated with the current Attendee</param>
-        public ATTENDEE(URI address, CUTYPE cutype = CUTYPE.UNKNOWN, ROLE role = ROLE.UNKNOWN,
-            PARTSTAT partstat = PARTSTAT.UNKNOWN, BOOLEAN rsvp = BOOLEAN.UNKNOWN, MEMBER member = null, DELEGATE delegatee = null, DELEGATE delegator = null,
-            URI sentby = null, string cn = null, URI dir = null, LANGUAGE language = null)
-        {
-            Address = address;
-            CalendarUserType = cutype;
-            Member = member;
-            Role = role;
-            Participation = partstat;
-            Rsvp = rsvp;
-            Delegatee = delegatee;
-            Delegator = delegator;
-            SentBy = sentby;
-            CN = cn;
-            Language = language;
-            Directory = dir;
         }
 
         /// <summary>
@@ -1483,15 +1454,6 @@ namespace reexjungle.xcal.domain.models
             Directory = organizer.Directory;
             SentBy = organizer.SentBy;
             Language = organizer.Language;
-        }
-
-        public ORGANIZER(URI address, URI sentby, string cname = null, URI dir = null, LANGUAGE language = null)
-        {
-            Address = address;
-            SentBy = sentby;
-            CN = cname;
-            Directory = dir;
-            Language = language;
         }
 
         /// <summary>
@@ -1788,15 +1750,19 @@ namespace reexjungle.xcal.domain.models
         /// <returns>String representation of the EXDATE property in form of "EXDATE;TimeZone:comma splited dates of exctptions"</returns>
         public override string ToString()
         {
+            if (DateTimes.NullOrEmpty()) return base.ToString();
+
             var sb = new StringBuilder();
             sb.Append("EXDATE");
-            if (ValueType != VALUE.UNKNOWN) sb.AppendFormat(";VALUE={1}", ValueType);
+            
+            if (ValueType != VALUE.UNKNOWN) sb.AppendFormat(";VALUE={0}", ValueType);
             else if (TimeZoneId != null) sb.AppendFormat(";{0}", TimeZoneId);
-            sb.Append(":"); var last = DateTimes.Last();
+            sb.Append(":"); 
+            
+            var last = DateTimes.Last();
             foreach (var datetime in DateTimes)
             {
-                if (datetime != last) sb.AppendFormat("{0}, ", datetime);
-                else sb.AppendFormat("{0}", datetime);
+                sb.AppendFormat(datetime != last ? "{0}, " : "{0}", datetime);
             }
             return sb.ToString();
         }
@@ -1999,7 +1965,7 @@ namespace reexjungle.xcal.domain.models
         /// Action value mode, for example "AUDIO", "DISPLAY", "EMAIL"
         /// </summary>
         [DataMember]
-        public VALUE Value { get; set; }
+        public VALUE ValueType { get; set; }
 
         [DataMember]
         public RELATED Related { get; set; }
@@ -2009,17 +1975,17 @@ namespace reexjungle.xcal.domain.models
             type = TriggerType.Related;
         }
 
-        public TRIGGER(DURATION duration, RELATED related = RELATED.UNKNOWN, VALUE value = VALUE.UNKNOWN)
+        public TRIGGER(DURATION duration, RELATED related = RELATED.UNKNOWN, VALUE valueType = VALUE.UNKNOWN)
         {
             Duration = duration;
             Related = related;
-            Value = value;
+            ValueType = valueType;
             type = TriggerType.Related;
         }
 
-        public TRIGGER(DATE_TIME datetime, VALUE value = VALUE.UNKNOWN)
+        public TRIGGER(DATE_TIME datetime, VALUE valueType = VALUE.UNKNOWN)
         {
-            Value = value;
+            ValueType = valueType;
             DateTime = datetime;
             type = TriggerType.Absolute;
         }
@@ -2034,13 +2000,13 @@ namespace reexjungle.xcal.domain.models
             sb.AppendFormat("TRIGGER");
             if (type == TriggerType.Related)
             {
-                if (Value == VALUE.DURATION) sb.AppendFormat(";VALUE={0}", Value);
+                if (ValueType == VALUE.DURATION) sb.AppendFormat(";VALUE={0}", ValueType);
                 else if (Related != default(RELATED)) sb.AppendFormat(";RELATED={0}", Related);
                 sb.AppendFormat(":{0}", Duration);
             }
             else
             {
-                if (Value == VALUE.DATE_TIME) sb.AppendFormat(";VALUE={0}", Value);
+                if (ValueType == VALUE.DATE_TIME) sb.AppendFormat(";VALUE={0}", ValueType);
                 sb.AppendFormat(":{0}", DateTime);
             }
             return sb.ToString();
@@ -2112,7 +2078,7 @@ namespace reexjungle.xcal.domain.models
         /// </summary>
         [DataMember]
         [Ignore]
-        public List<IPARAMETER> Parameters { get; set; }
+        public List<object> Parameters { get; set; }
 
         [DataMember]
         public VALUE ValueType { get; set; }
@@ -2125,7 +2091,7 @@ namespace reexjungle.xcal.domain.models
         /// Constructor based on the value of the IANA-Property
         /// </summary>
         /// <param name="value"> The value assigned to the IANA-Property</param>
-        protected MISC_PROPERTY(string name, TValue value, List<IPARAMETER> parameters)
+        protected MISC_PROPERTY(string name, TValue value, List<object> parameters)
         {
             Name = name;
             Value = value;
@@ -2180,11 +2146,9 @@ namespace reexjungle.xcal.domain.models
     [DataContract]
     public class IANA_PROPERTY : MISC_PROPERTY<object>
     {
-        public IANA_PROPERTY()
-        {
-        }
+        public IANA_PROPERTY() { }
 
-        public IANA_PROPERTY(string name, object value, List<IPARAMETER> parameters)
+        public IANA_PROPERTY(string name, object value, List<object> parameters)
             : base(name, value, parameters)
         {
         }
@@ -2197,7 +2161,7 @@ namespace reexjungle.xcal.domain.models
         {
         }
 
-        public X_PROPERTY(string name, object value, List<IPARAMETER> parameters)
+        public X_PROPERTY(string name, object value, List<object> parameters)
             : base(name, value, parameters)
         {
         }

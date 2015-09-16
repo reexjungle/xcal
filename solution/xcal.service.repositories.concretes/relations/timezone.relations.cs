@@ -179,7 +179,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(StandardId, other.StandardId) && CommentId.Equals(other.CommentId);
+            return Equals(StandardId, other.StandardId) && CommentId.Equals(other.CommentId);
         }
 
         public override bool Equals(object obj)
@@ -263,13 +263,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         public Guid StandardId { get; set; }
 
         [ForeignKey(typeof(TZNAME), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TimeZoneNameId { get; set; }
+        public Guid TimeZoneNameId { get; set; }
 
         public bool Equals(REL_STANDARDS_TZNAMES other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return StandardId.Equals(other.StandardId) && string.Equals(TimeZoneNameId, other.TimeZoneNameId);
+            return StandardId.Equals(other.StandardId) && TimeZoneNameId.Equals(other.TimeZoneNameId);
         }
 
         public override bool Equals(object obj)
@@ -284,7 +284,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         {
             unchecked
             {
-                return (StandardId.GetHashCode() * 397) ^ (TimeZoneNameId != null ? TimeZoneNameId.GetHashCode() : 0);
+                return (StandardId.GetHashCode() * 397) ^ TimeZoneNameId.GetHashCode();
             }
         }
 

@@ -39,8 +39,9 @@ namespace reexjungle.xcal.domain.models
                 encoding = value;
                 if (!string.IsNullOrEmpty(Value))
                 {
-                    if (encoding == ENCODING.BASE64) Value = Value.ToBase64String();
-                    else Value = Value.ToUtf8String();
+                    Value = encoding == ENCODING.BASE64 
+                        ? Value.ToBase64String() 
+                        : Value.ToUtf8String();
                 };
             }
         }
@@ -1312,7 +1313,7 @@ namespace reexjungle.xcal.domain.models
                         if (match.Groups["sign"].Value == "-") mulitplier *= -1;
                     }
                     if (match.Groups["ordwk"].Success) ordweek = mulitplier * int.Parse(match.Groups["ordwk"].Value);
-                    if (match.Groups["weekday"].Success) weekday = match.Groups["weekday"].Value.ToWEEKDAY();
+                    if (match.Groups["weekday"].Success) weekday = (WEEKDAY)Enum.Parse(typeof(WEEKDAY), match.Groups["weekday"].Value);
                 }
             }
         }
@@ -1583,7 +1584,7 @@ namespace reexjungle.xcal.domain.models
             duration = default(DURATION);
             type = PeriodType.Start;
 
-            var parts = value.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = value.Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
             if (parts == null || parts.Length != 2) throw new FormatException("Invalid PERIOD format");
 
             try
@@ -1737,267 +1738,252 @@ namespace reexjungle.xcal.domain.models
     [DataContract]
     public class RECUR : IRECUR, IEquatable<RECUR>, IContainsKey<Guid>
     {
-        #region fields
-
-        private FREQ freq;
-        private DATE_TIME until;
-        private uint count;
-        private uint interval;
-        private WEEKDAY wkst;
-        private List<uint> bysecond;
-        private List<uint> byminute;
-        private List<uint> byhour;
-        private List<WEEKDAYNUM> byday;
-        private List<int> bymonthday;
-        private List<int> byyearday;
-        private List<int> byweekno;
-        private List<uint> bymonth;
-        private List<int> bysetpos;
-
-        #endregion fields
-
         #region properties
 
         [DataMember]
         public Guid Id { get; set; }
 
+        /// <summary>
+        /// Gets or sets the frequency of the recurrence rule.
+        /// This property is REQUIRED and must not occur more than once.
+        /// </summary>
         [DataMember]
-        public FREQ FREQ
-        {
-            get { return freq; }
-            set { freq = value; }
-        }
+        public FREQ FREQ { get; set; }
+
+        /// <summary>
+        /// Gets or sets the end date that bounds the reczrrence rule in an INCLUSIVE manner.
+        /// This property is OPTIONAL but MUST be nullified if the COUNT property is non-zero.
+        /// </summary>
+        [DataMember]
+        public DATE_TIME UNTIL { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of occurrences at which to range-bound the recurrence.
+        /// This property is OPTIONAL but MUST be set to zero if the UNTIL property is non-null.
+        /// </summary>
+        [DataMember]
+        public uint COUNT { get; set; }
+
+        /// <summary>
+        /// Represents the intervals the recurrence rule repeats.
+        /// The default value is 1.
+        /// For example in a SECONDLY rule, this property implies a repetition for every second.
+        /// </summary>
+        [DataMember]
+        public uint INTERVAL { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of seconds within a minute.
+        /// Valid values are 0 to 60.
+        /// </summary>
+        /// <remarks>Normally, the seconds range is from 0 to 59 but the extra 60th second accounts for a leap second, which ma ybe ignored by a non-supporting system. </remarks>
+        [DataMember]
+        public List<uint> BYSECOND { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of minutes within an hour.
+        /// Valid values are from 0 to 59.
+        /// </summary>
+        [DataMember]
+        public List<uint> BYMINUTE { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of hours within a day.
+        /// Valid values are from 0 to 23.
+        /// </summary>
+        [DataMember]
+        public List<uint> BYHOUR { get; set; }
 
         [DataMember]
-        public DATE_TIME UNTIL
-        {
-            get { return until; }
-            set { until = value; }
-        }
+        public List<WEEKDAYNUM> BYDAY { get; set; }
 
+        /// <summary>
+        /// Gets or sets the collection of days of the month.
+        /// Valid values are 1 to 31 or -31 to -1.
+        /// Negative values represent the day position from the end of the month e.g -10 is the tenth to the last day of the month
+        /// </summary>
         [DataMember]
-        public uint COUNT
-        {
-            get { return count; }
-            set { count = value; }
-        }
+        public List<int> BYMONTHDAY { get; set; }
 
+        /// <summary>
+        /// Gets or sets the collection of days of the year.
+        /// Valid values are 1 to 366 or -366 to -1.
+        /// Negative values represent the day position from the end of the year e.g -306 is the 306th to the last day of the month.
+        /// This property MUST NOT be specified when the FREQ property is set to DAILY, WEEKLY, or MONTHLY
+        /// </summary>
         [DataMember]
-        public uint INTERVAL
-        {
-            get { return interval; }
-            set { interval = value; }
-        }
+        public List<int> BYYEARDAY { get; set; }
 
+        /// <summary>
+        /// Gets or sets the collection of ordinals specifiying the weeks of the year.
+        /// Valid values are 1 to 53 or -53 to -1.
+        /// This property MUST NOT be specified when the FREQ property is set to anything other than YEARLY.
+        /// </summary>
         [DataMember]
-        public List<uint> BYSECOND
-        {
-            get { return bysecond; }
-            set { bysecond = value; }
-        }
+        public List<int> BYWEEKNO { get; set; }
 
+        /// <summary>
+        /// Gets or sets the collection of months of the year.
+        /// Valid values are 1 to 12.
+        /// </summary>
         [DataMember]
-        public List<uint> BYMINUTE
-        {
-            get { return byminute; }
-            set { byminute = value; }
-        }
+        public List<uint> BYMONTH { get; set; }
 
+        /// <summary>
+        /// Gets or sets the day on which the work week starts.
+        /// The default day is MO.
+        /// </summary>
+        /// <remarks>
+        /// This is used significantly when a weekly recurrence rule has an interval greater than 1 and a BYDAY rule is specified.
+        /// Also, it is significantly used when a BYWEEKNO rule in a YEARLY rule is specified.
+        /// </remarks>
         [DataMember]
-        public List<uint> BYHOUR
-        {
-            get { return byhour; }
-            set { byhour = value; }
-        }
+        public WEEKDAY WKST { get; set; }
 
+        /// <summary>
+        /// Gets or sets the list of values corresponfing to the nth occurence within the set of recurrence instances in an interval of the recurrence rule.
+        /// Valid values are 1 to 366 or -366 to -1
+        /// This property MUST only be used together with another BYxxx rule part (e.g. BYDAY)
+        /// </summary>
+        /// <remarks>
+        /// Example: &quot; the last work day of the month &quot;
+        /// FRREQ = MONTHLY; BYDAY = MO, TU, WE, TH, FR; BYSETPOS = -1
+        /// </remarks>
         [DataMember]
-        public List<WEEKDAYNUM> BYDAY
-        {
-            get { return byday; }
-            set { byday = value; }
-        }
-
-        [DataMember]
-        public List<int> BYMONTHDAY
-        {
-            get { return bymonthday; }
-            set { bymonthday = value; }
-        }
-
-        [DataMember]
-        public List<int> BYYEARDAY
-        {
-            get { return byyearday; }
-            set { byyearday = value; }
-        }
-
-        [DataMember]
-        public List<int> BYWEEKNO
-        {
-            get { return byweekno; }
-            set { byweekno = value; }
-        }
-
-        [DataMember]
-        public List<uint> BYMONTH
-        {
-            get { return bymonth; }
-            set { bymonth = value; }
-        }
-
-        [DataMember]
-        public WEEKDAY WKST
-        {
-            get { return wkst; }
-            set { wkst = value; }
-        }
-
-        [DataMember]
-        public List<int> BYSETPOS
-        {
-            get { return bysetpos; }
-            set { bysetpos = value; }
-        }
+        public List<int> BYSETPOS { get; set; }
 
         #endregion properties
 
         public RECUR()
         {
-            freq = FREQ.UNKNOWN;
-            until = default(DATE_TIME);
-            count = 0u;
-            interval = 1u;
-            wkst = WEEKDAY.SU;
+            FREQ = FREQ.UNKNOWN;
+            UNTIL = default(DATE_TIME);
+            COUNT = 0u;
+            INTERVAL = 1u;
+            WKST = WEEKDAY.SU;
         }
 
         public RECUR(string value)
         {
-            freq = FREQ.UNKNOWN;
-            until = default(DATE_TIME);
-            count = 0u;
-            interval = 1u;
-            wkst = WEEKDAY.SU;
-            var tokens = value.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            FREQ = FREQ.UNKNOWN;
+            UNTIL = default(DATE_TIME);
+            COUNT = 0u;
+            INTERVAL = 1u;
+            WKST = WEEKDAY.SU;
+            var tokens = value.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
             if (tokens == null || tokens.Length == 0) throw new FormatException("Invalid Recur format");
 
-            try
+            foreach (var token in tokens)
             {
-                foreach (var token in tokens)
+                const string pattern = @"^(FREQ|UNTIL|COUNT|INTERVAL|BYSECOND|BYMINUTE|BYHOUR|BYMONTHDAY|BYYEARDAY|BYWEEKNO|BYMONTH|WKST|BYSETPOS)=((\w+|\d+)(,[\s]*(\w+|\d+))*)$";
+                if (!Regex.IsMatch(token, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)) continue;
+
+                var pair = token.Split(new[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
+
+                //check FREQ
+                if (pair[0].Equals("FREQ", StringComparison.OrdinalIgnoreCase)) FREQ = (FREQ) Enum.Parse(typeof(FREQ), pair[1], true);
+                if (pair[0].Equals("UNTIL", StringComparison.OrdinalIgnoreCase)) UNTIL = new DATE_TIME(pair[1]);
+                if (pair[0].Equals("COUNT", StringComparison.OrdinalIgnoreCase)) COUNT = uint.Parse(pair[1]);
+                if (pair[0].Equals("INTERVAL", StringComparison.OrdinalIgnoreCase)) INTERVAL = uint.Parse(pair[1]);
+                if (pair[0].Equals("BYSECOND", StringComparison.OrdinalIgnoreCase))
                 {
-                    var pattern = @"^(FREQ|UNTIL|COUNT|INTERVAL|BYSECOND|BYMINUTE|BYHOUR|BYMONTHDAY|BYYEARDAY|BYWEEKNO|BYMONTH|WKST|BYSETPOS)=((\w+|\d+)(,[\s]*(\w+|\d+))*)$";
-                    if (!Regex.IsMatch(token, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture)) continue;
+                    var parts = pair[1].Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length == 0) continue;
+                    BYSECOND = parts.Select(uint.Parse).ToList();
+                }
+                if (pair[0].Equals("BYMINUTE", StringComparison.OrdinalIgnoreCase))
+                {
+                    var parts = pair[1].Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length == 0) continue;
+                    BYMINUTE = parts.Select(uint.Parse).ToList();
+                }
+                if (pair[0].Equals("BYHOUR", StringComparison.OrdinalIgnoreCase))
+                {
+                    var parts = pair[1].Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length == 0) continue;
+                    BYMINUTE = parts.Select(uint.Parse).ToList();
+                }
 
-                    var pair = token.Split(new string[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
+                if (pair[0].Equals("BYDAY", StringComparison.OrdinalIgnoreCase))
+                {
+                    var parts = pair[1].Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length == 0) continue;
+                    BYDAY = parts.Select(x => new WEEKDAYNUM(x)).ToList();
+                }
 
-                    //check FREQ
-                    if (pair[0].Equals("FREQ", StringComparison.OrdinalIgnoreCase)) FREQ = pair[1].ToFREQ();
-                    if (pair[0].Equals("UNTIL", StringComparison.OrdinalIgnoreCase)) UNTIL = new DATE_TIME(pair[1]);
-                    if (pair[0].Equals("COUNT", StringComparison.OrdinalIgnoreCase)) COUNT = uint.Parse(pair[1]);
-                    if (pair[0].Equals("INTERVAL", StringComparison.OrdinalIgnoreCase)) INTERVAL = uint.Parse(pair[1]);
-                    if (pair[0].Equals("BYSECOND", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var parts = pair[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                        if (parts == null || parts.Length == 0) continue;
-                        BYSECOND = parts.Select(x => uint.Parse(x)).ToList();
-                    }
-                    if (pair[0].Equals("BYMINUTE", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var parts = pair[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                        if (parts == null || parts.Length == 0) continue;
-                        BYMINUTE = parts.Select(x => uint.Parse(x)).ToList();
-                    }
-                    if (pair[0].Equals("BYHOUR", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var parts = pair[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                        if (parts == null || parts.Length == 0) continue;
-                        BYMINUTE = parts.Select(x => uint.Parse(x)).ToList();
-                    }
+                if (pair[0].Equals("BYMONTHDAY", StringComparison.OrdinalIgnoreCase))
+                {
+                    var parts = pair[1].Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length == 0) continue;
+                    BYMONTHDAY = parts.Select(int.Parse).ToList();
+                }
 
-                    if (pair[0].Equals("BYDAY", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var parts = pair[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                        if (parts == null || parts.Length == 0) continue;
-                        BYDAY = parts.Select(x => new WEEKDAYNUM(x)).ToList();
-                    }
+                if (pair[0].Equals("BYYEARDAY", StringComparison.OrdinalIgnoreCase))
+                {
+                    var parts = pair[1].Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length == 0) continue;
+                    BYYEARDAY = parts.Select(int.Parse).ToList();
+                }
 
-                    if (pair[0].Equals("BYMONTHDAY", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var parts = pair[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                        if (parts == null || parts.Length == 0) continue;
-                        BYMONTHDAY = parts.Select(x => int.Parse(x)).ToList();
-                    }
+                if (pair[0].Equals("BYWEEKNO", StringComparison.OrdinalIgnoreCase))
+                {
+                    var parts = pair[1].Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length == 0) continue;
+                    BYWEEKNO = parts.Select(int.Parse).ToList();
+                }
 
-                    if (pair[0].Equals("BYYEARDAY", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var parts = pair[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                        if (parts == null || parts.Length == 0) continue;
-                        BYYEARDAY = parts.Select(x => int.Parse(x)).ToList();
-                    }
+                if (pair[0].Equals("BYMONTH", StringComparison.OrdinalIgnoreCase))
+                {
+                    var parts = pair[1].Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length == 0) continue;
+                    BYMONTH = parts.Select(uint.Parse).ToList();
+                }
 
-                    if (pair[0].Equals("BYWEEKNO", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var parts = pair[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                        if (parts == null || parts.Length == 0) continue;
-                        BYWEEKNO = parts.Select(x => int.Parse(x)).ToList();
-                    }
+                if (pair[0].Equals("WKST", StringComparison.OrdinalIgnoreCase)) WKST = (WEEKDAY) Enum.Parse(typeof(WEEKDAY), pair[1], true);
 
-                    if (pair[0].Equals("BYMONTH", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var parts = pair[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                        if (parts == null || parts.Length == 0) continue;
-                        BYMONTH = parts.Select(x => uint.Parse(x)).ToList();
-                    }
-
-                    if (pair[0].Equals("WKST", StringComparison.OrdinalIgnoreCase)) WKST = pair[1].ToWEEKDAY();
-
-                    if (pair[0].Equals("BYSETPOS", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var parts = pair[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                        if (parts == null || parts.Length == 0) continue;
-                        BYSETPOS = parts.Select(x => int.Parse(x)).ToList();
-                    }
+                if (pair[0].Equals("BYSETPOS", StringComparison.OrdinalIgnoreCase))
+                {
+                    var parts = pair[1].Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length == 0) continue;
+                    BYSETPOS = parts.Select(int.Parse).ToList();
                 }
             }
-            catch (ArgumentNullException) { throw; }
-            catch (FormatException) { throw; }
-            catch (OverflowException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public RECUR(FREQ freq, DATE_TIME until)
         {
-            this.freq = freq;
-            this.until = until;
-            count = 0u;
-            interval = 1u;
-            wkst = WEEKDAY.SU;
+            this.FREQ = freq;
+            this.UNTIL = until;
+            COUNT = 0u;
+            INTERVAL = 1u;
+            WKST = WEEKDAY.SU;
         }
 
         public RECUR(FREQ freq, uint count, uint interval)
         {
-            this.freq = freq;
-            until = new DATE_TIME();
-            this.count = count;
-            this.interval = interval;
-            wkst = WEEKDAY.SU;
+            this.FREQ = freq;
+            UNTIL = new DATE_TIME();
+            this.COUNT = count;
+            this.INTERVAL = interval;
+            WKST = WEEKDAY.SU;
         }
 
         public RECUR(IRECUR recur)
         {
-            freq = recur.FREQ;
-            until = recur.UNTIL;
-            count = recur.COUNT;
-            interval = recur.INTERVAL;
-            wkst = recur.WKST;
-            bysecond = recur.BYSECOND;
-            byminute = recur.BYMINUTE;
-            byhour = recur.BYHOUR;
-            byday = recur.BYDAY;
-            bymonthday = recur.BYMONTHDAY;
-            byyearday = recur.BYYEARDAY;
-            byweekno = recur.BYWEEKNO;
-            bymonth = recur.BYMONTH;
-            bysetpos = recur.BYSETPOS;
+            FREQ = recur.FREQ;
+            UNTIL = recur.UNTIL;
+            COUNT = recur.COUNT;
+            INTERVAL = recur.INTERVAL;
+            WKST = recur.WKST;
+            BYSECOND = recur.BYSECOND;
+            BYMINUTE = recur.BYMINUTE;
+            BYHOUR = recur.BYHOUR;
+            BYDAY = recur.BYDAY;
+            BYMONTHDAY = recur.BYMONTHDAY;
+            BYYEARDAY = recur.BYYEARDAY;
+            BYWEEKNO = recur.BYWEEKNO;
+            BYMONTH = recur.BYMONTH;
+            BYSETPOS = recur.BYSETPOS;
         }
 
         public override string ToString()
@@ -2113,14 +2099,17 @@ namespace reexjungle.xcal.domain.models
 
         public bool Equals(RECUR other)
         {
-            if (other == null) return false;
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
             return Id.Equals(other.Id);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return Equals(obj as RECUR);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((RECUR)obj);
         }
 
         public override int GetHashCode()
@@ -2128,16 +2117,14 @@ namespace reexjungle.xcal.domain.models
             return Id.GetHashCode();
         }
 
-        public static bool operator ==(RECUR a, RECUR b)
+        public static bool operator ==(RECUR left, RECUR right)
         {
-            if ((object)a == null || (object)b == null) return Equals(a, b);
-            return a.Equals(b);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(RECUR a, RECUR b)
+        public static bool operator !=(RECUR left, RECUR right)
         {
-            if ((object)a == null || (object)b == null) return !Equals(a, b);
-            return !a.Equals(b);
+            return !Equals(left, right);
         }
     }
 
@@ -2177,23 +2164,6 @@ namespace reexjungle.xcal.domain.models
             return path;
         }
 
-        public bool Equals(URI other)
-        {
-            if (other == null) return false;
-            return (path.Equals(other.Path, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return Equals(obj as URI);
-        }
-
-        public override int GetHashCode()
-        {
-            return path.GetHashCode();
-        }
-
         public int CompareTo(URI other)
         {
             return string.Compare(path, other.Path, StringComparison.OrdinalIgnoreCase);
@@ -2211,16 +2181,34 @@ namespace reexjungle.xcal.domain.models
             return x.CompareTo(y) > 0;
         }
 
-        public static bool operator ==(URI x, URI y)
+        public bool Equals(URI other)
         {
-            if ((object)x == null || (object)y == null) return Equals(x, y);
-            return x.Equals(y);
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return string.Equals(path, other.path);
         }
 
-        public static bool operator !=(URI x, URI y)
+        public override bool Equals(object obj)
         {
-            if (x == null || y == null) return !Equals(x, y);
-            return !x.Equals(y);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((URI)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (path != null ? path.GetHashCode() : 0);
+        }
+
+        public static bool operator ==(URI left, URI right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(URI left, URI right)
+        {
+            return !Equals(left, right);
         }
     }
 }

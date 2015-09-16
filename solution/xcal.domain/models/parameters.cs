@@ -182,23 +182,15 @@ namespace reexjungle.xcal.domain.models
 
         public FMTTYPE(string value)
         {
-            try
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+            var pattern = @"^FMTTYPE=(?<type>\w+)/(?<subtype>\w+)$";
+            if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
+                throw new FormatException("Invalid Format type");
+            foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
             {
-                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
-                var pattern = @"^FMTTYPE=(?<type>\w+)(\.?<subtype>\w+)?$";
-                if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                    throw new FormatException("Invalid Format type");
-                foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                {
-                    if (match.Groups["type"].Success) TypeName = match.Groups["type"].Value;
-                    else if (match.Groups["subtype"].Success) SubTypeName = match.Groups["subtype"].Value;
-                }
+                if (match.Groups["type"].Success) TypeName = match.Groups["type"].Value;
+                else if (match.Groups["subtype"].Success) SubTypeName = match.Groups["subtype"].Value;
             }
-            catch (FormatException) { throw; }
-            catch (ArgumentNullException) { throw; }
-            catch (ArgumentOutOfRangeException) { throw; }
-            catch (ArgumentException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public FMTTYPE(IFMTTYPE fmttype)
@@ -271,23 +263,15 @@ namespace reexjungle.xcal.domain.models
 
         public LANGUAGE(string value)
         {
-            try
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+            var pattern = @"^(LANGUAGE=)?(?<tag>\w+)(\-(?<subtag>\w+))?$";
+            if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
+                throw new FormatException("Invalid Format type");
+            foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
             {
-                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
-                var pattern = @"^(LANGUAGE=)?(?<tag>\w+)(\-(?<subtag>\w+))?$";
-                if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                    throw new FormatException("Invalid Format type");
-                foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                {
-                    if (match.Groups["tag"].Success) Tag = match.Groups["tag"].Value;
-                    else if (match.Groups["subtag"].Success) SubTag = match.Groups["subtag"].Value;
-                }
+                if (match.Groups["tag"].Success) Tag = match.Groups["tag"].Value;
+                else if (match.Groups["subtag"].Success) SubTag = match.Groups["subtag"].Value;
             }
-            catch (FormatException) { throw; }
-            catch (ArgumentNullException) { throw; }
-            catch (ArgumentOutOfRangeException) { throw; }
-            catch (ArgumentException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public LANGUAGE(ILANGUAGE language)

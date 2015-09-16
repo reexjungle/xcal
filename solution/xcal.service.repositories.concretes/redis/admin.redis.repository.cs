@@ -1,5 +1,4 @@
 ﻿using reexjungle.xcal.service.repositories.contracts;
-using reexjungle.xmisc.infrastructure.contracts;
 using ServiceStack.Redis;
 using System;
 
@@ -29,9 +28,9 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             this.manager = manager;
         }
 
-        public void Flush(FlushMode mode = FlushMode.soft)
+        public void Flush(bool force)
         {
-            if (mode == FlushMode.soft) client.FlushDb();
+            if (force) client.FlushDb();
             else client.FlushAll();
         }
     }

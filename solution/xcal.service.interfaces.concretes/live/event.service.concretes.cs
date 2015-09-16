@@ -13,35 +13,33 @@ using ServiceStack.ServiceInterface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using reexjungle.xmisc.infrastructure.contracts;
 
 namespace reexjungle.xcal.service.interfaces.concretes.live
 {
-    public class EventService : Service, IEventService
+    public class EventWebService : Service, IEventWebService
     {
-        private readonly ILogFactory logFactory;
+        private readonly ILogFactory factory;
         private readonly ICalendarRepository calendarRepository;
         private readonly IEventRepository eventRepository;
+        private readonly ICacheKeyBuilder<Guid> keyBuilder; 
 
         private ILog log;
-
         private ILog logger
         {
-            get { return log ?? (log = logFactory.GetLogger(GetType())); }
+            get { return log ?? (log = factory.GetLogger(GetType())); }
         }
 
-        public ILogFactory LogFactory
-        {
-            get { return logFactory; }
-        }
-
-        public EventService(IEventRepository eventRepository, ICalendarRepository calendarRepository, ILogFactory logFactory)
+        public EventWebService(IEventRepository eventRepository, ICalendarRepository calendarRepository, ICacheKeyBuilder<Guid> keyBuilder, ILogFactory factory)
         {
             if (eventRepository == null) throw new ArgumentNullException("eventRepository");
             if (calendarRepository == null) throw new ArgumentNullException("calendarRepository");
-            if (logFactory == null) throw new ArgumentNullException("logFactory");
+            if (keyBuilder == null) throw new ArgumentNullException("keyBuilder");
+            if (factory == null) throw new ArgumentNullException("factory");
 
             this.calendarRepository = calendarRepository;
-            this.logFactory = logFactory;
+            this.factory = factory;
+            this.keyBuilder = keyBuilder;
             this.eventRepository = eventRepository;
         }
 
@@ -49,7 +47,6 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
         {
             try
             {
-                var cacheKey = UrnId.Create<VEVENT>(request.Event.Id);
                 if (calendarRepository.ContainsKey(request.CalendarId))
                 {
                     if (!eventRepository.ContainsKey(request.Event.Id))
@@ -57,14 +54,30 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                         var calendar = calendarRepository.Find(request.CalendarId);
                         calendar.Events.MergeRange(request.Event.ToSingleton());
                         calendarRepository.Save(calendar);
+
+                        var cacheKey = keyBuilder.Build(request, x => x.Event.Id).ToString();
+                        RequestContext.RemoveFromCache(Cache, cacheKey);
+
                     }
                 }
 
-                RequestContext.RemoveFromCache(Cache, cacheKey);
+
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
 
         public void Post(AddEvents request)
@@ -79,30 +92,64 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                         var calendar = calendarRepository.Find(request.CalendarId);
                         calendar.Events.MergeRange(request.Events);
                         calendarRepository.Save(calendar);
+
+                        var cacheKey = keyBuilder.Build(request, x => keys).ToString();
+                        RequestContext.RemoveFromCache(Cache, cacheKey);
                     }
+
                 }
 
-                RequestContext.RemoveFromCache(Cache, "urn:events");
             }
-            catch (ArgumentNullException ex) { logger.Error(ex.ToString()); throw; }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (ArgumentNullException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
 
         public void Put(UpdateEvent request)
         {
             try
             {
-                var cacheKey = UrnId.Create<VEVENT>(request.Event.Id);
                 if (eventRepository.ContainsKey(request.Event.Id))
+                {
                     eventRepository.Save(request.Event);
 
-                RequestContext.RemoveFromCache(Cache, cacheKey);
+                    var cacheKey = keyBuilder.Build(request, x => x.Event.Id).ToString();
+                    RequestContext.RemoveFromCache(Cache, cacheKey);
+
+                }
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
 
         public void Put(UpdateEvents request)
@@ -113,21 +160,35 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 if (eventRepository.ContainsKeys(keys))
                 {
                     eventRepository.SaveAll(request.Events);
+                
+                    var cacheKey = keyBuilder.Build(request, x => keys).ToString();
+                    RequestContext.RemoveFromCache(Cache, cacheKey);
+
                 }
 
-                RequestContext.RemoveFromCache(Cache, "urn:events");
+
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
         }
 
-        public void Patch(PatchEvent request)
+        public void Post(PatchEvent request)
         {
             try
             {
-                var cacheKey = UrnId.Create<VEVENT>(request.EventId);
-
                 var source = new VEVENT
                 {
                     Start = request.Start,
@@ -162,50 +223,61 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                     XProperties = request.XProperties
                 };
 
-                var fieldlist = new List<string>();
-                if (source.Start != default(DATE_TIME)) fieldlist.Add("Start");
-                if (source.Classification != default(CLASS)) fieldlist.Add("Classification");
-                if (source.Description != null) fieldlist.Add("Description");
-                if (source.Position != default(GEO)) fieldlist.Add("Position");
-                if (source.Location != null) fieldlist.Add("Location");
-                if (source.Organizer != null) fieldlist.Add("Organizer");
-                if (source.Priority != default(PRIORITY)) fieldlist.Add("Priority");
-                if (source.Sequence != default(int)) fieldlist.Add("Sequence");
-                if (source.Status != default(STATUS)) fieldlist.Add("Status");
-                if (source.Summary != null) fieldlist.Add("Summary");
-                if (source.Transparency != default(TRANSP)) fieldlist.Add("Transparency");
-                if (source.Url != default(URI)) fieldlist.Add("Url");
-                if (source.RecurrenceRule != null) fieldlist.Add("RecurrenceRule");
-                if (source.End != default(DATE_TIME)) fieldlist.Add("End");
-                if (source.Duration != default(DURATION)) fieldlist.Add("Duration");
-                if (source.Categories != null) fieldlist.Add("Categories");
-                if (source.AttachmentBinaries != null) fieldlist.Add("AttachmentBinaries");
-                if (source.AttachmentUris != null) fieldlist.Add("AttachmentUris");
-                if (source.Attendees != null) fieldlist.Add("Attendees");
-                if (source.Comments != null) fieldlist.Add("Comments");
-                if (source.Contacts != null) fieldlist.Add("Contacts");
-                if (source.ExceptionDates != null) fieldlist.Add("ExceptionDates");
-                if (source.RequestStatuses != null) fieldlist.Add("RequestStatuses");
-                if (source.Resources != null) fieldlist.Add("Resources");
-                if (source.RelatedTos != null) fieldlist.Add("RelatedTos");
-                if (source.AudioAlarms != null) fieldlist.Add("AudioAlarms");
-                if (source.DisplayAlarms != null) fieldlist.Add("DisplayAlarms");
-                if (source.EmailAlarms != null) fieldlist.Add("EmailAlarms");
-                if (source.IANAProperties != null) fieldlist.Add("IANAProperties");
-                if (source.XProperties != null) fieldlist.Add("XProperties");
+                var fields = new List<string>();
+                if (source.Start != default(DATE_TIME)) fields.Add("Start");
+                if (source.Classification != default(CLASS)) fields.Add("Classification");
+                if (source.Description != null) fields.Add("Description");
+                if (source.Position != default(GEO)) fields.Add("Position");
+                if (source.Location != null) fields.Add("Location");
+                if (source.Organizer != null) fields.Add("Organizer");
+                if (source.Priority != default(PRIORITY)) fields.Add("Priority");
+                if (source.Sequence != default(int)) fields.Add("Sequence");
+                if (source.Status != default(STATUS)) fields.Add("Status");
+                if (source.Summary != null) fields.Add("Summary");
+                if (source.Transparency != default(TRANSP)) fields.Add("Transparency");
+                if (source.Url != default(URI)) fields.Add("Url");
+                if (source.RecurrenceRule != null) fields.Add("RecurrenceRule");
+                if (source.End != default(DATE_TIME)) fields.Add("End");
+                if (source.Duration != default(DURATION)) fields.Add("Duration");
+                if (source.Categories != null) fields.Add("Categories");
+                if (source.AttachmentBinaries != null) fields.Add("AttachmentBinaries");
+                if (source.AttachmentUris != null) fields.Add("AttachmentUris");
+                if (source.Attendees != null) fields.Add("Attendees");
+                if (source.Comments != null) fields.Add("Comments");
+                if (source.Contacts != null) fields.Add("Contacts");
+                if (source.ExceptionDates != null) fields.Add("ExceptionDates");
+                if (source.RequestStatuses != null) fields.Add("RequestStatuses");
+                if (source.Resources != null) fields.Add("Resources");
+                if (source.RelatedTos != null) fields.Add("RelatedTos");
+                if (source.AudioAlarms != null) fields.Add("AudioAlarms");
+                if (source.DisplayAlarms != null) fields.Add("DisplayAlarms");
+                if (source.EmailAlarms != null) fields.Add("EmailAlarms");
+                if (source.IANAProperties != null) fields.Add("IANAProperties");
+                if (source.XProperties != null) fields.Add("XProperties");
 
-                var fieldstr = string.Format("x => new {{ {0} }}", string.Join(", ", fieldlist.Select(x => string.Format("x.{0}", x))));
-                var fieldexpr = fieldstr.CompileToExpressionFunc<VEVENT, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(VEVENT).Assembly.Location, typeof(IContainsKey<Guid>).Assembly.Location });
+                eventRepository.Patch(source, fields, request.EventId.ToSingleton());
 
-                eventRepository.Patch(source, fieldexpr, request.EventId.ToSingleton());
+                var cacheKey = keyBuilder.Build(request, x => x.EventId).ToString();
                 RequestContext.RemoveFromCache(Cache, cacheKey);
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
 
-        public void Patch(PatchEvents request)
+        public void Post(PatchEvents request)
         {
             try
             {
@@ -243,72 +315,106 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                     XProperties = request.XProperties
                 };
 
-                var fieldlist = new List<string>();
-                if (source.Start != default(DATE_TIME)) fieldlist.Add("Start");
-                if (source.Classification != default(CLASS)) fieldlist.Add("Classification");
-                if (source.Description != null) fieldlist.Add("Description");
-                if (source.Position != default(GEO)) fieldlist.Add("Position");
-                if (source.Location != null) fieldlist.Add("Location");
-                if (source.Organizer != null) fieldlist.Add("Organizer");
-                if (source.Priority != default(PRIORITY)) fieldlist.Add("Priority");
-                if (source.Sequence != default(int)) fieldlist.Add("Sequence");
-                if (source.Status != default(STATUS)) fieldlist.Add("Status");
-                if (source.Summary != null) fieldlist.Add("Summary");
-                if (source.Transparency != default(TRANSP)) fieldlist.Add("Transparency");
-                if (source.Url != default(URI)) fieldlist.Add("Url");
-                if (source.RecurrenceRule != null) fieldlist.Add("RecurrenceRule");
-                if (source.End != default(DATE_TIME)) fieldlist.Add("End");
-                if (source.Duration != default(DURATION)) fieldlist.Add("Duration");
-                if (source.Categories != null) fieldlist.Add("Categories");
-                if (source.AttachmentBinaries != null) fieldlist.Add("AttachmentBinaries");
-                if (source.AttachmentUris != null) fieldlist.Add("AttachmentUris");
-                if (source.Attendees != null) fieldlist.Add("Attendees");
-                if (source.Comments != null) fieldlist.Add("Comments");
-                if (source.Contacts != null) fieldlist.Add("Contacts");
-                if (source.ExceptionDates != null) fieldlist.Add("ExceptionDates");
-                if (source.RequestStatuses != null) fieldlist.Add("RequestStatuses");
-                if (source.Resources != null) fieldlist.Add("Resources");
-                if (source.RelatedTos != null) fieldlist.Add("RelatedTos");
-                if (source.AudioAlarms != null) fieldlist.Add("AudioAlarms");
-                if (source.DisplayAlarms != null) fieldlist.Add("DisplayAlarms");
-                if (source.EmailAlarms != null) fieldlist.Add("EmailAlarms");
-                if (source.IANAProperties != null) fieldlist.Add("IANAProperties");
-                if (source.XProperties != null) fieldlist.Add("XProperties");
+                var fields = new List<string>();
+                if (source.Start != default(DATE_TIME)) fields.Add("Start");
+                if (source.Classification != default(CLASS)) fields.Add("Classification");
+                if (source.Description != null) fields.Add("Description");
+                if (source.Position != default(GEO)) fields.Add("Position");
+                if (source.Location != null) fields.Add("Location");
+                if (source.Organizer != null) fields.Add("Organizer");
+                if (source.Priority != default(PRIORITY)) fields.Add("Priority");
+                if (source.Sequence != default(int)) fields.Add("Sequence");
+                if (source.Status != default(STATUS)) fields.Add("Status");
+                if (source.Summary != null) fields.Add("Summary");
+                if (source.Transparency != default(TRANSP)) fields.Add("Transparency");
+                if (source.Url != default(URI)) fields.Add("Url");
+                if (source.RecurrenceRule != null) fields.Add("RecurrenceRule");
+                if (source.End != default(DATE_TIME)) fields.Add("End");
+                if (source.Duration != default(DURATION)) fields.Add("Duration");
+                if (source.Categories != null) fields.Add("Categories");
+                if (source.AttachmentBinaries != null) fields.Add("AttachmentBinaries");
+                if (source.AttachmentUris != null) fields.Add("AttachmentUris");
+                if (source.Attendees != null) fields.Add("Attendees");
+                if (source.Comments != null) fields.Add("Comments");
+                if (source.Contacts != null) fields.Add("Contacts");
+                if (source.ExceptionDates != null) fields.Add("ExceptionDates");
+                if (source.RequestStatuses != null) fields.Add("RequestStatuses");
+                if (source.Resources != null) fields.Add("Resources");
+                if (source.RelatedTos != null) fields.Add("RelatedTos");
+                if (source.AudioAlarms != null) fields.Add("AudioAlarms");
+                if (source.DisplayAlarms != null) fields.Add("DisplayAlarms");
+                if (source.EmailAlarms != null) fields.Add("EmailAlarms");
+                if (source.IANAProperties != null) fields.Add("IANAProperties");
+                if (source.XProperties != null) fields.Add("XProperties");
+                
+                eventRepository.Patch(source, fields, request.EventIds);
 
-                var fieldstr = string.Format("x => new {{ {0} }}", string.Join(", ", fieldlist.Select(x => string.Format("x.{0}", x))));
-                var fieldexpr = fieldstr.CompileToExpressionFunc<VEVENT, object>(CodeDomLanguage.csharp, new string[] { "System.dll", "System.Core.dll", typeof(VEVENT).Assembly.Location, typeof(IContainsKey<Guid>).Assembly.Location });
-                eventRepository.Patch(source, fieldexpr, request.EventIds);
-
-                RequestContext.RemoveFromCache(Cache, "urn:events");
+                var cacheKey = keyBuilder.Build(request, x => x.EventIds).ToString();
+                RequestContext.RemoveFromCache(Cache, cacheKey);
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
 
         public void Delete(DeleteEvent request)
         {
             try
             {
-                var cacheKey = UrnId.Create<VEVENT>(request.EventId);
                 eventRepository.Erase(request.EventId);
-                RequestContext.RemoveFromCache(Cache, cacheKey);
+                RequestContext.RemoveFromCache(Cache, keyBuilder.Build(request, x => x.EventId).ToString());
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
 
-        public void Delete(DeleteEvents request)
+        public void Post(DeleteEvents request)
         {
             try
             {
                 eventRepository.EraseAll(request.EventIds);
-                RequestContext.RemoveFromCache(Cache, "urn:events");
+                RequestContext.RemoveFromCache(Cache, keyBuilder.Build(request, x => x.EventIds).ToString());
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
 
         public VEVENT Get(FindEvent request)
@@ -317,59 +423,97 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             {
                 return eventRepository.Find(request.EventId);
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
 
         public List<VEVENT> Post(FindEvents request)
         {
             try
             {
-                IEnumerable<VEVENT> events = null;
-                if (request.Page != null && request.Size != null)
-                {
-                    events = eventRepository.FindAll(request.EventIds, (request.Page.Value - 1) * request.Size.Value, request.Size.Value);
-                }
-                else events = eventRepository.FindAll(request.EventIds);
-
-                return !events.NullOrEmpty() ? events.ToList() : new List<VEVENT>();
+                return request.Page != null && request.Size != null
+                    ? eventRepository.FindAll(request.EventIds, (request.Page.Value - 1)*request.Size.Value,
+                        request.Size.Value).ToList()
+                    : eventRepository.FindAll(request.EventIds).ToList();
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); throw;
+            }
         }
 
         public List<VEVENT> Get(GetEvents request)
         {
             try
             {
-                IEnumerable<VEVENT> events = null;
-                if (request.Page != null && request.Size != null)
-                    events = eventRepository.Get((request.Page.Value - 1) * request.Size.Value, request.Size.Value);
-                else
-                    events = eventRepository.Get();
-                return !events.NullOrEmpty() ? events.ToList() : new List<VEVENT>();
+                return request.Page != null && request.Size != null
+                    ? eventRepository.Get((request.Page.Value - 1)*request.Size.Value, request.Size.Value).ToList()
+                    : eventRepository.Get().ToList();
+
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
 
         public List<Guid> Get(GetEventKeys request)
         {
             try
             {
-                IEnumerable<Guid> keys;
-                if (request.Page != null && request.Size != null)
-                    keys = eventRepository.GetKeys((request.Page.Value - 1) * request.Size.Value, request.Size.Value);
-                else
-                    keys = eventRepository.GetKeys();
-                return !keys.NullOrEmpty() ? keys.ToList() : new List<Guid>();
+                return request.Page != null && request.Size != null
+                    ? eventRepository.GetKeys((request.Page.Value - 1)*request.Size.Value, request.Size.Value).ToList()
+                    : eventRepository.GetKeys().ToList();
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
     }
 }

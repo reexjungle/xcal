@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace reexjungle.xcal.domain.contracts
 {
-    public interface IJOURNAL : ICOMPONENT
+    public interface IJOURNAL
     {
         string Uid { get; set; }
 

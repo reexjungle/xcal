@@ -18,13 +18,14 @@ using System.Linq;
 namespace reexjungle.xcal.service.interfaces.concretes.live
 {
     /// <summary> Represents a service for iCalendar instances. </summary>
-    public class CalendarService : Service, ICalendarService
+    public class CalendarWebService : Service, ICalendarWebService
     {
         private readonly ILogFactory logFactory;
         private readonly ICalendarRepository repository;
+        private readonly ICacheKeyBuilder<Guid> keyBuilder;
+        private readonly string nullkey;
 
-        private ILog log = null;
-
+        private ILog log;
         private ILog logger
         {
             get
@@ -35,12 +36,18 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
 
         /// <summary> Constructor.</summary>
         /// <param name="repository"> The calendar repository. </param>
+        /// <param name="keyBuilder"></param>
         /// <param name="logFactory"> The factory instance to use for logging operations. </param>
-        public CalendarService(ICalendarRepository repository, ILogFactory logFactory)
-            : base()
+        public CalendarWebService(ICalendarRepository repository, ICacheKeyBuilder<Guid> keyBuilder, ILogFactory logFactory)
         {
+            if (repository == null) throw new ArgumentNullException("repository");
+            if (keyBuilder == null) throw new ArgumentNullException("keyBuilder");
+            if (logFactory == null) throw new ArgumentNullException("logFactory");
+
             this.repository = repository;
             this.logFactory = logFactory;
+            this.keyBuilder = keyBuilder;
+            nullkey = keyBuilder.NullKey.ToString();
         }
 
         /// <summary> Adds an iCalendar instance to the service repository. </summary>
@@ -51,15 +58,30 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
         {
             try
             {
-                var cacheKey = UrnId.Create<VCALENDAR>(request.Calendar.Id);
                 if (!repository.ContainsKey(request.Calendar.Id))
+                {
                     repository.Save(request.Calendar);
 
-                RequestContext.RemoveFromCache(Cache, cacheKey);
+                    var key = keyBuilder.Build(request, x => x.Calendar.Id).ToString();
+                    RequestContext.RemoveFromCache(Cache, key);
+                }
+
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
         }
 
         /// <summary>  Adds an iCalendar instances to the service repository.</summary>
@@ -70,17 +92,30 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
         {
             try
             {
-                var keys = request.Calendars.Select(x => x.Id).ToArray();
+                var keys = request.Calendars.Select(x => x.Id).Distinct();
                 if (!repository.ContainsKeys(keys, ExpectationMode.Pessimistic))
                 {
                     repository.SaveAll(request.Calendars);
-                }
 
-                RequestContext.RemoveFromCache(Cache, "urn:calendars");
+                    var key = keyBuilder.Build(request, x => keys).ToString();
+                    RequestContext.RemoveFromCache(Cache, key, nullkey);
+                }
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
         }
 
         /// <summary> Updates an iCalendar instance in the repository.</summary>
@@ -91,16 +126,29 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
         {
             try
             {
-                var cacheKey = UrnId.Create<VCALENDAR>(request.Calendar.Id);
                 if (repository.ContainsKey(request.Calendar.Id))
                 {
                     repository.Save(request.Calendar);
+                    var key = keyBuilder.Build(request, x => x.Calendar.Id).ToString();
+                    RequestContext.RemoveFromCache(Cache, key, nullkey);
+
                 }
-                RequestContext.RemoveFromCache(Cache, cacheKey);
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
 
         /// <summary> Updates iCalendar instances in the web repository.</summary>
@@ -111,29 +159,40 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
         {
             try
             {
-                var keys = request.Calendars.Select(x => x.Id).ToArray();
-
+                var keys = request.Calendars.Select(x => x.Id).Distinct();
                 if (repository.ContainsKeys(keys, ExpectationMode.Pessimistic))
                 {
                     repository.SaveAll(request.Calendars);
-                }
 
-                RequestContext.RemoveFromCache(Cache, "urn:calendars");
+                    var key = keyBuilder.Build(request, x => keys).ToString();
+                    RequestContext.RemoveFromCache(Cache, key, nullkey);
+                }
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
 
         /// <summary> Patches an iCalendar instance in the service repository.</summary>
         /// <exception cref="InvalidOperationException"> Thrown when the requested operation is invalid.</exception>
         /// <exception cref="ApplicationException"> Thrown when an Application error condition occurs.</exception>
         /// <param name="request"> The request to patch an iCalendar instance</param>
-        public void Patch(PatchCalendar request)
+        public void Post(PatchCalendar request)
         {
             try
             {
-                var cacheKey = UrnId.Create<VCALENDAR>(request.CalendarId);
                 var source = new VCALENDAR
                 {
                     ProdId = request.ProductId,
@@ -149,27 +208,41 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                     XComponents = request.XComponents
                 };
 
-                var fieldlist = new List<string>();
-                if (!string.IsNullOrEmpty(source.ProdId) || !string.IsNullOrEmpty(source.ProdId)) fieldlist.Add("ProdId");
-                if (source.Calscale != CALSCALE.UNKNOWN) fieldlist.Add("Calscale");
-                if (source.Method != METHOD.UNKNOWN) fieldlist.Add("Method");
-                if (!source.Events.NullOrEmpty()) fieldlist.Add("Events");
-                if (!source.ToDos.NullOrEmpty()) fieldlist.Add("ToDos");
-                if (!source.FreeBusies.NullOrEmpty()) fieldlist.Add("FreeBusies");
-                if (!source.Journals.NullOrEmpty()) fieldlist.Add("Journals");
-                if (!source.TimeZones.NullOrEmpty()) fieldlist.Add("TimeZones");
-                if (!source.IanaComponents.NullOrEmpty()) fieldlist.Add("IanaComponents");
-                if (!source.XComponents.NullOrEmpty()) fieldlist.Add("XComponents");
+                var fields = new List<string>();
+                if (!string.IsNullOrEmpty(source.ProdId) || !string.IsNullOrEmpty(source.ProdId))
+                    fields.Add("ProdId");
+                if (source.Calscale != CALSCALE.UNKNOWN) fields.Add("Calscale");
+                if (source.Method != METHOD.UNKNOWN) fields.Add("Method");
+                if (!source.Events.NullOrEmpty()) fields.Add("Events");
+                if (!source.ToDos.NullOrEmpty()) fields.Add("ToDos");
+                if (!source.FreeBusies.NullOrEmpty()) fields.Add("FreeBusies");
+                if (!source.Journals.NullOrEmpty()) fields.Add("Journals");
+                if (!source.TimeZones.NullOrEmpty()) fields.Add("TimeZones");
+                if (!source.IanaComponents.NullOrEmpty()) fields.Add("IanaComponents");
+                if (!source.XComponents.NullOrEmpty()) fields.Add("XComponents");
 
-                var fieldstr = string.Format("x => new {{ {0} }}", string.Join(", ", fieldlist.Select(x => string.Format("x.{0}", x))));
-                var fieldexpr = fieldstr.CompileToExpressionFunc<VCALENDAR, object>(CodeDomLanguage.csharp, "System.dll", "System.Core.dll", typeof(VCALENDAR).Assembly.Location, typeof(IContainsKey<Guid>).Assembly.Location);
-                repository.Patch(source, fieldexpr, request.CalendarId.ToSingleton());
 
-                RequestContext.RemoveFromCache(Cache, cacheKey);
+                repository.Patch(source, fields, request.CalendarId.ToSingleton());
+
+                var key = keyBuilder.Build(request, x => x.CalendarId).ToString();
+                RequestContext.RemoveFromCache(Cache, key);
+
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
 
         /// <summary> Patches the given request.</summary>
@@ -177,7 +250,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
         /// <exception cref="InvalidOperationException"> Thrown when the requested operation is invalid.</exception>
         /// <exception cref="ApplicationException"> Thrown when an Application error condition occurs.</exception>
         /// <param name="request"> The request to patch iCalendar instances.</param>
-        public void Patch(PatchCalendars request)
+        public void Post(PatchCalendars request)
         {
             try
             {
@@ -196,28 +269,48 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                     XComponents = request.XComponents
                 };
 
-                var fieldlist = new List<string>();
-                if (!string.IsNullOrEmpty(source.ProdId) || !string.IsNullOrWhiteSpace(source.ProdId)) fieldlist.Add("ProdId");
-                if (source.Calscale != default(CALSCALE)) fieldlist.Add("Calscale");
-                if (source.Method != default(METHOD)) fieldlist.Add("Method");
-                if (!source.Events.NullOrEmpty()) fieldlist.Add("Events");
-                if (!source.ToDos.NullOrEmpty()) fieldlist.Add("ToDos");
-                if (!source.FreeBusies.NullOrEmpty()) fieldlist.Add("FreeBusies");
-                if (!source.Journals.NullOrEmpty()) fieldlist.Add("Journals");
-                if (!source.TimeZones.NullOrEmpty()) fieldlist.Add("TimeZones");
-                if (!source.IanaComponents.NullOrEmpty()) fieldlist.Add("IanaComponents");
-                if (!source.XComponents.NullOrEmpty()) fieldlist.Add("XComponents");
+                var fields = new List<string>();
+                if (!string.IsNullOrEmpty(source.ProdId) || !string.IsNullOrWhiteSpace(source.ProdId))
+                    fields.Add("ProdId");
+                if (source.Calscale != default(CALSCALE)) fields.Add("Calscale");
+                if (source.Method != default(METHOD)) fields.Add("Method");
+                if (!source.Events.NullOrEmpty()) fields.Add("Events");
+                if (!source.ToDos.NullOrEmpty()) fields.Add("ToDos");
+                if (!source.FreeBusies.NullOrEmpty()) fields.Add("FreeBusies");
+                if (!source.Journals.NullOrEmpty()) fields.Add("Journals");
+                if (!source.TimeZones.NullOrEmpty()) fields.Add("TimeZones");
+                if (!source.IanaComponents.NullOrEmpty()) fields.Add("IanaComponents");
+                if (!source.XComponents.NullOrEmpty()) fields.Add("XComponents");
 
-                var fieldstr = string.Format("x => new {{ {0} }}", string.Join(", ", fieldlist.Select(x => string.Format("x.{0}", x))));
-                var fieldexpr = fieldstr.CompileToExpressionFunc<VCALENDAR, object>(CodeDomLanguage.csharp, "System.dll", "System.Core.dll", typeof(VCALENDAR).Assembly.Location, typeof(IContainsKey<Guid>).Assembly.Location);
-                repository.Patch(source, fieldexpr, request.CalendarIds.Distinct());
+                var calendarIds = !request.CalendarIds.NullOrEmpty()
+                    ? request.CalendarIds.Distinct()
+                    : null;
 
-                RequestContext.RemoveFromCache(Cache, "urn:calendars");
+                repository.Patch(source, fields, calendarIds);
+
+                var key = keyBuilder.Build(request, x => calendarIds).ToString();
+                RequestContext.RemoveFromCache(Cache, key, nullkey);
+
             }
-            catch (ArgumentNullException ex) { logger.Error(ex.ToString()); throw; }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (ArgumentNullException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); throw;
+            }
         }
 
         /// <summary> Deletes a given iCalendar instance from service repository.</summary>
@@ -228,30 +321,61 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
         {
             try
             {
-                var cacheKey = UrnId.Create<VCALENDAR>(request.CalendarId);
                 repository.Erase(request.CalendarId);
 
-                RequestContext.RemoveFromCache(Cache, cacheKey);
+                var key = keyBuilder.Build(request, x => x.CalendarId).ToString();
+                RequestContext.RemoveFromCache(Cache, key);
+
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); throw;
+            }
         }
 
         /// <summary> Deletes given iCalendar instances from the service repository.</summary>
         /// <exception cref="InvalidOperationException"> Thrown when the requested operation is invalid.</exception>
         /// <exception cref="ApplicationException">Thrown when an Application error condition occurs.</exception>
         /// <param name="request"> The request to delete.</param>
-        public void Delete(DeleteCalendars request)
+        public void Post(DeleteCalendars request)
         {
             try
             {
-                repository.EraseAll(request.CalendarIds);
-                RequestContext.RemoveFromCache(Cache, "urn:calendars");
+                var calendarIds = request.CalendarIds.NullOrEmpty()
+                    ? Enumerable.Empty<Guid>()
+                    : request.CalendarIds.Distinct();
+
+                repository.EraseAll(calendarIds);
+
+                var key = keyBuilder.Build(request, x => calendarIds).ToString();
+                RequestContext.RemoveFromCache(Cache, key, nullkey);
+
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
 
         /// <summary> Gets the requested iCalendar instance.</summary>
@@ -280,17 +404,25 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
         {
             try
             {
-                IEnumerable<VCALENDAR> calendars = null;
-                if (request.Page != null && request.Size != null)
-                {
-                    calendars = repository.FindAll(request.CalendarIds, (request.Page.Value - 1) * request.Size.Value, request.Size.Value);
-                }
-                else calendars = repository.FindAll(request.CalendarIds);
-                return !calendars.NullOrEmpty() ? calendars.ToList() : new List<VCALENDAR>();
+                return request.Page != null && request.Size != null
+                    ? repository.FindAll(request.CalendarIds, (request.Page.Value - 1) * request.Size.Value, request.Size.Value).ToList()
+                    : repository.FindAll(request.CalendarIds).ToList();
             }
-            catch (ArgumentNullException ex) { logger.Error(ex.ToString()); throw; }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
+            catch (ArgumentNullException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
 
         /// <summary> Gets paginated set of iCalendar instances.</summary>
@@ -302,17 +434,25 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
         {
             try
             {
-                IEnumerable<VCALENDAR> calendars = null;
-                if (request.Page != null && request.Size != null)
-                    calendars = repository.Get((request.Page.Value - 1) * request.Size.Value, request.Size.Value);
-                else
-                    calendars = repository.Get();
-
-                return !calendars.NullOrEmpty() ? calendars.ToList() : new List<VCALENDAR>();
+                return request.Page != null && request.Size != null
+                    ? repository.Get((request.Page.Value - 1)*request.Size.Value, request.Size.Value).ToList()
+                    : repository.Get().ToList();
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
 
         /// <summary> Gets the requested iCalendar IDs.</summary>
@@ -322,15 +462,25 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
         {
             try
             {
-                IEnumerable<Guid> keys;
-                if (request.Page != null && request.Size != null)
-                    keys = repository.GetKeys((request.Page.Value - 1) * request.Size.Value, request.Size.Value);
-                else keys = repository.GetKeys();
-                return !keys.NullOrEmpty() ? keys.ToList() : new List<Guid>();
+                return request.Page != null && request.Size != null
+                    ? repository.GetKeys((request.Page.Value - 1)*request.Size.Value, request.Size.Value).ToList()
+                    : repository.GetKeys().ToList();
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace reexjungle.xcal.domain.contracts
 {
-    public interface IOBSERVANCE : ICOMPONENT
+    public interface IOBSERVANCE
     {
         DATE_TIME Start { get; set; }
 
@@ -20,7 +20,7 @@ namespace reexjungle.xcal.domain.contracts
         List<TZNAME> TimeZoneNames { get; set; }
     }
 
-    public interface ITIMEZONE : ICOMPONENT
+    public interface ITIMEZONE
     {
         TZID TimeZoneId { get; set; }
 

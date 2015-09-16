@@ -74,15 +74,6 @@ namespace reexjungle.xcal.service.validators.concretes
         }
     }
 
-    public class DeleteCalendarsValidator : AbstractValidator<DeleteCalendars>
-    {
-        public DeleteCalendarsValidator()
-        {
-            CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.CalendarIds).NotNull().NotEmpty();
-        }
-    }
-
     public class FindCalendarValidator : AbstractValidator<FindCalendar>
     {
         public FindCalendarValidator()

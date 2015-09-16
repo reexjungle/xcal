@@ -8,7 +8,7 @@ namespace reexjungle.xcal.service.interfaces.contracts.live
     /// <summary>
     /// Specifies a service interface for iCalendar objects
     /// </summary>
-    public interface ICalendarService
+    public interface ICalendarWebService
     {
         /// <summary>
         ///
@@ -38,13 +38,13 @@ namespace reexjungle.xcal.service.interfaces.contracts.live
         ///
         /// </summary>
         /// <param name="request"></param>
-        void Patch(PatchCalendar request);
+        void Post(PatchCalendar request);
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="request"></param>
-        void Patch(PatchCalendars request);
+        void Post(PatchCalendars request);
 
         /// <summary>
         ///
@@ -56,7 +56,7 @@ namespace reexjungle.xcal.service.interfaces.contracts.live
         ///
         /// </summary>
         /// <param name="request"></param>
-        void Delete(DeleteCalendars request);
+        void Post(DeleteCalendars request);
 
         /// <summary>
         ///

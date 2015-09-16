@@ -37,7 +37,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
         public List<VEVENT> Events { get; set; }
     }
 
-    [Route("/calendars/events/{EventId}/patch", "PATCH")]
+    [Route("/calendars/events/{EventId}/patch", "POST")]
     public class PatchEvent : IReturnVoid
     {
         public Guid EventId { get; set; }
@@ -111,7 +111,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
         public Dictionary<Guid, X_PROPERTY> XProperties { get; set; }
     }
 
-    [Route("/calendars/events/batch/patch", "PATCH")]
+    [Route("/calendars/events/batch/patch", "POST")]
     public class PatchEvents : IReturnVoid
     {
         public List<Guid> EventIds { get; set; }
@@ -191,7 +191,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
         public Guid EventId { get; set; }
     }
 
-    [Route("/calendars/events/batch/delete", "DELETE")]
+    [Route("/calendars/events/batch/delete", "POST")]
     public class DeleteEvents : IReturnVoid
     {
         public List<Guid> EventIds { get; set; }

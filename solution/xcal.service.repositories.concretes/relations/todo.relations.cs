@@ -84,7 +84,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(TodoId, other.TodoId) && AttachmentId == other.AttachmentId;
+            return Equals(TodoId, other.TodoId) && AttachmentId == other.AttachmentId;
         }
 
         public override bool Equals(object obj)
@@ -138,7 +138,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(TodoId, other.TodoId) && RecurId == other.RecurId;
+            return Equals(TodoId, other.TodoId) && RecurId == other.RecurId;
         }
 
         public override bool Equals(object obj)
@@ -192,7 +192,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(TodoId, other.TodoId) && OrganizerId == other.OrganizerId;
+            return Equals(TodoId, other.TodoId) && OrganizerId == other.OrganizerId;
         }
 
         public override bool Equals(object obj)
@@ -246,7 +246,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(TodoId, other.TodoId) && AttendeeId == other.AttendeeId;
+            return Equals(TodoId, other.TodoId) && AttendeeId == other.AttendeeId;
         }
 
         public override bool Equals(object obj)
@@ -354,7 +354,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(TodoId, other.TodoId) && ContactId == other.ContactId;
+            return Equals(TodoId, other.TodoId) && ContactId == other.ContactId;
         }
 
         public override bool Equals(object obj)
@@ -462,7 +462,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(TodoId, other.TodoId) && ExceptionDateId == other.ExceptionDateId;
+            return Equals(TodoId, other.TodoId) && ExceptionDateId == other.ExceptionDateId;
         }
 
         public override bool Equals(object obj)
@@ -510,13 +510,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         /// Gets or sets the unique identifier of the relation entity
         /// </summary>
         [ForeignKey(typeof(RELATEDTO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public Guid ExceptionDateId { get; set; }
+        public Guid RelatedToId { get; set; }
 
         public bool Equals(REL_TODOS_RELATEDTOS other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return TodoId.Equals(other.TodoId) && ExceptionDateId.Equals(other.ExceptionDateId);
+            return TodoId.Equals(other.TodoId) && RelatedToId.Equals(other.RelatedToId);
         }
 
         public override bool Equals(object obj)
@@ -531,7 +531,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         {
             unchecked
             {
-                return (TodoId.GetHashCode() * 397) ^ ExceptionDateId.GetHashCode();
+                return (TodoId.GetHashCode() * 397) ^ RelatedToId.GetHashCode();
             }
         }
 

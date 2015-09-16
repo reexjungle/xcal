@@ -240,13 +240,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         /// Gets or sets the unique identifier of the related time zone entity
         /// </summary>
         [ForeignKey(typeof(VTIMEZONE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TimeZoneId { get; set; }
+        public Guid TimeZoneId { get; set; }
 
         public bool Equals(REL_CALENDARS_TIMEZONES other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(CalendarId, other.CalendarId) && string.Equals(TimeZoneId, other.TimeZoneId);
+            return CalendarId.Equals(other.CalendarId) && TimeZoneId.Equals(other.TimeZoneId);
         }
 
         public override bool Equals(object obj)
@@ -261,7 +261,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         {
             unchecked
             {
-                return ((CalendarId != null ? CalendarId.GetHashCode() : 0) * 397) ^ (TimeZoneId != null ? TimeZoneId.GetHashCode() : 0);
+                return (CalendarId.GetHashCode() * 397) ^ TimeZoneId.GetHashCode();
             }
         }
 
@@ -294,13 +294,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         /// Gets or sets the unique identifier of the related time zone entity
         /// </summary>
         [ForeignKey(typeof(IANA_COMPONENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string IanaId { get; set; }
+        public Guid IanaId { get; set; }
 
         public bool Equals(REL_CALENDARS_IANACS other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return CalendarId == other.CalendarId && IanaId == other.IanaId;
+            return CalendarId.Equals(other.CalendarId) && IanaId.Equals(other.IanaId);
         }
 
         public override bool Equals(object obj)
@@ -348,13 +348,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         /// Gets or sets the unique identifier of the related x-component entity
         /// </summary>
         [ForeignKey(typeof(X_COMPONENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string XComponentId { get; set; }
+        public Guid XComponentId { get; set; }
 
         public bool Equals(REL_CALENDARS_XCS other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return CalendarId == other.CalendarId && XComponentId == other.XComponentId;
+            return CalendarId.Equals(other.CalendarId) && XComponentId.Equals(other.XComponentId);
         }
 
         public override bool Equals(object obj)

@@ -1,9 +1,9 @@
-﻿using reexjungle.technical.data.concretes.extensions.redis;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.repositories.concretes.relations;
 using reexjungle.xcal.service.repositories.contracts;
 using reexjungle.xmisc.foundation.concretes;
 using reexjungle.xmisc.infrastructure.contracts;
+using reexjungle.xmisc.technical.data.concretes.nosql;
 using ServiceStack.Common;
 using ServiceStack.Redis;
 using System;
@@ -156,11 +156,11 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             });
         }
 
-        public void Patch(VCALENDAR source, Expression<Func<VCALENDAR, object>> fields, IEnumerable<Guid> keys = null)
+        public void Patch(VCALENDAR source, IEnumerable<string> fields, IEnumerable<Guid> keys = null)
         {
             #region construct anonymous fields using expression lambdas
 
-            var selection = fields.GetMemberNames().ToList();
+            var selection = fields as IList<string> ?? fields.ToList();
 
             Expression<Func<VCALENDAR, object>> primitives = x => new
             {

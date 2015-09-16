@@ -1,5 +1,5 @@
-﻿using reexjungle.technical.data.contracts;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.technical.data.contracts;
 using System;
 using System.Collections.Generic;
 

@@ -1,9 +1,8 @@
 ﻿using Funq;
 using MySql.Data.MySqlClient;
 using NLog;
-using reexjungle.crosscut.operations.concretes;
-using reexjungle.technical.data.concretes.extensions.ormlite.mysql;
 using reexjungle.xcal.application.server.web.dev2.Properties;
+using reexjungle.xcal.crosscut.concretes.operations;
 using reexjungle.xcal.service.interfaces.concretes.live;
 using reexjungle.xcal.service.plugins.formats.concretes;
 using reexjungle.xcal.service.repositories.concretes.redis;
@@ -11,6 +10,7 @@ using reexjungle.xcal.service.repositories.contracts;
 using reexjungle.xcal.service.validators.concretes;
 using reexjungle.xmisc.infrastructure.concretes.operations;
 using reexjungle.xmisc.infrastructure.contracts;
+using reexjungle.xmisc.technical.data.concretes.orm;
 using ServiceStack.Logging;
 using ServiceStack.Logging.Elmah;
 using ServiceStack.Logging.NLogger;
@@ -85,7 +85,7 @@ namespace reexjungle.xcal.application.server.web.dev2
 
             #region inject rdbms provider
 
-            container.Register<IOrmLiteDialectProvider>(MySqlDialect.Provider);
+            container.Register(MySqlDialect.Provider);
             container.Register<IDbConnectionFactory>(new OrmLiteConnectionFactory(Settings.Default.mysql_server, container.Resolve<IOrmLiteDialectProvider>()));
 
             #endregion inject rdbms provider
@@ -215,7 +215,7 @@ namespace reexjungle.xcal.application.server.web.dev2
         }
 
         public ApplicationHost()
-            : base(Settings.Default.service_name, typeof(EventService).Assembly)
+            : base(Settings.Default.service_name, typeof(EventWebService).Assembly)
         {
             #region set up mono compliant settings
 

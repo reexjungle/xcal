@@ -12,6 +12,7 @@ using System.CodeDom.Compiler;
 using System.Configuration;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using reexjungle.xmisc.infrastructure.concretes.operations;
 
 namespace reexjungle.xcal.application.server.web.local.Properties {
     
@@ -114,27 +115,27 @@ namespace reexjungle.xcal.application.server.web.local.Properties {
         [ApplicationScopedSetting()]
         [DebuggerNonUserCode()]
         [DefaultSettingValue("rdbms")]
-        public reexjungle.xmisc.infrastructure.concretes.operations.StorageType main_storage {
+        public StorageType main_storage {
             get {
-                return ((reexjungle.xmisc.infrastructure.concretes.operations.StorageType)(this["main_storage"]));
+                return ((StorageType)(this["main_storage"]));
             }
         }
         
         [ApplicationScopedSetting()]
         [DebuggerNonUserCode()]
         [DefaultSettingValue("nosql")]
-        public reexjungle.xmisc.infrastructure.concretes.operations.StorageType auth_storage {
+        public StorageType auth_storage {
             get {
-                return ((reexjungle.xmisc.infrastructure.concretes.operations.StorageType)(this["auth_storage"]));
+                return ((StorageType)(this["auth_storage"]));
             }
         }
         
         [ApplicationScopedSetting()]
         [DebuggerNonUserCode()]
         [DefaultSettingValue("nosql")]
-        public reexjungle.xmisc.infrastructure.concretes.operations.StorageType cache_storage {
+        public StorageType cache_storage {
             get {
-                return ((reexjungle.xmisc.infrastructure.concretes.operations.StorageType)(this["cache_storage"]));
+                return ((StorageType)(this["cache_storage"]));
             }
         }
         

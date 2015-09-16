@@ -80,7 +80,6 @@ namespace reexjungle.xcal.service.validators.concretes
     public class EmailValidator : AbstractValidator<URI>
     {
         public EmailValidator()
-            : base()
         {
             RuleFor(x => x.Path).Must((x, y) => IsValid(x.Path)).When(x => !string.IsNullOrWhiteSpace(x.Path)
                 || !string.IsNullOrEmpty(x.Path));
@@ -88,20 +87,14 @@ namespace reexjungle.xcal.service.validators.concretes
 
         private bool IsValid(string email)
         {
-            try
-            {
-                var pattern = @"^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$";
-                return Regex.IsMatch(email, pattern, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (ArgumentException) { throw; }
+            var pattern = @"^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$";
+            return Regex.IsMatch(email, pattern, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
         }
     }
 
     public class UriValidator : AbstractValidator<URI>
     {
         public UriValidator()
-            : base()
         {
             RuleFor(x => x.Path).Must((x, y) => Uri.IsWellFormedUriString(y, UriKind.RelativeOrAbsolute)).When(x => x.Path != null);
         }
@@ -120,7 +113,6 @@ namespace reexjungle.xcal.service.validators.concretes
     public class RecurrenceValidator : AbstractValidator<RECUR>
     {
         public RecurrenceValidator()
-            : base()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.FREQ).NotEqual(FREQ.UNKNOWN);

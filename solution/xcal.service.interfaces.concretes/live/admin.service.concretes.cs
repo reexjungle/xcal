@@ -4,68 +4,74 @@ using reexjungle.xcal.service.repositories.contracts;
 using ServiceStack.Logging;
 using ServiceStack.ServiceInterface;
 using System;
+using ServiceStack.ServiceHost;
 
 namespace reexjungle.xcal.service.interfaces.concretes.live
 {
+    /// <summary>
+    ///
+    /// </summary>
     public class AdminService : Service, IAdminService
     {
-        private ILogFactory logfactory;
-        private IAdminRepository repository;
+        private readonly ILogFactory factory;
+        private readonly IAdminRepository repository;
 
-        private ILog log = null;
+        private ILog log;
 
         private ILog logger
         {
-            get { return (log != null) ? log : logfactory.GetLogger(GetType()); }
+            get
+            {
+                return log ?? (log = factory.GetLogger(GetType()));
+            }
         }
 
         public ILogFactory LogFactory
         {
-            get { return logfactory; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("Logger");
-                logfactory = value;
-                log = logfactory.GetLogger(GetType());
-            }
+            get { return factory; }
         }
 
         public IAdminRepository AdminRepository
         {
             get { return repository; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("AdminRepository");
-                repository = value;
-            }
         }
 
-        public AdminService()
-            : base()
+        public AdminService(IAdminRepository repository, ILogFactory factory)
         {
-            AdminRepository = TryResolve<IAdminRepository>();
-            LogFactory = TryResolve<ILogFactory>();
-        }
-
-        public AdminService(IAdminRepository repository, ILogFactory logger)
-            : base()
-        {
-            AdminRepository = repository;
-            LogFactory = logger;
+            this.repository = repository;
+            this.factory = factory;
         }
 
         public void Post(FlushDatabase request)
         {
             try
             {
-                if (request.Mode != null && request.Mode.HasValue)
-                    AdminRepository.Flush(request.Mode.Value);
+                if (request.Force != null)
+                {
+                    AdminRepository.Flush(request.Force.Value);
+                }
                 else
+                {
                     AdminRepository.Flush();
+                }
+
+                //invalidate cache
+                Cache.FlushAll();
             }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); throw;
+            }
         }
     }
 }

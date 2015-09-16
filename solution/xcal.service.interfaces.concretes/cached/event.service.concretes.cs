@@ -9,38 +9,34 @@ using ServiceStack.Logging;
 using ServiceStack.ServiceHost;
 using ServiceStack.ServiceInterface;
 using System;
+using reexjungle.xmisc.infrastructure.contracts;
 
 namespace reexjungle.xcal.service.interfaces.concretes.cached
 {
     public class CachedEventService : Service, ICachedEventService
     {
-        public ICacheClient CacheClient { get; set; }
-
-        private ILogFactory logfactory;
+        private readonly ICacheClient client;
+        private readonly ICacheKeyBuilder<Guid> keyBuilder; 
+        private readonly ILogFactory factory;
+        private readonly TimeSpan? ttl;
 
         private ILog log;
-
         private ILog logger
         {
-            get { return log ?? (log = logfactory.GetLogger(GetType())); }
+            get { return log ?? (log = factory.GetLogger(GetType())); }
         }
 
-        public ILogFactory LogFactory
-        {
-            get { return logfactory; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("Logger");
-                logfactory = value;
-                log = logfactory.GetLogger(GetType());
-            }
-        }
 
-        public TimeSpan? TimeToLive { get; set; }
-
-        public CachedEventService()
+        public CachedEventService(TimeSpan? ttl, ICacheClient client, ICacheKeyBuilder<Guid> keyBuilder, ILogFactory factory)
         {
-            TimeToLive = ResolveService<TimeSpan?>();
+            if (client == null) throw new ArgumentNullException("client");
+            if (keyBuilder == null) throw new ArgumentNullException("keyBuilder");
+            if (factory == null) throw new ArgumentNullException("factory");
+
+            this.ttl = ttl;
+            this.client = client;
+            this.factory = factory;
+            this.keyBuilder = keyBuilder;
         }
 
         public object Get(FindEventCached request)
@@ -48,19 +44,39 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
             try
             {
                 return RequestContext.ToOptimizedResultUsingCache(
-                CacheClient, UrnId.Create<VEVENT>(request.EventId),
-                () =>
-                {
-                    var result = ResolveService<EventService>()
-                        .Get(new FindEvent { EventId = request.EventId });
-                    return result ?? VEVENT.Empty;
-                });
+                    client,
+                    keyBuilder.Build(request, x => x.EventId).ToString(),
+                    () =>
+                    {
+                        var result = ResolveService<EventWebService>()
+                            .Get(new FindEvent {EventId = request.EventId});
+                        return result ?? VEVENT.Empty;
+                    });
             }
-            catch (ArgumentNullException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ArgumentException ex) { logger.Error(ex.ToString()); throw; }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (ArgumentNullException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ArgumentException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); throw;
+            }
         }
 
         public object Post(FindEventsCached request)
@@ -68,50 +84,84 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
             try
             {
                 return RequestContext.ToOptimizedResultUsingCache(
-                CacheClient,
-                request.Page != null && request.Size != null ? string.Format("urn:events:{0}:{1}", request.Page, request.Size) : "urn:events",
-                TimeToLive,
-                () =>
-                {
-                    return ResolveService<EventService>()
+                    client,
+                    keyBuilder.Build(request, x => x.EventIds).ToString(),
+                    ttl,
+                    () => ResolveService<EventWebService>()
                         .Post(new FindEvents
                         {
                             EventIds = request.EventIds,
                             Page = request.Page,
                             Size = request.Size
-                        });
-                });
+                        }));
             }
-            catch (ArgumentNullException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ArgumentException ex) { logger.Error(ex.ToString()); throw; }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (ArgumentNullException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ArgumentException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); throw;
+            }
         }
 
         public object Get(GetEventsCached request)
         {
             try
             {
-                return RequestContext.ToOptimizedResultUsingCache(
-                CacheClient,
-                request.Page != null && request.Size != null ? string.Format("urn:events:{0}:{1}", request.Page, request.Size) : "urn:events",
-                TimeToLive,
-                () =>
-                {
-                    return ResolveService<EventService>()
+               var results = RequestContext.ToOptimizedResultUsingCache(
+                    client,
+                    keyBuilder.Build(request, x => x.Page, x => x.Size).ToString(),
+                    ttl,
+                    () => ResolveService<EventWebService>()
                         .Get(new GetEvents
                         {
                             Page = request.Page,
                             Size = request.Size
-                        });
-                });
+                        }));
+
+                return results;
             }
-            catch (ArgumentNullException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ArgumentException ex) { logger.Error(ex.ToString()); throw; }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (ArgumentNullException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ArgumentException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); throw;
+            }
         }
 
         public object Get(GetEventKeysCached request)
@@ -119,24 +169,40 @@ namespace reexjungle.xcal.service.interfaces.concretes.cached
             try
             {
                 return RequestContext.ToOptimizedResultUsingCache(
-                CacheClient,
-                request.Page != null && request.Size != null ? string.Format("urn:events:{0}:{1}", request.Page, request.Size) : "urn:events",
-                TimeToLive,
-                () =>
-                {
-                    return ResolveService<EventService>()
-                        .Get(new GetEventKeys
-                        {
-                            Page = request.Page,
-                            Size = request.Size
-                        });
-                });
+                    client,
+                    keyBuilder.Build(request, x => x.Page.Value, x => x.Size.Value).ToString(),
+                    ttl, 
+                    () => ResolveService<EventWebService>().Get(new GetEventKeys
+                    {
+                        Page = request.Page,
+                        Size = request.Size
+                    }));
             }
-            catch (ArgumentNullException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ArgumentException ex) { logger.Error(ex.ToString()); throw; }
-            catch (InvalidOperationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (ApplicationException ex) { logger.Error(ex.ToString()); throw; }
-            catch (Exception ex) { logger.Error(ex.ToString()); throw; }
+            catch (ArgumentNullException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ArgumentException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (ApplicationException ex)
+            {
+                logger.Error(ex.ToString());
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.ToString()); 
+                throw;
+            }
         }
     }
 }

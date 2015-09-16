@@ -246,7 +246,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return FreeBusyId == other.FreeBusyId && string.Equals(InfoId, other.InfoId);
+            return FreeBusyId == other.FreeBusyId && Equals(InfoId, other.InfoId);
         }
 
         public override bool Equals(object obj)

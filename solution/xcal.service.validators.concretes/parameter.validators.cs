@@ -1,4 +1,5 @@
-﻿using reexjungle.xcal.domain.models;
+﻿using MarkdownDeep;
+using reexjungle.xcal.domain.models;
 using reexjungle.xmisc.foundation.concretes;
 using ServiceStack.FluentValidation;
 
@@ -7,16 +8,14 @@ namespace reexjungle.xcal.service.validators.concretes
     public class LanguageValidator : AbstractValidator<LANGUAGE>
     {
         public LanguageValidator()
-            : base()
         {
-            RuleFor(x => x.Tag).NotNull();
+            RuleFor(x => x.Tag).Must((x, y) => !string.IsNullOrWhiteSpace(y));
         }
     }
 
     public class TimeZoneIdValidator : AbstractValidator<TZID>
     {
         public TimeZoneIdValidator()
-            : base()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Prefix).NotNull().When(x => x.GloballyUnique = false);
@@ -45,7 +44,6 @@ namespace reexjungle.xcal.service.validators.concretes
     public class MemberValidator : AbstractValidator<MEMBER>
     {
         public MemberValidator()
-            : base()
         {
             RuleFor(x => x.Addresses).SetCollectionValidator(new UriValidator()).When(x => !x.Addresses.NullOrEmpty());
         }

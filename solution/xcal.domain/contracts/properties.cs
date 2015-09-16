@@ -3,14 +3,13 @@ using reexjungle.xcal.domain.models;
 
 namespace reexjungle.xcal.domain.contracts
 {
-    public interface IPROPERTY { }
 
     #region Descriptive Component Properties
 
     /// <summary>
     /// Specifies a general contract for associating a document object (attachment) with an iCalendar object.
     /// </summary>
-    public interface IATTACH : IPROPERTY 
+    public interface IATTACH 
     {
         /// <summary>
         /// Gets or sets the format type of the resource being attached.
@@ -35,7 +34,7 @@ namespace reexjungle.xcal.domain.contracts
     /// Categories Property
     /// Specifies a contract for defining categories for a calendar component.
     /// </summary>
-    public interface ICATEGORIES : IPROPERTY
+    public interface ICATEGORIES
     {
         /// <summary>
         /// Gets or sets the value of the categories
@@ -48,7 +47,7 @@ namespace reexjungle.xcal.domain.contracts
         LANGUAGE Language { get; set; }
     }
 
-    public interface ITEXTUAL : IPROPERTY
+    public interface ITEXTUAL
     {
         URI AlternativeText { get; set; }
 
@@ -60,13 +59,13 @@ namespace reexjungle.xcal.domain.contracts
         string Text { get; set; }
     }
 
-    public interface IGEO : IPROPERTY
+    public interface IGEO 
     {
         float Longitude { get; }
         float Latitude { get; }
     } 
  
-    public interface IRESOURCES : IPROPERTY
+    public interface IRESOURCES
     {
         URI AlternativeText { get; set; }
 
@@ -75,7 +74,7 @@ namespace reexjungle.xcal.domain.contracts
         List<string> Values { get; set; }
     }
 
-    public interface IPRIORITY: IPROPERTY
+    public interface IPRIORITY
     {
         int Value { get; }
         PriorityType Format { get; }
@@ -87,7 +86,7 @@ namespace reexjungle.xcal.domain.contracts
 
     #region Date and Time Component Properties
 
-    public interface IFREEBUSY_INFO : IPROPERTY
+    public interface IFREEBUSY_INFO
     {
         FBTYPE Type { get; set; }
 
@@ -98,7 +97,7 @@ namespace reexjungle.xcal.domain.contracts
 
     #region Time Zone Component Properties
 
-    public interface ITZNAME : IPROPERTY
+    public interface ITZNAME
     {
         LANGUAGE Language { get; set; }
 
@@ -109,7 +108,7 @@ namespace reexjungle.xcal.domain.contracts
 
     #region Relationship Component Properties
 
-    public interface IATTENDEE : IPROPERTY
+    public interface IATTENDEE
     {
         URI Address { get; set; }
         CUTYPE CalendarUserType { get; set; }
@@ -125,7 +124,7 @@ namespace reexjungle.xcal.domain.contracts
         LANGUAGE Language { get; set; }
     }
 
-    public interface IORGANIZER : IPROPERTY
+    public interface IORGANIZER 
     {
         URI Address { get; set; }
         string CN { get; set; }
@@ -134,14 +133,14 @@ namespace reexjungle.xcal.domain.contracts
         LANGUAGE Language { get; set; }
     }
 
-    public interface IRECURRENCE_ID : IPROPERTY 
+    public interface IRECURRENCE_ID  
     {
         DATE_TIME Value { get; set; }
         RANGE Range { get; set; }
         TZID TimeZoneId { get; set; }
     }
    
-    public interface IRELATEDTO : IPROPERTY
+    public interface IRELATEDTO
     {
         string Reference { get; set; }
         RELTYPE RelationshipType { get; set; }
@@ -151,14 +150,14 @@ namespace reexjungle.xcal.domain.contracts
 
     #region Recurrence Component Properties
 
-    public interface IEXDATE : IPROPERTY
+    public interface IEXDATE
     {
         List<DATE_TIME> DateTimes { get; set; }
         TZID TimeZoneId { get; set; }
         VALUE ValueType { get; set; }
     }
 
-    public interface IRDATE : IPROPERTY
+    public interface IRDATE
     { 
         List<DATE_TIME> DateTimes { get; set; }
         List<PERIOD> Periods { get; set; }
@@ -170,7 +169,7 @@ namespace reexjungle.xcal.domain.contracts
 
     #region Alarm Component Properties
 
-    public interface ITRIGGER : IPROPERTY
+    public interface ITRIGGER
     {
         //trigrel
         DURATION Duration { get; set; }
@@ -181,7 +180,7 @@ namespace reexjungle.xcal.domain.contracts
         DATE_TIME DateTime {get; set;}
 
         //Selector
-        VALUE Value { get; set; }
+        VALUE ValueType { get; set; }
 
     }
 
@@ -189,11 +188,11 @@ namespace reexjungle.xcal.domain.contracts
 
     #region Miscellaneous Component Properties
 
-    public interface IMISC_PROPERTY<TValue> : IPROPERTY 
+    public interface IMISC_PROPERTY<TValue> 
     { 
 
         string Name { get; set; }
-        List<IPARAMETER> Parameters { get; set; }
+        List<object> Parameters { get; set; }
         TValue Value { get; set; }   
         VALUE ValueType {get; set; }
     }
@@ -221,7 +220,7 @@ namespace reexjungle.xcal.domain.contracts
         uint L3 { get; set; }
     }
 
-    public interface IREQUEST_STATUS : IPROPERTY
+    public interface IREQUEST_STATUS
     {
         ISTATCODE Code { get; set; }
         string Description { get; set; }

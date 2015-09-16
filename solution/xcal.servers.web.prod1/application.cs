@@ -1,9 +1,8 @@
 ﻿using Funq;
 using MySql.Data.MySqlClient;
 using NLog;
-using reexjungle.crosscut.operations.concretes;
-using reexjungle.technical.data.concretes.extensions.ormlite.mysql;
 using reexjungle.xcal.application.server.web.prod1.Properties;
+using reexjungle.xcal.crosscut.concretes.operations;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.interfaces.concretes.live;
 using reexjungle.xcal.service.plugins.formats.concretes;
@@ -13,7 +12,7 @@ using reexjungle.xcal.service.repositories.contracts;
 using reexjungle.xcal.service.validators.concretes;
 using reexjungle.xmisc.infrastructure.concretes.operations;
 using reexjungle.xmisc.infrastructure.contracts;
-using ServiceStack.CacheAccess;
+using reexjungle.xmisc.technical.data.concretes.orm;
 using ServiceStack.Logging;
 using ServiceStack.Logging.Elmah;
 using ServiceStack.Logging.NLogger;
@@ -88,7 +87,7 @@ namespace reexjungle.xcal.application.server.web.prod1
 
             #region inject rdbms provider
 
-            container.Register<IOrmLiteDialectProvider>(MySqlDialect.Provider);
+            container.Register(MySqlDialect.Provider);
             container.Register<IDbConnectionFactory>(new OrmLiteConnectionFactory(Settings.Default.mysql_server, container.Resolve<IOrmLiteDialectProvider>()));
 
             #endregion inject rdbms provider
@@ -196,30 +195,30 @@ namespace reexjungle.xcal.application.server.web.prod1
 
             #region inject ormlite repositories
 
-            container.Register<IAudioAlarmRepository>(x => new AudioAlarmOrmLiteRepository(
+            container.Register<IAudioAlarmRepository>(x => new AudioAlarmOrmRepository(
                     x.Resolve<IKeyGenerator<Guid>>(),
                     x.Resolve<IDbConnectionFactory>()));
 
-            container.Register<IDisplayAlarmRepository>(x => new DisplayAlarmOrmLiteRepository(
+            container.Register<IDisplayAlarmRepository>(x => new DisplayAlarmOrmRepository(
                 x.Resolve<IDbConnectionFactory>()));
 
-            container.Register<IEmailAlarmRepository>(x => new EmailAlarmOrmLiteRepository(
+            container.Register<IEmailAlarmRepository>(x => new EmailAlarmOrmRepository(
                 x.Resolve<IKeyGenerator<Guid>>(),
                 x.Resolve<IDbConnectionFactory>()));
 
-            container.Register<IEventRepository>(x => new EventOrmLiteRepository(
+            container.Register<IEventRepository>(x => new EventOrmRepository(
                     x.Resolve<IKeyGenerator<Guid>>(),
                     x.Resolve<IAudioAlarmRepository>(),
                     x.Resolve<IDisplayAlarmRepository>(),
                     x.Resolve<IEmailAlarmRepository>(),
                     x.Resolve<IDbConnectionFactory>()));
 
-            container.Register<ICalendarRepository>(x => new CalendarOrmLiteRepository(
+            container.Register<ICalendarRepository>(x => new CalendarOrmRepository(
                     x.Resolve<IKeyGenerator<Guid>>(),
                     x.Resolve<IEventRepository>(),
                     x.Resolve<IDbConnectionFactory>()));
 
-            container.Register<IAdminRepository>(x => new AdminOrmLiteRepository(
+            container.Register<IAdminRepository>(x => new AdminOrmRepository(
                 x.Resolve<IDbConnectionFactory>()));
 
             #endregion inject ormlite repositories
@@ -230,7 +229,7 @@ namespace reexjungle.xcal.application.server.web.prod1
             //NOTE: Redis Server must already be installed on the remote machine and must be running
             container.Register<IRedisClientsManager>(x => new BasicRedisClientManager(Settings.Default.redis_server));
             var cachedclient = container.Resolve<IRedisClientsManager>().GetCacheClient();
-            if (cachedclient != null) container.Register<ICacheClient>(x => cachedclient);
+            if (cachedclient != null) container.Register(x => cachedclient);
 
             #endregion inject cached providers
 
@@ -238,7 +237,7 @@ namespace reexjungle.xcal.application.server.web.prod1
         }
 
         public ApplicationHost()
-            : base(Settings.Default.service_name, typeof(EventService).Assembly)
+            : base(Settings.Default.service_name, typeof(EventWebService).Assembly)
         {
             #region set up mono compliant settings
 

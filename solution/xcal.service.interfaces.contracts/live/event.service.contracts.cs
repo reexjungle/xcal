@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace reexjungle.xcal.service.interfaces.contracts.live
 {
-    public interface IEventService
+    public interface IEventWebService
     {
         void Post(AddEvent request);
 
@@ -15,13 +15,13 @@ namespace reexjungle.xcal.service.interfaces.contracts.live
 
         void Put(UpdateEvents request);
 
-        void Patch(PatchEvent request);
+        void Post(PatchEvent request);
 
-        void Patch(PatchEvents request);
+        void Post(PatchEvents request);
 
         void Delete(DeleteEvent request);
 
-        void Delete(DeleteEvents request);
+        void Post(DeleteEvents request);
 
         VEVENT Get(FindEvent request);
 

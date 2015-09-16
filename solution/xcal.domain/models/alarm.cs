@@ -36,7 +36,6 @@ namespace reexjungle.xcal.domain.models
         public ATTACH_URI AttachmentUri { get; set; }
 
         public AUDIO_ALARM()
-            : base()
         {
             Action = ACTION.AUDIO;
         }
@@ -131,7 +130,6 @@ namespace reexjungle.xcal.domain.models
         public DESCRIPTION Description { get; set; }
 
         public DISPLAY_ALARM()
-            : base()
         {
             Action = ACTION.DISPLAY;
         }
@@ -238,7 +236,6 @@ namespace reexjungle.xcal.domain.models
         public List<ATTACH_URI> AttachmentUris { get; set; }
 
         public EMAIL_ALARM()
-            : base()
         {
             Action = ACTION.EMAIL;
             Attendees = new List<ATTENDEE>();

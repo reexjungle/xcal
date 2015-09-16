@@ -1,14 +1,13 @@
 ﻿using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.repositories.concretes.relations;
 using reexjungle.xcal.service.repositories.contracts;
-using reexjungle.xmisc.infrastructure.contracts;
 using ServiceStack.OrmLite;
 using System;
 using System.Data;
 
 namespace reexjungle.xcal.service.repositories.concretes.ormlite
 {
-    public class AdminOrmLiteRepository : IAdminRepository, IOrmLiteRepository
+    public class AdminOrmRepository : IAdminRepository, IOrmRepository
     {
         private IDbConnection conn;
         private readonly IDbConnectionFactory factory;
@@ -23,7 +22,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
             get { return factory; }
         }
 
-        public AdminOrmLiteRepository(IDbConnectionFactory factory)
+        public AdminOrmRepository(IDbConnectionFactory factory)
         {
             if (factory == null) throw new ArgumentNullException("factory");
             this.factory = factory;
@@ -117,10 +116,12 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
             });
         }
 
-        public void Flush(FlushMode mode = FlushMode.soft)
+        public void Flush(bool force)
         {
-            if (mode == FlushMode.hard) RecreateTables(factory);
-            else DeleteAllRowsFromTables(factory);
+            if (force)
+                RecreateTables(factory);
+            else
+                DeleteAllRowsFromTables(factory);
         }
     }
 }

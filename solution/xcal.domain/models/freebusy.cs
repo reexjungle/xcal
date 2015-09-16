@@ -30,9 +30,11 @@ namespace reexjungle.xcal.domain.models
             get { return Id.ToString(); }
             set
             {
-                Id = !string.IsNullOrWhiteSpace(value)
-                    ? new Guid(value)
-                    : Guid.NewGuid();
+                var id = Guid.Empty;
+                if (Guid.TryParse(value, out id))
+                {
+                    Id = id;
+                }
             }
         }
 

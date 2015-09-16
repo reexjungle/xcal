@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace reexjungle.xcal.service.operations.concretes.cached
 {
+
     [Route("/cached/calendars/{CalendarId}/find", "GET")]
     public class FindCalendarCached : IReturn<VCALENDAR>
     {
@@ -35,7 +36,7 @@ namespace reexjungle.xcal.service.operations.concretes.cached
 
     [Route("/cached/calendars/keys/{Page}/{Size}", "GET")]
     [Route("/cached/calendars/keys/page/{Page}/size/{Size}", "GET")]
-    public class GetCalendarKeysCached : IReturn<List<string>>, IPaginated<int>
+    public class GetCalendarKeysCached : IReturn<List<Guid>>, IPaginated<int>
     {
         public int? Page { get; set; }
 

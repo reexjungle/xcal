@@ -294,13 +294,13 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         /// Gets or sets the unique identifier of the related comment entity
         /// </summary>
         [ForeignKey(typeof(COMMENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public Guid AttendeeId { get; set; }
+        public Guid CommentId { get; set; }
 
         public bool Equals(REL_JOURNALS_COMMENTS other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return JournalId == other.JournalId && AttendeeId == other.AttendeeId;
+            return JournalId == other.JournalId && CommentId == other.CommentId;
         }
 
         public override bool Equals(object obj)
@@ -315,7 +315,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         {
             unchecked
             {
-                return (JournalId.GetHashCode() * 397) ^ AttendeeId.GetHashCode();
+                return (JournalId.GetHashCode() * 397) ^ CommentId.GetHashCode();
             }
         }
 

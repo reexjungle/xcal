@@ -10,7 +10,6 @@ namespace reexjungle.xcal.service.validators.concretes
     public class PublishEventsValidator : AbstractValidator<PublishEvents>
     {
         public PublishEventsValidator()
-            : base()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Method).Equal(METHOD.PUBLISH);

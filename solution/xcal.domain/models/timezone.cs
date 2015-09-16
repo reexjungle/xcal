@@ -185,7 +185,6 @@ namespace reexjungle.xcal.domain.models
     public class DAYLIGHT : OBSERVANCE
     {
         public DAYLIGHT()
-            : base()
         {
         }
 

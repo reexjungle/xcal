@@ -24,7 +24,6 @@ namespace reexjungle.xcal.service.clients.concretes
         }
 
         public iCalendarServiceClient(string baseUri)
-            : base()
         {
             SetBaseUri(baseUri);
         }

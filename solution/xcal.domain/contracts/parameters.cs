@@ -1,18 +1,13 @@
-﻿using System.Collections.Generic;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
+using System.Collections.Generic;
 
 namespace reexjungle.xcal.domain.contracts
 {
     /// <summary>
-    /// General contract for calendar parameters
-    /// </summary>
-    public interface IPARAMETER { }
-
-    /// <summary>
     /// Delegators
     /// Specfies the calendar users that have delegated their participation to the calendar user specfied by the property.
     /// </summary>
-    public interface IDELEGATE : IPARAMETER
+    public interface IDELEGATE
     {
         /// <summary>
         /// Gets or sets the calendar addresses of the participation delegators
@@ -20,15 +15,17 @@ namespace reexjungle.xcal.domain.contracts
         List<URI> Addresses { get; set; }
     }
 
-    public interface IFMTTYPE : IPARAMETER
+    public interface IFMTTYPE
     {
         string TypeName { get; set; }
+
         string SubTypeName { get; set; }
     }
 
-    public interface ILANGUAGE : IPARAMETER
+    public interface ILANGUAGE
     {
         string Tag { get; set; }
+
         string SubTag { get; set; }
     }
 
@@ -36,7 +33,7 @@ namespace reexjungle.xcal.domain.contracts
     /// Group or List Membership.
     /// Specifies the group or list membership of the calendar user specified by a property
     /// </summary>
-    public interface IMEMBER : IPARAMETER
+    public interface IMEMBER
     {
         /// <summary>
         /// Gets or sets the calendar addresses of the group members
@@ -49,10 +46,10 @@ namespace reexjungle.xcal.domain.contracts
     /// Specifies the identifier for the time zone definition for a time component in a property value.
     /// </summary>
     /// <remarks>
-    /// This paramter MUST be specified on the DATE_TIME, DATE_TIME, DUE, EXDATE and RDATE propertiws when either a DATE-TIME 
+    /// This paramter MUST be specified on the DATE_TIME, DATE_TIME, DUE, EXDATE and RDATE propertiws when either a DATE-TIME
     /// or TIME value type is specified and when the value is neither a UTC or &quot; floating time &quot; time.
     /// </remarks>
-    public interface ITZID: IPARAMETER
+    public interface ITZID
     {
         /// <summary>
         /// Gets or sets whether the time-zone prefix should be included
@@ -69,5 +66,4 @@ namespace reexjungle.xcal.domain.contracts
         /// </summary>
         string Suffix { get; set; }
     }
-
 }

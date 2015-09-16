@@ -1,30 +1,17 @@
-﻿using reexjungle.xmisc.infrastructure.contracts;
-using ServiceStack.OrmLite;
+﻿using ServiceStack.OrmLite;
 using ServiceStack.Redis;
-using System.Data;
 
 namespace reexjungle.xcal.service.repositories.contracts
 {
     /// <summary>
-    /// Specifies a contract for a repository hosted on a relational data source connected through the lightweight ORMLite connector.
+    /// Specifies a contract for a repository hosted on a relational data source connected through an ORM connector.
     /// </summary>
-    public interface IOrmLiteRepository
+    public interface IOrmRepository
     {
         /// <summary>
         /// Gets the connection factory of ORMLite datasources
         /// </summary>
         IDbConnectionFactory DbConnectionFactory { get; }
-    }
-
-    /// <summary>
-    /// Speicifies a contract for a repository based on a relational data source connected through the lighweight Dapper ORM connector
-    /// </summary>
-    public interface IDapperRepository
-    {
-        /// <summary>
-        ///
-        /// </summary>
-        IFactory<IDbConnection> DbConnectionFactory { get; }
     }
 
     /// <summary>

@@ -1,9 +1,9 @@
-﻿using reexjungle.technical.data.concretes.extensions.redis;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.repositories.concretes.relations;
 using reexjungle.xcal.service.repositories.contracts;
 using reexjungle.xmisc.foundation.concretes;
 using reexjungle.xmisc.infrastructure.contracts;
+using reexjungle.xmisc.technical.data.concretes.nosql;
 using ServiceStack.Common.Extensions;
 using ServiceStack.Redis;
 using System;
@@ -118,11 +118,11 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             });
         }
 
-        public void Patch(AUDIO_ALARM source, Expression<Func<AUDIO_ALARM, object>> fields, IEnumerable<Guid> keys = null)
+        public void Patch(AUDIO_ALARM source, IEnumerable<string> fields, IEnumerable<Guid> keys = null)
         {
             #region construct anonymous fields using expression lambdas
 
-            var selection = fields.GetMemberNames();
+            var selection = fields as IList<string> ?? fields.ToList();
 
             Expression<Func<AUDIO_ALARM, object>> primitives = x => new
             {
@@ -443,11 +443,11 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             });
         }
 
-        public void Patch(DISPLAY_ALARM source, Expression<Func<DISPLAY_ALARM, object>> fields, IEnumerable<Guid> keys = null)
+        public void Patch(DISPLAY_ALARM source, IEnumerable<string> fields, IEnumerable<Guid> keys = null)
         {
             #region construct anonymous fields using expression lambdas
 
-            var selection = fields.GetMemberNames().ToList();
+            var selection = fields as IList<string> ?? fields.ToList();
 
             Expression<Func<DISPLAY_ALARM, object>> primitives = x => new
             {
@@ -527,8 +527,8 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
     public class EmailAlarmRedisRepository : IEmailAlarmRepository, IRedisRepository
     {
-        private IRedisClientsManager manager;
-        private IKeyGenerator<Guid> keygenerator;
+        private readonly IRedisClientsManager manager;
+        private readonly IKeyGenerator<Guid> keygenerator;
         private IRedisClient client = null;
 
         private IRedisClient redis
@@ -763,11 +763,11 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             });
         }
 
-        public void Patch(EMAIL_ALARM source, Expression<Func<EMAIL_ALARM, object>> fields, IEnumerable<Guid> keys = null)
+        public void Patch(EMAIL_ALARM source, IEnumerable<string> fields, IEnumerable<Guid> keys = null)
         {
             #region construct anonymous fields using expression lambdas
 
-            var selection = fields.GetMemberNames().ToList();
+            var selection = fields as IList<string> ?? fields.ToList();
 
             Expression<Func<EMAIL_ALARM, object>> primitives = x => new
             {

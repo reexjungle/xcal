@@ -31,7 +31,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
         public List<VCALENDAR> Calendars { get; set; }
     }
 
-    [Route("/calendars/{CalendarId}/patch", "PATCH")]
+    [Route("/calendars/{CalendarId}/patch", "POST")]
     public class PatchCalendar : IReturnVoid
     {
         public Guid CalendarId { get; set; }
@@ -59,7 +59,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
         public List<X_COMPONENT> XComponents { get; set; }
     }
 
-    [Route("/calendars/batch/patch", "PATCH")]
+    [Route("/calendars/batch/patch", "POST")]
     public class PatchCalendars : IReturnVoid
     {
         public List<Guid> CalendarIds { get; set; }
@@ -93,7 +93,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
         public Guid CalendarId { get; set; }
     }
 
-    [Route("/calendars/batch/delete", "DELETE")]
+    [Route("/calendars/batch/delete", "POST")]
     public class DeleteCalendars : IReturnVoid
     {
         public List<Guid> CalendarIds { get; set; }

@@ -4,6 +4,7 @@ using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
 
@@ -31,9 +32,11 @@ namespace reexjungle.xcal.domain.models
             get { return Id.ToString(); }
             set
             {
-                Id = !string.IsNullOrWhiteSpace(value)
-                    ? new Guid(value)
-                    : Guid.NewGuid();
+                var id = Guid.Empty;
+                if (Guid.TryParse(value, out id))
+                {
+                    Id = id;
+                }
             }
         }
 
