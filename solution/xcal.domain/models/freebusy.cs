@@ -1,27 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.Serialization;
+﻿using reexjungle.xcal.domain.contracts;
+using reexjungle.xmisc.foundation.concretes;
+using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.foundation.essentials.concretes;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Text;
 
 namespace reexjungle.xcal.domain.models
 {
     [DataContract]
-    public class VFREEBUSY: IFREEBUSY, IEquatable<VFREEBUSY>, IContainsKey<string>
+    public class VFREEBUSY : IFREEBUSY, IEquatable<VFREEBUSY>, IContainsKey<Guid>
     {
+        /// <summary>
+        /// Gets or sets the unique identifier of the free/busy time.
+        /// </summary>
         [DataMember]
-        public string Id 
-        {
-            get { return this.Uid; }
-            set { this.Uid = value; }
-        }
+        [Index(Unique = true)]
+        public Guid Id { get; set; }
 
+        /// <summary>
+        /// Gets or sets the unique identifier of a non-recurrent free/busy time.
+        /// </summary>
         [DataMember]
-        public string Uid { get; set; }
+        [Index(Unique = false)]
+        public string Uid
+        {
+            get { return Id.ToString(); }
+            set
+            {
+                var id = Guid.Empty;
+                if (Guid.TryParse(value, out id))
+                {
+                    Id = id;
+                }
+            }
+        }
 
         [DataMember]
         public DATE_TIME Datestamp { get; set; }
@@ -69,80 +84,95 @@ namespace reexjungle.xcal.domain.models
 
         public bool Equals(VFREEBUSY other)
         {
-            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
+            //primary reference
+            var equals = Id.Equals(other.Id);
+
+            //tie-breaker
+            if (equals)
+                equals = Datestamp == other.Datestamp;
+
+            return equals;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            if (!(obj is VFREEBUSY)) return false;
-            return this.Equals(obj as VFREEBUSY);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((VFREEBUSY)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.Uid.GetHashCode();
+            return Id.GetHashCode() ^ Datestamp.GetHashCode();
         }
 
-        public static bool operator ==(VFREEBUSY a, VFREEBUSY b)
+        public static bool operator ==(VFREEBUSY left, VFREEBUSY right)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
-            return a.Equals(b);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(VFREEBUSY a, VFREEBUSY b)
+        public static bool operator !=(VFREEBUSY left, VFREEBUSY right)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
-            return !a.Equals(b);
+            return !Equals(left, right);
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
+
             sb.Append("BEGIN:VFREEBUSY").AppendLine();
-            sb.AppendFormat("DTSTAMP:{0}", this.Datestamp.ToString()).AppendLine();
-            sb.AppendFormat("UID:{0}", this.Uid.ToString()).AppendLine();
-            if (this.Start.TimeZoneId != null)
-                sb.AppendFormat("DTSTART;{0}:{1}", this.Start.TimeZoneId.ToString(), this.Start.ToString()).AppendLine();
+
+            sb.AppendFormat("DTSTAMP:{0}", Datestamp.ToString()).AppendLine();
+
+            sb.AppendFormat("UID:{0}", Uid.ToString()).AppendLine();
+
+            if (Start.TimeZoneId != null)
+                sb.AppendFormat("DTSTART;{0}:{1}", Start.TimeZoneId.ToString(), Start.ToString()).AppendLine();
             else
-                sb.AppendFormat("DTSTART:{0}", this.Start.ToString()).AppendLine();
-            if (this.Organizer != null) sb.Append(this.Organizer.ToString()).AppendLine();
-            if (this.Url != null) sb.AppendFormat("URL:{0}", this.Url.ToString()).AppendLine();
+                sb.AppendFormat("DTSTART:{0}", Start.ToString()).AppendLine();
 
-            if (this.End.TimeZoneId != null)
-                sb.AppendFormat("DTEND;{0}:{1}", this.End.TimeZoneId.ToString(), this.End.ToString()).AppendLine();
+            if (Organizer != null) sb.Append(Organizer.ToString()).AppendLine();
+
+            if (Url != null) sb.AppendFormat("URL:{0}", Url.ToString()).AppendLine();
+
+            if (End.TimeZoneId != null)
+                sb.AppendFormat("DTEND;{0}:{1}", End.TimeZoneId.ToString(), End.ToString()).AppendLine();
             else
-                sb.AppendFormat("DTEND:{0}", this.End.ToString()).AppendLine();
-           
-            if (!this.Attachments.NullOrEmpty())
+                sb.AppendFormat("DTEND:{0}", End.ToString()).AppendLine();
+
+            if (!Attachments.NullOrEmpty())
             {
-                foreach (var attachment in this.Attachments) if (attachment != null) sb.Append(attachment.ToString()).AppendLine();
+                foreach (var attachment in Attachments.Where(attachment => attachment != null))
+                    sb.Append(attachment.ToString()).AppendLine();
             }
 
-            if (!this.Attendees.NullOrEmpty())
+            if (!Attendees.NullOrEmpty())
             {
-                foreach (var attendee in this.Attendees) if (attendee != null) sb.Append(attendee.ToString()).AppendLine();
+                foreach (var attendee in Attendees.Where(attendee => attendee != null))
+                    sb.Append(attendee.ToString()).AppendLine();
             }
 
-            if (!this.RequestStatuses.NullOrEmpty())
+            if (!RequestStatuses.NullOrEmpty())
             {
-                foreach (var reqstat in this.RequestStatuses) if (reqstat != null) sb.Append(reqstat.ToString()).AppendLine();
+                foreach (var reqstat in RequestStatuses.Where(reqstat => reqstat != null))
+                    sb.Append(reqstat.ToString()).AppendLine();
             }
 
-            if (!this.IANA.NullOrEmpty())
+            if (!IANA.NullOrEmpty())
             {
-                foreach (var iana in this.IANA) if (iana != null) sb.Append(iana.ToString()).AppendLine();
+                foreach (var iana in IANA.Where(iana => iana != null))
+                    sb.Append(iana.ToString()).AppendLine();
             }
 
-            if (!this.NonStandard.NullOrEmpty())
+            if (!NonStandard.NullOrEmpty())
             {
-                foreach (var xprop in this.NonStandard) if (xprop != null) sb.Append(xprop.ToString()).AppendLine();
+                foreach (var xprop in NonStandard.Where(xprop => xprop != null))
+                    sb.Append(xprop.ToString()).AppendLine();
             }
 
             sb.Append("END:VFREEBUSY");
             return sb.ToString();
         }
-
-
     }
 }

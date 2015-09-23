@@ -1,56 +1,37 @@
-﻿using reexjungle.infrastructure.contracts;
-using reexjungle.xcal.service.repositories.contracts;
+﻿using reexjungle.xcal.service.repositories.contracts;
 using ServiceStack.Redis;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace reexjungle.xcal.service.repositories.concretes.redis
 {
-    public class AdminRedisRepository : IAdminRedisRepository
+    public class AdminRedisRepository : IAdminRepository, IRedisRepository
     {
-        private IRedisClientsManager manager;
-        private IRedisClient client = null;
+        private readonly IRedisClientsManager manager;
+        private IRedisClient client;
 
         private IRedisClient redis
         {
             get
             {
-                return (client != null) ? client : this.manager.GetClient();
+                return client ?? (client = manager.GetClient());
             }
         }
 
         public IRedisClientsManager RedisClientsManager
         {
-            get { return this.manager; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("RedisClientsManager");
-                this.manager = value;
-                this.client = manager.GetClient();
-            }
-        }
-
-        public AdminRedisRepository()
-        {
+            get { return manager; }
         }
 
         public AdminRedisRepository(IRedisClientsManager manager)
         {
-            this.RedisClientsManager = manager;
+            if (manager == null) throw new ArgumentNullException("manager");
+            this.manager = manager;
         }
 
-        public AdminRedisRepository(IRedisClient client)
+        public void Flush(bool force)
         {
-            if (client == null) throw new ArgumentNullException("IRedisClient");
-            this.client = client;
-        }
-
-        public void Flush(FlushMode mode = FlushMode.soft)
-        {
-            if (mode == FlushMode.soft) this.client.FlushDb();
-            else this.client.FlushAll();
+            if (force) client.FlushDb();
+            else client.FlushAll();
         }
     }
 }

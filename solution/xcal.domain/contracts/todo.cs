@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using reexjungle.xcal.domain.models;
-
+﻿using reexjungle.xcal.domain.models;
+using System;
+using System.Collections.Generic;
 
 namespace reexjungle.xcal.domain.contracts
 {
-    public interface ITODO: ICOMPONENT
+    public interface ITODO
     {
         string Uid { get; set; }
 

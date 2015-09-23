@@ -1,12 +1,6 @@
-﻿using reexjungle.foundation.essentials.concretes;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.foundation.concretes;
 using ServiceStack.FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace reexjungle.xcal.service.validators.concretes
 {

@@ -1,806 +1,818 @@
-﻿using reexjungle.foundation.essentials.contracts;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
 using ServiceStack.OrmLite;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace reexjungle.xcal.service.repositories.concretes.relations
 {
-    public class REL_TODOS_ATTACHBINS : IEquatable<REL_TODOS_ATTACHBINS>, IContainsKey<string>
+    public class REL_TODOS_ATTACHBINS : IEquatable<REL_TODOS_ATTACHBINS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VTODO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public Guid TodoId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(ATTACH_BINARY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AttachmentId { get; set; }
+        public Guid AttachmentId { get; set; }
 
         public bool Equals(REL_TODOS_ATTACHBINS other)
         {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.AttachmentId.Equals(other.AttachmentId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return TodoId == other.TodoId && AttachmentId == other.AttachmentId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_TODOS_ATTACHBINS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_TODOS_ATTACHBINS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.AttachmentId.GetHashCode();
+            unchecked
+            {
+                return (TodoId.GetHashCode() * 397) ^ AttachmentId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_TODOS_ATTACHBINS x, REL_TODOS_ATTACHBINS y)
+        public static bool operator ==(REL_TODOS_ATTACHBINS left, REL_TODOS_ATTACHBINS right)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_TODOS_ATTACHBINS x, REL_TODOS_ATTACHBINS y)
+        public static bool operator !=(REL_TODOS_ATTACHBINS left, REL_TODOS_ATTACHBINS right)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_TODOS_ATTACHURIS : IEquatable<REL_TODOS_ATTACHURIS>, IContainsKey<string>
+    public class REL_TODOS_ATTACHURIS : IEquatable<REL_TODOS_ATTACHURIS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VTODO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public Guid TodoId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(ATTACH_URI), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AttachmentId { get; set; }
+        public Guid AttachmentId { get; set; }
 
         public bool Equals(REL_TODOS_ATTACHURIS other)
         {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.AttachmentId.Equals(other.AttachmentId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(TodoId, other.TodoId) && AttachmentId == other.AttachmentId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_TODOS_ATTACHURIS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_TODOS_ATTACHURIS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.AttachmentId.GetHashCode();
+            unchecked
+            {
+                return ((TodoId != null ? TodoId.GetHashCode() : 0) * 397) ^ AttachmentId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_TODOS_ATTACHURIS x, REL_TODOS_ATTACHURIS y)
+        public static bool operator ==(REL_TODOS_ATTACHURIS left, REL_TODOS_ATTACHURIS right)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_TODOS_ATTACHURIS x, REL_TODOS_ATTACHURIS y)
+        public static bool operator !=(REL_TODOS_ATTACHURIS left, REL_TODOS_ATTACHURIS right)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_TODOS_RECURS : IEquatable<REL_TODOS_RECURS>, IContainsKey<string>
+    public class REL_TODOS_RECURS : IEquatable<REL_TODOS_RECURS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VTODO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public Guid TodoId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(RECUR), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string RecurId { get; set; }
+        public Guid RecurId { get; set; }
 
         public bool Equals(REL_TODOS_RECURS other)
         {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.RecurId.Equals(other.RecurId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(TodoId, other.TodoId) && RecurId == other.RecurId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_TODOS_RECURS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_TODOS_RECURS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.RecurId.GetHashCode();
+            unchecked
+            {
+                return ((TodoId != null ? TodoId.GetHashCode() : 0) * 397) ^ RecurId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_TODOS_RECURS x, REL_TODOS_RECURS y)
+        public static bool operator ==(REL_TODOS_RECURS left, REL_TODOS_RECURS right)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_TODOS_RECURS x, REL_TODOS_RECURS y)
+        public static bool operator !=(REL_TODOS_RECURS left, REL_TODOS_RECURS right)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_TODOS_ORGANIZERS : IEquatable<REL_TODOS_ORGANIZERS>, IContainsKey<string>
+    public class REL_TODOS_ORGANIZERS : IEquatable<REL_TODOS_ORGANIZERS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VEVENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public Guid TodoId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(ORGANIZER), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string OrganizerId { get; set; }
+        public Guid OrganizerId { get; set; }
 
         public bool Equals(REL_TODOS_ORGANIZERS other)
         {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.OrganizerId.Equals(other.OrganizerId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(TodoId, other.TodoId) && OrganizerId == other.OrganizerId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_TODOS_ORGANIZERS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_TODOS_ORGANIZERS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.OrganizerId.GetHashCode();
+            unchecked
+            {
+                return ((TodoId != null ? TodoId.GetHashCode() : 0) * 397) ^ OrganizerId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_TODOS_ORGANIZERS x, REL_TODOS_ORGANIZERS y)
+        public static bool operator ==(REL_TODOS_ORGANIZERS left, REL_TODOS_ORGANIZERS right)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_TODOS_ORGANIZERS x, REL_TODOS_ORGANIZERS y)
+        public static bool operator !=(REL_TODOS_ORGANIZERS left, REL_TODOS_ORGANIZERS right)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_TODOS_ATTENDEES : IEquatable<REL_TODOS_ATTENDEES>, IContainsKey<string>
+    public class REL_TODOS_ATTENDEES : IEquatable<REL_TODOS_ATTENDEES>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-attendee relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VTODO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public Guid TodoId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
         [ForeignKey(typeof(ATTENDEE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AttendeeId { get; set; }
+        public Guid AttendeeId { get; set; }
 
         public bool Equals(REL_TODOS_ATTENDEES other)
         {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.AttendeeId.Equals(other.AttendeeId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(TodoId, other.TodoId) && AttendeeId == other.AttendeeId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_TODOS_ATTENDEES;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_TODOS_ATTENDEES)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.AttendeeId.GetHashCode();
+            unchecked
+            {
+                return ((TodoId != null ? TodoId.GetHashCode() : 0) * 397) ^ AttendeeId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_TODOS_ATTENDEES x, REL_TODOS_ATTENDEES y)
+        public static bool operator ==(REL_TODOS_ATTENDEES left, REL_TODOS_ATTENDEES right)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_TODOS_ATTENDEES x, REL_TODOS_ATTENDEES y)
+        public static bool operator !=(REL_TODOS_ATTENDEES left, REL_TODOS_ATTENDEES right)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_TODOS_COMMENTS : IEquatable<REL_TODOS_COMMENTS>, IContainsKey<string>
+    public class REL_TODOS_COMMENTS : IEquatable<REL_TODOS_COMMENTS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-comment relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VTODO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public Guid TodoId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related comment entity
         /// </summary>
         [ForeignKey(typeof(COMMENT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string CommentId { get; set; }
+        public Guid CommentId { get; set; }
 
         public bool Equals(REL_TODOS_COMMENTS other)
         {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.CommentId.Equals(other.CommentId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return TodoId.Equals(other.TodoId) && CommentId.Equals(other.CommentId);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_TODOS_COMMENTS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_TODOS_COMMENTS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.CommentId.GetHashCode();
+            unchecked
+            {
+                return (TodoId.GetHashCode() * 397) ^ CommentId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_TODOS_COMMENTS x, REL_TODOS_COMMENTS y)
+        public static bool operator ==(REL_TODOS_COMMENTS left, REL_TODOS_COMMENTS right)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_TODOS_COMMENTS x, REL_TODOS_COMMENTS y)
+        public static bool operator !=(REL_TODOS_COMMENTS left, REL_TODOS_COMMENTS right)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_TODOS_CONTACTS : IEquatable<REL_TODOS_CONTACTS>, IContainsKey<string>
+    public class REL_TODOS_CONTACTS : IEquatable<REL_TODOS_CONTACTS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-contact relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VTODO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public Guid TodoId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related contact entity
         /// </summary>
         [ForeignKey(typeof(CONTACT), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string ContactId { get; set; }
+        public Guid ContactId { get; set; }
 
         public bool Equals(REL_TODOS_CONTACTS other)
         {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.ContactId.Equals(other.ContactId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(TodoId, other.TodoId) && ContactId == other.ContactId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_TODOS_CONTACTS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_TODOS_CONTACTS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.ContactId.GetHashCode();
+            unchecked
+            {
+                return ((TodoId != null ? TodoId.GetHashCode() : 0) * 397) ^ ContactId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_TODOS_CONTACTS x, REL_TODOS_CONTACTS y)
+        public static bool operator ==(REL_TODOS_CONTACTS left, REL_TODOS_CONTACTS right)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_TODOS_CONTACTS x, REL_TODOS_CONTACTS y)
+        public static bool operator !=(REL_TODOS_CONTACTS left, REL_TODOS_CONTACTS right)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_TODOS_RDATES : IEquatable<REL_TODOS_RDATES>, IContainsKey<string>
+    public class REL_TODOS_RDATES : IEquatable<REL_TODOS_RDATES>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-recurrence date relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VTODO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public Guid TodoId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related recurrence date entity
         /// </summary>
         [ForeignKey(typeof(RDATE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string RecurrenceDateId { get; set; }
+        public Guid RecurrenceDateId { get; set; }
 
         public bool Equals(REL_TODOS_RDATES other)
         {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.RecurrenceDateId.Equals(other.RecurrenceDateId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return TodoId.Equals(other.TodoId) && RecurrenceDateId.Equals(other.RecurrenceDateId);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_TODOS_RDATES;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_TODOS_RDATES)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.RecurrenceDateId.GetHashCode();
+            unchecked
+            {
+                return (TodoId.GetHashCode() * 397) ^ RecurrenceDateId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_TODOS_RDATES x, REL_TODOS_RDATES y)
+        public static bool operator ==(REL_TODOS_RDATES left, REL_TODOS_RDATES right)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_TODOS_RDATES x, REL_TODOS_RDATES y)
+        public static bool operator !=(REL_TODOS_RDATES left, REL_TODOS_RDATES right)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_TODOS_EXDATES : IEquatable<REL_TODOS_EXDATES>, IContainsKey<string>
+    public class REL_TODOS_EXDATES : IEquatable<REL_TODOS_EXDATES>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-exception date relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VTODO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public Guid TodoId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related exception date entity
         /// </summary>
         [ForeignKey(typeof(EXDATE), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string ExceptionDateId { get; set; }
+        public Guid ExceptionDateId { get; set; }
 
         public bool Equals(REL_TODOS_EXDATES other)
         {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.ExceptionDateId.Equals(other.ExceptionDateId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(TodoId, other.TodoId) && ExceptionDateId == other.ExceptionDateId;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_TODOS_EXDATES;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_TODOS_EXDATES)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.ExceptionDateId.GetHashCode();
+            unchecked
+            {
+                return ((TodoId != null ? TodoId.GetHashCode() : 0) * 397) ^ ExceptionDateId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_TODOS_EXDATES x, REL_TODOS_EXDATES y)
+        public static bool operator ==(REL_TODOS_EXDATES left, REL_TODOS_EXDATES right)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_TODOS_EXDATES x, REL_TODOS_EXDATES y)
+        public static bool operator !=(REL_TODOS_EXDATES left, REL_TODOS_EXDATES right)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_TODOS_RELATEDTOS : IEquatable<REL_TODOS_RELATEDTOS>, IContainsKey<string>
+    public class REL_TODOS_RELATEDTOS : IEquatable<REL_TODOS_RELATEDTOS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-related to relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VTODO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public Guid TodoId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the relation entity
         /// </summary>
         [ForeignKey(typeof(RELATEDTO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string RelatedToId { get; set; }
+        public Guid RelatedToId { get; set; }
 
         public bool Equals(REL_TODOS_RELATEDTOS other)
         {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.RelatedToId.Equals(other.RelatedToId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return TodoId.Equals(other.TodoId) && RelatedToId.Equals(other.RelatedToId);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_TODOS_RELATEDTOS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_TODOS_RELATEDTOS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.RelatedToId.GetHashCode();
+            unchecked
+            {
+                return (TodoId.GetHashCode() * 397) ^ RelatedToId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_TODOS_RELATEDTOS x, REL_TODOS_RELATEDTOS y)
+        public static bool operator ==(REL_TODOS_RELATEDTOS left, REL_TODOS_RELATEDTOS right)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_TODOS_RELATEDTOS x, REL_TODOS_RELATEDTOS y)
+        public static bool operator !=(REL_TODOS_RELATEDTOS left, REL_TODOS_RELATEDTOS right)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_TODOS_REQSTATS : IEquatable<REL_TODOS_REQSTATS>, IContainsKey<string>
+    public class REL_TODOS_REQSTATS : IEquatable<REL_TODOS_REQSTATS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-request status relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VTODO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public Guid TodoId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related request status entity
         /// </summary>
         [ForeignKey(typeof(REQUEST_STATUS), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string ReqStatsId { get; set; }
+        public Guid ReqStatsId { get; set; }
 
         public bool Equals(REL_TODOS_REQSTATS other)
         {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.ReqStatsId.Equals(other.ReqStatsId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return TodoId.Equals(other.TodoId) && ReqStatsId.Equals(other.ReqStatsId);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_TODOS_REQSTATS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_TODOS_REQSTATS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.ReqStatsId.GetHashCode();
+            unchecked
+            {
+                return (TodoId.GetHashCode() * 397) ^ ReqStatsId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_TODOS_REQSTATS x, REL_TODOS_REQSTATS y)
+        public static bool operator ==(REL_TODOS_REQSTATS left, REL_TODOS_REQSTATS right)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_TODOS_REQSTATS x, REL_TODOS_REQSTATS y)
+        public static bool operator !=(REL_TODOS_REQSTATS left, REL_TODOS_REQSTATS right)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_TODOS_RESOURCES : IEquatable<REL_TODOS_RESOURCES>, IContainsKey<string>
+    public class REL_TODOS_RESOURCES : IEquatable<REL_TODOS_RESOURCES>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-resources relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VTODO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public Guid TodoId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related resources-entity
         /// </summary>
         [ForeignKey(typeof(RESOURCES), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string ResourcesId { get; set; }
+        public Guid ResourcesId { get; set; }
 
         public bool Equals(REL_TODOS_RESOURCES other)
         {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.ResourcesId.Equals(other.ResourcesId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return TodoId.Equals(other.TodoId) && ResourcesId.Equals(other.ResourcesId);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_TODOS_RESOURCES;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_TODOS_RESOURCES)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.ResourcesId.GetHashCode();
+            unchecked
+            {
+                return (TodoId.GetHashCode() * 397) ^ ResourcesId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_TODOS_RESOURCES x, REL_TODOS_RESOURCES y)
+        public static bool operator ==(REL_TODOS_RESOURCES left, REL_TODOS_RESOURCES right)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_TODOS_RESOURCES x, REL_TODOS_RESOURCES y)
+        public static bool operator !=(REL_TODOS_RESOURCES left, REL_TODOS_RESOURCES right)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_TODOS_AUDIO_ALARMS : IEquatable<REL_TODOS_AUDIO_ALARMS>, IContainsKey<string>
+    public class REL_TODOS_AUDIO_ALARMS : IEquatable<REL_TODOS_AUDIO_ALARMS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-alarm relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VTODO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public Guid TodoId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related alarm entity
         /// </summary>
         [ForeignKey(typeof(AUDIO_ALARM), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AlarmId { get; set; }
+        public Guid AlarmId { get; set; }
 
         public bool Equals(REL_TODOS_AUDIO_ALARMS other)
         {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.AlarmId.Equals(other.AlarmId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return TodoId.Equals(other.TodoId) && AlarmId.Equals(other.AlarmId);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_TODOS_AUDIO_ALARMS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_TODOS_AUDIO_ALARMS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.AlarmId.GetHashCode();
+            unchecked
+            {
+                return (TodoId.GetHashCode() * 397) ^ AlarmId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_TODOS_AUDIO_ALARMS x, REL_TODOS_AUDIO_ALARMS y)
+        public static bool operator ==(REL_TODOS_AUDIO_ALARMS left, REL_TODOS_AUDIO_ALARMS right)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_TODOS_AUDIO_ALARMS x, REL_TODOS_AUDIO_ALARMS y)
+        public static bool operator !=(REL_TODOS_AUDIO_ALARMS left, REL_TODOS_AUDIO_ALARMS right)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_TODOS_DISPLAY_ALARMS : IEquatable<REL_TODOS_DISPLAY_ALARMS>, IContainsKey<string>
+    public class REL_TODOS_DISPLAY_ALARMS : IEquatable<REL_TODOS_DISPLAY_ALARMS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-alarm relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VTODO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public Guid TodoId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related alarm entity
         /// </summary>
         [ForeignKey(typeof(DISPLAY_ALARM), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AlarmId { get; set; }
+        public Guid AlarmId { get; set; }
 
         public bool Equals(REL_TODOS_DISPLAY_ALARMS other)
         {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.AlarmId.Equals(other.AlarmId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return TodoId.Equals(other.TodoId) && AlarmId.Equals(other.AlarmId);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_TODOS_DISPLAY_ALARMS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_TODOS_DISPLAY_ALARMS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.AlarmId.GetHashCode();
+            unchecked
+            {
+                return (TodoId.GetHashCode() * 397) ^ AlarmId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_TODOS_DISPLAY_ALARMS x, REL_TODOS_DISPLAY_ALARMS y)
+        public static bool operator ==(REL_TODOS_DISPLAY_ALARMS left, REL_TODOS_DISPLAY_ALARMS right)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_TODOS_DISPLAY_ALARMS x, REL_TODOS_DISPLAY_ALARMS y)
+        public static bool operator !=(REL_TODOS_DISPLAY_ALARMS left, REL_TODOS_DISPLAY_ALARMS right)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
-    public class REL_TODOS_EMAIL_ALARMS : IEquatable<REL_TODOS_EMAIL_ALARMS>, IContainsKey<string>
+    public class REL_TODOS_EMAIL_ALARMS : IEquatable<REL_TODOS_EMAIL_ALARMS>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-alarm relation
         /// </summary>
         [Index(true)]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related event entity
         /// </summary>
         [ForeignKey(typeof(VTODO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string TodoId { get; set; }
+        public Guid TodoId { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier of the related alarm entity
         /// </summary>
         [ForeignKey(typeof(EMAIL_ALARM), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
-        public string AlarmId { get; set; }
+        public Guid AlarmId { get; set; }
 
         public bool Equals(REL_TODOS_EMAIL_ALARMS other)
         {
-            if (other == null) return false;
-            return (this.TodoId.Equals(other.TodoId, StringComparison.OrdinalIgnoreCase) &&
-                this.AlarmId.Equals(other.AlarmId, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return TodoId.Equals(other.TodoId) && AlarmId.Equals(other.AlarmId);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            var rel = obj as REL_TODOS_EMAIL_ALARMS;
-            if (rel == null) return false;
-            return this.Equals(rel);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((REL_TODOS_EMAIL_ALARMS)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TodoId.GetHashCode() ^ this.AlarmId.GetHashCode();
+            unchecked
+            {
+                return (TodoId.GetHashCode() * 397) ^ AlarmId.GetHashCode();
+            }
         }
 
-        public static bool operator ==(REL_TODOS_EMAIL_ALARMS x, REL_TODOS_EMAIL_ALARMS y)
+        public static bool operator ==(REL_TODOS_EMAIL_ALARMS left, REL_TODOS_EMAIL_ALARMS right)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(REL_TODOS_EMAIL_ALARMS x, REL_TODOS_EMAIL_ALARMS y)
+        public static bool operator !=(REL_TODOS_EMAIL_ALARMS left, REL_TODOS_EMAIL_ALARMS right)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 }

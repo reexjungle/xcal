@@ -1,22 +1,18 @@
-﻿using System;
+﻿using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.technical.data.contracts;
+using System;
 using System.Collections.Generic;
-using ServiceStack.OrmLite;
-using ServiceStack.Redis;
-using reexjungle.xcal.domain.models;
-using reexjungle.technical.data.contracts;
 
 namespace reexjungle.xcal.service.repositories.contracts
 {
-    public interface ICalendarRepository:
-        IReadRepository<VCALENDAR, string>,
-        IWriteRepository<VCALENDAR, string>,
-        IReadRepositoryKeys<string>
+    /// <summary>
+    /// Specifies a contract for calendar repositories
+    /// </summary>
+    public interface ICalendarRepository :
+        IReadRepository<VCALENDAR, Guid>,
+        IWriteRepository<VCALENDAR, Guid>,
+        IReadRepositoryKeys<Guid>
     {
-        /// <summary>
-        /// Gets or sets the repository of addressing the event aggregate root
-        /// </summary>
-        IEventRepository EventRepository { get; set; }
-
         /// <summary>
         /// Populates a sparse calendar entity with details from its consitutent entities
         /// </summary>
@@ -32,35 +28,12 @@ namespace reexjungle.xcal.service.repositories.contracts
         IEnumerable<VCALENDAR> HydrateAll(IEnumerable<VCALENDAR> dry);
 
         /// <summary>
-        /// Depopulates aggregate entities from a calendar 
+        /// Depopulates aggregate entities from a calendar
         /// </summary>
         /// <param name="full">The calendar to be depopulated</param>
         /// <returns>A depopulated calendar</returns>
         VCALENDAR Dehydrate(VCALENDAR full);
 
         IEnumerable<VCALENDAR> DehydrateAll(IEnumerable<VCALENDAR> full);
-    }
-
-    /// <summary>
-    /// Specifies an interface for a repository of calendars hosted on a relational data source
-    /// </summary>
-    public interface ICalendarOrmLiteRepository : ICalendarRepository
-    {
-        /// <summary>
-        /// Gets the connection factory of ORMLite datasources
-        /// </summary>
-        IDbConnectionFactory DbConnectionFactory { get; set; }
-    }
-
-
-    /// <summary>
-    /// Specifies an interface for a repository of calendars hosted on a NoSQL Redis data source
-    /// </summary>
-    public interface ICalendarRedisRepository : ICalendarRepository
-    {
-        /// <summary>
-        /// Gets the Redis client manager
-        /// </summary>
-        IRedisClientsManager RedisClientsManager { get; set; }
     }
 }

@@ -1,36 +1,18 @@
-﻿using System;
+﻿using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.technical.data.contracts;
+using System;
 using System.Collections.Generic;
-using ServiceStack.OrmLite;
-using ServiceStack.Redis;
-using reexjungle.xcal.domain.models;
-using reexjungle.technical.data.contracts;
 
 namespace reexjungle.xcal.service.repositories.contracts
 {
-    
     /// <summary>
     /// Specifies a general interface for a repository of events
     /// </summary>
-    public interface IEventRepository: 
-        IReadRepository<VEVENT, string>,
-        IWriteRepository<VEVENT, string>,
-        IReadRepositoryKeys<string>
+    public interface IEventRepository :
+        IReadRepository<VEVENT, Guid>,
+        IWriteRepository<VEVENT, Guid>,
+        IReadRepositoryKeys<Guid>
     {
-        /// <summary>
-        /// Gets or sets the audio alarm repository
-        /// </summary>
-        IAudioAlarmRepository AudioAlarmRepository { get; set; }
-
-        /// <summary>
-        /// Gets or sets the display alarm repository
-        /// </summary>
-        IDisplayAlarmRepository DisplayAlarmRepository { get; set; }
-
-        /// <summary>
-        /// Gets or sets the email alarm repository
-        /// </summary>
-        IEmailAlarmRepository EmailAlarmRepository { get; set; }
-
         /// <summary>
         /// Populates a sparse event entity with details from its consitutent entities
         /// </summary>
@@ -58,29 +40,5 @@ namespace reexjungle.xcal.service.repositories.contracts
         /// <param name="full">The events to depopulate</param>
         /// <returns>Depopulated events</returns>
         IEnumerable<VEVENT> DehydrateAll(IEnumerable<VEVENT> full);
-    } 
-
-    /// <summary>
-    /// Specifies an interface for a repository of events connected to an ORMlite source
-    /// </summary>
-    public interface IEventOrmLiteRepository: IEventRepository
-    {
-        /// <summary>
-        /// Gets or sets the connection factory of ORMLite datasources
-        /// </summary>
-        IDbConnectionFactory DbConnectionFactory { get; set; }
     }
-
-
-    /// <summary>
-    /// Specifies an interface for a repository of events connected to a NoSQL Redis source
-    /// </summary>
-    public interface IEventRedisRepository : IEventRepository
-    {
-        /// <summary>
-        /// Gets or sets the Redis Client manager
-        /// </summary>
-        IRedisClientsManager RedisClientsManager { get; set; }
-    }
-
 }

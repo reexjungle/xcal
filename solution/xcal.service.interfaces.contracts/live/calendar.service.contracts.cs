@@ -1,19 +1,14 @@
-﻿using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.operations.concretes.live;
-using reexjungle.xcal.service.repositories.contracts;
-using ServiceStack.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace reexjungle.xcal.service.interfaces.contracts.live
 {
     /// <summary>
     /// Specifies a service interface for iCalendar objects
     /// </summary>
-    public interface ICalendarService
+    public interface ICalendarWebService
     {
         /// <summary>
         ///
@@ -43,13 +38,13 @@ namespace reexjungle.xcal.service.interfaces.contracts.live
         ///
         /// </summary>
         /// <param name="request"></param>
-        void Patch(PatchCalendar request);
+        void Post(PatchCalendar request);
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="request"></param>
-        void Patch(PatchCalendars request);
+        void Post(PatchCalendars request);
 
         /// <summary>
         ///
@@ -61,7 +56,7 @@ namespace reexjungle.xcal.service.interfaces.contracts.live
         ///
         /// </summary>
         /// <param name="request"></param>
-        void Delete(DeleteCalendars request);
+        void Post(DeleteCalendars request);
 
         /// <summary>
         ///
@@ -89,6 +84,6 @@ namespace reexjungle.xcal.service.interfaces.contracts.live
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        List<string> Get(GetCalendarKeys request);
+        List<Guid> Get(GetCalendarKeys request);
     }
 }

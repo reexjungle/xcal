@@ -1,11 +1,9 @@
-﻿using reexjungle.foundation.essentials.concretes;
-using reexjungle.xcal.domain.contracts;
+﻿using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.foundation.concretes;
 using ServiceStack.FluentValidation;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace reexjungle.xcal.service.validators.concretes
@@ -14,7 +12,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public BinaryValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Value).NotNull().NotEmpty();
             RuleFor(x => x.Encoding).NotEqual(ENCODING.UNKNOWN);
         }
@@ -24,7 +22,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public DateValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.FULLYEAR).InclusiveBetween(1u, 10000u);
             RuleFor(x => x.MONTH).InclusiveBetween(1u, 12u);
             RuleFor(x => x.MDAY).InclusiveBetween(1u, 31u);
@@ -35,7 +33,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public DateTimeValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.FULLYEAR).InclusiveBetween(1u, 10000u);
             RuleFor(x => x.MONTH).InclusiveBetween(1u, 12u);
             RuleFor(x => x.MDAY).InclusiveBetween(1u, 31u);
@@ -51,7 +49,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public TimeValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.HOUR).InclusiveBetween(0u, 23u);
             RuleFor(x => x.MINUTE).InclusiveBetween(0u, 59u);
             RuleFor(x => x.SECOND).InclusiveBetween(0u, 60u);
@@ -82,28 +80,21 @@ namespace reexjungle.xcal.service.validators.concretes
     public class EmailValidator : AbstractValidator<URI>
     {
         public EmailValidator()
-            : base()
         {
-            RuleFor(x => x.Path).Must((x, y) => this.IsValid(x.Path)).When(x => !string.IsNullOrWhiteSpace(x.Path)
+            RuleFor(x => x.Path).Must((x, y) => IsValid(x.Path)).When(x => !string.IsNullOrWhiteSpace(x.Path)
                 || !string.IsNullOrEmpty(x.Path));
         }
 
         private bool IsValid(string email)
         {
-            try
-            {
-                var pattern = @"^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$";
-                return Regex.IsMatch(email, pattern, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (ArgumentException) { throw; }
+            var pattern = @"^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$";
+            return Regex.IsMatch(email, pattern, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
         }
     }
 
     public class UriValidator : AbstractValidator<URI>
     {
         public UriValidator()
-            : base()
         {
             RuleFor(x => x.Path).Must((x, y) => Uri.IsWellFormedUriString(y, UriKind.RelativeOrAbsolute)).When(x => x.Path != null);
         }
@@ -113,7 +104,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public WeekDayNumValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.OrdinalWeek).InclusiveBetween(1, 53).When(x => x.OrdinalWeek != 0);
             RuleFor(x => x.Weekday).NotEqual(WEEKDAY.UNKNOWN);
         }
@@ -122,9 +113,8 @@ namespace reexjungle.xcal.service.validators.concretes
     public class RecurrenceValidator : AbstractValidator<RECUR>
     {
         public RecurrenceValidator()
-            : base()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.FREQ).NotEqual(FREQ.UNKNOWN);
             RuleFor(x => x.INTERVAL).GreaterThan(0u);
             RuleFor(x => x.BYSECOND).Must((x, y) => y.Max() <= 60u).When(x => !x.BYSECOND.NullOrEmpty());
@@ -144,7 +134,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public UtcOffsetValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.Continue;
+            CascadeMode = CascadeMode.Continue;
             RuleFor(x => x.HOUR).InclusiveBetween(-23, 23);
             RuleFor(x => x.MINUTE).InclusiveBetween(-59, 59);
             RuleFor(x => x.SECOND).InclusiveBetween(-59, 59);

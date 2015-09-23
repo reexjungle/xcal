@@ -1,11 +1,7 @@
-﻿using reexjungle.foundation.essentials.concretes;
-using reexjungle.xcal.domain.contracts;
+﻿using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.foundation.concretes;
 using ServiceStack.FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace reexjungle.xcal.service.validators.concretes
 {
@@ -13,7 +9,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public AlarmValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Trigger).NotNull().SetValidator(new TriggerValidator());
             RuleFor(x => x.Duration).NotNull().SetValidator(new DurationValidator()).Unless(x => x.Repeat < 0);
             RuleFor(x => x.Repeat).GreaterThanOrEqualTo(0).Unless(x => x.Duration == default(DURATION));
@@ -24,7 +20,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public AudioAlarmValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.AttachmentBinary).NotNull().SetValidator(new AttachmentBinaryValidator()).When(x => x.AttachmentBinary != null);
             RuleFor(x => x.AttachmentUri).NotNull().SetValidator(new AttachmentUriValidator()).When(x => x.AttachmentUri != null);
         }
@@ -34,7 +30,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public DisplayAlarmValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Description).NotNull().SetValidator(new TextValidator());
         }
     }
@@ -43,7 +39,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public EmailAlarmValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Description).NotNull().SetValidator(new TextValidator());
             RuleFor(x => x.Summary).NotNull().SetValidator(new TextValidator());
             RuleFor(x => x.Attendees).NotNull().NotEmpty().SetCollectionValidator(new AttendeeValidator());

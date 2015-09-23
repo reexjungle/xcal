@@ -1,20 +1,16 @@
 ﻿using Funq;
 using MySql.Data.MySqlClient;
-using reexjungle.crosscut.operations.concretes;
-using reexjungle.foundation.essentials.concretes;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.infrastructure.concretes.operations;
-using reexjungle.infrastructure.contracts;
-using reexjungle.technical.data.concretes.extensions.ormlite.mysql;
-using reexjungle.xcal.domain.models;
+using NLog;
+using reexjungle.xcal.application.server.web.dev2.Properties;
+using reexjungle.xcal.crosscut.concretes.operations;
 using reexjungle.xcal.service.interfaces.concretes.live;
 using reexjungle.xcal.service.plugins.formats.concretes;
-using reexjungle.xcal.service.repositories.concretes.ormlite;
 using reexjungle.xcal.service.repositories.concretes.redis;
-using reexjungle.xcal.service.repositories.concretes.relations;
 using reexjungle.xcal.service.repositories.contracts;
 using reexjungle.xcal.service.validators.concretes;
-using ServiceStack.CacheAccess;
+using reexjungle.xmisc.infrastructure.concretes.operations;
+using reexjungle.xmisc.infrastructure.contracts;
+using reexjungle.xmisc.technical.data.concretes.orm;
 using ServiceStack.Logging;
 using ServiceStack.Logging.Elmah;
 using ServiceStack.Logging.NLogger;
@@ -26,6 +22,7 @@ using ServiceStack.ServiceInterface.Validation;
 using ServiceStack.WebHost.Endpoints;
 using System;
 using System.Data;
+using System.Diagnostics;
 
 namespace reexjungle.xcal.application.server.web.dev2
 {
@@ -36,7 +33,7 @@ namespace reexjungle.xcal.application.server.web.dev2
             #region configure headers
 
             //Enable global CORS features on  Response headers
-            base.SetConfig(new EndpointHostConfig
+            SetConfig(new EndpointHostConfig
             {
                 GlobalResponseHeaders =
                 {
@@ -82,14 +79,14 @@ namespace reexjungle.xcal.application.server.web.dev2
 
             #region inject key generators
 
-            container.Register<IGuidKeyGenerator>(new GuidKeyGenerator());
+            container.Register<IKeyGenerator<Guid>>(new SequentialGuidKeyGenerator());
 
             #endregion inject key generators
 
             #region inject rdbms provider
 
-            container.Register<IOrmLiteDialectProvider>(MySqlDialect.Provider);
-            container.Register<IDbConnectionFactory>(new OrmLiteConnectionFactory(Properties.Settings.Default.mysql_server, container.Resolve<IOrmLiteDialectProvider>()));
+            container.Register(MySqlDialect.Provider);
+            container.Register<IDbConnectionFactory>(new OrmLiteConnectionFactory(Settings.Default.mysql_server, container.Resolve<IOrmLiteDialectProvider>()));
 
             #endregion inject rdbms provider
 
@@ -104,24 +101,24 @@ namespace reexjungle.xcal.application.server.web.dev2
                 dbfactory.Run(x =>
                 {
                     //create NLog database and table
-                    x.CreateSchemaIfNotExists(Properties.Settings.Default.nlog_db_name, Properties.Settings.Default.overwrite_db);
-                    x.ChangeDatabase(Properties.Settings.Default.nlog_db_name);
-                    x.ConnectionString = string.Format("{0};Database={1};", Properties.Settings.Default.mysql_server, Properties.Settings.Default.nlog_db_name);
+                    x.CreateSchemaIfNotExists(Settings.Default.nlog_db_name, Settings.Default.overwrite_db);
+                    x.ChangeDatabase(Settings.Default.nlog_db_name);
+                    x.ConnectionString = string.Format("{0};Database={1};", Settings.Default.mysql_server, Settings.Default.nlog_db_name);
                     x.CreateTableIfNotExists<NlogTable>();
 
                     //create elmah database, table and stored procedures
-                    x.CreateSchemaIfNotExists(Properties.Settings.Default.elmah_db_name, Properties.Settings.Default.overwrite_db);
-                    x.ChangeDatabase(Properties.Settings.Default.elmah_db_name);
-                    x.ConnectionString = string.Format("{0};Database={1};", Properties.Settings.Default.mysql_server, Properties.Settings.Default.elmah_db_name);
+                    x.CreateSchemaIfNotExists(Settings.Default.elmah_db_name, Settings.Default.overwrite_db);
+                    x.ChangeDatabase(Settings.Default.elmah_db_name);
+                    x.ConnectionString = string.Format("{0};Database={1};", Settings.Default.mysql_server, Settings.Default.elmah_db_name);
 
                     //execute initialization script on first run
-                    if (!x.TableExists(Properties.Settings.Default.elmah_error_table))
+                    if (!x.TableExists(Settings.Default.elmah_error_table))
                     {
                         //execute creation of stored procedures
-                        x.ExecuteSql(Properties.Resources.elmah_mysql_CreateLogTable);
-                        x.ExecuteSql(Properties.Resources.elmah_mysql_GetErrorXml);
-                        x.ExecuteSql(Properties.Resources.elmah_mysql_GetErrorsXml);
-                        x.ExecuteSql(Properties.Resources.elmah_mysql_LogError);
+                        x.ExecuteSql(Resources.elmah_mysql_CreateLogTable);
+                        x.ExecuteSql(Resources.elmah_mysql_GetErrorXml);
+                        x.ExecuteSql(Resources.elmah_mysql_GetErrorsXml);
+                        x.ExecuteSql(Resources.elmah_mysql_LogError);
 
                         //call "create table" stored procedure
                         x.Exec(cmd =>
@@ -135,25 +132,25 @@ namespace reexjungle.xcal.application.server.web.dev2
                     x.Dispose();
                 });
             }
-            catch (NLog.NLogConfigurationException ex)
+            catch (NLogConfigurationException ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                Debug.WriteLine(ex.ToString());
             }
-            catch (MySql.Data.MySqlClient.MySqlException ex)
+            catch (MySqlException ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                Debug.WriteLine(ex.ToString());
             }
-            catch (NLog.NLogRuntimeException ex)
+            catch (NLogRuntimeException ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                Debug.WriteLine(ex.ToString());
             }
             catch (InvalidOperationException ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
+                Debug.WriteLine(ex.Message);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
+                Debug.WriteLine(ex.Message);
             }
 
             #endregion create logger databases and tables
@@ -164,44 +161,31 @@ namespace reexjungle.xcal.application.server.web.dev2
 
             #region inject redis repositories
 
-            container.Register<ICalendarRepository>(x => new CalendarRedisRepository
-            {
-                KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
-                RedisClientsManager = container.Resolve<IRedisClientsManager>(),
-                EventRepository = x.Resolve<IEventRepository>(),
-            });
+            container.Register<IAudioAlarmRepository>(x => new AudioAlarmRedisRepository(
+                    x.Resolve<IKeyGenerator<Guid>>(),
+                    x.Resolve<IRedisClientsManager>()));
 
-            container.Register<IEventRepository>(x => new EventRedisRepository
-            {
-                KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
-                RedisClientsManager = container.Resolve<IRedisClientsManager>(),
-                AudioAlarmRepository = x.Resolve<IAudioAlarmRepository>(),
-                DisplayAlarmRepository = x.Resolve<IDisplayAlarmRepository>(),
-                EmailAlarmRepository = x.Resolve<IEmailAlarmRepository>(),
-            });
+            container.Register<IDisplayAlarmRepository>(x => new DisplayAlarmRedisRepository(
+                x.Resolve<IRedisClientsManager>()));
 
-            container.Register<IAudioAlarmRepository>(x => new AudioAlarmRedisRepository
-            {
-                KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
-                RedisClientsManager = container.Resolve<IRedisClientsManager>(),
-            });
+            container.Register<IEmailAlarmRepository>(x => new EmailAlarmRedisRepository(
+                x.Resolve<IKeyGenerator<Guid>>(),
+                x.Resolve<IRedisClientsManager>()));
 
-            container.Register<IDisplayAlarmRepository>(x => new DisplayAlarmRedisRepository
-            {
-                KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
-                RedisClientsManager = container.Resolve<IRedisClientsManager>(),
-            });
+            container.Register<IEventRepository>(x => new EventRedisRepository(
+                    x.Resolve<IKeyGenerator<Guid>>(),
+                    x.Resolve<IAudioAlarmRepository>(),
+                    x.Resolve<IDisplayAlarmRepository>(),
+                    x.Resolve<IEmailAlarmRepository>(),
+                    x.Resolve<IRedisClientsManager>()));
 
-            container.Register<IEmailAlarmRepository>(x => new EmailAlarmRedisRepository
-            {
-                KeyGenerator = x.Resolve<IGuidKeyGenerator>(),
-                RedisClientsManager = container.Resolve<IRedisClientsManager>(),
-            });
+            container.Register<ICalendarRepository>(x => new CalendarRedisRepository(
+                    x.Resolve<IKeyGenerator<Guid>>(),
+                    x.Resolve<IEventRepository>(),
+                    x.Resolve<IRedisClientsManager>()));
 
-            container.Register<IAdminRepository>(x => new AdminRedisRepository
-            {
-                RedisClientsManager = container.Resolve<IRedisClientsManager>(),
-            });
+            container.Register<IAdminRepository>(x => new AdminRedisRepository(
+                x.Resolve<IRedisClientsManager>()));
 
             #endregion inject redis repositories
 
@@ -209,7 +193,7 @@ namespace reexjungle.xcal.application.server.web.dev2
 
             //register cache client to redis server running on linux.
             //NOTE: Redis Server must already be installed on the local machine and must be running
-            container.Register<IRedisClientsManager>(x => new BasicRedisClientManager(Properties.Settings.Default.redis_server));
+            container.Register<IRedisClientsManager>(x => new BasicRedisClientManager(Settings.Default.redis_server));
 
             try
             {
@@ -218,11 +202,11 @@ namespace reexjungle.xcal.application.server.web.dev2
             }
             catch (RedisResponseException ex)
             {
-                container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString(), ex);
+                container.Resolve<ILogFactory>().GetLogger(GetType()).Error(ex.ToString(), ex);
             }
             catch (RedisException ex)
             {
-                container.Resolve<ILogFactory>().GetLogger(this.GetType()).Error(ex.ToString(), ex);
+                container.Resolve<ILogFactory>().GetLogger(GetType()).Error(ex.ToString(), ex);
             }
 
             #endregion inject redis provider
@@ -231,7 +215,7 @@ namespace reexjungle.xcal.application.server.web.dev2
         }
 
         public ApplicationHost()
-            : base(Properties.Settings.Default.service_name, typeof(EventService).Assembly)
+            : base(Settings.Default.service_name, typeof(EventWebService).Assembly)
         {
             #region set up mono compliant settings
 

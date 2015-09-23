@@ -1,25 +1,21 @@
-﻿using System;
+﻿using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.foundation.concretes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.foundation.essentials.concretes;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
 
 namespace reexjungle.xcal.domain.extensions
 {
-
     public static class Generators
     {
         public static List<DATE_TIME> GenerateRecurrences(this DATE_TIME start, RECUR rrule, uint window = 6)
         {
-
             #region Generator function
 
             Func<DATE_TIME, DATE_TIME, RECUR, IEnumerable<DATE_TIME>> generate = (s, max, r) =>
             {
-                var dates = new List<DATE_TIME> {s};
+                var dates = new List<DATE_TIME> { s };
                 switch (r.FREQ)
                 {
                     case FREQ.SECONDLY:
@@ -136,9 +132,9 @@ namespace reexjungle.xcal.domain.extensions
                 }
 
                 return dates;
-            }; 
+            };
 
-            #endregion
+            #endregion Generator function
 
             #region Limit-related functions
 
@@ -153,8 +149,8 @@ namespace reexjungle.xcal.domain.extensions
                 else
                     return s.ToDateTime().AddMonths((int)w).ToDATE_TIME(s.TimeZoneId);
             };
- 
-            #endregion
+
+            #endregion Limit-related functions
 
             var slimit = calculate_limit(start, (int)window, rrule);
 
@@ -166,31 +162,30 @@ namespace reexjungle.xcal.domain.extensions
                 while (lstart <= rrule.UNTIL)
                 {
                     results = results.Union(generate(lstart, slimit, rrule));
-                    if (!results.NullOrEmpty()) 
+                    if (!results.NullOrEmpty())
                         lstart = results.Last();
                     else lstart = slimit <= rrule.UNTIL
-                        ? slimit 
+                        ? slimit
                         : new DATE_TIME(
-                            rrule.UNTIL.FULLYEAR, 
-                            rrule.UNTIL.MONTH, 
-                            rrule.UNTIL.MDAY + 1, 
-                            rrule.UNTIL.HOUR, 
-                            rrule.UNTIL.MINUTE,  
-                            rrule.UNTIL.SECOND, 
-                            rrule.UNTIL.Type, 
+                            rrule.UNTIL.FULLYEAR,
+                            rrule.UNTIL.MONTH,
+                            rrule.UNTIL.MDAY + 1,
+                            rrule.UNTIL.HOUR,
+                            rrule.UNTIL.MINUTE,
+                            rrule.UNTIL.SECOND,
+                            rrule.UNTIL.Type,
                             rrule.UNTIL.TimeZoneId);
 
                     slimit = calculate_limit(slimit, (int)window, rrule);
                 }
 
                 results = results.Where(x => x <= rrule.UNTIL);
-
             }
             else if (rrule.COUNT != 0)
             {
                 while (results.Count() < rrule.COUNT)
                 {
-                    results = results.Union(generate(lstart, slimit, rrule)); 
+                    results = results.Union(generate(lstart, slimit, rrule));
                     lstart = results.Last();
                     slimit = calculate_limit(slimit, (int)window, rrule);
                 }
@@ -198,7 +193,7 @@ namespace reexjungle.xcal.domain.extensions
             }
             else
             {
-                results = results.Union(generate(lstart, slimit, rrule)); 
+                results = results.Union(generate(lstart, slimit, rrule));
                 if (!results.NullOrEmpty()) lstart = results.Last();
                 else lstart = new DATE_TIME(
                     rrule.UNTIL.FULLYEAR,
@@ -212,8 +207,6 @@ namespace reexjungle.xcal.domain.extensions
             }
 
             return results.Except(start.ToSingleton()).ToList();
-
         }
-
     }
 }

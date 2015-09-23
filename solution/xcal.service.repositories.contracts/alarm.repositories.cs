@@ -1,7 +1,6 @@
-﻿using reexjungle.technical.data.contracts;
-using reexjungle.xcal.domain.models;
-using ServiceStack.OrmLite;
-using ServiceStack.Redis;
+﻿using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.technical.data.contracts;
+using System;
 using System.Collections.Generic;
 
 namespace reexjungle.xcal.service.repositories.contracts
@@ -12,10 +11,9 @@ namespace reexjungle.xcal.service.repositories.contracts
     /// Specifies a general interface for a repository of audio alerts
     /// </summary>
     public interface IAudioAlarmRepository :
-        IReadRepository<AUDIO_ALARM, string>,
-        IWriteRepository<AUDIO_ALARM, string> 
+        IReadRepository<AUDIO_ALARM, Guid>,
+        IWriteRepository<AUDIO_ALARM, Guid>
     {
-
         /// <summary>
         /// Populates a sparse email alarm entity with details from its consitutent entities
         /// </summary>
@@ -45,28 +43,6 @@ namespace reexjungle.xcal.service.repositories.contracts
         IEnumerable<AUDIO_ALARM> DehydrateAll(IEnumerable<AUDIO_ALARM> full);
     }
 
-    /// <summary>
-    /// Specifies an interface for a repository of audio alerts connected to an ORMlite source
-    /// </summary>
-    public interface IAudioAlarmOrmLiteRepository : IAudioAlarmRepository
-    {
-        /// <summary>
-        /// Gets or sets the connection factory of ORMLite datasources
-        /// </summary>
-        IDbConnectionFactory DbConnectionFactory { get; set; }
-    }
-
-    /// <summary>
-    /// Specifies an interface for a repository of audio alerts connected to a NoSQL Redis source
-    /// </summary>
-    public interface IAudioAlarmRedisRepository : IAudioAlarmRepository
-    {
-        /// <summary>
-        /// Gets or sets the connection factory of ORMLite datasources
-        /// </summary>
-        IRedisClientsManager RedisClientsManager { get; set; }
-    }
-
     #endregion audio alarm repository
 
     #region display alarm repository
@@ -75,30 +51,8 @@ namespace reexjungle.xcal.service.repositories.contracts
     /// Specifies a general interface for a repository of display alerts
     /// </summary>
     public interface IDisplayAlarmRepository :
-        IReadRepository<DISPLAY_ALARM, string>,
-        IWriteRepository<DISPLAY_ALARM, string> { }
-
-    /// <summary>
-    /// Specifies an interface for a repository of display alerts connected to an ORMlite source
-    /// </summary>
-    public interface IDisplayAlarmOrmLiteRepository : IDisplayAlarmRepository
-    {
-        /// <summary>
-        /// Gets the connection factory of ORMLite datasources
-        /// </summary>
-        IDbConnectionFactory DbConnectionFactory { get; set; }
-    }
-
-    /// <summary>
-    /// Specifies an interface for a repository of display alerts connected to a NoSQL Redis source
-    /// </summary>
-    public interface IDisplayAlarmRedisRepository : IDisplayAlarmRepository
-    {
-        /// <summary>
-        /// Gets the connection factory of ORMLite datasources
-        /// </summary>
-        IRedisClientsManager RedisClientsManager { get; set; }
-    }
+        IReadRepository<DISPLAY_ALARM, Guid>,
+        IWriteRepository<DISPLAY_ALARM, Guid> { }
 
     #endregion display alarm repository
 
@@ -108,8 +62,8 @@ namespace reexjungle.xcal.service.repositories.contracts
     /// Specifies a general interface for a repository of email alerts
     /// </summary>
     public interface IEmailAlarmRepository :
-        IReadRepository<EMAIL_ALARM, string>,
-        IWriteRepository<EMAIL_ALARM, string>
+        IReadRepository<EMAIL_ALARM, Guid>,
+        IWriteRepository<EMAIL_ALARM, Guid>
     {
         /// <summary>
         /// Populates a sparse email alarm entity with details from its consitutent entities
@@ -138,28 +92,6 @@ namespace reexjungle.xcal.service.repositories.contracts
         /// <param name="full">The audio alarm entities to depopulate</param>
         /// <returns>Depopulated alarms</returns>
         IEnumerable<EMAIL_ALARM> DehydrateAll(IEnumerable<EMAIL_ALARM> full);
-    }
-
-    /// <summary>
-    /// Specifies an interface for a repository of email alerts connected to an ORMlite source
-    /// </summary>
-    public interface IEmailAlarmOrmLiteRepository : IEmailAlarmRepository
-    {
-        /// <summary>
-        /// Gets the connection factory of ORMLite datasources
-        /// </summary>
-        IDbConnectionFactory DbConnectionFactory { get; set; }
-    }
-
-    /// <summary>
-    /// Specifies an interface for a repository of email alerts connected to a NoSQL Redis source
-    /// </summary>
-    public interface IEmailAlarmRedisRepository : IEmailAlarmRepository
-    {
-        /// <summary>
-        /// Gets the connection factory of ORMLite datasources
-        /// </summary>
-        IRedisClientsManager RedisClientsManager { get; set; }
     }
 
     #endregion email alarm repository

@@ -1,11 +1,10 @@
-﻿using reexjungle.infrastructure.contracts;
-using ServiceStack.ServiceHost;
+﻿using ServiceStack.ServiceHost;
 
 namespace reexjungle.xcal.service.operations.concretes.live
 {
     [Route("/admin/database/flush", "POST")]
     public class FlushDatabase : IReturnVoid
     {
-        public FlushMode? Mode { get; set; }
+        public bool? Force { get; set; }
     }
 }

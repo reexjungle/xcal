@@ -1,27 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.foundation.concretes;
 using ServiceStack.FluentValidation;
-using reexjungle.foundation.essentials.concretes;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
+using System;
 
 namespace reexjungle.xcal.service.validators.concretes
 {
-    public class CalendarValidator: AbstractValidator<VCALENDAR>
+    /// <summary>
+    /// Validates instances of the <see cref="VCALENDAR"/> type.
+    /// </summary>
+    public class CalendarValidator : AbstractValidator<VCALENDAR>
     {
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public CalendarValidator()
         {
-            RuleFor(x => x.Id).Must((x, y) => !string.IsNullOrEmpty(x.Id) || !string.IsNullOrWhiteSpace(x.Id));
-            RuleFor(x => x.ProdId).Must((x, y) => !string.IsNullOrEmpty(x.ProdId) || !string.IsNullOrWhiteSpace(x.ProdId));
-            RuleFor(x => x.Version).Must((x, y) => !string.IsNullOrEmpty(x.ProdId) || !string.IsNullOrWhiteSpace(x.ProdId));
-            RuleFor(x => x.Events).NotNull();
+            RuleFor(x => x.Id).Must((x, y) => x.Id != Guid.Empty);
+            RuleFor(x => x.ProdId).Must((x, y) => !string.IsNullOrWhiteSpace(x.ProdId));
+            RuleFor(x => x.Version).Must((x, y) => !string.IsNullOrWhiteSpace(x.Version));
             RuleFor(x => x.Events).SetCollectionValidator(new EventValidator()).When(x => !x.Events.NullOrEmpty());
-            RuleFor(x => x.ToDos).NotNull();
-            RuleFor(x => x.Journals).NotNull();
-            RuleFor(x => x.FreeBusies).NotNull();
-            RuleFor(x => x.TimeZones).NotNull();
+            //RuleFor(x => x.ToDos).NotNull();
+            //RuleFor(x => x.Journals).NotNull();
+            //RuleFor(x => x.FreeBusies).NotNull();
+            //RuleFor(x => x.TimeZones).NotNull();
         }
     }
 }

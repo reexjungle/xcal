@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\SemanticGit.2.1.6\build\SemanticGit.props" Condition="Exists('..\packages\SemanticGit.2.1.6\build\SemanticGit.props')" />
+  <Import Project="..\packages\SemanticGit.2.1.22\build\SemanticGit.props" Condition="Exists('..\packages\SemanticGit.2.1.22\build\SemanticGit.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -12,7 +12,7 @@
     <AssemblyName>xcal.service.operations.concretes</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>89038a47</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>1f4e6258</NuGetPackageImportStamp>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentValidation">
+      <HintPath>..\packages\FluentValidation.5.6.2.0\lib\portable-net40+sl50+wp80+win8+wpa81\FluentValidation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ServiceStack">
       <HintPath>..\packages\ServiceStack.3.9.71\lib\net35\ServiceStack.dll</HintPath>
     </Reference>
@@ -64,6 +68,14 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="xmisc.foundation.contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\xmisc.foundation.contracts.1.0.78-rc-999002a\lib\net40\xmisc.foundation.contracts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xmisc.infrastructure.contracts">
+      <HintPath>..\packages\xmisc.infrastructure.contracts.1.0.78-rc-999002a\lib\net40\xmisc.infrastructure.contracts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="cached\calendar.operations.cs" />
@@ -78,14 +90,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\foundation.essentials.contracts\foundation.essentials.contracts.csproj">
-      <Project>{0188be5c-bafa-4fac-b068-11dcf7cd918e}</Project>
-      <Name>foundation.essentials.contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\infrastructure.contracts\infrastructure.contracts.csproj">
-      <Project>{82ed5f70-e1d9-456e-8686-c59306312726}</Project>
-      <Name>infrastructure.contracts</Name>
-    </ProjectReference>
     <ProjectReference Include="..\xcal.domain\xcal.domain.csproj">
       <Project>{5b708e08-1f69-4fde-9d99-afa3784a49d7}</Project>
       <Name>xcal.domain</Name>
@@ -96,10 +100,10 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\SemanticGit.2.1.6\build\SemanticGit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SemanticGit.2.1.6\build\SemanticGit.props'))" />
-    <Error Condition="!Exists('..\packages\SemanticGit.2.1.6\build\SemanticGit.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SemanticGit.2.1.6\build\SemanticGit.targets'))" />
+    <Error Condition="!Exists('..\packages\SemanticGit.2.1.22\build\SemanticGit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SemanticGit.2.1.22\build\SemanticGit.props'))" />
+    <Error Condition="!Exists('..\packages\SemanticGit.2.1.22\build\SemanticGit.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SemanticGit.2.1.22\build\SemanticGit.targets'))" />
   </Target>
-  <Import Project="..\packages\SemanticGit.2.1.6\build\SemanticGit.targets" Condition="Exists('..\packages\SemanticGit.2.1.6\build\SemanticGit.targets')" />
+  <Import Project="..\packages\SemanticGit.2.1.22\build\SemanticGit.targets" Condition="Exists('..\packages\SemanticGit.2.1.22\build\SemanticGit.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -6,7 +6,7 @@ namespace reexjungle.xcal.domain.contracts
     /// <summary>
     /// Specifies a contract for alarm objects associated to an iCalendar object.
     /// </summary>
-    public interface IALARM : ICOMPONENT
+    public interface IALARM
     {
         /// <summary>
         /// Gets or sets the action invoked for the alarm, when the alarm is triggered.

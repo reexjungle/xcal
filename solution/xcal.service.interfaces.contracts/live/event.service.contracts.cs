@@ -1,16 +1,11 @@
-﻿using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.operations.concretes.live;
-using reexjungle.xcal.service.repositories.contracts;
-using ServiceStack.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace reexjungle.xcal.service.interfaces.contracts.live
 {
-    public interface IEventService
+    public interface IEventWebService
     {
         void Post(AddEvent request);
 
@@ -20,13 +15,13 @@ namespace reexjungle.xcal.service.interfaces.contracts.live
 
         void Put(UpdateEvents request);
 
-        void Patch(PatchEvent request);
+        void Post(PatchEvent request);
 
-        void Patch(PatchEvents request);
+        void Post(PatchEvents request);
 
         void Delete(DeleteEvent request);
 
-        void Delete(DeleteEvents request);
+        void Post(DeleteEvents request);
 
         VEVENT Get(FindEvent request);
 
@@ -34,6 +29,6 @@ namespace reexjungle.xcal.service.interfaces.contracts.live
 
         List<VEVENT> Get(GetEvents request);
 
-        List<string> Get(GetEventKeys request);
+        List<Guid> Get(GetEventKeys request);
     }
 }

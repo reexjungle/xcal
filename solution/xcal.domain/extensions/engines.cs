@@ -1,6 +1,6 @@
-﻿using reexjungle.foundation.essentials.concretes;
-using reexjungle.xcal.domain.contracts;
+﻿using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.foundation.concretes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,6 @@ namespace reexjungle.xcal.domain.extensions
     public static class RecurrenceEngine
     {
         #region Limit BYSETPOS
-
 
         /// <summary>
         /// Filters dates by indexed position within recurrence interval
@@ -214,7 +213,6 @@ namespace reexjungle.xcal.domain.extensions
                                 var len = occurrences.Count();
                                 results = results.Union(positives.Where(p => p >= 1 && p <= len).Select(p => occurrences[p - 1]));
                                 results = results.Union(negatives.Where(n => Math.Abs(n) >= 1 && Math.Abs(n) <= len).Select(n => occurrences[len + n]));
-
                             }
                         }
                     }
@@ -280,7 +278,6 @@ namespace reexjungle.xcal.domain.extensions
                                 var len = occurrences.Count();
                                 results = results.Union(positives.Where(p => p >= 1 && p <= len).Select(p => occurrences[p - 1]));
                                 results = results.Union(negatives.Where(n => Math.Abs(n) >= 1 && Math.Abs(n) <= len).Select(n => occurrences[len + n]));
-
                             }
                         }
                     }
@@ -350,7 +347,6 @@ namespace reexjungle.xcal.domain.extensions
                                 var len = occurrences.Count();
                                 results = results.Union(positives.Where(p => p >= 1 && p <= len).Select(p => occurrences[p - 1]));
                                 results = results.Union(negatives.Where(n => Math.Abs(n) >= 1 && Math.Abs(n) <= len).Select(n => occurrences[len + n]));
-
                             }
                         }
                         else  //empty BYDAY and empty BYMONTHDAY; check BYYEARDAY
@@ -363,7 +359,6 @@ namespace reexjungle.xcal.domain.extensions
                                     var len = occurrences.Count();
                                     results = results.Union(positives.Where(p => p >= 1 && p <= len).Select(p => occurrences[p - 1]));
                                     results = results.Union(negatives.Where(n => Math.Abs(n) >= 1 && Math.Abs(n) <= len).Select(n => occurrences[len + n]));
-
                                 }
                             }
                             else //empty BYYEARDAY; check BYWEEKNO
@@ -376,12 +371,11 @@ namespace reexjungle.xcal.domain.extensions
                                         var len = occurrences.Count();
                                         results = results.Union(positives.Where(p => p >= 1 && p <= len).Select(p => occurrences[p - 1]));
                                         results = results.Union(negatives.Where(n => Math.Abs(n) >= 1 && Math.Abs(n) <= len).Select(n => occurrences[len + n]));
-
-                                    } 
+                                    }
                                 }
                                 else //empty BYYEARDAY; check BYMONTH
                                 {
-                                    if(!rrule.BYMONTH.NullOrEmpty())
+                                    if (!rrule.BYMONTH.NullOrEmpty())
                                     {
                                         foreach (var byyear in byyears)
                                         {
@@ -389,7 +383,7 @@ namespace reexjungle.xcal.domain.extensions
                                             var len = occurrences.Count();
                                             results = results.Union(positives.Where(p => p >= 1 && p <= len).Select(p => occurrences[p - 1]));
                                             results = results.Union(negatives.Where(n => Math.Abs(n) >= 1 && Math.Abs(n) <= len).Select(n => occurrences[len + n]));
-                                        } 
+                                        }
                                     }
                                 }
                             }
@@ -614,7 +608,7 @@ namespace reexjungle.xcal.domain.extensions
 
             if (!unranked.NullOrEmpty())
             {
-                dates = dates.Union(dates.SelectMany(date => unranked.SelectMany(u => 
+                dates = dates.Union(dates.SelectMany(date => unranked.SelectMany(u =>
                     u.Weekday.ToDayOfWeek()
                     .GetSimilarDatesOfMonth((int)date.FULLYEAR, (int)date.MONTH, (int)date.HOUR, (int)date.MINUTE, (int)date.SECOND).ToDATE_TIMEs(date.TimeZoneId)).ToList()));
             }

@@ -1,55 +1,36 @@
-﻿using reexjungle.infrastructure.contracts;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
 using reexjungle.xcal.service.repositories.concretes.relations;
 using reexjungle.xcal.service.repositories.contracts;
 using ServiceStack.OrmLite;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 
 namespace reexjungle.xcal.service.repositories.concretes.ormlite
 {
-    public class AdminOrmLiteRepository : IAdminOrmLiteRepository
+    public class AdminOrmRepository : IAdminRepository, IOrmRepository
     {
         private IDbConnection conn;
-        private IDbConnectionFactory factory = null;
+        private readonly IDbConnectionFactory factory;
 
         private IDbConnection db
         {
-            get { return (this.conn) ?? (conn = factory.OpenDbConnection()); }
+            get { return (conn) ?? (conn = factory.OpenDbConnection()); }
         }
 
         public IDbConnectionFactory DbConnectionFactory
         {
-            get { return this.factory; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("Null factory");
-                this.factory = value;
-            }
+            get { return factory; }
         }
 
-        public AdminOrmLiteRepository()
+        public AdminOrmRepository(IDbConnectionFactory factory)
         {
-        }
-
-        public AdminOrmLiteRepository(IDbConnectionFactory factory)
-        {
-            this.DbConnectionFactory = factory;
-        }
-
-        public AdminOrmLiteRepository(IDbConnection connection)
-        {
-            if (connection == null) throw new ArgumentNullException("connection");
-            this.conn = connection;
+            if (factory == null) throw new ArgumentNullException("factory");
+            this.factory = factory;
         }
 
         public void Dispose()
         {
-            if (this.conn != null) this.conn.Dispose();
+            if (conn != null) conn.Dispose();
         }
 
         private void RecreateTables(IDbConnectionFactory factory)
@@ -70,14 +51,12 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                     }
                     catch (ApplicationException)
                     {
-                        try { transaction.Rollback(); }
-                        catch (Exception) { }
+                        transaction.Rollback();
                         throw;
                     }
                     catch (InvalidOperationException)
                     {
-                        try { transaction.Rollback(); }
-                        catch (Exception) { }
+                        transaction.Rollback();
                         throw;
                     }
                 }
@@ -125,30 +104,24 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                     }
                     catch (ApplicationException)
                     {
-                        try { transaction.Rollback(); }
-                        catch (Exception) { }
+                        transaction.Rollback();
                         throw;
                     }
                     catch (InvalidOperationException)
                     {
-                        try { transaction.Rollback(); }
-                        catch (Exception) { }
+                        transaction.Rollback();
                         throw;
                     }
                 }
             });
         }
 
-        public void Flush(FlushMode mode = FlushMode.soft)
+        public void Flush(bool force)
         {
-            try
-            {
-                if (mode == FlushMode.hard) this.RecreateTables(this.DbConnectionFactory);
-                else this.DeleteAllRowsFromTables(this.DbConnectionFactory);
-            }
-            catch (ApplicationException) { throw; }
-            catch (InvalidOperationException) { throw; }
-            catch (Exception) { throw; }
+            if (force)
+                RecreateTables(factory);
+            else
+                DeleteAllRowsFromTables(factory);
         }
     }
 }

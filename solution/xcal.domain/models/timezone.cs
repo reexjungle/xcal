@@ -1,20 +1,19 @@
-﻿using reexjungle.foundation.essentials.concretes;
-using reexjungle.foundation.essentials.contracts;
-using reexjungle.xcal.domain.contracts;
+﻿using reexjungle.xcal.domain.contracts;
+using reexjungle.xmisc.foundation.concretes;
+using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 
 namespace reexjungle.xcal.domain.models
 {
     [DataContract]
-    public class VTIMEZONE : ITIMEZONE, IEquatable<VTIMEZONE>, IContainsKey<string>
+    public class VTIMEZONE : ITIMEZONE, IEquatable<VTIMEZONE>, IContainsKey<Guid>
     {
-        public string Id { get; set; }
+        [DataMember]
+        public Guid Id { get; set; }
 
         [DataMember]
         public TZID TimeZoneId { get; set; }
@@ -35,40 +34,41 @@ namespace reexjungle.xcal.domain.models
 
         public bool Equals(VTIMEZONE other)
         {
-            if (other == null) return false;
-            return (this.TimeZoneId == other.TimeZoneId);
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Id.Equals(other.Id);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return this.Equals(obj as VTIMEZONE);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((VTIMEZONE)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TimeZoneId.GetHashCode();
+            return Id.GetHashCode();
         }
 
-        public static bool operator ==(VTIMEZONE a, VTIMEZONE b)
+        public static bool operator ==(VTIMEZONE left, VTIMEZONE right)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
-            return a.Equals(b);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(VTIMEZONE a, VTIMEZONE b)
+        public static bool operator !=(VTIMEZONE left, VTIMEZONE right)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
-            return !a.Equals(b);
+            return !Equals(left, right);
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:VTIMEZONE").AppendLine();
-            sb.AppendFormat("TZID={0}", this.TimeZoneId).AppendLine();
-            if (!this.StandardTimes.NullOrEmpty()) this.StandardTimes.ForEach(x => sb.Append(x).AppendLine());
-            else if (!this.DaylightTimes.NullOrEmpty()) this.DaylightTimes.ForEach(x => sb.Append(x).AppendLine());
+            sb.AppendFormat("TZID={0}", TimeZoneId).AppendLine();
+            if (!StandardTimes.NullOrEmpty()) StandardTimes.ForEach(x => sb.Append(x).AppendLine());
+            else if (!DaylightTimes.NullOrEmpty()) DaylightTimes.ForEach(x => sb.Append(x).AppendLine());
             sb.Append("END:VTIMEZONE");
             return sb.ToString();
         }
@@ -77,9 +77,10 @@ namespace reexjungle.xcal.domain.models
     [DataContract]
     [KnownType(typeof(STANDARD))]
     [KnownType(typeof(DAYLIGHT))]
-    public abstract class OBSERVANCE : IOBSERVANCE, IEquatable<OBSERVANCE>, IContainsKey<string>
+    public abstract class OBSERVANCE : IOBSERVANCE, IEquatable<OBSERVANCE>, IContainsKey<Guid>
     {
-        public string Id { get; set; }
+        [DataMember]
+        public Guid Id { get; set; }
 
         [DataMember]
         public DATE_TIME Start { get; set; }
@@ -106,48 +107,48 @@ namespace reexjungle.xcal.domain.models
         [Ignore]
         public List<TZNAME> TimeZoneNames { get; set; }
 
-        public OBSERVANCE()
+        protected OBSERVANCE()
         {
-            this.Comments = new List<COMMENT>();
-            this.RecurrenceDates = new List<RDATE>();
-            this.TimeZoneNames = new List<TZNAME>();
+            Comments = new List<COMMENT>();
+            RecurrenceDates = new List<RDATE>();
+            TimeZoneNames = new List<TZNAME>();
         }
 
-        public OBSERVANCE(DATE_TIME start, UTC_OFFSET from, UTC_OFFSET to)
+        protected OBSERVANCE(DATE_TIME start, UTC_OFFSET from, UTC_OFFSET to)
         {
-            this.Start = start;
-            this.TimeZoneOffsetFrom = from;
-            this.TimeZoneOffsetTo = to;
+            Start = start;
+            TimeZoneOffsetFrom = from;
+            TimeZoneOffsetTo = to;
         }
 
         public bool Equals(OBSERVANCE other)
         {
             if (other == null) return false;
-            return this.Id.Equals(other.Id, StringComparison.OrdinalIgnoreCase);
+            return Id.Equals(other.Id);
         }
 
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType()) return false;
-            return this.Equals(obj as OBSERVANCE);
+            return Equals(obj as OBSERVANCE);
         }
 
         public override int GetHashCode()
         {
-            return this.Start.GetHashCode() ^
-                this.TimeZoneOffsetFrom.GetHashCode() ^
-                this.TimeZoneOffsetTo.GetHashCode();
+            return Start.GetHashCode() ^
+                TimeZoneOffsetFrom.GetHashCode() ^
+                TimeZoneOffsetTo.GetHashCode();
         }
 
         public static bool operator ==(OBSERVANCE a, OBSERVANCE b)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(OBSERVANCE a, OBSERVANCE b)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
+            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
     }
@@ -156,7 +157,6 @@ namespace reexjungle.xcal.domain.models
     public class STANDARD : OBSERVANCE
     {
         public STANDARD()
-            : base()
         {
         }
 
@@ -169,13 +169,13 @@ namespace reexjungle.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:STANDARD").AppendLine();
-            sb.AppendFormat("DTSTART:{0}", this.Start).AppendLine();
-            sb.AppendFormat("TZOFFSETFROM", this.TimeZoneOffsetFrom).AppendLine();
-            sb.AppendFormat("TZOFFSETTO", this.TimeZoneOffsetTo).AppendLine();
-            if (this.RecurrenceRule != null) sb.Append(this.RecurrenceRule).AppendLine();
-            if (!this.RecurrenceDates.NullOrEmpty()) this.RecurrenceDates.ForEach(x => sb.Append(x).AppendLine());
-            if (!this.Comments.NullOrEmpty()) this.Comments.ForEach(x => sb.Append(x).AppendLine());
-            if (!this.TimeZoneNames.NullOrEmpty()) this.TimeZoneNames.ForEach(x => sb.Append(x).AppendLine());
+            sb.AppendFormat("DTSTART:{0}", Start).AppendLine();
+            sb.AppendFormat("TZOFFSETFROM", TimeZoneOffsetFrom).AppendLine();
+            sb.AppendFormat("TZOFFSETTO", TimeZoneOffsetTo).AppendLine();
+            if (RecurrenceRule != null) sb.Append(RecurrenceRule).AppendLine();
+            if (!RecurrenceDates.NullOrEmpty()) RecurrenceDates.ForEach(x => sb.Append(x).AppendLine());
+            if (!Comments.NullOrEmpty()) Comments.ForEach(x => sb.Append(x).AppendLine());
+            if (!TimeZoneNames.NullOrEmpty()) TimeZoneNames.ForEach(x => sb.Append(x).AppendLine());
             sb.Append("END:STANDARD");
             return sb.ToString();
         }
@@ -185,7 +185,6 @@ namespace reexjungle.xcal.domain.models
     public class DAYLIGHT : OBSERVANCE
     {
         public DAYLIGHT()
-            : base()
         {
         }
 
@@ -198,13 +197,13 @@ namespace reexjungle.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:DAYLIGHT").AppendLine();
-            sb.AppendFormat("DTSTART:{0}", this.Start).AppendLine();
-            sb.AppendFormat("TZOFFSETFROM", this.TimeZoneOffsetFrom).AppendLine();
-            sb.AppendFormat("TZOFFSETTO", this.TimeZoneOffsetTo).AppendLine();
-            if (this.RecurrenceRule != null) sb.Append(this.RecurrenceRule).AppendLine();
-            if (!this.RecurrenceDates.NullOrEmpty()) this.RecurrenceDates.ForEach(x => sb.Append(x).AppendLine());
-            if (!this.Comments.NullOrEmpty()) this.Comments.ForEach(x => sb.Append(x).AppendLine());
-            if (!this.TimeZoneNames.NullOrEmpty()) this.TimeZoneNames.ForEach(x => sb.Append(x).AppendLine());
+            sb.AppendFormat("DTSTART:{0}", Start).AppendLine();
+            sb.AppendFormat("TZOFFSETFROM", TimeZoneOffsetFrom).AppendLine();
+            sb.AppendFormat("TZOFFSETTO", TimeZoneOffsetTo).AppendLine();
+            if (RecurrenceRule != null) sb.Append(RecurrenceRule).AppendLine();
+            if (!RecurrenceDates.NullOrEmpty()) RecurrenceDates.ForEach(x => sb.Append(x).AppendLine());
+            if (!Comments.NullOrEmpty()) Comments.ForEach(x => sb.Append(x).AppendLine());
+            if (!TimeZoneNames.NullOrEmpty()) TimeZoneNames.ForEach(x => sb.Append(x).AppendLine());
             sb.Append("END:DAYLIGHT");
             return sb.ToString();
         }

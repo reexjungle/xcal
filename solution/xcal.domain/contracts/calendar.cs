@@ -1,9 +1,5 @@
 ﻿using reexjungle.xcal.domain.contracts;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace reexjungle.xcal.domain.models
 {
@@ -70,11 +66,5 @@ namespace reexjungle.xcal.domain.models
         /// Gets or sets the X-components of the iCalendar core object
         /// </summary>
         List<X_COMPONENT> XComponents { get; set; }
-
     }
-
-
-
-
-
 }

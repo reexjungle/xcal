@@ -1,22 +1,16 @@
-﻿using reexjungle.crosscut.operations.concretes;
-using reexjungle.foundation.essentials.concretes;
-using reexjungle.xcal.domain.contracts;
+﻿using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.foundation.concretes;
 using ServiceStack.FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace reexjungle.xcal.service.validators.concretes
 {
     public class TextValidator : AbstractValidator<TEXTUAL>
     {
         public TextValidator()
-            : base()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Text).Must((x, y) => !string.IsNullOrEmpty(y));
+            RuleFor(x => x.Text).Must((x, y) => !string.IsNullOrWhiteSpace(y));
             RuleFor(x => x.AlternativeText).SetValidator(new UriValidator()).When(x => x.AlternativeText != null);
             RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
         }
@@ -25,7 +19,6 @@ namespace reexjungle.xcal.service.validators.concretes
     public class RecurrenceIdValidator : AbstractValidator<RECURRENCE_ID>
     {
         public RecurrenceIdValidator()
-            : base()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Value).SetValidator(new DateTimeValidator());
@@ -37,7 +30,6 @@ namespace reexjungle.xcal.service.validators.concretes
     public class OrganizerValidator : AbstractValidator<ORGANIZER>
     {
         public OrganizerValidator()
-            : base()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Address).SetValidator(new UriValidator()).When(x => x.Address != null);
@@ -51,7 +43,6 @@ namespace reexjungle.xcal.service.validators.concretes
     public class AttendeeValidator : AbstractValidator<ATTENDEE>
     {
         public AttendeeValidator()
-            : base()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Address).SetValidator(new UriValidator()).When(x => x.Address != null);
@@ -73,7 +64,6 @@ namespace reexjungle.xcal.service.validators.concretes
         where T : IATTACH
     {
         public AttachmentBaseValidator()
-            : base()
         {
             RuleFor(x => x.FormatType)
                 .Must((x, y) => !string.IsNullOrEmpty(y.TypeName) && !string.IsNullOrEmpty(y.SubTypeName))
@@ -84,7 +74,6 @@ namespace reexjungle.xcal.service.validators.concretes
     public class CategoriesValidator : AbstractValidator<CATEGORIES>
     {
         public CategoriesValidator()
-            : base()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
@@ -95,7 +84,6 @@ namespace reexjungle.xcal.service.validators.concretes
     public class AttachmentValidator : AttachmentBaseValidator<IATTACH>
     {
         public AttachmentValidator()
-            : base()
         {
             RuleFor(x => x.FormatType).SetValidator(new FormatTypeValidator()).When(x => x.FormatType != null);
         }
@@ -104,9 +92,8 @@ namespace reexjungle.xcal.service.validators.concretes
     public class AttachmentBinaryValidator : AttachmentBaseValidator<ATTACH_BINARY>
     {
         public AttachmentBinaryValidator()
-            : base()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Content).NotNull().SetValidator(new BinaryValidator());
         }
     }
@@ -114,7 +101,6 @@ namespace reexjungle.xcal.service.validators.concretes
     public class AttachmentUriValidator : AttachmentBaseValidator<ATTACH_URI>
     {
         public AttachmentUriValidator()
-            : base()
         {
             RuleFor(x => x.Content).NotNull().SetValidator(new UriValidator());
         }
@@ -124,7 +110,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public ExceptionDateValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.DateTimes).Must((x, y) => !y.NullOrEmpty());
             RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null);
             RuleFor(x => x.ValueType).Must((x, y) => x.ValueType == VALUE.DATE_TIME || x.ValueType == VALUE.DATE);
@@ -135,7 +121,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public GeoValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Latitude).InclusiveBetween(0f, 90f);
             RuleFor(x => x.Longitude).InclusiveBetween(-180f, 180f);
         }
@@ -145,7 +131,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public RecurrenceDateValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.DateTimes).SetCollectionValidator(new DateTimeValidator()).When(x => !x.DateTimes.NullOrEmpty());
             RuleFor(x => x.Periods).SetCollectionValidator(new PeriodValidator()).When(x => !x.Periods.NullOrEmpty());
             RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null);
@@ -157,7 +143,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public PriorityValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Value).InclusiveBetween(0, 9).When(x => x.Format == PriorityType.Integral);
             RuleFor(x => x.Level).NotEqual(PRIORITYLEVEL.UNKNOWN).When(x => x.Format == PriorityType.Level);
             RuleFor(x => x.Schema).NotEqual(PRIORITYSCHEMA.UNKNOWN).When(x => x.Format == PriorityType.Schema);
@@ -176,7 +162,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public ResourcesValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Values).NotNull();
             RuleFor(x => x.AlternativeText).SetValidator(new UriValidator()).When(x => x.AlternativeText != null);
             RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
@@ -186,9 +172,8 @@ namespace reexjungle.xcal.service.validators.concretes
     public class TimeZoneNameValidator : AbstractValidator<TZNAME>
     {
         public TimeZoneNameValidator()
-            : base()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Text).NotNull().NotEmpty();
             RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
         }
@@ -197,21 +182,20 @@ namespace reexjungle.xcal.service.validators.concretes
     public class ObservanceValidator : AbstractValidator<OBSERVANCE>
     {
         public ObservanceValidator()
-            : base()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Start).SetValidator(new DateTimeValidator());
             RuleFor(x => x.TimeZoneOffsetFrom).SetValidator(new UtcOffsetValidator()).When(x => x.TimeZoneOffsetFrom != default(UTC_OFFSET));
             RuleFor(x => x.TimeZoneOffsetTo).SetValidator(new UtcOffsetValidator()).When(x => x.TimeZoneOffsetTo != default(UTC_OFFSET));
             RuleFor(x => x.RecurrenceRule).SetValidator(new RecurrenceValidator()).When(x => x.RecurrenceRule != null);
             RuleFor(x => x.RecurrenceDates).SetCollectionValidator(new RecurrenceDateValidator()).
-                Must((x, y) => y.AreUnique()).
+                Must((x, y) => y.IsSet()).
                 When(x => x.RecurrenceRule != null && !x.RecurrenceDates.NullOrEmpty());
             RuleFor(x => x.Comments).SetCollectionValidator(new TextValidator()).
-                Must((x, y) => y.AreUnique()).
+                Must((x, y) => y.IsSet()).
                 When(x => !x.Comments.NullOrEmpty());
             RuleFor(x => x.TimeZoneNames).SetCollectionValidator(new TimeZoneNameValidator()).
-                Must((x, y) => x.TimeZoneNames.AreUnique()).
+                Must((x, y) => x.TimeZoneNames.IsSet()).
                 When(x => !x.TimeZoneNames.NullOrEmpty());
         }
     }
@@ -220,7 +204,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public TriggerValidator()
         {
-            CascadeMode = ServiceStack.FluentValidation.CascadeMode.StopOnFirstFailure;
+            CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Duration).SetValidator(new DurationValidator()).When(x => x.Duration != default(DURATION));
             RuleFor(x => x.DateTime).SetValidator(new DateTimeValidator()).When(x => x.DateTime != default(DATE_TIME));
             RuleFor(x => x.ValueType).NotEqual(VALUE.UNKNOWN);

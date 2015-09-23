@@ -1,5 +1,5 @@
-﻿using reexjungle.foundation.essentials.concretes;
-using reexjungle.xcal.domain.contracts;
+﻿using reexjungle.xcal.domain.contracts;
+using reexjungle.xmisc.foundation.concretes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +9,25 @@ using System.Text.RegularExpressions;
 
 namespace reexjungle.xcal.domain.models
 {
+    /// <summary>
+    /// Time Zone ID class
+    /// </summary>
     [DataContract]
     public class TZID : ITZID, IEquatable<TZID>, IComparable<TZID>
     {
+        private string prefix;
+        private bool globallyUnique;
+
         [DataMember]
-        public string Prefix { get; set; }
+        public string Prefix
+        {
+            get { return prefix; }
+            set
+            {
+                prefix = value;
+                globallyUnique = string.IsNullOrWhiteSpace(prefix);
+            }
+        }
 
         /// <summary>
         /// Gets or sets the identifier for the time zone definition for a time component
@@ -22,68 +36,114 @@ namespace reexjungle.xcal.domain.models
         public string Suffix { get; set; }
 
         [DataMember]
-        public bool GloballyUnique { get; set; }
+        public bool GloballyUnique
+        {
+            get { return globallyUnique; }
+            set
+            {
+                globallyUnique = value;
+                if (globallyUnique) prefix = null;
+            }
+        }
 
         public TZID()
         {
-            this.Prefix = string.Empty;
-            this.Suffix = "GMT";
-            this.GloballyUnique = true;
+            Prefix = string.Empty;
+            Suffix = "GMT";
+        }
+
+        public TZID(ITZID other)
+        {
+            if (other == null) throw new ArgumentNullException("other");
+
+            if (string.IsNullOrEmpty(other.Suffix))
+                throw new ArgumentException("Suffix of Time Zone ID must neither be null nor empty!");
+
+            Prefix = other.Prefix;
+            Suffix = other.Suffix;
         }
 
         public TZID(string value)
         {
+            if (string.IsNullOrWhiteSpace(value)) throw new ArgumentNullException("value");
+
+            var tokens = value.Split('/');
+            switch (tokens.Length)
+            {
+                case 2:
+                    Prefix = tokens[0];
+
+                    if (string.IsNullOrEmpty(tokens[1]))
+                        throw new ArgumentException("Suffix of Time Zone ID must neither be null nor empty!");
+
+                    Suffix = tokens[1];
+                    break;
+
+                case 1:
+                    GloballyUnique = false;
+
+                    if (string.IsNullOrEmpty(tokens[0]))
+                        throw new ArgumentException("Suffix of Time Zone ID must neither be null nor empty!");
+
+                    Suffix = tokens[0];
+                    break;
+            }
         }
 
-        public TZID(string prefix, string suffix, bool unique = false)
+        public TZID(string prefix, string suffix)
         {
-            if (string.IsNullOrEmpty(suffix)) throw new ArgumentException("Suffix MUST neither be emty nor null");
-            this.Prefix = prefix;
-            this.Suffix = suffix;
-            this.GloballyUnique = unique;
+            if (string.IsNullOrEmpty(suffix))
+                throw new ArgumentException("suffix");
+
+            Prefix = prefix;
+            Suffix = suffix;
         }
 
         public override string ToString()
         {
-            if (this.GloballyUnique) return string.Format("TZID=/{0}", this.Suffix);
-            return string.Format("TZID={0}/{1}", this.Prefix, this.Suffix);
+            if (GloballyUnique) return string.Format("TZID=/{0}", Suffix);
+            return string.Format("TZID={0}/{1}", Prefix, Suffix);
         }
 
         public bool Equals(TZID other)
         {
-            if (other == null) return false;
-            return
-                this.Suffix == other.Suffix &&
-                this.GloballyUnique == other.GloballyUnique;
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return string.Equals(Suffix, other.Suffix) && GloballyUnique == other.GloballyUnique && string.Equals(Prefix, other.Prefix);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return this.Equals((TZID)obj);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((TZID)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.Suffix.GetHashCode() ^
-                this.GloballyUnique.GetHashCode();
+            unchecked
+            {
+                var hashCode = (Suffix != null ? Suffix.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ GloballyUnique.GetHashCode();
+                hashCode = (hashCode * 397) ^ (Prefix != null ? Prefix.GetHashCode() : 0);
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(TZID left, TZID right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(TZID left, TZID right)
+        {
+            return !Equals(left, right);
         }
 
         public int CompareTo(TZID other)
         {
-            return this.Suffix.CompareTo(other.Suffix);
-        }
-
-        public static bool operator ==(TZID a, TZID b)
-        {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(TZID a, TZID b)
-        {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
-            return !a.Equals(b);
+            return string.Compare(Suffix, other.Suffix, StringComparison.OrdinalIgnoreCase);
         }
 
         public static bool operator <(TZID a, TZID b)
@@ -110,77 +170,72 @@ namespace reexjungle.xcal.domain.models
 
         public FMTTYPE()
         {
-            this.TypeName = null;
-            this.SubTypeName = null;
+            TypeName = null;
+            SubTypeName = null;
         }
 
         public FMTTYPE(string name, string subname)
         {
-            this.TypeName = name;
-            this.SubTypeName = subname;
+            TypeName = name;
+            SubTypeName = subname;
         }
 
         public FMTTYPE(string value)
         {
-            try
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+            var pattern = @"^FMTTYPE=(?<type>\w+)/(?<subtype>\w+)$";
+            if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
+                throw new FormatException("Invalid Format type");
+            foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
             {
-                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
-                var pattern = @"^FMTTYPE=(?<type>\w+)(\.?<subtype>\w+)?$";
-                if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                    throw new FormatException("Invalid Format type");
-                foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                {
-                    if (match.Groups["type"].Success) this.TypeName = match.Groups["type"].Value;
-                    else if (match.Groups["subtype"].Success) this.SubTypeName = match.Groups["subtype"].Value;
-                }
+                if (match.Groups["type"].Success) TypeName = match.Groups["type"].Value;
+                else if (match.Groups["subtype"].Success) SubTypeName = match.Groups["subtype"].Value;
             }
-            catch (FormatException) { throw; }
-            catch (ArgumentNullException) { throw; }
-            catch (ArgumentOutOfRangeException) { throw; }
-            catch (ArgumentException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public FMTTYPE(IFMTTYPE fmttype)
         {
             if (fmttype == null) throw new ArgumentNullException("fmttype");
-            this.TypeName = fmttype.TypeName;
-            this.SubTypeName = fmttype.SubTypeName;
+            TypeName = fmttype.TypeName;
+            SubTypeName = fmttype.SubTypeName;
         }
 
         public override string ToString()
         {
-            return string.Format("FMTTYPE={0}/{1}", this.TypeName, this.SubTypeName);
+            return string.Format("FMTTYPE={0}/{1}", TypeName, SubTypeName);
         }
 
         public bool Equals(FMTTYPE other)
         {
-            if (other == null) return false;
-            return (this.TypeName.Equals(other.TypeName, StringComparison.OrdinalIgnoreCase) &&
-                this.SubTypeName.Equals(other.SubTypeName, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return string.Equals(TypeName, other.TypeName) && string.Equals(SubTypeName, other.SubTypeName);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return this.Equals(obj as FMTTYPE);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((FMTTYPE)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.TypeName.GetHashCode() ^ this.SubTypeName.GetHashCode();
+            unchecked
+            {
+                return ((TypeName != null ? TypeName.GetHashCode() : 0) * 397) ^ (SubTypeName != null ? SubTypeName.GetHashCode() : 0);
+            }
         }
 
-        public static bool operator ==(FMTTYPE a, FMTTYPE b)
+        public static bool operator ==(FMTTYPE left, FMTTYPE right)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
-            return a.Equals(b);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(FMTTYPE a, FMTTYPE b)
+        public static bool operator !=(FMTTYPE left, FMTTYPE right)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
-            return !a.Equals(b);
+            return !Equals(left, right);
         }
     }
 
@@ -195,52 +250,44 @@ namespace reexjungle.xcal.domain.models
 
         public LANGUAGE()
         {
-            this.Tag = null;
-            this.SubTag = null;
+            Tag = null;
+            SubTag = null;
         }
 
         public LANGUAGE(string tag, string subtag)
         {
             if (string.IsNullOrEmpty(tag)) throw new ArgumentException("tag");
-            this.Tag = tag;
-            this.SubTag = subtag;
+            Tag = tag;
+            SubTag = subtag;
         }
 
         public LANGUAGE(string value)
         {
-            try
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+            var pattern = @"^(LANGUAGE=)?(?<tag>\w+)(\-(?<subtag>\w+))?$";
+            if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
+                throw new FormatException("Invalid Format type");
+            foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
             {
-                if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
-                var pattern = @"^(LANGUAGE=)?(?<tag>\w+)(\-(?<subtag>\w+))?$";
-                if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                    throw new FormatException("Invalid Format type");
-                foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                {
-                    if (match.Groups["tag"].Success) this.Tag = match.Groups["tag"].Value;
-                    else if (match.Groups["subtag"].Success) this.SubTag = match.Groups["subtag"].Value;
-                }
+                if (match.Groups["tag"].Success) Tag = match.Groups["tag"].Value;
+                else if (match.Groups["subtag"].Success) SubTag = match.Groups["subtag"].Value;
             }
-            catch (FormatException) { throw; }
-            catch (ArgumentNullException) { throw; }
-            catch (ArgumentOutOfRangeException) { throw; }
-            catch (ArgumentException) { throw; }
-            catch (Exception) { throw; }
         }
 
         public LANGUAGE(ILANGUAGE language)
         {
             if (language == null) throw new ArgumentNullException("language");
-            this.Tag = language.Tag;
-            this.SubTag = language.SubTag;
+            Tag = language.Tag;
+            SubTag = language.SubTag;
         }
 
         public override string ToString()
         {
-            if (!string.IsNullOrEmpty(this.Tag))
+            if (!string.IsNullOrEmpty(Tag))
             {
-                return (!string.IsNullOrEmpty(this.SubTag)) ?
-                    string.Format("LANGUAGE={0}-{1}", this.Tag, this.SubTag) :
-                    string.Format("LANGUAGE={0}", this.Tag);
+                return (!string.IsNullOrEmpty(SubTag)) ?
+                    string.Format("LANGUAGE={0}-{1}", Tag, SubTag) :
+                    string.Format("LANGUAGE={0}", Tag);
             }
 
             return string.Empty;
@@ -248,33 +295,35 @@ namespace reexjungle.xcal.domain.models
 
         public bool Equals(LANGUAGE other)
         {
-            if (other == null) return false;
-            return (!string.IsNullOrEmpty(this.SubTag) ? this.Tag.Equals(other.Tag, StringComparison.OrdinalIgnoreCase) :
-                this.Tag.Equals(other.Tag, StringComparison.OrdinalIgnoreCase) &&
-                this.SubTag.Equals(other.SubTag, StringComparison.OrdinalIgnoreCase));
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return string.Equals(Tag, other.Tag) && string.Equals(SubTag, other.SubTag);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return this.Equals(obj as LANGUAGE);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((LANGUAGE)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.Tag.GetHashCode() ^ this.SubTag.GetHashCode();
+            unchecked
+            {
+                return ((Tag != null ? Tag.GetHashCode() : 0) * 397) ^ (SubTag != null ? SubTag.GetHashCode() : 0);
+            }
         }
 
-        public static bool operator ==(LANGUAGE a, LANGUAGE b)
+        public static bool operator ==(LANGUAGE left, LANGUAGE right)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
-            return a.Equals(b);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(LANGUAGE a, LANGUAGE b)
+        public static bool operator !=(LANGUAGE left, LANGUAGE right)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
-            return !a.Equals(b);
+            return !Equals(left, right);
         }
     }
 
@@ -292,7 +341,7 @@ namespace reexjungle.xcal.domain.models
         /// </summary>
         public DELEGATE()
         {
-            this.Addresses = new List<URI>();
+            Addresses = new List<URI>();
         }
 
         /// <summary>
@@ -301,7 +350,7 @@ namespace reexjungle.xcal.domain.models
         /// <param name="addresses">The enumerable collection of calendar addresses, which represent the delegators</param>
         public DELEGATE(List<URI> addresses)
         {
-            this.Addresses = addresses;
+            Addresses = addresses;
         }
 
         public DELEGATE(string value)
@@ -320,7 +369,7 @@ namespace reexjungle.xcal.domain.models
                     if (match.Groups["value"].Success) val = match.Groups["value"].Value;
                 }
                 var parts = val.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                this.Addresses = new List<URI>(parts.Select(p => new URI(p)));
+                Addresses = new List<URI>(parts.Select(p => new URI(p)));
             }
             catch (ArgumentNullException) { throw; }
             catch (ArgumentOutOfRangeException) { throw; }
@@ -330,15 +379,15 @@ namespace reexjungle.xcal.domain.models
         public DELEGATE(IDELEGATE del)
         {
             if (del == null) throw new ArgumentNullException("delegatee or delegator");
-            this.Addresses = del.Addresses;
+            Addresses = del.Addresses;
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
-            foreach (var addr in this.Addresses)
+            foreach (var addr in Addresses)
             {
-                if (addr != this.Addresses.Last()) sb.AppendFormat("\"mailto:{0}\", ", addr);
+                if (addr != Addresses.Last()) sb.AppendFormat("\"mailto:{0}\", ", addr);
                 else sb.AppendFormat("\"mailto:{0}\"", addr);
             }
             return sb.ToString();
@@ -346,31 +395,32 @@ namespace reexjungle.xcal.domain.models
 
         public bool Equals(DELEGATE other)
         {
-            if (other == null) return false;
-            return this.Addresses.AreDuplicatesOf(other.Addresses);
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Addresses.IsEquivalentOf(other.Addresses);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return this.Equals(obj as DELEGATE);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((DELEGATE)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.Addresses.GetHashCode();
+            return (Addresses != null ? Addresses.GetHashCode() : 0);
         }
 
-        public static bool operator ==(DELEGATE x, DELEGATE y)
+        public static bool operator ==(DELEGATE left, DELEGATE right)
         {
-            if ((object)x == null || (object)y == null) return object.Equals(x, y);
-            return x.Equals(y);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(DELEGATE x, DELEGATE y)
+        public static bool operator !=(DELEGATE left, DELEGATE right)
         {
-            if ((object)x == null || (object)y == null) return !object.Equals(x, y);
-            return !x.Equals(y);
+            return !Equals(left, right);
         }
     }
 
@@ -392,7 +442,7 @@ namespace reexjungle.xcal.domain.models
         /// </summary>
         public MEMBER()
         {
-            this.Addresses = new List<URI>();
+            Addresses = new List<URI>();
         }
 
         /// <summary>
@@ -401,7 +451,7 @@ namespace reexjungle.xcal.domain.models
         /// <param name="addresses">The enumerable collection of addresses representing users in the membership list</param>
         public MEMBER(List<URI> addresses)
         {
-            this.Addresses = addresses;
+            Addresses = addresses;
         }
 
         public MEMBER(string value)
@@ -420,7 +470,7 @@ namespace reexjungle.xcal.domain.models
                     if (match.Groups["value"].Success) val = match.Groups["value"].Value;
                 }
                 var parts = val.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                this.Addresses = new List<URI>(parts.Select(p => new URI(p)));
+                Addresses = new List<URI>(parts.Select(p => new URI(p)));
             }
             catch (FormatException) { throw; }
             catch (ArgumentNullException) { throw; }
@@ -439,9 +489,9 @@ namespace reexjungle.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("MEMBER=");
-            foreach (var addr in this.Addresses)
+            foreach (var addr in Addresses)
             {
-                if (addr != this.Addresses.Last()) sb.AppendFormat("mailto:{0}, ", addr);
+                if (addr != Addresses.Last()) sb.AppendFormat("mailto:{0}, ", addr);
                 else sb.AppendFormat("mailto:{0}", addr);
             }
 
@@ -450,31 +500,32 @@ namespace reexjungle.xcal.domain.models
 
         public bool Equals(MEMBER other)
         {
-            if (other == null) return false;
-            return this.Addresses.AreDuplicatesOf(other.Addresses);
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Addresses.IsEquivalentOf(other.Addresses);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return this.Equals(obj as MEMBER);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((MEMBER)obj);
         }
 
         public override int GetHashCode()
         {
-            return this.Addresses.GetHashCode();
+            return (Addresses != null ? Addresses.GetHashCode() : 0);
         }
 
-        public static bool operator ==(MEMBER a, MEMBER b)
+        public static bool operator ==(MEMBER left, MEMBER right)
         {
-            if ((object)a == null || (object)b == null) return object.Equals(a, b);
-            return a.Equals(b);
+            return Equals(left, right);
         }
 
-        public static bool operator !=(MEMBER a, MEMBER b)
+        public static bool operator !=(MEMBER left, MEMBER right)
         {
-            if ((object)a == null || (object)b == null) return !object.Equals(a, b);
-            return !a.Equals(b);
+            return !Equals(left, right);
         }
     }
 }

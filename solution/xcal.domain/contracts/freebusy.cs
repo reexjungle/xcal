@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using reexjungle.xcal.domain.models;
-
+﻿using reexjungle.xcal.domain.models;
+using System.Collections.Generic;
 
 namespace reexjungle.xcal.domain.contracts
 {
-    public interface IFREEBUSY: ICOMPONENT
+    public interface IFREEBUSY
     {
         string Uid { get; set; }
 

@@ -1,18 +1,16 @@
-﻿using reexjungle.infrastructure.contracts;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.models;
+using reexjungle.xmisc.infrastructure.contracts;
 using ServiceStack.ServiceHost;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace reexjungle.xcal.service.operations.concretes.cached
 {
+
     [Route("/cached/calendars/{CalendarId}/find", "GET")]
     public class FindCalendarCached : IReturn<VCALENDAR>
     {
-        public string CalendarId { get; set; }
+        public Guid CalendarId { get; set; }
     }
 
     [Route("/cached/calendars/batch/find", "POST")]
@@ -20,7 +18,7 @@ namespace reexjungle.xcal.service.operations.concretes.cached
     [Route("/cached/calendars/batch/find/page/{Page}/size/{Size}", "POST")]
     public class FindCalendarsCached : IReturn<List<VCALENDAR>>, IPaginated<int>
     {
-        public List<string> CalendarIds { get; set; }
+        public List<Guid> CalendarIds { get; set; }
 
         public int? Page { get; set; }
 
@@ -38,7 +36,7 @@ namespace reexjungle.xcal.service.operations.concretes.cached
 
     [Route("/cached/calendars/keys/{Page}/{Size}", "GET")]
     [Route("/cached/calendars/keys/page/{Page}/size/{Size}", "GET")]
-    public class GetCalendarKeysCached : IReturn<List<string>>, IPaginated<int>
+    public class GetCalendarKeysCached : IReturn<List<Guid>>, IPaginated<int>
     {
         public int? Page { get; set; }
 
