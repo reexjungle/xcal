@@ -59,6 +59,12 @@ namespace reexjungle.xcal.domain.models
             FormatType = format;
         }
 
+        public ATTACH_BINARY(string value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            var pattern = "^ATTACH $";
+        }
+
         /// <summary>
         /// Overloaded ToString method
         /// </summary>
@@ -353,13 +359,14 @@ namespace reexjungle.xcal.domain.models
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public TEXTUAL()
+        protected TEXTUAL()
         {
             Text = string.Empty;
             AlternativeText = null;
+            Language = null;
         }
 
-        public TEXTUAL(ITEXTUAL value)
+        protected TEXTUAL(ITEXTUAL value)
         {
             Language = value.Language;
             AlternativeText = value.AlternativeText;
@@ -432,9 +439,12 @@ namespace reexjungle.xcal.domain.models
         {
         }
 
-        public DESCRIPTION(string text)
+        public DESCRIPTION(string value): base()
         {
             //todo: Parsing code here
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+            var pattern = @"^DESCRIPTION (?<tag>\w+)(\-(?<subtag>\w+))?$";
+
         }
 
         public DESCRIPTION(string text, URI altrep, LANGUAGE language = null)

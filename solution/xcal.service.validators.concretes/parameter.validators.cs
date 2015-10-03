@@ -7,35 +7,38 @@ namespace reexjungle.xcal.service.validators.concretes
 {
     public class LanguageValidator : AbstractValidator<LANGUAGE>
     {
-        public LanguageValidator()
+        public LanguageValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
+            CascadeMode = mode;
             RuleFor(x => x.Tag).Must((x, y) => !string.IsNullOrWhiteSpace(y));
         }
     }
 
     public class TimeZoneIdValidator : AbstractValidator<TZID>
     {
-        public TimeZoneIdValidator()
+        public TimeZoneIdValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
-            CascadeMode = CascadeMode.StopOnFirstFailure;
+            CascadeMode = mode;
             RuleFor(x => x.Prefix).NotNull().When(x => x.GloballyUnique = false);
-            RuleFor(x => x.Suffix).NotNull();
+            RuleFor(x => x.Suffix).NotNull().NotEmpty().When(x => x.Suffix != null);
+
         }
     }
 
     public class DelegateValidator : AbstractValidator<DELEGATE>
     {
-        public DelegateValidator()
+        public DelegateValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
+            CascadeMode = mode;
             RuleFor(x => x.Addresses).SetCollectionValidator(new UriValidator()).When(x => !x.Addresses.NullOrEmpty());
         }
     }
 
     public class FormatTypeValidator : AbstractValidator<FMTTYPE>
     {
-        public FormatTypeValidator()
+        public FormatTypeValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
-            CascadeMode = CascadeMode.StopOnFirstFailure;
+            CascadeMode = mode;
             RuleFor(x => x.TypeName).NotNull().NotEmpty();
             RuleFor(x => x.SubTypeName).NotNull().NotEmpty();
         }
@@ -43,8 +46,9 @@ namespace reexjungle.xcal.service.validators.concretes
 
     public class MemberValidator : AbstractValidator<MEMBER>
     {
-        public MemberValidator()
+        public MemberValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
+            CascadeMode = mode;
             RuleFor(x => x.Addresses).SetCollectionValidator(new UriValidator()).When(x => !x.Addresses.NullOrEmpty());
         }
     }

@@ -14,7 +14,6 @@ namespace reexjungle.xcal.domain.extensions
     {
         #region specialized enumeration translators for iCalendar
 
-
         /// <summary>
         /// Converts an EncodingType to its equivalent string representation
         /// </summary>
@@ -25,7 +24,6 @@ namespace reexjungle.xcal.domain.extensions
         {
             return type == ENCODING.BIT8 ? "8BIT" : ENCODING.BASE64.ToString();
         }
-
 
         #endregion specialized enumeration translators for iCalendar
 

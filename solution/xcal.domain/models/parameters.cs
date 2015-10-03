@@ -18,6 +18,9 @@ namespace reexjungle.xcal.domain.models
         private string prefix;
         private bool globallyUnique;
 
+        /// <summary>
+        /// Gets or sets the identifier for the time zone definition for a time component
+        /// </summary>
         [DataMember]
         public string Prefix
         {
@@ -55,9 +58,6 @@ namespace reexjungle.xcal.domain.models
         public TZID(ITZID other)
         {
             if (other == null) throw new ArgumentNullException("other");
-
-            if (string.IsNullOrEmpty(other.Suffix))
-                throw new ArgumentException("Suffix of Time Zone ID must neither be null nor empty!");
 
             Prefix = other.Prefix;
             Suffix = other.Suffix;
@@ -116,7 +116,7 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((TZID)obj);
         }
 
@@ -148,13 +148,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator <(TZID a, TZID b)
         {
-            if ((object)a == null || (object)b == null) return false;
+            if (ReferenceEquals(a, null) || ReferenceEquals(b, null)) return false;
             return a.CompareTo(b) < 0;
         }
 
         public static bool operator >(TZID a, TZID b)
         {
-            if ((object)a == null || (object)b == null) return false;
+            if (ReferenceEquals(a, null) || ReferenceEquals(b, null)) return false;
             return a.CompareTo(b) > 0;
         }
     }
@@ -183,9 +183,12 @@ namespace reexjungle.xcal.domain.models
         public FMTTYPE(string value)
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
-            var pattern = @"^FMTTYPE=(?<type>\w+)/(?<subtype>\w+)$";
-            if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
+            
+            var pattern = @"^(?<type>\w+)/(?<subtype>\w+)$";
+            
+            if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture |RegexOptions.IgnoreCase))
                 throw new FormatException("Invalid Format type");
+            
             foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
             {
                 if (match.Groups["type"].Success) TypeName = match.Groups["type"].Value;
@@ -196,6 +199,7 @@ namespace reexjungle.xcal.domain.models
         public FMTTYPE(IFMTTYPE fmttype)
         {
             if (fmttype == null) throw new ArgumentNullException("fmttype");
+            
             TypeName = fmttype.TypeName;
             SubTypeName = fmttype.SubTypeName;
         }
@@ -216,7 +220,7 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((FMTTYPE)obj);
         }
 
@@ -264,7 +268,7 @@ namespace reexjungle.xcal.domain.models
         public LANGUAGE(string value)
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
-            var pattern = @"^(LANGUAGE=)?(?<tag>\w+)(\-(?<subtag>\w+))?$";
+            var pattern = @"^(?<tag>\w+)(\-(?<subtag>\w+))?$";
             if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
                 throw new FormatException("Invalid Format type");
             foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
@@ -304,7 +308,7 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((LANGUAGE)obj);
         }
 
@@ -358,28 +362,22 @@ namespace reexjungle.xcal.domain.models
             var uricheck = @"(?<value>(\w+)((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?))";
             var pattern = string.Format("(\")(mailto:){0}(\")", uricheck);
 
-            try
-            {
-                if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                    throw new FormatException("Invalid Delegate format");
-                var val = string.Empty;
+            if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
+                throw new FormatException("Invalid Delegate format");
+            var val = string.Empty;
 
-                foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                {
-                    if (match.Groups["value"].Success) val = match.Groups["value"].Value;
-                }
-                var parts = val.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                Addresses = new List<URI>(parts.Select(p => new URI(p)));
+            foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
+            {
+                if (match.Groups["value"].Success) val = match.Groups["value"].Value;
             }
-            catch (ArgumentNullException) { throw; }
-            catch (ArgumentOutOfRangeException) { throw; }
-            catch (ArgumentException) { throw; }
+            var parts = val.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            Addresses = new List<URI>(parts.Select(p => new URI(p)));
         }
 
-        public DELEGATE(IDELEGATE del)
+        public DELEGATE(IDELEGATE @delegate)
         {
-            if (del == null) throw new ArgumentNullException("delegatee or delegator");
-            Addresses = del.Addresses;
+            if (@delegate == null) throw new ArgumentNullException("delegate");
+            Addresses = @delegate.Addresses;
         }
 
         public override string ToString()
@@ -404,7 +402,7 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((DELEGATE)obj);
         }
 
@@ -459,24 +457,16 @@ namespace reexjungle.xcal.domain.models
             var uricheck = @"(?<value>(\w+)((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?))";
             var pattern = string.Format("(\")(mailto:){0}(\")", uricheck);
 
-            try
-            {
-                if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                    throw new FormatException("Invalid Member format");
-                var val = string.Empty;
+            if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
+                throw new FormatException("Invalid Member format");
+            var val = string.Empty;
 
-                foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                {
-                    if (match.Groups["value"].Success) val = match.Groups["value"].Value;
-                }
-                var parts = val.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                Addresses = new List<URI>(parts.Select(p => new URI(p)));
+            foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
+            {
+                if (match.Groups["value"].Success) val = match.Groups["value"].Value;
             }
-            catch (FormatException) { throw; }
-            catch (ArgumentNullException) { throw; }
-            catch (ArgumentOutOfRangeException) { throw; }
-            catch (ArgumentException) { throw; }
-            catch (Exception) { throw; }
+            var parts = val.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            Addresses = new List<URI>(parts.Select(p => new URI(p)));
         }
 
         public MEMBER(IMEMBER member)
@@ -509,7 +499,7 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((MEMBER)obj);
         }
 

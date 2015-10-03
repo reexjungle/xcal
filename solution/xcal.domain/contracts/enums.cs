@@ -13,7 +13,7 @@
     /// <summary>
     /// Represents the type of iCalendar encodings
     /// </summary>
-    public enum ENCODING { UNKNOWN, BIT8, BASE64 }
+    public enum ENCODING { BIT8, BASE64 }
 
     public enum TimeType { Unknown, Local, Utc, LocalAndTimeZone }
 

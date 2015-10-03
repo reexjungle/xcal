@@ -1,28 +1,26 @@
-﻿using reexjungle.xcal.domain.contracts;
+﻿using System;
+using System.Linq;
+using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
 using reexjungle.xmisc.foundation.concretes;
 using ServiceStack.FluentValidation;
-using System;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace reexjungle.xcal.service.validators.concretes
 {
     public class BinaryValidator : AbstractValidator<BINARY>
     {
-        public BinaryValidator()
+        public BinaryValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
-            CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Value).NotNull().NotEmpty();
-            RuleFor(x => x.Encoding).NotEqual(ENCODING.UNKNOWN);
+            CascadeMode = mode;
+            RuleFor(x => x.Value).Must((x, value) => !string.IsNullOrEmpty(value));
         }
     }
 
     public class DateValidator : AbstractValidator<DATE>
     {
-        public DateValidator()
+        public DateValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
-            CascadeMode = CascadeMode.StopOnFirstFailure;
+            CascadeMode = mode;
             RuleFor(x => x.FULLYEAR).InclusiveBetween(1u, 10000u);
             RuleFor(x => x.MONTH).InclusiveBetween(1u, 12u);
             RuleFor(x => x.MDAY).InclusiveBetween(1u, 31u);
@@ -31,9 +29,9 @@ namespace reexjungle.xcal.service.validators.concretes
 
     public class DateTimeValidator : AbstractValidator<DATE_TIME>
     {
-        public DateTimeValidator()
+        public DateTimeValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
-            CascadeMode = CascadeMode.StopOnFirstFailure;
+            CascadeMode = mode;
             RuleFor(x => x.FULLYEAR).InclusiveBetween(1u, 10000u);
             RuleFor(x => x.MONTH).InclusiveBetween(1u, 12u);
             RuleFor(x => x.MDAY).InclusiveBetween(1u, 31u);
@@ -41,70 +39,54 @@ namespace reexjungle.xcal.service.validators.concretes
             RuleFor(x => x.MINUTE).InclusiveBetween(0u, 59u);
             RuleFor(x => x.SECOND).InclusiveBetween(0u, 60u);
             RuleFor(x => x.Type).NotEqual(TimeType.Utc).When(x => x.TimeZoneId != null);
-            RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null || x.Type == TimeType.Utc);
+            RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator())
+                .When(x => x.TimeZoneId != null || x.Type == TimeType.Utc);
         }
     }
 
     public class TimeValidator : AbstractValidator<TIME>
     {
-        public TimeValidator()
+        public TimeValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
-            CascadeMode = CascadeMode.StopOnFirstFailure;
+            CascadeMode = mode;
             RuleFor(x => x.HOUR).InclusiveBetween(0u, 23u);
             RuleFor(x => x.MINUTE).InclusiveBetween(0u, 59u);
             RuleFor(x => x.SECOND).InclusiveBetween(0u, 60u);
             RuleFor(x => x.Type).NotEqual(TimeType.Utc).When(x => x.TimeZoneId != null);
-            RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null || x.Type == TimeType.Utc);
+            RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator())
+                .When(x => x.TimeZoneId != null || x.Type == TimeType.Utc);
         }
     }
 
-    public class DurationValidator : AbstractValidator<DURATION>
-    {
-        public DurationValidator()
-        {
-            //RuleFor(x => x.Sign).NotEqual(SignType.Neutral);
-        }
-    }
 
     public class PeriodValidator : AbstractValidator<PERIOD>
     {
-        public PeriodValidator()
+        public PeriodValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
-            var dtvalidator = new DateTimeValidator();
-            RuleFor(x => x.Start).SetValidator(dtvalidator).When(x => x.Start != default(DATE_TIME));
-            RuleFor(x => x.End).SetValidator(dtvalidator).Unless(x => x.Duration != default(DURATION)).When(x => x.End != default(DATE_TIME));
-            RuleFor(x => x.Duration).SetValidator(new DurationValidator()).Unless(x => x.End != default(DATE_TIME)).When(x => x.Duration != default(DURATION));
-        }
-    }
-
-    public class EmailValidator : AbstractValidator<URI>
-    {
-        public EmailValidator()
-        {
-            RuleFor(x => x.Path).Must((x, y) => IsValid(x.Path)).When(x => !string.IsNullOrWhiteSpace(x.Path)
-                || !string.IsNullOrEmpty(x.Path));
-        }
-
-        private bool IsValid(string email)
-        {
-            var pattern = @"^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$";
-            return Regex.IsMatch(email, pattern, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
+            CascadeMode = mode;
+            var validator = new DateTimeValidator();
+            RuleFor(x => x.Start).SetValidator(validator)
+                .When(x => x.Start != default(DATE_TIME));
+            RuleFor(x => x.End).SetValidator(validator)
+                .Unless(x => x.Duration != default(DURATION)).When(x => x.End != default(DATE_TIME));
         }
     }
 
     public class UriValidator : AbstractValidator<URI>
     {
-        public UriValidator()
+        public UriValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
-            RuleFor(x => x.Path).Must((x, y) => Uri.IsWellFormedUriString(y, UriKind.RelativeOrAbsolute)).When(x => x.Path != null);
+            CascadeMode = mode;
+            RuleFor(x => x.Path).Must((x, y) => Uri.IsWellFormedUriString(y, UriKind.RelativeOrAbsolute))
+                .When(x => !string.IsNullOrEmpty(x.Path));
         }
     }
 
     public class WeekDayNumValidator : AbstractValidator<WEEKDAYNUM>
     {
-        public WeekDayNumValidator()
+        public WeekDayNumValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
-            CascadeMode = CascadeMode.StopOnFirstFailure;
+            CascadeMode = mode;
             RuleFor(x => x.OrdinalWeek).InclusiveBetween(1, 53).When(x => x.OrdinalWeek != 0);
             RuleFor(x => x.Weekday).NotEqual(WEEKDAY.UNKNOWN);
         }
@@ -112,9 +94,9 @@ namespace reexjungle.xcal.service.validators.concretes
 
     public class RecurrenceValidator : AbstractValidator<RECUR>
     {
-        public RecurrenceValidator()
+        public RecurrenceValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
-            CascadeMode = CascadeMode.StopOnFirstFailure;
+            CascadeMode = mode;
             RuleFor(x => x.FREQ).NotEqual(FREQ.UNKNOWN);
             RuleFor(x => x.INTERVAL).GreaterThan(0u);
             RuleFor(x => x.BYSECOND).Must((x, y) => y.Max() <= 60u).When(x => !x.BYSECOND.NullOrEmpty());
@@ -132,9 +114,9 @@ namespace reexjungle.xcal.service.validators.concretes
 
     public class UtcOffsetValidator : AbstractValidator<UTC_OFFSET>
     {
-        public UtcOffsetValidator()
+        public UtcOffsetValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
-            CascadeMode = CascadeMode.Continue;
+            CascadeMode = mode;
             RuleFor(x => x.HOUR).InclusiveBetween(-23, 23);
             RuleFor(x => x.MINUTE).InclusiveBetween(-59, 59);
             RuleFor(x => x.SECOND).InclusiveBetween(-59, 59);
