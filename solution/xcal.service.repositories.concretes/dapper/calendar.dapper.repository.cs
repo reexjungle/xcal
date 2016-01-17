@@ -6,7 +6,6 @@ using ServiceStack.OrmLite;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq.Expressions;
 
 namespace reexjungle.xcal.service.repositories.concretes.dapper
 {
@@ -24,16 +23,16 @@ namespace reexjungle.xcal.service.repositories.concretes.dapper
 
         public IDbConnectionFactory DbConnectionFactory
         {
-            get { throw new NotImplementedException(); }
+            get { return factory; }
         }
 
-        public CalendarDapperRepository(IDbConnection dbconnection, IKeyGenerator<Guid> keygenerator, IEventRepository eventrepository)
+        public CalendarDapperRepository(IDbConnectionFactory factory, IKeyGenerator<Guid> keygenerator, IEventRepository eventrepository)
         {
-            dbconnection.ThrowIfNull("dbconnection");
+            dbconnection.ThrowIfNull("factory");
             keygenerator.ThrowIfNull("keygenerator");
             eventrepository.ThrowIfNull("eventrepository");
 
-            this.dbconnection = dbconnection;
+            this.factory = factory;
             this.keygenerator = keygenerator;
             this.eventrepository = eventrepository;
         }
