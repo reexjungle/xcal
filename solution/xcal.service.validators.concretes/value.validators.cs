@@ -72,14 +72,15 @@ namespace reexjungle.xcal.service.validators.concretes
         }
     }
 
-    public class UriValidator : AbstractValidator<URI>
+    public class CalendarAddressValidator:AbstractValidator<CAL_ADDRESS>
     {
-        public UriValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
+        public CalendarAddressValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
             CascadeMode = mode;
-            RuleFor(x => x.Path).Must((x, y) => Uri.IsWellFormedUriString(y, UriKind.RelativeOrAbsolute))
-                .When(x => !string.IsNullOrEmpty(x.Path));
+            RuleFor(x => x.LocalPath).EmailAddress().When(x => x.IsAbsoluteUri);
+
         }
+        
     }
 
     public class WeekDayNumValidator : AbstractValidator<WEEKDAYNUM>
@@ -88,7 +89,7 @@ namespace reexjungle.xcal.service.validators.concretes
         {
             CascadeMode = mode;
             RuleFor(x => x.OrdinalWeek).InclusiveBetween(1, 53).When(x => x.OrdinalWeek != 0);
-            RuleFor(x => x.Weekday).NotEqual(WEEKDAY.UNKNOWN);
+            RuleFor(x => x.Weekday).NotEqual(WEEKDAY.NONE);
         }
     }
 
@@ -97,7 +98,7 @@ namespace reexjungle.xcal.service.validators.concretes
         public RecurrenceValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
             CascadeMode = mode;
-            RuleFor(x => x.FREQ).NotEqual(FREQ.UNKNOWN);
+            RuleFor(x => x.FREQ).NotEqual(FREQ.NONE);
             RuleFor(x => x.INTERVAL).GreaterThan(0u);
             RuleFor(x => x.BYSECOND).Must((x, y) => y.Max() <= 60u).When(x => !x.BYSECOND.NullOrEmpty());
             RuleFor(x => x.BYMINUTE).Must((x, y) => y.Max() <= 59u).When(x => !x.BYMINUTE.NullOrEmpty());
@@ -107,7 +108,7 @@ namespace reexjungle.xcal.service.validators.concretes
             RuleFor(x => x.BYYEARDAY).Must((x, y) => y.Min() >= -366 && y.Max() <= 366).When(x => !x.BYYEARDAY.NullOrEmpty());
             RuleFor(x => x.BYWEEKNO).Must((x, y) => y.Min() >= -53 && y.Max() <= 53).When(x => !x.BYWEEKNO.NullOrEmpty());
             RuleFor(x => x.BYMONTH).Must((x, y) => y.Min() >= 1 && y.Max() <= 12).When(x => !x.BYMONTH.NullOrEmpty());
-            RuleFor(x => x.WKST).NotEqual(WEEKDAY.UNKNOWN);
+            RuleFor(x => x.WKST).NotEqual(WEEKDAY.NONE);
             RuleFor(x => x.BYSETPOS).Must((x, y) => y.Min() >= -366 && y.Max() <= 366).When(x => !x.BYSETPOS.NullOrEmpty());
         }
     }

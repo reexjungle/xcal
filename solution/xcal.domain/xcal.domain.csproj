@@ -112,6 +112,7 @@
     <Compile Include="extensions\engines.cs" />
     <Compile Include="extensions\events.cs" />
     <Compile Include="extensions\generators.cs" />
+    <Compile Include="extensions\parsers.cs" />
     <Compile Include="models\event.cs" />
     <Compile Include="contracts\parameters.cs" />
     <Compile Include="contracts\properties.cs" />

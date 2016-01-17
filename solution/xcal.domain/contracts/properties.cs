@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using reexjungle.xcal.domain.models;
 
 namespace reexjungle.xcal.domain.contracts
@@ -49,7 +50,7 @@ namespace reexjungle.xcal.domain.contracts
 
     public interface ITEXTUAL
     {
-        URI AlternativeText { get; set; }
+        ALTREP AlternativeText { get; set; }
 
         LANGUAGE Language { get; set; }
 
@@ -67,7 +68,7 @@ namespace reexjungle.xcal.domain.contracts
  
     public interface IRESOURCES
     {
-        URI AlternativeText { get; set; }
+        ALTREP AlternativeText { get; set; }
 
         LANGUAGE Language { get; set; }
 
@@ -86,7 +87,7 @@ namespace reexjungle.xcal.domain.contracts
 
     #region Date and Time Component Properties
 
-    public interface IFREEBUSY_INFO
+    public interface IFREEBUSY_PROPERTY
     {
         FBTYPE Type { get; set; }
 
@@ -110,26 +111,26 @@ namespace reexjungle.xcal.domain.contracts
 
     public interface IATTENDEE
     {
-        URI Address { get; set; }
+        CAL_ADDRESS Address { get; set; }
         CUTYPE CalendarUserType { get; set; }
         MEMBER Member { get; set; }
         ROLE Role { get; set; }
         PARTSTAT Participation { get; set; }
         BOOLEAN Rsvp { get; set; }
-        DELEGATE Delegatee { get; set; }
-        DELEGATE Delegator { get; set; }
-        URI SentBy { get; set; }
+        DELEGATED_TO Delegatee { get; set; }
+        DELEGATED_FROM Delegator { get; set; }
+        SENT_BY SentBy { get; set; }
         string CN { get; set; }
-        URI Directory { get; set; }
+        DIR Directory { get; set; }
         LANGUAGE Language { get; set; }
     }
 
     public interface IORGANIZER 
     {
-        URI Address { get; set; }
+        CAL_ADDRESS Address { get; set; }
         string CN { get; set; }
-        URI Directory { get; set; }
-        URI SentBy { get; set; }
+        DIR Directory { get; set; }
+        SENT_BY SentBy { get; set; }
         LANGUAGE Language { get; set; }
     }
 
@@ -154,7 +155,6 @@ namespace reexjungle.xcal.domain.contracts
     {
         List<DATE_TIME> DateTimes { get; set; }
         TZID TimeZoneId { get; set; }
-        VALUE ValueType { get; set; }
     }
 
     public interface IRDATE
@@ -188,16 +188,14 @@ namespace reexjungle.xcal.domain.contracts
 
     #region Miscellaneous Component Properties
 
-    public interface IMISC_PROPERTY<TValue> 
+    public interface IMISC_PROPERTY
     { 
 
         string Name { get; set; }
         List<object> Parameters { get; set; }
-        TValue Value { get; set; }   
+        object Value { get; set; }   
         VALUE ValueType {get; set; }
     }
-
-    public interface IMISC_PROPERTY : IMISC_PROPERTY<object> { }
 
     /// <summary>
     /// Specifies an interface for a return status code
@@ -217,12 +215,54 @@ namespace reexjungle.xcal.domain.contracts
         /// <summary>
         /// Third level of granularity
         /// </summary>
-        uint L3 { get; set; }
+        uint? L3 { get; set; }
+    }
+
+    /// <summary>
+    /// Specifies an interface for an IANA-registered property.
+    /// </summary>
+    public interface IIANA_PROPERTY
+    {
+        /// <summary>
+        /// An IANA-registered property name.
+        /// </summary>
+        string Token { get; set; }
+
+        /// <summary>
+        /// A list of registered iCalendar parameters. Any iCalendar parameter can be specified in the list.
+        /// </summary>
+        List<object> Parameters { get; set; }
+
+
+        /// <summary>
+        /// A value for the IANA-registered property. The default value type is TEXT (string) although any value type can be set.
+        /// </summary>
+        object Value { get; set; }
+    }
+
+
+    public interface IX_PROPERTY
+    {
+        /// <summary>
+        /// An custom property name. The name must have an &quot;X-&quot; prefix.
+        /// </summary>
+        string Name { get; set; }
+
+        /// <summary>
+        /// A list of registered iCalendar parameters. Any iCalendar parameter can be specified in the list.
+        /// </summary>
+        List<object> Parameters { get; set; }
+
+
+        /// <summary>
+        /// A value for the custom property. The default value type is TEXT (string) although any value type can be set.
+        /// </summary>
+        object Value { get; set; }
     }
 
     public interface IREQUEST_STATUS
     {
-        ISTATCODE Code { get; set; }
+        STATCODE Code { get; set; }
         string Description { get; set; }
         string ExceptionData { get; set; }
         LANGUAGE Language { get; set; }

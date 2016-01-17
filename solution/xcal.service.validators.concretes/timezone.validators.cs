@@ -10,7 +10,6 @@ namespace reexjungle.xcal.service.validators.concretes
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null);
-            RuleFor(x => x.Url).SetValidator(new UriValidator()).When(x => x.Url != null);
             RuleFor(x => x.StandardTimes).SetCollectionValidator(new ObservanceValidator()).
                 Must((x, y) => y.IsSet()).
                 When(x => !x.StandardTimes.NullOrEmpty());

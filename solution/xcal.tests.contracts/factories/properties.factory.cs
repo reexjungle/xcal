@@ -49,9 +49,9 @@ namespace reexjungle.xcal.tests.contracts.factories
 
         IEnumerable<RESOURCES> CreateResourcesList(int quantity);
 
-        FREEBUSY_INFO CreateFreebusyInfo();
+        FREEBUSY CreateFreebusyInfo();
 
-        IEnumerable<FREEBUSY_INFO> CreateFreebusyInfos(int quantity);
+        IEnumerable<FREEBUSY> CreateFreebusyInfos(int quantity);
 
         TZNAME CreateTimeZoneName();
 
@@ -88,5 +88,9 @@ namespace reexjungle.xcal.tests.contracts.factories
         REQUEST_STATUS CreateRequestStatus();
 
         IEnumerable<REQUEST_STATUS> CreateRequestStatuses(int quantity);
+
+        URL CreateUrl();
+
+        IEnumerable<URL> CreateUrls(int quantity);
     }
 }

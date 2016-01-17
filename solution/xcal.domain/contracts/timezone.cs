@@ -24,7 +24,7 @@ namespace reexjungle.xcal.domain.contracts
     {
         TZID TimeZoneId { get; set; }
 
-        URI Url { get; set; }
+        URL Url { get; set; }
 
         DATE_TIME LastModified { get; set; }
 

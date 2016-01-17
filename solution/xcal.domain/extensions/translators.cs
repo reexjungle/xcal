@@ -173,7 +173,7 @@ namespace reexjungle.xcal.domain.extensions
             return new DURATION(weeks, days, hours, minutes, seconds);
         }
 
-        public static TIME ToTIME(this TimeSpan span, TimeZoneInfo tzinfo = null, TimeType format = TimeType.Unknown)
+        public static TIME ToTIME(this TimeSpan span, TimeZoneInfo tzinfo = null, TimeType format = TimeType.NONE)
         {
             if (tzinfo != null)
             {
@@ -187,7 +187,7 @@ namespace reexjungle.xcal.domain.extensions
                 : new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds);
         }
 
-        public static TIME ToTIME(this TimeSpan span, TZID tzid, TimeType format = TimeType.Unknown)
+        public static TIME ToTIME(this TimeSpan span, TZID tzid, TimeType format = TimeType.NONE)
         {
             if (tzid != null)
             {
@@ -233,8 +233,7 @@ namespace reexjungle.xcal.domain.extensions
                 case DayOfWeek.Thursday: return WEEKDAY.TH;
                 case DayOfWeek.Friday: return WEEKDAY.FR;
                 case DayOfWeek.Saturday: return WEEKDAY.SA;
-                default:
-                    return WEEKDAY.UNKNOWN;
+                default: return WEEKDAY.NONE;
             }
         }
 

@@ -13,7 +13,7 @@ namespace reexjungle.xcal.domain.contracts
 
         ORGANIZER Organizer { get; set; }
 
-        URI Url { get; set; }
+        URL Url { get; set; }
 
         DATE_TIME End { get; set; }
 
@@ -23,7 +23,7 @@ namespace reexjungle.xcal.domain.contracts
 
         List<COMMENT> Comments { get; set; }
 
-        List<FREEBUSY_INFO> FreeBusyProperties { get; set; }
+        List<FREEBUSY> FreeBusyProperties { get; set; }
 
         List<REQUEST_STATUS> RequestStatuses { get; set; }
 

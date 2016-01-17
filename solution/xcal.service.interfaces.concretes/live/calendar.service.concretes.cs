@@ -211,8 +211,8 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 var fields = new List<string>();
                 if (!string.IsNullOrEmpty(source.ProdId) || !string.IsNullOrEmpty(source.ProdId))
                     fields.Add("ProdId");
-                if (source.Calscale != CALSCALE.UNKNOWN) fields.Add("Calscale");
-                if (source.Method != METHOD.UNKNOWN) fields.Add("Method");
+                if (source.Calscale != CALSCALE.NONE) fields.Add("Calscale");
+                if (source.Method != METHOD.NONE) fields.Add("Method");
                 if (!source.Events.NullOrEmpty()) fields.Add("Events");
                 if (!source.ToDos.NullOrEmpty()) fields.Add("ToDos");
                 if (!source.FreeBusies.NullOrEmpty()) fields.Add("FreeBusies");

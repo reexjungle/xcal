@@ -151,10 +151,10 @@ namespace reexjungle.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("BEGIN:VCALENDAR").AppendLine();
-            sb.AppendFormat("VERSION:{0}", Version.ToString()).AppendLine();
-            sb.AppendFormat("PRODID:{0}", ProdId.ToString()).AppendLine();
-            if (Calscale != default(CALSCALE)) sb.AppendFormat("CALSCALE:{0}", Calscale.ToString()).AppendLine();
-            if (Method != default(METHOD)) sb.AppendFormat("METHOD:{0}", Method.ToString()).AppendLine();
+            sb.AppendFormat("VERSION:{0}", Version).AppendLine();
+            sb.AppendFormat("PRODID:{0}", ProdId).AppendLine();
+            if (Calscale != default(CALSCALE)) sb.AppendFormat("CALSCALE:{0}", Calscale).AppendLine();
+            if (Method != default(METHOD)) sb.AppendFormat("METHOD:{0}", Method).AppendLine();
             if (!Events.NullOrEmpty()) Events.ForEach(x => sb.Append(x.ToString()).AppendLine());
             if (!ToDos.NullOrEmpty()) ToDos.ForEach(x => sb.Append(x.ToString()).AppendLine());
             if (!FreeBusies.NullOrEmpty()) FreeBusies.ForEach(x => sb.Append(x.ToString()).AppendLine());

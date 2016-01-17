@@ -9,7 +9,7 @@ namespace reexjungle.xcal.service.validators.concretes
         public IANAPropertyValidator()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Name).NotNull().NotEmpty();
+            RuleFor(x => x.Token).NotNull().NotEmpty();
             RuleFor(x => x.Value).NotNull();
         }
     }

@@ -87,7 +87,7 @@ namespace reexjungle.xcal.domain.contracts
         /// <summary>
         /// 
         /// </summary>
-        URI Url { get; set; }
+        URL Url { get; set; }
 
         /// <summary>
         /// 

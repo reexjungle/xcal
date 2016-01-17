@@ -87,7 +87,7 @@ namespace reexjungle.xcal.domain.models
         public SUMMARY Summary { get; set; }
 
         [DataMember]
-        public URI Url { get; set; }
+        public URL Url { get; set; }
 
         [DataMember]
         [Ignore]
@@ -223,7 +223,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("DTSTART;{0}:{1}", Start.TimeZoneId, Start).AppendLine();
             else
                 sb.AppendFormat("DTSTART:{0}", Start).AppendLine();
-            if (Classification != CLASS.UNKNOWN) sb.AppendFormat("CLASS:{0}", Classification).AppendLine();
+            if (Classification != CLASS.NONE) sb.AppendFormat("CLASS:{0}", Classification).AppendLine();
             if (Completed.TimeZoneId != null)
                 sb.AppendFormat("COMPLETED;{0}:{1}", Completed.TimeZoneId, Completed).AppendLine();
             else
@@ -237,7 +237,7 @@ namespace reexjungle.xcal.domain.models
             sb.AppendFormat("PERCENT-COMPLETED:{0}", Percent).AppendLine();
             if (Priority != default(PRIORITY)) sb.Append(Priority).AppendLine();
             sb.AppendFormat("SEQUENCE:{0}", Sequence).AppendLine();
-            if (Status != STATUS.UNKNOWN) sb.AppendFormat("STATUS:{0}", Status).AppendLine();
+            if (Status != STATUS.NONE) sb.AppendFormat("STATUS:{0}", Status).AppendLine();
             if (Summary != null) sb.Append(Summary).AppendLine();
             if (Url != null) sb.AppendFormat("URL:{0}", Url).AppendLine();
             if (RecurrenceId != null) sb.Append(RecurrenceId).AppendLine();

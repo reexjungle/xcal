@@ -49,7 +49,7 @@ namespace reexjungle.xcal.domain.models
         public ORGANIZER Organizer { get; set; }
 
         [DataMember]
-        public URI Url { get; set; }
+        public URL Url { get; set; }
 
         [DataMember]
         public DATE_TIME End { get; set; }
@@ -68,7 +68,7 @@ namespace reexjungle.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public List<FREEBUSY_INFO> FreeBusyProperties { get; set; }
+        public List<FREEBUSY> FreeBusyProperties { get; set; }
 
         [DataMember]
         [Ignore]
