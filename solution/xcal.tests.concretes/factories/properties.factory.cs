@@ -12,29 +12,42 @@ namespace reexjungle.xcal.tests.concretes.factories
     public class PropertiesFactory : IPropertiesFactory
     {
         private readonly IValuesFactory valuesFactory;
-        private readonly ISharedFactory sharedFactory;
         private readonly IParametersFactory parametersFactory;
         private readonly IKeyGenerator<Guid> keyGenerator;
         private readonly RandomGenerator rndGenerator;
 
-        private readonly List<string> names;
-        private readonly List<string> resources;
-        private readonly List<string> categories; 
-
-        public PropertiesFactory(IKeyGenerator<Guid> keyGenerator, IValuesFactory valuesFactory, IParametersFactory parametersFactory, ISharedFactory sharedFactory)
-        {
-            if (keyGenerator == null) throw new ArgumentNullException("keyGenerator");
-            if (valuesFactory == null) throw new ArgumentNullException("valuesFactory");
-            if (parametersFactory == null) throw new ArgumentNullException("parametersFactory");
-            if (sharedFactory == null) throw new ArgumentNullException("sharedFactory");
-
-            this.keyGenerator = keyGenerator;
-            this.valuesFactory = valuesFactory;
-            this.parametersFactory = parametersFactory;
-            this.sharedFactory = sharedFactory;
-
-            names = new List<string>
+        private readonly List<string> usernames = new List<string>
             {
+            "King", 
+            "Palmer",  
+            "Quintin",  
+            "Alexandra",  
+            "Anglea",  
+            "Cira",  
+            "Zola",  
+            "Mirella",  
+            "Samuel",  
+            "Elane",  
+            "Stephan",  
+            "Guillermo",  
+            "Suellen",  
+            "Shona",  
+            "Melda",  
+            "Tess",  
+            "Tammara",  
+            "Sherie",  
+            "Nettie",  
+            "Maggie",  
+            "Merrilee",  
+            "Pauletta",  
+            "Stephen",  
+            "Keith",  
+            "Lonna",  
+            "Raleigh",  
+            "Burma",  
+            "Delilah ", 
+            "Treasa ", 
+            "Myles",
               "Caesar",
               "Koba",
               "Cornelia",
@@ -46,7 +59,7 @@ namespace reexjungle.xcal.tests.concretes.factories
               "Jack Bauer"
             };
 
-            resources = new List<string>
+        private readonly List<string> resources = new List<string>
             {
               "example.mp3",
               "example.wav",
@@ -59,7 +72,8 @@ namespace reexjungle.xcal.tests.concretes.factories
               "example.png"
             };
 
-            categories = new List<string>
+
+        private readonly List<string> categories = new List<string>
             {
                 "DRESS",
                 "VACATION",
@@ -67,7 +81,17 @@ namespace reexjungle.xcal.tests.concretes.factories
                 "APPOINTMENT",
                 "MEETING",
                 "SICK"
-            };
+            }; 
+
+        public PropertiesFactory(IKeyGenerator<Guid> keyGenerator, IValuesFactory valuesFactory, IParametersFactory parametersFactory)
+        {
+            if (keyGenerator == null) throw new ArgumentNullException("keyGenerator");
+            if (valuesFactory == null) throw new ArgumentNullException("valuesFactory");
+            if (parametersFactory == null) throw new ArgumentNullException("parametersFactory");
+
+            this.keyGenerator = keyGenerator;
+            this.valuesFactory = valuesFactory;
+            this.parametersFactory = parametersFactory;
 
             rndGenerator = new RandomGenerator();
         }
@@ -97,7 +121,7 @@ namespace reexjungle.xcal.tests.concretes.factories
             return Builder<ATTACH_URI>.CreateListOfSize(quantity)
                 .All()
                 .With(x => x.Id = keyGenerator.GetNext())
-                .And(x => x.Content = valuesFactory.CreateUri(sharedFactory.CreateUrl()))
+                .And(x => x.Content = valuesFactory.CreateUri())
                 .And(x => x.FormatType = parametersFactory.CreateFormatType())
                 .Build();
         }
@@ -112,8 +136,8 @@ namespace reexjungle.xcal.tests.concretes.factories
             return Builder<ATTENDEE>.CreateListOfSize(quantity)
                 .All()
                 .With(x => x.Id = keyGenerator.GetNext())
-                .And(x => x.CN = Pick<string>.RandomItemFrom(names))
-                .And(x => x.Address = valuesFactory.CreateUri(sharedFactory.CreateEmail(x.CN)))
+                .And(x => x.CN = Pick<string>.RandomItemFrom(usernames))
+                .And(x => x.Address = valuesFactory.CreateEmail(x.CN))
                 .And(x => x.CalendarUserType = Pick<CUTYPE>.RandomItemFrom(new[]
                 {
                     CUTYPE.GROUP,
@@ -121,8 +145,8 @@ namespace reexjungle.xcal.tests.concretes.factories
                     CUTYPE.RESOURCE,
                     CUTYPE.ROOM
                 }))
-                .And(x => x.Directory = valuesFactory.CreateUri(sharedFactory.CreateUrl()))
-                .And(x => x.Member = parametersFactory.CreateMember())
+                .And(x => x.Directory = parametersFactory.CreateDirectory())
+                .And(x => x.Member = parametersFactory.CreateMember(usernames, rndGenerator.Next(1, quantity)))
                 .And(x => x.Language = parametersFactory.CreateLanguage())
                 .And(x => x.Participation = Pick<PARTSTAT>.RandomItemFrom(new[]
                 {
@@ -146,9 +170,9 @@ namespace reexjungle.xcal.tests.concretes.factories
                     BOOLEAN.FALSE,
                     BOOLEAN.TRUE
                 }))
-                .And(x => x.Delegatee = parametersFactory.CreateDelegate())
-                .And(x => x.Delegator = parametersFactory.CreateDelegate())
-                .And(x => x.SentBy = valuesFactory.CreateUri(sharedFactory.CreateEmail()))
+                .And(x => x.Delegatee = parametersFactory.CreateDelegatee(usernames, rndGenerator.Next(1, quantity)))
+                .And(x => x.Delegator = parametersFactory.CreateDelegator(usernames, rndGenerator.Next(1, quantity)))
+                .And(x => x.SentBy = parametersFactory.CreateSentBy(Pick<string>.RandomItemFrom(usernames)))
                 .Build();
         }
 
@@ -178,7 +202,7 @@ namespace reexjungle.xcal.tests.concretes.factories
                 .All()
                 .With(x => x.Id = keyGenerator.GetNext())
                 .And(x => x.Text = rndGenerator.Phrase(30))
-                .And(x => x.AlternativeText = valuesFactory.CreateUri(sharedFactory.CreateUrl()))
+                .And(x => x.AlternativeText = parametersFactory.CreateAlternativeTextRepresentation())
                 .And(x => x.Language = parametersFactory.CreateLanguage())
                 .Build();
         }
@@ -194,7 +218,7 @@ namespace reexjungle.xcal.tests.concretes.factories
                 .All()
                 .With(x => x.Id = keyGenerator.GetNext())
                 .And(x => x.Text = rndGenerator.Phrase(20))
-                .And(x => x.AlternativeText = valuesFactory.CreateUris(sharedFactory.CreateUrls(rndGenerator.Next(0, quantity))).FirstOrDefault())
+                .And(x => x.AlternativeText = parametersFactory.CreateAlternativeTextRepresentation())
                 .And(x => x.Language = parametersFactory.CreateLanguage())
                 .Build();
         }
@@ -210,7 +234,7 @@ namespace reexjungle.xcal.tests.concretes.factories
                 .All()
                 .With(x => x.Id = keyGenerator.GetNext())
                 .And(x => x.Text = rndGenerator.Phrase(20))
-                .And(x => x.AlternativeText = valuesFactory.CreateUris(sharedFactory.CreateUrls(rndGenerator.Next(0, quantity))).FirstOrDefault())
+                .And(x => x.AlternativeText = parametersFactory.CreateAlternativeTextRepresentation())
                 .And(x => x.Language = parametersFactory.CreateLanguage())
                 .Build();
         }
@@ -226,7 +250,7 @@ namespace reexjungle.xcal.tests.concretes.factories
                 .All()
                 .With(x => x.Id = keyGenerator.GetNext())
                 .And(x => x.Text = rndGenerator.Phrase(20))
-                .And(x => x.AlternativeText = valuesFactory.CreateUris(sharedFactory.CreateUrls(rndGenerator.Next(0, quantity))).FirstOrDefault())
+                .And(x => x.AlternativeText = parametersFactory.CreateAlternativeTextRepresentation())
                 .And(x => x.Language = parametersFactory.CreateLanguage())
                 .Build();
         }
@@ -242,7 +266,7 @@ namespace reexjungle.xcal.tests.concretes.factories
                 .All()
                 .With(x => x.Id = keyGenerator.GetNext())
                 .And(x => x.Text = rndGenerator.Phrase(20))
-                .And(x => x.AlternativeText = valuesFactory.CreateUris(sharedFactory.CreateUrls(rndGenerator.Next(0, quantity))).FirstOrDefault())
+                .And(x => x.AlternativeText = parametersFactory.CreateAlternativeTextRepresentation())
                 .And(x => x.Language = parametersFactory.CreateLanguage())
                 .Build();
         }
@@ -277,14 +301,14 @@ namespace reexjungle.xcal.tests.concretes.factories
                 .Build();
         }
 
-        public FREEBUSY_INFO CreateFreebusyInfo()
+        public FREEBUSY CreateFreebusyInfo()
         {
             return CreateFreebusyInfos(1).First();
         }
 
-        public IEnumerable<FREEBUSY_INFO> CreateFreebusyInfos(int quantity)
+        public IEnumerable<FREEBUSY> CreateFreebusyInfos(int quantity)
         {
-            return Builder<FREEBUSY_INFO>.CreateListOfSize(quantity)
+            return Builder<FREEBUSY>.CreateListOfSize(quantity)
                 .All()
                 .With(x => x.Id = keyGenerator.GetNext())
                 .And(x => x.Type = Pick<FBTYPE>.RandomItemFrom(new []
@@ -293,7 +317,7 @@ namespace reexjungle.xcal.tests.concretes.factories
                     FBTYPE.BUSY_TENTATIVE, 
                     FBTYPE.BUSY_UNAVAILABLE, 
                     FBTYPE.FREE, 
-                    FBTYPE.UNKNOWN, 
+                    FBTYPE.NONE, 
                 }))
                 .And(x => x.Periods = valuesFactory.CreatePeriods(rndGenerator.Next(1, quantity)).ToList())
                 .Build();
@@ -324,9 +348,9 @@ namespace reexjungle.xcal.tests.concretes.factories
             return Builder<ORGANIZER>.CreateListOfSize(quantity)
                 .All()
                 .With(x => x.Id = keyGenerator.GetNext())
-                .And(x => x.CN = Pick<string>.RandomItemFrom(names))
-                .And(x => x.Address = valuesFactory.CreateUri(sharedFactory.CreateEmail(x.CN)))
-                .And(x => x.Directory = valuesFactory.CreateUri(sharedFactory.CreateUrl()))
+                .And(x => x.CN = Pick<string>.RandomItemFrom(usernames))
+                .And(x => x.Address = valuesFactory.CreateEmail(x.CN))
+                .And(x => x.Directory = parametersFactory.CreateDirectory())
                 .And(x => x.Language = parametersFactory.CreateLanguage())
                 .Build();
         }
@@ -378,11 +402,6 @@ namespace reexjungle.xcal.tests.concretes.factories
                 .With(x => x.Id = keyGenerator.GetNext())
                 .And(x => x.DateTimes = valuesFactory.CreateDateTimes(rndGenerator.Next(0, quantity)).ToList())
                 .And(x => x.TimeZoneId = parametersFactory.CreateTimeZoneId())
-                .And(x => x.ValueType == Pick<VALUE>.RandomItemFrom(new []
-                {
-                    VALUE.DATE, 
-                    VALUE.DATE_TIME, 
-                }))
                 .Build();
         }
 
@@ -441,7 +460,6 @@ namespace reexjungle.xcal.tests.concretes.factories
         {
             return Builder<STATCODE>.CreateListOfSize(quantity)
                 .All()
-                .With(x => x.Id = keyGenerator.GetNext())
                 .And(x => x.L1 =  rndGenerator.Next(1u, 5u))
                 .And(x => x.L2 = rndGenerator.Next(1u, 5u))
                 .And(x => x.L3 = rndGenerator.Next(1u, 5u))
@@ -463,6 +481,24 @@ namespace reexjungle.xcal.tests.concretes.factories
                 .And(x => x.ExceptionData = rndGenerator.Phrase(30))
                 .And(x => x.Language = parametersFactory.CreateLanguage())
                 .Build();
+        }
+
+        public URL CreateUrl()
+        {
+            return new URL
+            {
+                Uri = valuesFactory.CreateUri()
+            };
+        }
+
+        public IEnumerable<URL> CreateUrls(int quantity)
+        {
+            var urls = new List<URL>();
+            for (var i = 0; i < quantity; i++)
+            {
+                urls.Add(CreateUrl());
+            }
+            return urls;
         }
     }
 }

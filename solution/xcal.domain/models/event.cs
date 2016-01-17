@@ -110,7 +110,7 @@ namespace reexjungle.xcal.domain.models
         public TRANSP Transparency { get; set; }
 
         [DataMember]
-        public URI Url { get; set; }
+        public URL Url { get; set; }
 
         [DataMember]
         [StringLength(int.MaxValue)]
@@ -373,7 +373,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("DTSTART;{0}:{1}", Start.TimeZoneId, Start).AppendLine();
             else
                 sb.AppendFormat("DTSTART:{0}", Start).AppendLine();
-            if (Classification != CLASS.UNKNOWN) sb.AppendFormat("CLASS:{0}", Classification).AppendLine();
+            if (Classification != CLASS.NONE) sb.AppendFormat("CLASS:{0}", Classification).AppendLine();
             sb.AppendFormat("CREATED:{0}", Created).AppendLine();
             if (Description != null) sb.Append(Description).AppendLine();
             if (Position != default(GEO)) sb.Append(Position).AppendLine();
@@ -382,9 +382,9 @@ namespace reexjungle.xcal.domain.models
             if (Organizer != null) sb.Append(Organizer).AppendLine();
             if (Priority != default(PRIORITY)) sb.Append(Priority).AppendLine();
             sb.AppendFormat("SEQUENCE:{0}", Sequence).AppendLine();
-            if (Status != STATUS.UNKNOWN) sb.AppendFormat("STATUS:{0}", Status).AppendLine();
+            if (Status != STATUS.NONE) sb.AppendFormat("STATUS:{0}", Status).AppendLine();
             if (Summary != null) sb.Append(Summary).AppendLine();
-            if (Transparency != TRANSP.UNKNOWN) sb.AppendFormat("TRANSP:{0}", Transparency).AppendLine();
+            if (Transparency != TRANSP.NONE) sb.AppendFormat("TRANSP:{0}", Transparency).AppendLine();
             if (Url != null) sb.AppendFormat("URL:{0}", Url).AppendLine();
             if (RecurrenceId != null) sb.Append(RecurrenceId).AppendLine();
             if (RecurrenceRule != null) sb.AppendFormat("RRULE:{0}", RecurrenceRule).AppendLine();

@@ -19,32 +19,12 @@ namespace reexjungle.xcal.domain.models
     [DataContract]
     public class BINARY : IBINARY, IEquatable<BINARY>
     {
-        private ENCODING encoding;
-
         /// <summary>
         /// Gets or sets the value of this type
         /// </summary>
         [DataMember]
         public string Value { get; set; }
 
-        /// <summary>
-        /// Gets or sets the encoding used for this type
-        /// </summary>
-        [DataMember]
-        public ENCODING Encoding
-        {
-            get { return encoding; }
-            set
-            {
-                encoding = value;
-                if (!string.IsNullOrEmpty(Value))
-                {
-                    Value = encoding == ENCODING.BASE64 
-                        ? Value.ToBase64String() 
-                        : Value.ToUtf8String();
-                };
-            }
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BINARY"/> class.
@@ -52,18 +32,6 @@ namespace reexjungle.xcal.domain.models
         public BINARY()
         {
             Value = string.Empty;
-            Encoding = ENCODING.BASE64;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BINARY"/> class.
-        /// </summary>
-        /// <param name="value">The serialized value of an instance of the <see cref="BINARY"/> class.</param>
-        /// <param name="encoding">The encoding used for this instance.</param>
-        public BINARY(string value, ENCODING encoding)
-        {
-            Value = value;
-            Encoding = encoding;
         }
 
         /// <summary>
@@ -72,11 +40,16 @@ namespace reexjungle.xcal.domain.models
         /// <param name="value">The string representation of the &quot;Value&quot; of the <see cref="BINARY"/> class.</param>
         public BINARY(string value)
         {
-            if (!string.IsNullOrEmpty(value))
-            {
-                Value = value;
-                Encoding = IsBase64String(Value) ? ENCODING.BASE64 : ENCODING.BIT8;
-            }
+            if (value == null) throw new ArgumentNullException("value");
+            var pattern = @"^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$";
+
+            var options = RegexOptions.IgnoreCase 
+                | RegexOptions.ExplicitCapture 
+                | RegexOptions.IgnorePatternWhitespace 
+                | RegexOptions.CultureInvariant;
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+            Value = value;
         }
 
         /// <summary>
@@ -88,7 +61,6 @@ namespace reexjungle.xcal.domain.models
         {
             if (binary == null) throw new ArgumentNullException("binary");
             Value = binary.Value;
-            Encoding = binary.Encoding;
         }
 
         private static bool IsBase64String(string @string)
@@ -100,7 +72,6 @@ namespace reexjungle.xcal.domain.models
             }
             catch (FormatException)
             {
-
                 return false;
             }
 
@@ -111,14 +82,14 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return encoding == other.encoding && string.Equals(Value, other.Value);
+            return string.Equals(Value, other.Value);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((BINARY)obj);
         }
 
@@ -126,7 +97,7 @@ namespace reexjungle.xcal.domain.models
         {
             unchecked
             {
-                return ((int)encoding * 397) ^ (Value != null ? Value.GetHashCode() : 0);
+                return (Value != null ? Value.GetHashCode() : 0);
             }
         }
 
@@ -245,7 +216,7 @@ namespace reexjungle.xcal.domain.models
             fullyear = 1u;
             month = 1u;
             mday = 1u;
-            var pattern = @"^(?<year>\d{2,4})(?<month>\d{1,2})(?<day>\d{1,2})$";
+            var pattern = @"^(?<year>\d{4,})(?<month>\d{2})(?<day>\d{2})$";
             if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
             {
                 foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
@@ -576,7 +547,7 @@ namespace reexjungle.xcal.domain.models
             minute = (uint)datetime.Minute;
             second = (uint)datetime.Second;
             tzid = null;
-            type = TimeType.Unknown;
+            type = TimeType.NONE;
             if (tzinfo != null)
             {
                 tzid = new TZID(null, tzinfo.Id);
@@ -600,7 +571,7 @@ namespace reexjungle.xcal.domain.models
             minute = (uint)datetime.Minute;
             second = (uint)datetime.Second;
             this.tzid = null;
-            type = TimeType.Unknown;
+            type = TimeType.NONE;
             if (tzid != null)
             {
                 this.tzid = tzid;
@@ -626,46 +597,7 @@ namespace reexjungle.xcal.domain.models
             tzid = null;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct from a <see cref="DATE"/> instance.
-        /// </summary>
-        /// <param name="date">The source <see cref="DATE_TIME"/> struct.</param>
-        /// <param name="tzid">The time zone identifer (<see cref="TZID"/> ).</param>
-        /// <exception cref="System.ArgumentNullException">date</exception>
-        public DATE_TIME(DATE date, TZID tzid = null)
-        {
-            if (date == default(DATE)) throw new ArgumentNullException("date");
-            fullyear = date.FULLYEAR;
-            month = date.MONTH;
-            mday = date.MDAY;
-            hour = 0u;
-            minute = 0u;
-            second = 0u;
-            this.tzid = tzid;
-            if (this.tzid != null) type = TimeType.LocalAndTimeZone;
-            else type = TimeType.Unknown;
-            type = TimeType.Unknown;
-        }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct from a <see cref="TIME"/> instance.
-        /// </summary>
-        /// <param name="time">The source <see cref="TIME"/> struct.</param>
-        /// <exception cref="System.ArgumentNullException">time</exception>
-        public DATE_TIME(TIME time)
-        {
-            if (time == null) throw new ArgumentNullException("time");
-            fullyear = 1u;
-            month = 1u;
-            mday = 1u;
-            hour = time.HOUR;
-            minute = time.MINUTE;
-            second = time.SECOND;
-            tzid = time.TimeZoneId;
-            if (tzid != null) type = TimeType.LocalAndTimeZone;
-            else type = TimeType.Unknown;
-            type = TimeType.Unknown;
-        }
 
         /// <summary>
         /// Deserializes a new instance of the <see cref="DATE_TIME"/> struct from string.
@@ -680,9 +612,9 @@ namespace reexjungle.xcal.domain.models
             minute = 0u;
             second = 0u;
             tzid = null;
-            type = TimeType.Unknown;
+            type = TimeType.NONE;
 
-            var pattern = @"^(?<tzid>((\p{L})+)*(\/)*((\p{L}+\p{P}*\s*)+):)*(?<year>\d{2,4})(?<month>\d{1,2})(?<day>\d{1,2})(T(?<hour>\d{1,2})(?<min>\d{1,2})(?<sec>\d{1,2})(?<utc>Z?))?$";
+            var pattern = @"^((?<tzid>TZID=(\w+)?/(\w+)):)?(?<year>\d{4,})(?<month>\d{2})(?<day>\d{2})T(?<hour>\d{2})(?<min>\d{2})(?<sec>\d{2})(?<utc>Z)?$";
             if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
             {
                 foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
@@ -695,10 +627,7 @@ namespace reexjungle.xcal.domain.models
                     if (match.Groups["sec"].Success) second = uint.Parse(match.Groups["sec"].Value);
                     if (match.Groups["utc"].Success)
                     {
-                        if (match.Groups["utc"].Value.Equals("Z", StringComparison.OrdinalIgnoreCase))
                             type = TimeType.Utc;
-                        else if (match.Groups["utc"].Value.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
-                            type = TimeType.Local;
                     }
                     if (match.Groups["tzid"].Success)
                     {
@@ -714,15 +643,33 @@ namespace reexjungle.xcal.domain.models
         /// </summary>
         /// <param name="value">The <see cref="IDATE_TIME"/> interface.</param>
         /// <param name="tzid"></param>
-        public DATE_TIME(IDATE_TIME value, TZID tzid = null)
+        public DATE_TIME(IDATE value)
         {
             fullyear = value.FULLYEAR;
             month = value.MONTH;
             mday = value.MDAY;
+            hour = 0u;
+            minute = 0u;
+            second = 0u;
+            tzid = null;
+            type = TimeType.NONE;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct from an <see cref="IDATE"/> instance.
+        /// </summary>
+        /// <param name="value">The source <see cref="DATE_TIME"/> struct.</param>
+        /// <param name="tzid">The time zone identifer (<see cref="TZID"/> ).</param>
+        /// <exception cref="System.ArgumentNullException">date</exception>
+        public DATE_TIME(ITIME value, TZID tzid = null)
+        {
+            fullyear = 0u;
+            month = 0u;
+            mday = 0u;
             hour = value.HOUR;
             minute = value.MINUTE;
             second = value.SECOND;
-            type = value.Type;
+            type = tzid != null ? TimeType.LocalAndTimeZone : TimeType.NONE;
             this.tzid = tzid ?? value.TimeZoneId;
         }
 
@@ -950,7 +897,7 @@ namespace reexjungle.xcal.domain.models
             minute = (uint)datetime.Minute;
             second = (uint)datetime.Second;
             tzid = null;
-            type = TimeType.Unknown;
+            type = TimeType.NONE;
             if (tzinfo != null)
             {
                 tzid = new TZID(null, tzinfo.Id);
@@ -975,9 +922,9 @@ namespace reexjungle.xcal.domain.models
             minute = 0u;
             second = 0u;
             tzid = null;
-            type = TimeType.Unknown;
+            type = TimeType.NONE;
 
-            var pattern = @"^(?<tzid>((\p{L})+)*(\/)*((\p{L}+\p{P}*\s*)+):)*(T(?<hour>\d{1,2})(?<min>\d{1,2})(?<sec>\d{1,2})(?<utc>Z?))?$";
+            var pattern = @"^((?<tzid>TZID=(\w+)?/(\w+)):)?T(?<hour>\d{1,2})(?<min>\d{1,2})(?<sec>\d{1,2})(?<utc>Z)?$";
             if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
             {
                 foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
@@ -1422,7 +1369,7 @@ namespace reexjungle.xcal.domain.models
         public WEEKDAYNUM(string value)
         {
             ordweek = 0;
-            weekday = WEEKDAY.UNKNOWN;
+            weekday = WEEKDAY.NONE;
 
             var pattern = @"^((?<minus>\-)? <?ordwk>\d{1,2})?(?<weekday>(SU|MO|TU|WE|TH|FR|SA)$";
             if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
@@ -1735,40 +1682,43 @@ namespace reexjungle.xcal.domain.models
             duration = default(DURATION);
             type = PeriodType.Start;
 
-            var parts = value.Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts == null || parts.Length != 2) throw new FormatException("Invalid PERIOD format");
 
-            try
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+
+            var datetimePattern = @"((TZID=(\w+)?/(\w+)):)?(\d{4,})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z?";
+            var durationPattern = @"(\-)?P((\d*)W)?((\d*)D)?(T((\d*)H)?((\d*)M)?((\d*)S)?)?";
+            var explicitPattern = string.Format("{0}/{0}", datetimePattern);
+            var startPattern = string.Format("{0}/{1}", datetimePattern, durationPattern);
+            
+            var pattern = string.Format(@"^(?<periodExplicit>{0})|(?<periodStart>{1})$", explicitPattern, startPattern);
+
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+            foreach (Match match in regex.Matches(value))
             {
-                start = new DATE_TIME(parts[0]);
-                end = new DATE_TIME(parts[1]);
-                duration = end - start;
-            }
-            catch (ArgumentException)
-            {
-                try
+                if (match.Groups["periodExplicit"].Success)
                 {
+                    var periodExplicit = match.Groups["periodExplicit"].Value;
+                    var parts = periodExplicit.Split(new[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
+                    start = new DATE_TIME(parts[0]);
+                    end = new DATE_TIME(parts[1]);
+                    duration = end - start;
+                    type = PeriodType.Explicit;
+                    break;
+                }
+                if (match.Groups["periodStart"].Success)
+                {
+                    var periodStart = match.Groups["periodStart"].Value;
+                    var parts = periodStart.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                    start = new DATE_TIME(parts[0]);
                     duration = new DURATION(parts[1]);
                     end = start + duration;
+                    type = PeriodType.Start;
+                    break;
                 }
-                catch (FormatException) { throw; }
-                catch (Exception) { throw; }
-            }
-            catch (FormatException)
-            {
-                try
-                {
-                    duration = new DURATION(parts[1]);
-                    end = start + duration;
-                }
-                catch (FormatException) { throw; }
-                catch (Exception) { throw; }
-            }
-            catch (Exception)
-            {
-                try { duration = new DURATION(parts[1]); }
-                catch (FormatException) { throw; }
-                catch (Exception) { throw; }
             }
         }
 
@@ -1803,34 +1753,26 @@ namespace reexjungle.xcal.domain.models
         /// </summary>
         /// <param name="start"></param>
         /// <param name="end"></param>
-        /// <param name="stimezone"></param>
-        /// <param name="etimezone"></param>
-        public PERIOD(DateTime start, DateTime end, TimeZoneInfo stimezone = null, TimeZoneInfo etimezone = null)
+        /// <param name="startTimeZoneInfo"></param>
+        /// <param name="endTimeZoneInfo"></param>
+        public PERIOD(DateTime start, DateTime end, TimeZoneInfo startTimeZoneInfo = null, TimeZoneInfo endTimeZoneInfo = null)
         {
-            this.start = new DATE_TIME(start, stimezone);
-            this.end = new DATE_TIME(end, etimezone);
+            this.start = new DATE_TIME(start, startTimeZoneInfo);
+            this.end = new DATE_TIME(end, endTimeZoneInfo);
             duration = this.end - this.start;
             type = PeriodType.Explicit;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="span"></param>
-        /// <param name="stimezone"></param>
-        public PERIOD(DateTime start, TimeSpan span, TimeZoneInfo stimezone = null)
+
+        public PERIOD(DateTime start, TimeSpan span, TimeZoneInfo timeZoneInfo = null)
         {
-            this.start = new DATE_TIME(start, stimezone);
+            this.start = new DATE_TIME(start, timeZoneInfo);
             duration = new DURATION(span);
             end = this.start + duration;
             type = PeriodType.Start;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="period"></param>
+
         public PERIOD(IPERIOD period)
         {
             if (period == null) throw new ArgumentNullException("period");
@@ -2045,7 +1987,7 @@ namespace reexjungle.xcal.domain.models
         /// </summary>
         public RECUR()
         {
-            FREQ = FREQ.UNKNOWN;
+            FREQ = FREQ.NONE;
             UNTIL = default(DATE_TIME);
             COUNT = 0u;
             INTERVAL = 1u;
@@ -2058,7 +2000,7 @@ namespace reexjungle.xcal.domain.models
         /// <param name="value"></param>
         public RECUR(string value)
         {
-            FREQ = FREQ.UNKNOWN;
+            FREQ = FREQ.NONE;
             UNTIL = default(DATE_TIME);
             COUNT = 0u;
             INTERVAL = 1u;
@@ -2150,8 +2092,8 @@ namespace reexjungle.xcal.domain.models
         /// <param name="until"></param>
         public RECUR(FREQ freq, DATE_TIME until)
         {
-            this.FREQ = freq;
-            this.UNTIL = until;
+            FREQ = freq;
+            UNTIL = until;
             COUNT = 0u;
             INTERVAL = 1u;
             WKST = WEEKDAY.SU;
@@ -2165,10 +2107,10 @@ namespace reexjungle.xcal.domain.models
         /// <param name="interval"></param>
         public RECUR(FREQ freq, uint count, uint interval)
         {
-            this.FREQ = freq;
+            FREQ = freq;
             UNTIL = new DATE_TIME();
-            this.COUNT = count;
-            this.INTERVAL = interval;
+            COUNT = count;
+            INTERVAL = interval;
             WKST = WEEKDAY.SU;
         }
 
@@ -2311,7 +2253,7 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((RECUR)obj);
         }
 
@@ -2331,85 +2273,35 @@ namespace reexjungle.xcal.domain.models
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
+
     [DataContract]
-    public class URI : IURI, IEquatable<URI>, IComparable<URI>
+    public class CAL_ADDRESS: Uri
     {
-        private string path;
 
-        [DataMember]
-        public string Path
+        public CAL_ADDRESS(string uriString, bool emailable = true)
+            : base(emailable? string.Format("mailto:{0}",uriString.Replace("mailto:", string.Empty)): uriString)
         {
-            get { return path; }
-            set
-            {
-                path = value;
-            }
+
         }
 
-        public URI(string value)
+        public CAL_ADDRESS(string uriString, UriKind uriKind, bool emailable = true)
+            : base(emailable ? string.Format("mailto:{0}", uriString.Replace("mailto:", string.Empty)) : uriString, uriKind)
         {
-            path = value;
         }
 
-        public URI(IURI uri)
+        public CAL_ADDRESS(Uri baseUri, string relativeUri, bool emailable = true)
+            : base(emailable ? new Uri(string.Format("mailto:{0}", baseUri.ToString().Replace("mailto:", string.Empty))) : baseUri, relativeUri)
         {
-            if (uri == null) throw new ArgumentNullException("uri");
-            path = uri.Path;
         }
 
-        public override string ToString()
+        public CAL_ADDRESS(Uri baseUri, Uri relativeUri, bool emailable = true) :
+            base(emailable ? new Uri(string.Format("mailto:{0}", baseUri.ToString().Replace("mailto:", string.Empty))) : baseUri, relativeUri)
         {
-            return path;
+
         }
 
-        public int CompareTo(URI other)
+        public CAL_ADDRESS(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext)
         {
-            return string.Compare(path, other.Path, StringComparison.OrdinalIgnoreCase);
-        }
-
-        public bool Equals(URI other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return string.Equals(path, other.path);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((URI)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return (path != null ? path.GetHashCode() : 0);
-        }
-
-        public static bool operator <(URI x, URI y)
-        {
-            if (ReferenceEquals(x, null) || ReferenceEquals(y, null)) return false;
-            return x.CompareTo(y) < 0;
-        }
-
-        public static bool operator >(URI x, URI y)
-        {
-            if (x == null || y == null) return false;
-            return x.CompareTo(y) > 0;
-        }
-
-        public static bool operator ==(URI left, URI right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(URI left, URI right)
-        {
-            return !Equals(left, right);
         }
     }
 }

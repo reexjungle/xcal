@@ -30,7 +30,7 @@ namespace reexjungle.xcal.service.validators.concretes
         public DelegateValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
             CascadeMode = mode;
-            RuleFor(x => x.Addresses).SetCollectionValidator(new UriValidator()).When(x => !x.Addresses.NullOrEmpty());
+            RuleFor(x => x.Addresses).SetCollectionValidator(new CalendarAddressValidator()).When(x => !x.Addresses.NullOrEmpty());
         }
     }
 
@@ -49,7 +49,7 @@ namespace reexjungle.xcal.service.validators.concretes
         public MemberValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
             CascadeMode = mode;
-            RuleFor(x => x.Addresses).SetCollectionValidator(new UriValidator()).When(x => !x.Addresses.NullOrEmpty());
+            RuleFor(x => x.Addresses).SetCollectionValidator(new CalendarAddressValidator()).When(x => !x.Addresses.NullOrEmpty());
         }
     }
 }

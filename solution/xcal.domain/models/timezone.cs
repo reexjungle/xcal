@@ -19,7 +19,7 @@ namespace reexjungle.xcal.domain.models
         public TZID TimeZoneId { get; set; }
 
         [DataMember]
-        public URI Url { get; set; }
+        public URL Url { get; set; }
 
         [DataMember]
         public DATE_TIME LastModified { get; set; }

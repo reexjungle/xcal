@@ -235,7 +235,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 if (source.Status != default(STATUS)) fields.Add("Status");
                 if (source.Summary != null) fields.Add("Summary");
                 if (source.Transparency != default(TRANSP)) fields.Add("Transparency");
-                if (source.Url != default(URI)) fields.Add("Url");
+                if (source.Url != default(URL)) fields.Add("Url");
                 if (source.RecurrenceRule != null) fields.Add("RecurrenceRule");
                 if (source.End != default(DATE_TIME)) fields.Add("End");
                 if (source.Duration != default(DURATION)) fields.Add("Duration");
@@ -327,7 +327,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 if (source.Status != default(STATUS)) fields.Add("Status");
                 if (source.Summary != null) fields.Add("Summary");
                 if (source.Transparency != default(TRANSP)) fields.Add("Transparency");
-                if (source.Url != default(URI)) fields.Add("Url");
+                if (source.Url != default(URL)) fields.Add("Url");
                 if (source.RecurrenceRule != null) fields.Add("RecurrenceRule");
                 if (source.End != default(DATE_TIME)) fields.Add("End");
                 if (source.Duration != default(DURATION)) fields.Add("Duration");

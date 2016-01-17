@@ -14,11 +14,6 @@ namespace reexjungle.xcal.domain.contracts
         /// Gets or sets the Base64 value of this type.
         /// </summary>
         string Value { get; set; }
-
-        /// <summary>
-        /// Gets or sets the encoding used for the binary type.
-        /// </summary>
-        ENCODING Encoding { get; set; }
     }
 
     /// <summary>
@@ -244,13 +239,6 @@ namespace reexjungle.xcal.domain.contracts
         TZID TimeZoneId { get; }
     }
 
-    /// <summary>
-    /// Specifies the contract for identifying properties that contain a uniform resource identifier (URI) type of reference to the property value
-    /// </summary>
-    public interface IURI
-    {
-        string Path { get; set; }
-    }
 
     /// <summary>
     /// Specifies the contract for identifying properties that contain an offset from UTC to local time

@@ -38,7 +38,7 @@ namespace reexjungle.xcal.domain.contracts
 
         SUMMARY Summary { get; set; }
 
-        URI Url { get; set; }
+        URL Url { get; set; }
 
         RECURRENCE_ID RecurrenceId { get; set; }
 

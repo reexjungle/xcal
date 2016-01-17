@@ -66,10 +66,9 @@ namespace reexjungle.xcal.tests.concretes.integration
                     "RO"
                 })));
 
-            var sharedFactory = new SharedFactory();
             var valuesFactory = new ValuesFactory(guidKeyGenerator);
-            var parametersFactory =new ParametersFactory(valuesFactory, sharedFactory);
-            var propertiesFactory = new PropertiesFactory(guidKeyGenerator, valuesFactory, parametersFactory, sharedFactory);
+            var parametersFactory =new ParametersFactory(valuesFactory);
+            var propertiesFactory = new PropertiesFactory(guidKeyGenerator, valuesFactory, parametersFactory);
             var alarmFactory =new AlarmFactory(guidKeyGenerator, propertiesFactory, valuesFactory);
             
             EventFactory =new EventFactory(guidKeyGenerator, alarmFactory, propertiesFactory, valuesFactory);

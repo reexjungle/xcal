@@ -11,7 +11,6 @@ namespace reexjungle.xcal.service.validators.concretes
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Text).Must((x, y) => !string.IsNullOrWhiteSpace(y));
-            RuleFor(x => x.AlternativeText).SetValidator(new UriValidator()).When(x => x.AlternativeText != null);
             RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
         }
     }
@@ -22,7 +21,7 @@ namespace reexjungle.xcal.service.validators.concretes
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Value).SetValidator(new DateTimeValidator());
-            RuleFor(x => x.Range).NotEqual(RANGE.UNKNOWN);
+            RuleFor(x => x.Range).NotEqual(RANGE.NONE);
             RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null);
         }
     }
@@ -32,11 +31,8 @@ namespace reexjungle.xcal.service.validators.concretes
         public OrganizerValidator()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Address).SetValidator(new UriValidator()).When(x => x.Address != null);
             RuleFor(x => x.CN).Must((x, y) => !string.IsNullOrEmpty(y));
-            RuleFor(x => x.Directory).SetValidator(new UriValidator()).When(x => x.Directory != null);
             RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
-            RuleFor(x => x.SentBy).SetValidator(new UriValidator()).When(x => x.SentBy != null);
         }
     }
 
@@ -45,17 +41,13 @@ namespace reexjungle.xcal.service.validators.concretes
         public AttendeeValidator()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Address).SetValidator(new UriValidator()).When(x => x.Address != null);
             RuleFor(x => x.CN).Must((x, y) => !string.IsNullOrEmpty(y));
-            RuleFor(x => x.Directory).SetValidator(new UriValidator()).When(x => x.Directory != null);
             RuleFor(x => x.Delegatee).SetValidator(new DelegateValidator()).When(x => x.Delegatee != null);
             RuleFor(x => x.Delegator).SetValidator(new DelegateValidator()).When(x => x.Delegator != null);
             RuleFor(x => x.CalendarUserType).NotEqual(CUTYPE.UNKNOWN);
-            RuleFor(x => x.Participation).NotEqual(PARTSTAT.UNKNOWN);
-            RuleFor(x => x.Role).NotEqual(ROLE.UNKNOWN);
+            RuleFor(x => x.Participation).NotEqual(PARTSTAT.NONE);
+            RuleFor(x => x.Role).NotEqual(ROLE.NONE);
             RuleFor(x => x.Member).SetValidator(new MemberValidator()).When(x => x.Member != null);
-            RuleFor(x => x.Rsvp).NotEqual(BOOLEAN.UNKNOWN);
-            RuleFor(x => x.SentBy).SetValidator(new UriValidator()).When(x => x.SentBy != null);
             RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
         }
     }
@@ -63,7 +55,7 @@ namespace reexjungle.xcal.service.validators.concretes
     public abstract class AttachmentBaseValidator<T> : AbstractValidator<T>
         where T : IATTACH
     {
-        public AttachmentBaseValidator()
+        protected AttachmentBaseValidator()
         {
             RuleFor(x => x.FormatType)
                 .Must((x, y) => !string.IsNullOrEmpty(y.TypeName) && !string.IsNullOrEmpty(y.SubTypeName))
@@ -102,7 +94,6 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public AttachmentUriValidator()
         {
-            RuleFor(x => x.Content).NotNull().SetValidator(new UriValidator());
         }
     }
 
@@ -113,7 +104,6 @@ namespace reexjungle.xcal.service.validators.concretes
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.DateTimes).Must((x, y) => !y.NullOrEmpty());
             RuleFor(x => x.TimeZoneId).SetValidator(new TimeZoneIdValidator()).When(x => x.TimeZoneId != null);
-            RuleFor(x => x.ValueType).Must((x, y) => x.ValueType == VALUE.DATE_TIME || x.ValueType == VALUE.DATE);
         }
     }
 
@@ -145,8 +135,8 @@ namespace reexjungle.xcal.service.validators.concretes
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Value).InclusiveBetween(0, 9).When(x => x.Format == PriorityType.Integral);
-            RuleFor(x => x.Level).NotEqual(PRIORITYLEVEL.UNKNOWN).When(x => x.Format == PriorityType.Level);
-            RuleFor(x => x.Schema).NotEqual(PRIORITYSCHEMA.UNKNOWN).When(x => x.Format == PriorityType.Schema);
+            RuleFor(x => x.Level).NotEqual(PRIORITYLEVEL.NONE).When(x => x.Format == PriorityType.Level);
+            RuleFor(x => x.Schema).NotEqual(PRIORITYSCHEMA.NONE).When(x => x.Format == PriorityType.Schema);
         }
     }
 
@@ -154,7 +144,7 @@ namespace reexjungle.xcal.service.validators.concretes
     {
         public RelatedToValidator()
         {
-            RuleFor(x => x.RelationshipType).NotEqual(RELTYPE.UNKNOWN);
+            RuleFor(x => x.RelationshipType).NotEqual(RELTYPE.NONE);
         }
     }
 
@@ -164,7 +154,6 @@ namespace reexjungle.xcal.service.validators.concretes
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Values).NotNull();
-            RuleFor(x => x.AlternativeText).SetValidator(new UriValidator()).When(x => x.AlternativeText != null);
             RuleFor(x => x.Language).SetValidator(new LanguageValidator()).When(x => x.Language != null);
         }
     }
@@ -205,9 +194,8 @@ namespace reexjungle.xcal.service.validators.concretes
         public TriggerValidator()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Duration).SetValidator(new DurationValidator()).When(x => x.Duration != default(DURATION));
             RuleFor(x => x.DateTime).SetValidator(new DateTimeValidator()).When(x => x.DateTime != default(DATE_TIME));
-            RuleFor(x => x.ValueType).NotEqual(VALUE.UNKNOWN);
+            RuleFor(x => x.ValueType).NotEqual(VALUE.NONE);
         }
     }
 }

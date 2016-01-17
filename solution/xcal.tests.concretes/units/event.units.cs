@@ -20,10 +20,9 @@ namespace reexjungle.xcal.tests.concretes.units
         public EventUnitTests()
         {
             keyGenerator = new SequentialGuidKeyGenerator();
-            var sharedFactory = new SharedFactory();
             var valuesFactory = new ValuesFactory(keyGenerator);
-            var parametersFactory = new ParametersFactory(valuesFactory, sharedFactory);
-            var propertiesFactory = new PropertiesFactory(keyGenerator, valuesFactory, parametersFactory, sharedFactory);
+            var parametersFactory = new ParametersFactory(valuesFactory);
+            var propertiesFactory = new PropertiesFactory(keyGenerator, valuesFactory, parametersFactory);
             var alarmFactory = new AlarmFactory(keyGenerator, propertiesFactory, valuesFactory);
             factory = new EventFactory(keyGenerator, alarmFactory, propertiesFactory, valuesFactory);
         }

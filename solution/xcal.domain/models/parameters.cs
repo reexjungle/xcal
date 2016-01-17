@@ -1,11 +1,11 @@
-﻿using reexjungle.xcal.domain.contracts;
-using reexjungle.xmisc.foundation.concretes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xmisc.foundation.concretes;
 
 namespace reexjungle.xcal.domain.models
 {
@@ -67,26 +67,23 @@ namespace reexjungle.xcal.domain.models
         {
             if (string.IsNullOrWhiteSpace(value)) throw new ArgumentNullException("value");
 
-            var tokens = value.Split('/');
-            switch (tokens.Length)
+            var pattern = @"^TZID=(?<prefix>\w+)?/(?<suffix>\w+)$";
+
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+              RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if(!Regex.IsMatch(value, pattern, options)) throw  new FormatException("value");
+
+            GloballyUnique = true;
+            foreach (Match match in regex.Matches(value))
             {
-                case 2:
-                    Prefix = tokens[0];
-
-                    if (string.IsNullOrEmpty(tokens[1]))
-                        throw new ArgumentException("Suffix of Time Zone ID must neither be null nor empty!");
-
-                    Suffix = tokens[1];
-                    break;
-
-                case 1:
+                if (match.Groups["prefix"].Success)
+                {
                     GloballyUnique = false;
-
-                    if (string.IsNullOrEmpty(tokens[0]))
-                        throw new ArgumentException("Suffix of Time Zone ID must neither be null nor empty!");
-
-                    Suffix = tokens[0];
-                    break;
+                    Prefix = match.Groups["prefix"].Value;
+                }
+                Suffix = match.Groups["suffix"].Value;
             }
         }
 
@@ -184,15 +181,18 @@ namespace reexjungle.xcal.domain.models
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
             
-            var pattern = @"^(?<type>\w+)/(?<subtype>\w+)$";
+            var pattern = @"^FMTTYPE=(?<type>\w+)/(?<subtype>\w+\S*)$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+              RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
             
-            if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture |RegexOptions.IgnoreCase))
-                throw new FormatException("Invalid Format type");
-            
-            foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
+            foreach (Match match in regex.Matches(value))
             {
                 if (match.Groups["type"].Success) TypeName = match.Groups["type"].Value;
-                else if (match.Groups["subtype"].Success) SubTypeName = match.Groups["subtype"].Value;
+                if (match.Groups["subtype"].Success) SubTypeName = match.Groups["subtype"].Value;
             }
         }
 
@@ -268,13 +268,15 @@ namespace reexjungle.xcal.domain.models
         public LANGUAGE(string value)
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
-            var pattern = @"^(?<tag>\w+)(\-(?<subtag>\w+))?$";
+            var pattern = @"^LANGUAGE=(?<tag>\w+)(\-(?<subtag>\w+))?$";
             if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
                 throw new FormatException("Invalid Format type");
             foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
             {
-                if (match.Groups["tag"].Success) Tag = match.Groups["tag"].Value;
-                else if (match.Groups["subtag"].Success) SubTag = match.Groups["subtag"].Value;
+                if (match.Groups["tag"].Success) 
+                    Tag = match.Groups["tag"].Value;
+                if (match.Groups["subtag"].Success) 
+                    SubTag = match.Groups["subtag"].Value;
             }
         }
 
@@ -332,61 +334,49 @@ namespace reexjungle.xcal.domain.models
     }
 
     [DataContract]
-    public class DELEGATE : IDELEGATE, IEquatable<DELEGATE>
+    public abstract class DELEGATE : IDELEGATE, IEquatable<DELEGATE>
     {
         /// <summary>
         /// Gets or sets the calendar addresses of the participation delegators
         /// </summary>
         [DataMember]
-        public List<URI> Addresses { get; set; }
+        public List<CAL_ADDRESS> Addresses { get; set; }
 
         /// <summary>
         /// Default Constructor.
         /// </summary>
-        public DELEGATE()
+        protected DELEGATE()
         {
-            Addresses = new List<URI>();
+            Addresses = new List<CAL_ADDRESS>();
         }
 
         /// <summary>
         /// Overloaded Constructor
         /// </summary>
         /// <param name="addresses">The enumerable collection of calendar addresses, which represent the delegators</param>
-        public DELEGATE(List<URI> addresses)
+        protected DELEGATE(IEnumerable<CAL_ADDRESS> addresses)
         {
-            Addresses = addresses;
+            Addresses = addresses.NullOrEmpty()
+                ? new List<CAL_ADDRESS>()
+                : new List<CAL_ADDRESS>(addresses);
         }
 
-        public DELEGATE(string value)
-        {
-            var uricheck = @"(?<value>(\w+)((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?))";
-            var pattern = string.Format("(\")(mailto:){0}(\")", uricheck);
-
-            if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                throw new FormatException("Invalid Delegate format");
-            var val = string.Empty;
-
-            foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-            {
-                if (match.Groups["value"].Success) val = match.Groups["value"].Value;
-            }
-            var parts = val.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-            Addresses = new List<URI>(parts.Select(p => new URI(p)));
-        }
-
-        public DELEGATE(IDELEGATE @delegate)
+        protected DELEGATE(IDELEGATE @delegate)
         {
             if (@delegate == null) throw new ArgumentNullException("delegate");
-            Addresses = @delegate.Addresses;
+            Addresses = @delegate.Addresses.NullOrEmpty()
+                ? new List<CAL_ADDRESS>()
+                : new List<CAL_ADDRESS>(@delegate.Addresses);
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
-            foreach (var addr in Addresses)
+            foreach (var address in Addresses)
             {
-                if (addr != Addresses.Last()) sb.AppendFormat("\"mailto:{0}\", ", addr);
-                else sb.AppendFormat("\"mailto:{0}\"", addr);
+                sb.AppendFormat(address != Addresses.Last() 
+                    ? "\"mailto:{0}\", " 
+                    : "\"mailto:{0}\"", address);
             }
             return sb.ToString();
         }
@@ -422,6 +412,86 @@ namespace reexjungle.xcal.domain.models
         }
     }
 
+    [DataContract]
+    public class DELEGATED_FROM : DELEGATE
+    {
+        public DELEGATED_FROM()
+        {
+        }
+
+        public DELEGATED_FROM(string value)
+        {
+            Addresses = new List<CAL_ADDRESS>();
+            var pattern = @"DELEGATED-FROM=mailto:(?<uri>\s*(\w+:\S+)\s*)";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options); 
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("Invalid Delegate format");
+
+            foreach (Match match in regex.Matches(value))
+            {
+                if (match.Groups["uri"].Success)
+                {
+                    Addresses.Add(new CAL_ADDRESS(match.Groups["value"].Value));
+                }
+            }
+        }
+        
+        public DELEGATED_FROM(List<CAL_ADDRESS> addresses) : base(addresses)
+        {
+        }
+
+        public DELEGATED_FROM(IDELEGATE @delegate) : base(@delegate)
+        {
+        }
+
+        public override string ToString()
+        {
+            return string.Format("DELEGATED-FROM={0}",base.ToString());
+        }
+    }
+
+    [DataContract]
+    public class DELEGATED_TO : DELEGATE
+    {
+        public DELEGATED_TO()
+        {
+        }
+
+        public DELEGATED_TO(List<CAL_ADDRESS> addresses) : base(addresses)
+        {
+        }
+
+        public DELEGATED_TO(string value)
+        {
+            Addresses = new List<CAL_ADDRESS>();
+            var pattern = @"DELEGATED-TO=mailto:(?<uri>\s*(\w+:\S+)\s*)";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("Invalid Delegate format");
+
+            foreach (Match match in regex.Matches(value))
+            {
+                if (match.Groups["uri"].Success)
+                {
+                    Addresses.Add(new CAL_ADDRESS(match.Groups["value"].Value));
+                }
+            }
+        }
+
+        public DELEGATED_TO(IDELEGATE @delegate) : base(@delegate)
+        {
+        }
+
+        public override string ToString()
+        {
+            return string.Format("DELEGATED-TO={0}", base.ToString());
+        }
+    }
+
     /// <summary>
     /// Group or List Membership.
     /// Provides the group or list membership of the calendar user specified by a property
@@ -433,40 +503,46 @@ namespace reexjungle.xcal.domain.models
         /// Gets or sets the calendar addresses of the group members
         /// </summary>
         [DataMember]
-        public List<URI> Addresses { get; set; }
+        public List<CAL_ADDRESS> Addresses { get; set; }
 
         /// <summary>
         /// Default Constructor.
         /// </summary>
         public MEMBER()
         {
-            Addresses = new List<URI>();
+            Addresses = new List<CAL_ADDRESS>();
         }
 
         /// <summary>
         /// Overloaded Constructor.
         /// </summary>
         /// <param name="addresses">The enumerable collection of addresses representing users in the membership list</param>
-        public MEMBER(List<URI> addresses)
+        public MEMBER(IEnumerable<CAL_ADDRESS> addresses)
         {
-            Addresses = addresses;
+            Addresses = addresses.NullOrEmpty() 
+                ? new List<CAL_ADDRESS>() 
+                : new List<CAL_ADDRESS>(addresses);
         }
 
         public MEMBER(string value)
         {
-            var uricheck = @"(?<value>(\w+)((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?))";
-            var pattern = string.Format("(\")(mailto:){0}(\")", uricheck);
+            if (value == null) throw new ArgumentNullException("value");
 
-            if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                throw new FormatException("Invalid Member format");
-            var val = string.Empty;
+            var trimmed = value.Replace(" ", string.Empty);
+            var pattern = @"^MEMBER=(?<emails>(?:""mailto:(\w+\S+)""(,\s*)?)+)$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace | RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
 
-            foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
+            if (!Regex.IsMatch(trimmed, pattern, options)) throw new FormatException("value");
+
+            foreach (Match match in regex.Matches(trimmed))
             {
-                if (match.Groups["value"].Success) val = match.Groups["value"].Value;
+                if (match.Groups["emails"].Success)
+                {
+                    var emails = match.Groups["emails"].Value.Split(new[] {'\"', ','}, StringSplitOptions.RemoveEmptyEntries);
+                    Addresses = emails.Select(e => new CAL_ADDRESS(e.Trim())).ToList();
+                }
             }
-            var parts = val.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-            Addresses = new List<URI>(parts.Select(p => new URI(p)));
         }
 
         public MEMBER(IMEMBER member)
@@ -479,10 +555,9 @@ namespace reexjungle.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("MEMBER=");
-            foreach (var addr in Addresses)
+            foreach (var address in Addresses)
             {
-                if (addr != Addresses.Last()) sb.AppendFormat("mailto:{0}, ", addr);
-                else sb.AppendFormat("mailto:{0}", addr);
+                sb.AppendFormat(address != Addresses.Last() ? "{0}, " : "{0}", address);
             }
 
             return sb.ToString();
@@ -514,6 +589,235 @@ namespace reexjungle.xcal.domain.models
         }
 
         public static bool operator !=(MEMBER left, MEMBER right)
+        {
+            return !Equals(left, right);
+        }
+    }
+
+    [DataContract]
+    public class ALTREP : IEquatable<ALTREP>
+    {
+        [DataMember]
+        public Uri Uri { get; set; }
+        
+        public ALTREP()
+        {
+
+        }
+
+        public ALTREP(string uriString, UriKind kind)
+        {
+            if (uriString == null) throw new ArgumentNullException("uriString");
+            Uri = new Uri(uriString, kind);
+        }
+
+        public ALTREP(Uri uri)
+        {
+            if (uri == null) throw new ArgumentNullException("uri");
+            Uri = new Uri(uri.ToString());
+        }
+
+        public ALTREP(string value)
+        {
+            var pattern = @"^ALTREP=""(?<value>(\s*(\w+:\S+)\s*))""$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+            foreach (Match match in regex.Matches(value))
+            {
+                if (match.Groups["value"].Success)
+                {
+                    Uri = new Uri(match.Groups["value"].Value, UriKind.RelativeOrAbsolute);
+                }
+            }
+        }
+
+        public override string ToString()
+        {
+            return Uri != null 
+                ? string.Format(@"ALTREP=""{0}""", Uri)
+                : string.Empty;
+        }
+
+        public bool Equals(ALTREP other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(Uri, other.Uri);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((ALTREP) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Uri != null ? Uri.GetHashCode() : 0);
+        }
+
+        public static bool operator ==(ALTREP left, ALTREP right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(ALTREP left, ALTREP right)
+        {
+            return !Equals(left, right);
+        }
+    }
+
+    [DataContract]
+    public class DIR : IEquatable<DIR>
+    {
+        [DataMember]
+        public Uri Uri { get; set; }
+
+        public DIR()
+        {
+        }
+
+        public DIR(Uri uri)
+        {
+            if (uri == null) throw new ArgumentNullException("uri");
+            Uri = new Uri(uri.ToString());
+        }
+
+        public DIR(string uriString, UriKind kind)
+        {
+            if (uriString == null) throw new ArgumentNullException("uriString");
+            Uri = new Uri(uriString, kind);
+        }
+
+        public DIR(string value)
+        {
+            var pattern = @"^DIR=""(?<value>(\s*(\w+:\S+)\s*))""$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+
+            foreach (Match match in regex.Matches(value))
+            {
+                if (match.Groups["value"].Success)
+                {
+                    Uri = new Uri(match.Groups["value"].Value, UriKind.RelativeOrAbsolute);
+                }
+            }
+        }
+
+        public override string ToString()
+        {
+            return Uri != null 
+                ? string.Format("DIR=\"{0}\"", Uri)
+                : string.Empty;
+        }
+
+        public bool Equals(DIR other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(Uri, other.Uri);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((DIR) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Uri != null ? Uri.GetHashCode() : 0);
+        }
+
+        public static bool operator ==(DIR left, DIR right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(DIR left, DIR right)
+        {
+            return !Equals(left, right);
+        }
+    }
+
+    [DataContract]
+    public class SENT_BY: ISENT_BY, IEquatable<SENT_BY>
+    {
+        [DataMember]
+        public CAL_ADDRESS Address { get; set; }
+
+        public SENT_BY()
+        {
+            
+        }
+
+        public SENT_BY(CAL_ADDRESS address)
+        {
+            if (address == null) throw new ArgumentNullException("address");
+            Address = address;
+        }
+        
+        public SENT_BY(string value)
+        {
+            var pattern = @"^SENT-BY=""(?<value>(\s*(\w+\S+)\s*))""$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+
+            foreach (Match match in regex.Matches(value))
+            {
+                if (match.Groups["value"].Success)
+                {
+                    Address = new CAL_ADDRESS(match.Groups["value"].Value);
+                }
+            }
+        }
+
+        public override string ToString()
+        {
+            return Address != null 
+                ? string.Format(@"SENT-BY=""{0}""", Address)
+                : string.Empty;
+        }
+
+        public bool Equals(SENT_BY other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(Address, other.Address);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((SENT_BY) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Address != null ? Address.GetHashCode() : 0);
+        }
+
+        public static bool operator ==(SENT_BY left, SENT_BY right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(SENT_BY left, SENT_BY right)
         {
             return !Equals(left, right);
         }

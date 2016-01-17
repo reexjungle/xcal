@@ -1,4 +1,5 @@
 ﻿using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.extensions;
 using reexjungle.xmisc.foundation.concretes;
 using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -62,7 +64,19 @@ namespace reexjungle.xcal.domain.models
         public ATTACH_BINARY(string value)
         {
             if (value == null) throw new ArgumentNullException("value");
-            var pattern = "^ATTACH $";
+            var pattern =
+                @"^ATTACH(;(?<fmttype>FMTTYPE=\w+/\w+\S*))?;(?<encoding>ENCODING=BASE64;VALUE=BINARY):(?<binary>(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?)$";
+            
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+            foreach (Match match in regex.Matches(value))
+            {
+                if (match.Groups["fmttype"].Success) FormatType = new FMTTYPE(match.Groups["fmttype"].Value);
+                if (match.Groups["binary"].Success) Content = new BINARY(match.Groups["binary"].Value);
+            }
         }
 
         /// <summary>
@@ -76,7 +90,7 @@ namespace reexjungle.xcal.domain.models
             {
                 sb.AppendFormat("ATTACH");
                 if (FormatType != null) sb.AppendFormat(";{0}", FormatType);
-                sb.AppendFormat(";ENCODING={0}", Content.Encoding);
+                sb.AppendFormat(";ENCODING={0}", ENCODING.BASE64);
                 sb.AppendFormat(";VALUE=BINARY:{0}", Content);
             }
 
@@ -95,7 +109,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((ATTACH_BINARY)obj);
+            return Equals((ATTACH_BINARY) obj);
         }
 
         public override int GetHashCode()
@@ -118,7 +132,7 @@ namespace reexjungle.xcal.domain.models
     /// Capability to associate a document or another resource given by it's URI with a calendar component
     /// </summary>
     [DataContract]
-    public class ATTACH_URI : IATTACH<URI>, IEquatable<ATTACH_URI>, IComparable<ATTACH_URI>, IContainsKey<Guid>
+    public class ATTACH_URI : IATTACH<Uri>, IEquatable<ATTACH_URI>, IContainsKey<Guid>
     {
         /// <summary>
         /// ID of an Attachment for a particular Calendar component
@@ -136,7 +150,7 @@ namespace reexjungle.xcal.domain.models
         /// Universal Resource Identifier of the attached Content
         /// </summary>
         [DataMember]
-        public URI Content { get; set; }
+        public Uri Content { get; set; }
 
         /// <summary>
         /// Default Constructor
@@ -145,7 +159,7 @@ namespace reexjungle.xcal.domain.models
         {
         }
 
-        public ATTACH_URI(IATTACH<URI> attachment)
+        public ATTACH_URI(IATTACH<Uri> attachment)
         {
             Content = attachment.Content;
             FormatType = attachment.FormatType;
@@ -156,10 +170,27 @@ namespace reexjungle.xcal.domain.models
         /// </summary>
         /// <param name="content">URI of the attached content</param>
         /// <param name="format">The format type of the attachmen</param>
-        public ATTACH_URI(URI content, FMTTYPE format = null)
+        public ATTACH_URI(Uri content, FMTTYPE format = null)
         {
             FormatType = format;
             Content = content;
+        }
+
+        public ATTACH_URI(string value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            var pattern = @"^ATTACH(;(?<fmttype>FMTTYPE=\w+/\w+\S*))?:(?<uri>\s*(\w+:\S+)\s*)$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+            foreach (Match match in regex.Matches(value))
+            {
+                if (match.Groups["fmttype"].Success) FormatType = new FMTTYPE(match.Groups["fmttype"].Value);
+                if (match.Groups["uri"].Success)
+                    Content = new Uri(match.Groups["uri"].Value, UriKind.RelativeOrAbsolute);
+            }
         }
 
         /// <summary>
@@ -170,8 +201,7 @@ namespace reexjungle.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.AppendFormat("ATTACH");
-            if (!FormatType.Equals(default(FMTTYPE)))
-                sb.AppendFormat(";{0}", FormatType);
+            if (!FormatType.Equals(default(FMTTYPE))) sb.AppendFormat(";{0}", FormatType);
             sb.AppendFormat(":{0}", Content);
             return sb.ToString();
         }
@@ -188,7 +218,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((ATTACH_URI)obj);
+            return Equals((ATTACH_URI) obj);
         }
 
         public override int GetHashCode()
@@ -204,23 +234,6 @@ namespace reexjungle.xcal.domain.models
         public static bool operator !=(ATTACH_URI left, ATTACH_URI right)
         {
             return !Equals(left, right);
-        }
-
-        public int CompareTo(ATTACH_URI other)
-        {
-            return Content.CompareTo(other.Content);
-        }
-
-        public static bool operator <(ATTACH_URI a, ATTACH_URI b)
-        {
-            if (a == null || b == null) return false;
-            return a.CompareTo(b) < 0;
-        }
-
-        public static bool operator >(ATTACH_URI a, ATTACH_URI b)
-        {
-            if (a == null || b == null) return false;
-            return a.CompareTo(b) > 0;
         }
     }
 
@@ -250,13 +263,16 @@ namespace reexjungle.xcal.domain.models
         public CATEGORIES()
         {
             Values = new List<string>();
-            Language = null;
         }
 
         public CATEGORIES(ICATEGORIES categories)
         {
+            if (categories == null) throw new ArgumentNullException("categories");
+
             Language = categories.Language;
-            Values = categories.Values;
+            Values = categories.Values.NullOrEmpty()
+                ? new List<string>()
+                : new List<string>(categories.Values);
         }
 
         /// <summary>
@@ -264,10 +280,34 @@ namespace reexjungle.xcal.domain.models
         /// </summary>
         /// <param name="text">Description of the calendar component category or subtype</param>
         /// <param name="language">Language, used in a given category of calendar components</param>
-        public CATEGORIES(List<string> values, LANGUAGE language = null)
+        public CATEGORIES(IEnumerable<string> values, LANGUAGE language = null)
         {
-            Values = values;
+            if (values == null) throw new ArgumentNullException("values");
+
             Language = language;
+            Values = values.NullOrEmpty()
+                ? new List<string>()
+                : new List<string>(values);
+        }
+
+        public CATEGORIES(string value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            var pattern = @"^CATEGORIES(;(?<language>LANGUAGE=\w{2}-\w{2}))?:(?<text>(\w+\s*,?)+)$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+            foreach (Match match in regex.Matches(value))
+            {
+                if (match.Groups["lang"].Success) Language = new LANGUAGE(match.Groups["lang"].Value);
+                if (match.Groups["text"].Success)
+                {
+                    var lines = match.Groups["text"].Value.Split(new[] {',', ' '}, StringSplitOptions.RemoveEmptyEntries);
+                    Values = new List<string>(lines);
+                }
+            }
         }
 
         /// <summary>
@@ -278,13 +318,13 @@ namespace reexjungle.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("CATEGORIES");
-            if (Language.Equals(string.Empty)) sb.AppendFormat(";{0}", Language);
+            if (Language != null) sb.AppendFormat(";{0}", Language);
             sb.Append(":");
-            var last = Values.Last();
-            foreach (var val in Values)
+
+            foreach (var value in Values)
             {
-                if (val != last) sb.AppendFormat("{0}, ", val);
-                else sb.Append(val);
+                if (value != Values.Last()) sb.AppendFormat("{0}, ", value);
+                else sb.Append(value);
             }
             return sb.ToString();
         }
@@ -301,7 +341,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((CATEGORIES)obj);
+            return Equals((CATEGORIES) obj);
         }
 
         public override int GetHashCode()
@@ -324,11 +364,6 @@ namespace reexjungle.xcal.domain.models
     /// Specify non-processing information intended to provide a comment to the calendar user
     /// </summary>
     [DataContract]
-    [KnownType(typeof(COMMENT))]
-    [KnownType(typeof(CONTACT))]
-    [KnownType(typeof(SUMMARY))]
-    [KnownType(typeof(LOCATION))]
-    [KnownType(typeof(DESCRIPTION))]
     public abstract class TEXTUAL : ITEXTUAL, IEquatable<TEXTUAL>, IComparable<TEXTUAL>, IContainsKey<Guid>
     {
         /// <summary>
@@ -348,7 +383,7 @@ namespace reexjungle.xcal.domain.models
         /// Alternative Text of the Comment, can content more particular Description of a Calendar Component
         /// </summary>
         [DataMember]
-        public URI AlternativeText { get; set; }
+        public ALTREP AlternativeText { get; set; }
 
         /// <summary>
         /// Languge of the Comment
@@ -379,7 +414,7 @@ namespace reexjungle.xcal.domain.models
         /// <param name="text">Text content of the comment</param>
         /// <param name="altrep"></param>
         /// <param name="language">Language of the comment</param>
-        protected TEXTUAL(string text, URI altrep, LANGUAGE language = null)
+        protected TEXTUAL(string text, ALTREP altrep, LANGUAGE language = null)
         {
             Text = text;
             AlternativeText = altrep;
@@ -398,7 +433,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((TEXTUAL)obj);
+            return Equals((TEXTUAL) obj);
         }
 
         public override int GetHashCode()
@@ -439,15 +474,36 @@ namespace reexjungle.xcal.domain.models
         {
         }
 
-        public DESCRIPTION(string value): base()
+        public DESCRIPTION(string value)
         {
-            //todo: Parsing code here
             if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
-            var pattern = @"^DESCRIPTION (?<tag>\w+)(\-(?<subtag>\w+))?$";
 
+            var pattern =
+                @"^DESCRIPTION(;(?<altrep>ALTREP=\p{P}\s*(\w+:\S+)\s*\p{P}))?(;(?<lang>LANGUAGE=\p{L}{2}\-\p{L}{2}))?:(?<text>(\P{L}*\p{L}\p{M}*\P{L}*)+)$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+            foreach (Match match in regex.Matches(value))
+            {
+                if (match.Groups["lang"].Success)
+                {
+                    Language = new LANGUAGE(match.Groups["lang"].Value);
+                }
+
+                if (match.Groups["altrep"].Success)
+                {
+                    AlternativeText = new ALTREP(match.Groups["altrep"].Value);
+                }
+                if (match.Groups["text"].Success)
+                {
+                    Text = match.Groups["text"].Value;
+                }
+            }
         }
 
-        public DESCRIPTION(string text, URI altrep, LANGUAGE language = null)
+        public DESCRIPTION(string text, ALTREP altrep, LANGUAGE language = null)
             : base(text, altrep, language)
         {
         }
@@ -455,7 +511,7 @@ namespace reexjungle.xcal.domain.models
         public override string ToString()
         {
             var sb = new StringBuilder("DESCRIPTION");
-            if (AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", AlternativeText);
+            if (AlternativeText != null) sb.AppendFormat(";{0}", AlternativeText);
             if (Language != null) sb.AppendFormat(";{0}", Language);
             sb.AppendFormat(":{0}", Text.EscapeStrings());
             return sb.ToString();
@@ -469,12 +525,37 @@ namespace reexjungle.xcal.domain.models
         {
         }
 
-        public COMMENT(string text)
+        public COMMENT(string value)
         {
-            //todo: Parsing code here
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+
+            var pattern =
+                @"^COMMENT(;(?<altrep>ALTREP=\p{P}\s*(\w+:\S+)\s*\p{P}))?(;(?<lang>LANGUAGE=\p{L}{2}\-\p{L}{2}))?:(?<text>(\P{L}*\p{L}\p{M}*\P{L}*)+)$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+            if (Regex.IsMatch(value, pattern, options))
+            {
+                foreach (Match match in regex.Matches(value))
+                {
+                    if (match.Groups["lang"].Success)
+                    {
+                        Language = new LANGUAGE(match.Groups["lang"].Value);
+                    }
+
+                    if (match.Groups["altrep"].Success)
+                    {
+                        AlternativeText = new ALTREP(match.Groups["altrep"].Value);
+                    }
+                    if (match.Groups["text"].Success)
+                    {
+                        Text = match.Groups["text"].Value;
+                    }
+                }
+            }
         }
 
-        public COMMENT(string text, URI altrep, LANGUAGE language = null)
+        public COMMENT(string text, ALTREP altrep, LANGUAGE language = null)
             : base(text, altrep, language)
         {
         }
@@ -482,7 +563,7 @@ namespace reexjungle.xcal.domain.models
         public override string ToString()
         {
             var sb = new StringBuilder("COMMENT");
-            if (AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", AlternativeText);
+            if (AlternativeText != null) sb.AppendFormat(";{0}", AlternativeText);
             if (Language != null) sb.AppendFormat(";{0}", Language);
             sb.AppendFormat(":{0}", Text.EscapeStrings());
             return sb.ToString();
@@ -496,12 +577,37 @@ namespace reexjungle.xcal.domain.models
         {
         }
 
-        public CONTACT(string text)
+        public CONTACT(string value)
         {
-            //todo: Parsing code here
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+
+            var pattern =
+                @"^CONTACT(;(?<altrep>ALTREP=\p{P}\s*(\w+:\S+)\s*\p{P}))?(;(?<lang>LANGUAGE=\p{L}{2}\-\p{L}{2}))?:(?<text>(\P{L}*\p{L}\p{M}*\P{L}*)+)$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+            if (Regex.IsMatch(value, pattern, options))
+            {
+                foreach (Match match in regex.Matches(value))
+                {
+                    if (match.Groups["lang"].Success)
+                    {
+                        Language = new LANGUAGE(match.Groups["lang"].Value);
+                    }
+
+                    if (match.Groups["altrep"].Success)
+                    {
+                        AlternativeText = new ALTREP(match.Groups["altrep"].Value);
+                    }
+                    if (match.Groups["text"].Success)
+                    {
+                        Text = match.Groups["text"].Value;
+                    }
+                }
+            }
         }
 
-        public CONTACT(string text, URI altrep, LANGUAGE language = null)
+        public CONTACT(string text, ALTREP altrep, LANGUAGE language = null)
             : base(text, altrep, language)
         {
         }
@@ -509,7 +615,7 @@ namespace reexjungle.xcal.domain.models
         public override string ToString()
         {
             var sb = new StringBuilder("CONTACT");
-            if (AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", AlternativeText);
+            if (AlternativeText != null) sb.AppendFormat(";{0}", AlternativeText);
             if (Language != null) sb.AppendFormat(";{0}", Language);
             sb.AppendFormat(":{0}", Text.EscapeStrings());
             return sb.ToString();
@@ -523,12 +629,37 @@ namespace reexjungle.xcal.domain.models
         {
         }
 
-        public SUMMARY(string text)
+        public SUMMARY(string value)
         {
-            //todo: Parsing code here
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+
+            var pattern =
+                @"^SUMMARY(;(?<altrep>ALTREP=\p{P}\s*(\w+:\S+)\s*\p{P}))?(;(?<lang>LANGUAGE=\p{L}{2}\-\p{L}{2}))?:(?<text>(\P{L}*\p{L}\p{M}*\P{L}*)+)$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+            if (Regex.IsMatch(value, pattern, options))
+            {
+                foreach (Match match in regex.Matches(value))
+                {
+                    if (match.Groups["lang"].Success)
+                    {
+                        Language = new LANGUAGE(match.Groups["lang"].Value);
+                    }
+
+                    if (match.Groups["altrep"].Success)
+                    {
+                        AlternativeText = new ALTREP(match.Groups["altrep"].Value);
+                    }
+                    if (match.Groups["text"].Success)
+                    {
+                        Text = match.Groups["text"].Value;
+                    }
+                }
+            }
         }
 
-        public SUMMARY(string text, URI altrep, LANGUAGE language = null)
+        public SUMMARY(string text, ALTREP altrep, LANGUAGE language = null)
             : base(text, altrep, language)
         {
         }
@@ -536,7 +667,7 @@ namespace reexjungle.xcal.domain.models
         public override string ToString()
         {
             var sb = new StringBuilder("SUMMARY");
-            if (AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", AlternativeText);
+            if (AlternativeText != null) sb.AppendFormat(";{0}", AlternativeText);
             if (Language != null) sb.AppendFormat(";{0}", Language);
             sb.AppendFormat(":{0}", Text.EscapeStrings());
             return sb.ToString();
@@ -550,12 +681,37 @@ namespace reexjungle.xcal.domain.models
         {
         }
 
-        public LOCATION(string text)
+        public LOCATION(string value)
         {
-            //todo: Parsing code here
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+
+            var pattern =
+                @"^LOCATION(;(?<altrep>ALTREP=\p{P}\s*(\w+:\S+)\s*\p{P}))?(;(?<lang>LANGUAGE=\p{L}{2}\-\p{L}{2}))?:(?<text>(\P{L}*\p{L}\p{M}*\P{L}*)+)$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+            if (Regex.IsMatch(value, pattern, options))
+            {
+                foreach (Match match in regex.Matches(value))
+                {
+                    if (match.Groups["lang"].Success)
+                    {
+                        Language = new LANGUAGE(match.Groups["lang"].Value);
+                    }
+
+                    if (match.Groups["altrep"].Success)
+                    {
+                        AlternativeText = new ALTREP(match.Groups["altrep"].Value);
+                    }
+                    if (match.Groups["text"].Success)
+                    {
+                        Text = match.Groups["text"].Value;
+                    }
+                }
+            }
         }
 
-        public LOCATION(string text, URI altrep, LANGUAGE language = null)
+        public LOCATION(string text, ALTREP altrep, LANGUAGE language = null)
             : base(text, altrep, language)
         {
         }
@@ -563,7 +719,7 @@ namespace reexjungle.xcal.domain.models
         public override string ToString()
         {
             var sb = new StringBuilder("LOCATION");
-            if (AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", AlternativeText);
+            if (AlternativeText != null) sb.AppendFormat(";{0}", AlternativeText);
             if (Language != null) sb.AppendFormat(";{0}", Language);
             sb.AppendFormat(":{0}", Text.EscapeStrings());
             return sb.ToString();
@@ -604,10 +760,7 @@ namespace reexjungle.xcal.domain.models
         public float Latitude
         {
             get { return latitude; }
-            set
-            {
-                latitude = value;
-            }
+            set { latitude = value; }
         }
 
         public GEO(IGEO geo)
@@ -635,10 +788,13 @@ namespace reexjungle.xcal.domain.models
             longitude = default(float);
             latitude = default(float);
 
-            var pattern = @"^(?<lon>[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)(?<lat>[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)$";
-            if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
+            var pattern =
+                @"^(?<lon>[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)(?<lat>[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)$";
+            if (Regex.IsMatch(value, pattern,
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
             {
-                foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
+                foreach (Match match in Regex.Matches(value, pattern,
+                    RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
                 {
                     if (match.Groups["lon"].Success) longitude = float.Parse(match.Groups["lon"].Value);
                     if (match.Groups["lat"].Success) latitude = float.Parse(match.Groups["lat"].Value);
@@ -649,21 +805,21 @@ namespace reexjungle.xcal.domain.models
         public bool Equals(GEO other)
         {
             return longitude.Equals(other.longitude) &&
-                latitude.Equals(other.latitude);
+                   latitude.Equals(other.latitude);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            return obj is GEO && Equals((GEO)obj);
+            return obj is GEO && Equals((GEO) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return (longitude.GetHashCode() * 397) ^
-                    latitude.GetHashCode();
+                return (longitude.GetHashCode()*397) ^
+                       latitude.GetHashCode();
             }
         }
 
@@ -702,10 +858,10 @@ namespace reexjungle.xcal.domain.models
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Alternative Text for a specified Resource, can content the Description of this resource
+        /// Alternative Text for a specified Resource, can contain the Description of this resource
         /// </summary>
         [DataMember]
-        public URI AlternativeText { get; set; }
+        public ALTREP AlternativeText { get; set; }
 
         /// <summary>
         /// Language needed for a particular Resource
@@ -719,39 +875,69 @@ namespace reexjungle.xcal.domain.models
         [DataMember]
         public List<string> Values { get; set; }
 
-        /// <summary>
-        /// Indicates, if the Resource Property is set to default
-        /// </summary>
-        public bool IsDefault()
-        {
-            return Values.Count() == 0 && AlternativeText.IsDefault();
-        }
-
         public RESOURCES()
         {
-            Values = null;
-            AlternativeText = null;
-            Language = null;
+            Values = new List<string>();
         }
 
         public RESOURCES(IRESOURCES resources)
         {
+            if (resources == null) throw new ArgumentNullException("resources");
             AlternativeText = resources.AlternativeText;
             Language = resources.Language;
-            Values = resources.Values;
+            Values = resources.Values.NullOrEmpty()
+                ? new List<string>()
+                : new List<string>(resources.Values);
         }
 
         /// <summary>
         /// Constructor specifying the Text, Alternative Text and Language for Resource Property
         /// </summary>
-        /// <param name="text">Text with the name and other parameters, specifying the current Resource</param>
+        /// <param name="values"></param>
         /// <param name="alt">Alternative Text, can represent particular the description of the Resource</param>
         /// <param name="language">Language nescessary for the Resource</param>
-        public RESOURCES(List<string> values, URI alt, LANGUAGE language)
+        public RESOURCES(IEnumerable<string> values, ALTREP alt = null, LANGUAGE language = null)
         {
-            Values = values;
+            if (values == null) throw new ArgumentNullException("values");
+            if (alt == null) throw new ArgumentNullException("alt");
+            if (language == null) throw new ArgumentNullException("language");
+
             AlternativeText = alt;
             Language = language;
+
+            Values = values.NullOrEmpty()
+                ? new List<string>()
+                : new List<string>(values);
+        }
+
+        public RESOURCES(string value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            var pattern =
+                @"^RESOURCES(;(?<altrep>ALTREP=\p{P}\s*(\w+:\S+)\s*\p{P}))?(;(?<lang>LANGUAGE=\p{L}{2}\-\p{L}{2}))?:(?<text>(\P{L}*\p{L}\p{M}*\P{L}*)+)$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+
+            foreach (Match match in regex.Matches(value))
+            {
+                if (match.Groups["lang"].Success)
+                {
+                    Language = new LANGUAGE(match.Groups["lang"].Value);
+                }
+
+                if (match.Groups["altrep"].Success)
+                {
+                    AlternativeText = new ALTREP(match.Groups["altrep"].Value);
+                }
+                if (match.Groups["text"].Success)
+                {
+                    var lines = match.Groups["text"].Value.Split(new[] {',', ' '}, StringSplitOptions.RemoveEmptyEntries);
+                    Values = new List<string>(lines);
+                }
+            }
         }
 
         /// <summary>
@@ -762,7 +948,7 @@ namespace reexjungle.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("RESOURCES");
-            if (AlternativeText != null) sb.AppendFormat(";ALTREP=\"{0}\"", AlternativeText);
+            if (AlternativeText != null) sb.AppendFormat(";{0}", AlternativeText);
             if (Language != null) sb.AppendFormat(";{0}", Language);
             sb.Append(":");
             var last = Values.Last();
@@ -786,7 +972,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((RESOURCES)obj);
+            return Equals((RESOURCES) obj);
         }
 
         public override int GetHashCode()
@@ -818,10 +1004,21 @@ namespace reexjungle.xcal.domain.models
             var val = 0;
             switch (level)
             {
-                case PRIORITYLEVEL.UNKNOWN: val = 0; break;
-                case PRIORITYLEVEL.LOW: val = 9; break;
-                case PRIORITYLEVEL.MEDIUM: val = 5; break;
-                case PRIORITYLEVEL.HIGH: val = 1; break;
+                case PRIORITYLEVEL.NONE:
+                    val = 0;
+                    break;
+
+                case PRIORITYLEVEL.LOW:
+                    val = 9;
+                    break;
+
+                case PRIORITYLEVEL.MEDIUM:
+                    val = 5;
+                    break;
+
+                case PRIORITYLEVEL.HIGH:
+                    val = 1;
+                    break;
             }
             return val;
         }
@@ -831,7 +1028,7 @@ namespace reexjungle.xcal.domain.models
             if (value >= 1 && this.value <= 4) return PRIORITYLEVEL.HIGH;
             else if (value == 5) return PRIORITYLEVEL.MEDIUM;
             else if (value >= 6 && value <= 9) return PRIORITYLEVEL.LOW;
-            return PRIORITYLEVEL.UNKNOWN;
+            return PRIORITYLEVEL.NONE;
         }
 
         private int SchemaToValue(PRIORITYSCHEMA schema)
@@ -839,34 +1036,89 @@ namespace reexjungle.xcal.domain.models
             var val = 0;
             switch (schema)
             {
-                case PRIORITYSCHEMA.UNKNOWN: val = 0; break;
-                case PRIORITYSCHEMA.C3: val = 9; break;
-                case PRIORITYSCHEMA.C2: val = 8; break;
-                case PRIORITYSCHEMA.C1: val = 7; break;
-                case PRIORITYSCHEMA.B3: val = 6; break;
-                case PRIORITYSCHEMA.B2: val = 5; break;
-                case PRIORITYSCHEMA.B1: val = 4; break;
-                case PRIORITYSCHEMA.A3: val = 3; break;
-                case PRIORITYSCHEMA.A2: val = 2; break;
-                case PRIORITYSCHEMA.A1: val = 1; break;
+                case PRIORITYSCHEMA.NONE:
+                    val = 0;
+                    break;
+
+                case PRIORITYSCHEMA.C3:
+                    val = 9;
+                    break;
+
+                case PRIORITYSCHEMA.C2:
+                    val = 8;
+                    break;
+
+                case PRIORITYSCHEMA.C1:
+                    val = 7;
+                    break;
+
+                case PRIORITYSCHEMA.B3:
+                    val = 6;
+                    break;
+
+                case PRIORITYSCHEMA.B2:
+                    val = 5;
+                    break;
+
+                case PRIORITYSCHEMA.B1:
+                    val = 4;
+                    break;
+
+                case PRIORITYSCHEMA.A3:
+                    val = 3;
+                    break;
+
+                case PRIORITYSCHEMA.A2:
+                    val = 2;
+                    break;
+
+                case PRIORITYSCHEMA.A1:
+                    val = 1;
+                    break;
             }
             return val;
         }
 
         private PRIORITYSCHEMA ValueToSchema(int value)
         {
-            var schema = PRIORITYSCHEMA.UNKNOWN;
+            var schema = PRIORITYSCHEMA.NONE;
             switch (value)
             {
-                case 1: schema = PRIORITYSCHEMA.A1; break;
-                case 2: schema = PRIORITYSCHEMA.A2; break;
-                case 3: schema = PRIORITYSCHEMA.A3; break;
-                case 4: schema = PRIORITYSCHEMA.B1; break;
-                case 5: schema = PRIORITYSCHEMA.B2; break;
-                case 6: schema = PRIORITYSCHEMA.B3; break;
-                case 7: schema = PRIORITYSCHEMA.C1; break;
-                case 8: schema = PRIORITYSCHEMA.C2; break;
-                case 9: schema = PRIORITYSCHEMA.C3; break;
+                case 1:
+                    schema = PRIORITYSCHEMA.A1;
+                    break;
+
+                case 2:
+                    schema = PRIORITYSCHEMA.A2;
+                    break;
+
+                case 3:
+                    schema = PRIORITYSCHEMA.A3;
+                    break;
+
+                case 4:
+                    schema = PRIORITYSCHEMA.B1;
+                    break;
+
+                case 5:
+                    schema = PRIORITYSCHEMA.B2;
+                    break;
+
+                case 6:
+                    schema = PRIORITYSCHEMA.B3;
+                    break;
+
+                case 7:
+                    schema = PRIORITYSCHEMA.C1;
+                    break;
+
+                case 8:
+                    schema = PRIORITYSCHEMA.C2;
+                    break;
+
+                case 9:
+                    schema = PRIORITYSCHEMA.C3;
+                    break;
             }
 
             return schema;
@@ -874,32 +1126,72 @@ namespace reexjungle.xcal.domain.models
 
         private PRIORITYLEVEL SchemaToLevel(PRIORITYSCHEMA schema)
         {
-            var val = PRIORITYLEVEL.UNKNOWN;
+            var val = PRIORITYLEVEL.NONE;
             switch (schema)
             {
-                case PRIORITYSCHEMA.UNKNOWN: val = PRIORITYLEVEL.UNKNOWN; break;
-                case PRIORITYSCHEMA.C3: val = PRIORITYLEVEL.LOW; break;
-                case PRIORITYSCHEMA.C2: val = PRIORITYLEVEL.LOW; break;
-                case PRIORITYSCHEMA.C1: val = PRIORITYLEVEL.LOW; break;
-                case PRIORITYSCHEMA.B3: val = PRIORITYLEVEL.LOW; break;
-                case PRIORITYSCHEMA.B2: val = PRIORITYLEVEL.MEDIUM; break;
-                case PRIORITYSCHEMA.B1: val = PRIORITYLEVEL.HIGH; break;
-                case PRIORITYSCHEMA.A3: val = PRIORITYLEVEL.HIGH; break;
-                case PRIORITYSCHEMA.A2: val = PRIORITYLEVEL.HIGH; break;
-                case PRIORITYSCHEMA.A1: val = PRIORITYLEVEL.HIGH; break;
+                case PRIORITYSCHEMA.NONE:
+                    val = PRIORITYLEVEL.NONE;
+                    break;
+
+                case PRIORITYSCHEMA.C3:
+                    val = PRIORITYLEVEL.LOW;
+                    break;
+
+                case PRIORITYSCHEMA.C2:
+                    val = PRIORITYLEVEL.LOW;
+                    break;
+
+                case PRIORITYSCHEMA.C1:
+                    val = PRIORITYLEVEL.LOW;
+                    break;
+
+                case PRIORITYSCHEMA.B3:
+                    val = PRIORITYLEVEL.LOW;
+                    break;
+
+                case PRIORITYSCHEMA.B2:
+                    val = PRIORITYLEVEL.MEDIUM;
+                    break;
+
+                case PRIORITYSCHEMA.B1:
+                    val = PRIORITYLEVEL.HIGH;
+                    break;
+
+                case PRIORITYSCHEMA.A3:
+                    val = PRIORITYLEVEL.HIGH;
+                    break;
+
+                case PRIORITYSCHEMA.A2:
+                    val = PRIORITYLEVEL.HIGH;
+                    break;
+
+                case PRIORITYSCHEMA.A1:
+                    val = PRIORITYLEVEL.HIGH;
+                    break;
             }
             return val;
         }
 
         private PRIORITYSCHEMA LevelToSchema(PRIORITYLEVEL schema)
         {
-            var value = PRIORITYSCHEMA.UNKNOWN;
+            var value = PRIORITYSCHEMA.NONE;
             switch (schema)
             {
-                case PRIORITYLEVEL.LOW: value = PRIORITYSCHEMA.C3; break;
-                case PRIORITYLEVEL.MEDIUM: value = PRIORITYSCHEMA.B2; break;
-                case PRIORITYLEVEL.HIGH: value = PRIORITYSCHEMA.A1; break;
-                case PRIORITYLEVEL.UNKNOWN: value = PRIORITYSCHEMA.UNKNOWN; break;
+                case PRIORITYLEVEL.LOW:
+                    value = PRIORITYSCHEMA.C3;
+                    break;
+
+                case PRIORITYLEVEL.MEDIUM:
+                    value = PRIORITYSCHEMA.B2;
+                    break;
+
+                case PRIORITYLEVEL.HIGH:
+                    value = PRIORITYSCHEMA.A1;
+                    break;
+
+                case PRIORITYLEVEL.NONE:
+                    value = PRIORITYSCHEMA.NONE;
+                    break;
             }
 
             return value;
@@ -937,8 +1229,8 @@ namespace reexjungle.xcal.domain.models
         {
             format = PriorityType.Integral;
             this.value = value;
-            schema = PRIORITYSCHEMA.UNKNOWN;
-            level = PRIORITYLEVEL.UNKNOWN;
+            schema = PRIORITYSCHEMA.NONE;
+            level = PRIORITYLEVEL.NONE;
             schema = ValueToSchema(value);
             level = ValueToLevel(value);
         }
@@ -947,7 +1239,7 @@ namespace reexjungle.xcal.domain.models
         {
             format = PriorityType.Level;
             value = 0;
-            schema = PRIORITYSCHEMA.UNKNOWN;
+            schema = PRIORITYSCHEMA.NONE;
             this.level = level;
             value = LevelToValue(level);
             schema = LevelToSchema(level);
@@ -958,36 +1250,45 @@ namespace reexjungle.xcal.domain.models
             format = PriorityType.Schema;
             value = 0;
             this.schema = schema;
-            level = PRIORITYLEVEL.UNKNOWN;
+            level = PRIORITYLEVEL.NONE;
             value = SchemaToValue(schema);
             level = SchemaToLevel(schema);
         }
 
         public PRIORITY(string value)
         {
+            if (value == null) throw new ArgumentNullException("value");
+
             format = PriorityType.Integral;
             this.value = 0;
-            schema = PRIORITYSCHEMA.UNKNOWN;
-            level = PRIORITYLEVEL.UNKNOWN;
+            schema = PRIORITYSCHEMA.NONE;
+            level = PRIORITYLEVEL.NONE;
 
-            var pattern = @"^(?<priority>PRIORITY:)?(?<value>\d)$$";
-            if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
+            var pattern = @"^(?<priority>PRIORITY:)?(?<value>\d)$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+
+            var regex = new Regex(pattern, options);
+
+            if (!regex.IsMatch(value)) throw new FormatException("value");
+
+            foreach (Match match in Regex.Matches(value, pattern, options))
             {
-                foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
+                if (match.Groups["value"].Success)
                 {
-                    if (match.Groups["value"].Success) this.value = int.Parse(match.Groups["value"].Value);
+                    this.value = int.Parse(match.Groups["value"].Value);
+                    schema = ValueToSchema(this.value);
+                    level = ValueToLevel(this.value);
                 }
             }
-
-            schema = ValueToSchema(this.value);
-            level = ValueToLevel(this.value);
         }
 
         public override string ToString()
         {
-            if (Format == PriorityType.Integral) return string.Format("PRIORITY:{0}", value);
-            else if (Format == PriorityType.Level) return string.Format("PRIORITY:{0}", LevelToValue(level));
-            else return string.Format("PRIORITY:{0}", SchemaToValue(schema));
+            return Format == PriorityType.Integral
+                ? string.Format("PRIORITY:{0}", value)
+                : string.Format("PRIORITY:{0}",
+                    Format == PriorityType.Level ? LevelToValue(level) : SchemaToValue(schema));
         }
 
         public bool Equals(PRIORITY other)
@@ -998,7 +1299,7 @@ namespace reexjungle.xcal.domain.models
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            return obj is PRIORITY && Equals((PRIORITY)obj);
+            return obj is PRIORITY && Equals((PRIORITY) obj);
         }
 
         public override int GetHashCode()
@@ -1040,7 +1341,7 @@ namespace reexjungle.xcal.domain.models
     /// Defines one or more free or busy time intervals
     /// </summary>
     [DataContract]
-    public class FREEBUSY_INFO : IFREEBUSY_INFO, IContainsKey<Guid>, IEquatable<FREEBUSY_INFO>
+    public class FREEBUSY : IFREEBUSY_PROPERTY, IContainsKey<Guid>, IEquatable<FREEBUSY>
     {
         /// <summary>
         /// ID of a free od busy time interval
@@ -1061,21 +1362,65 @@ namespace reexjungle.xcal.domain.models
         [Ignore]
         public List<PERIOD> Periods { get; set; }
 
-        public FREEBUSY_INFO()
+        public FREEBUSY()
         {
+            Periods = new List<PERIOD>();
+            Type = FBTYPE.FREE;
         }
 
         /// <summary>
         /// Constructor based on the time interval
         /// </summary>
-        /// <param name="period"></param>
-        public FREEBUSY_INFO(List<PERIOD> periods, FBTYPE type = FBTYPE.FREE)
+        /// <param name="periods"></param>
+        /// <param name="type"></param>
+        public FREEBUSY(IEnumerable<PERIOD> periods, FBTYPE type = FBTYPE.FREE)
         {
-            Periods = periods;
             Type = type;
+            Periods = periods.NullOrEmpty()
+                ? new List<PERIOD>()
+                : new List<PERIOD>(periods);
         }
 
-        public bool Equals(FREEBUSY_INFO other)
+        public FREEBUSY(IFREEBUSY_PROPERTY other)
+        {
+            Type = other.Type;
+            Periods = other.Periods.NullOrEmpty()
+                ? new List<PERIOD>()
+                : new List<PERIOD>(other.Periods);
+        }
+
+        public FREEBUSY(string value)
+        {
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+
+            var trimmed = Regex.Replace(value, @"\s", string.Empty);
+            var pattern =
+                @"^FREEBUSY(;(?<fbtype>FBTYPE=(FREE|BUSY|BUSY-UNAVAILABLE|BUSY-TENTATIVE)))?:(?<periods>(((((\p{L})+)*(\/)*((\p{L}+\p{P}*\s*)+):)*(\d{2,4})(\d{1,2})(\d{1,2})(T(\d{1,2})(\d{1,2})(\d{1,2})Z)?/(((\p{L})+)*(\/)*((\p{L}+\p{P}*\s*)+):)*(\d{2,4})(\d{1,2})(\d{1,2})(T(\d{1,2})(\d{1,2})(\d{1,2})Z)?)|((((\p{L})+)*(\/)*((\p{L}+\p{P}*\s*)+):)*(\d{2,4})(\d{1,2})(\d{1,2})(T(\d{1,2})(\d{1,2})(\d{1,2})Z)?/(\-)?P((\d*)W)?((\d*)D)?(T((\d*)H)?((\d*)M)?((\d*)S)?)?),?)+)$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(trimmed, pattern, options)) throw new FormatException("value");
+            foreach (Match match in regex.Matches(trimmed))
+            {
+                if (match.Groups["fbtype"].Success)
+                {
+                    FBTYPE type;
+                    if (!Enum.TryParse(match.Groups["fbtype"].Value, true, out type))
+                        throw new FormatException("value");
+                    Type = type;
+                }
+                if (match.Groups["periods"].Success)
+                {
+                    var lines = match.Groups["periods"].Value.Split(new[] {',', ' '},
+                        StringSplitOptions.RemoveEmptyEntries);
+
+                    Periods.AddRange(lines.Select(x => new PERIOD(x)));
+                }
+            }
+        }
+
+        public bool Equals(FREEBUSY other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -1087,7 +1432,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((FREEBUSY_INFO)obj);
+            return Equals((FREEBUSY) obj);
         }
 
         public override int GetHashCode()
@@ -1095,12 +1440,12 @@ namespace reexjungle.xcal.domain.models
             return Id.GetHashCode();
         }
 
-        public static bool operator ==(FREEBUSY_INFO left, FREEBUSY_INFO right)
+        public static bool operator ==(FREEBUSY left, FREEBUSY right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(FREEBUSY_INFO left, FREEBUSY_INFO right)
+        public static bool operator !=(FREEBUSY left, FREEBUSY right)
         {
             return !Equals(left, right);
         }
@@ -1113,16 +1458,15 @@ namespace reexjungle.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("FREEBUSY");
-            if (Type != FBTYPE.UNKNOWN) sb.AppendFormat(";{0}", Type);
+            if (Type != FBTYPE.NONE) sb.AppendFormat(";{0}", Type);
             sb.Append(":");
 
-            if (!Periods.NullOrEmpty())
+            if (Periods.Count > 0)
             {
                 var last = Periods.Last();
                 foreach (var period in Periods)
                 {
-                    if (period != last) sb.AppendFormat("{0}, ", period);
-                    else sb.AppendFormat("{0}", period);
+                    sb.AppendFormat(period != last ? "{0}, " : "{0}", period);
                 }
             }
             return sb.ToString();
@@ -1162,10 +1506,7 @@ namespace reexjungle.xcal.domain.models
         public string Text
         {
             get { return text; }
-            set
-            {
-                text = value;
-            }
+            set { text = value; }
         }
 
         public TZNAME()
@@ -1188,6 +1529,30 @@ namespace reexjungle.xcal.domain.models
             Text = tzname.Text;
         }
 
+        public TZNAME(string value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+
+            var pattern = @"^TZNAME(;(?<lang>LANGUAGE=\p{L}{2}\-\p{L}{2}))?:(?<text>(\P{L}*\p{L}\p{M}*\P{L}*)+)$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+            foreach (Match match in regex.Matches(value))
+            {
+                if (match.Groups["lang"].Success)
+                {
+                    Language = new LANGUAGE(match.Groups["lang"].Value);
+                }
+
+                if (match.Groups["text"].Success)
+                {
+                    Text = match.Groups["text"].Value;
+                }
+            }
+        }
+
         public bool Equals(TZNAME other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -1200,7 +1565,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((TZNAME)obj);
+            return Equals((TZNAME) obj);
         }
 
         public override int GetHashCode()
@@ -1225,13 +1590,13 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator <(TZNAME a, TZNAME b)
         {
-            if ((object)a == null || (object)b == null) return false;
+            if ((object) a == null || (object) b == null) return false;
             return a.CompareTo(b) < 0;
         }
 
         public static bool operator >(TZNAME a, TZNAME b)
         {
-            if ((object)a == null || (object)b == null) return false;
+            if ((object) a == null || (object) b == null) return false;
             return a.CompareTo(b) > 0;
         }
 
@@ -1244,7 +1609,7 @@ namespace reexjungle.xcal.domain.models
             var sb = new StringBuilder();
             sb.Append("TZNAME");
             if (language != null) sb.AppendFormat(";{0}", language);
-            sb.AppendFormat(":{0}", text);
+            else sb.AppendFormat(":{0}", text);
             return sb.ToString();
         }
     }
@@ -1259,6 +1624,8 @@ namespace reexjungle.xcal.domain.models
     [DataContract]
     public class ATTENDEE : IATTENDEE, IEquatable<ATTENDEE>, IContainsKey<Guid>
     {
+        private CAL_ADDRESS address;
+
         /// <summary>
         /// ID of the current Attendee
         /// </summary>
@@ -1269,7 +1636,19 @@ namespace reexjungle.xcal.domain.models
         /// Address of the Current Attendee
         /// </summary>
         [DataMember]
-        public URI Address { get; set; }
+        public CAL_ADDRESS Address
+        {
+            get { return address; }
+            set
+            {
+                if (value != null)
+                {
+                    address = !value.ToString().StartsWith("mailto:", StringComparison.OrdinalIgnoreCase)
+                        ? new CAL_ADDRESS(string.Format("mailto:{0}", value))
+                        : value;
+                }
+            }
+        }
 
         /// <summary>
         /// Calendar User Type of the Attendee
@@ -1302,19 +1681,19 @@ namespace reexjungle.xcal.domain.models
         /// Specifies the Delegate for current Attendee
         /// </summary>
         [DataMember]
-        public DELEGATE Delegatee { get; set; }
+        public DELEGATED_TO Delegatee { get; set; }
 
         /// <summary>
         /// Specifies the Delegator to the current Attendee
         /// </summary>
         [DataMember]
-        public DELEGATE Delegator { get; set; }
+        public DELEGATED_FROM Delegator { get; set; }
 
         /// <summary>
-        /// Specifyes the company or community that sends the Attendee
+        /// Specifies the company or community that sends the Attendee
         /// </summary>
         [DataMember]
-        public URI SentBy { get; set; }
+        public SENT_BY SentBy { get; set; }
 
         /// <summary>
         /// Common name of the Attendee
@@ -1326,7 +1705,7 @@ namespace reexjungle.xcal.domain.models
         /// Specifies a reference to a directory entry associated with the current Attendee
         /// </summary>
         [DataMember]
-        public URI Directory { get; set; }
+        public DIR Directory { get; set; }
 
         /// <summary>
         /// Native Language of the current Attendee
@@ -1340,16 +1719,98 @@ namespace reexjungle.xcal.domain.models
         public ATTENDEE()
         {
             Address = null;
-            CalendarUserType = CUTYPE.UNKNOWN;
+            CalendarUserType = CUTYPE.NONE;
             Member = null;
-            Role = ROLE.UNKNOWN;
-            Participation = PARTSTAT.UNKNOWN;
-            Rsvp = BOOLEAN.UNKNOWN;
+            Role = ROLE.NONE;
+            Participation = PARTSTAT.NONE;
+            Rsvp = BOOLEAN.FALSE;
             Delegatee = null;
             Delegator = null;
             SentBy = null;
             CN = null;
             Directory = null;
+        }
+
+        public ATTENDEE(string value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+
+            var pattern = @"^ATTENDEE(?<params>;(\w+\S*))*:(?<value>\w+:\S*)$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+            foreach (Match match in regex.Matches(value))
+            {
+                if (match.Groups["params"].Success)
+                {
+                    var parts = match.Groups["params"].Value.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var part in parts)
+                    {
+                        if (part.StartsWith("CUTYPE", StringComparison.OrdinalIgnoreCase))
+                        {
+                            CalendarUserType = part.ParseEnumParameter<CUTYPE>();
+                        }
+
+                        if (part.StartsWith("MEMBER", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Member = new MEMBER(part);
+                        }
+
+                        if (part.StartsWith("ROLE", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Role = part.ParseEnumParameter<ROLE>();
+                        }
+
+                        if (part.StartsWith("ROLE", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Participation = part.ParseEnumParameter<PARTSTAT>();
+                        }
+
+                        if (part.StartsWith("RSVP", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Rsvp = part.ParseEnumParameter<BOOLEAN>();
+                        }
+
+                        if (part.StartsWith("DELEGATED-TO", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Delegatee = new DELEGATED_TO(part);
+                        }
+
+                        if (part.StartsWith("DELEGATED-FROM", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Delegator = new DELEGATED_FROM(part);
+                        }
+
+                        if (part.StartsWith("SENT-BY", StringComparison.OrdinalIgnoreCase))
+                        {
+                            SentBy = new SENT_BY(part);
+                        }
+
+                        if (part.StartsWith("CN", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var names = part.Split(new[] {'='}, StringSplitOptions.RemoveEmptyEntries);
+                            if (names.Length < 2) throw new FormatException("Invalid Common Name Format");
+                            CN = names[1];
+                        }
+                        if (part.StartsWith("DIR", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Directory = new DIR(part);
+                        }
+
+                        if (part.StartsWith("LANGUAGE", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Language = new LANGUAGE(part);
+                        }
+                    }
+                }
+
+                if (match.Groups["value"].Success)
+                {
+                    Address = new CAL_ADDRESS(match.Groups["value"].Value);
+                }
+            }
         }
 
         /// <summary>
@@ -1364,14 +1825,14 @@ namespace reexjungle.xcal.domain.models
             if (Member != null) sb.AppendFormat(";{0}", Member);
             if (Role != default(ROLE)) sb.AppendFormat(";ROLE={0}", Role);
             if (Participation != default(PARTSTAT)) sb.AppendFormat(";PARTSTAT={0}", Participation);
-            if (Rsvp != BOOLEAN.UNKNOWN) sb.AppendFormat(";RSVP={0}", Rsvp);
-            if (Delegatee != null) sb.AppendFormat(";DELEGATED-TO={0}", Delegatee);
-            if (Delegator != null) sb.AppendFormat(";DELEGATED-FROM={0}", Delegator);
-            if (SentBy != null) sb.AppendFormat("SENT-BY=\"mailto:{0}\"", SentBy);
+            if (Rsvp != BOOLEAN.TRUE) sb.AppendFormat(";RSVP={0}", Rsvp);
+            if (Delegatee != null) sb.AppendFormat(";{0}", Delegatee);
+            if (Delegator != null) sb.AppendFormat(";{0}", Delegator);
+            if (SentBy != null) sb.AppendFormat(";{0}", SentBy);
             if (!string.IsNullOrEmpty(CN)) sb.AppendFormat(";CN={0}", CN);
-            if (Directory != null) sb.AppendFormat(";DIR={0}", Directory);
+            if (Directory != null) sb.AppendFormat(";{0}", Directory);
             if (Language != null) sb.AppendFormat(";{0}", Language);
-            sb.AppendFormat(":mailto:{0}", Address);
+            sb.AppendFormat(":{0}", Address);
             return sb.ToString();
         }
 
@@ -1387,7 +1848,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((ATTENDEE)obj);
+            return Equals((ATTENDEE) obj);
         }
 
         public override int GetHashCode()
@@ -1412,6 +1873,8 @@ namespace reexjungle.xcal.domain.models
     [DataContract]
     public class ORGANIZER : IORGANIZER, IEquatable<ORGANIZER>, IContainsKey<Guid>
     {
+        private CAL_ADDRESS address;
+
         /// <summary>
         /// ID of the Organizer
         /// </summary>
@@ -1422,7 +1885,19 @@ namespace reexjungle.xcal.domain.models
         /// Address of an Organizer
         /// </summary>
         [DataMember]
-        public URI Address { get; set; }
+        public CAL_ADDRESS Address
+        {
+            get { return address; }
+            set
+            {
+                if (value != null)
+                {
+                    address = !value.ToString().StartsWith("mailto:", StringComparison.OrdinalIgnoreCase)
+                        ? new CAL_ADDRESS(string.Format("mailto:{0}", value))
+                        : value;
+                }
+            }
+        }
 
         /// <summary>
         /// Common or Display Name associated with "Organizer"
@@ -1434,13 +1909,13 @@ namespace reexjungle.xcal.domain.models
         /// Directory information associated with "Organizer"
         /// </summary>
         [DataMember]
-        public URI Directory { get; set; }
+        public DIR Directory { get; set; }
 
         /// <summary>
         /// Specifies another calendar user that is acting on behalf of the Organizer
         /// </summary>
         [DataMember]
-        public URI SentBy { get; set; }
+        public SENT_BY SentBy { get; set; }
 
         /// <summary>
         /// Native Language of the Organizer
@@ -1466,19 +1941,67 @@ namespace reexjungle.xcal.domain.models
             Language = organizer.Language;
         }
 
+        public ORGANIZER(string value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+
+            var pattern = @"^ORGANIZER(?<params>;(\w+\S*))*:(?<address>\w+:\S*)$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+            foreach (Match match in regex.Matches(value))
+            {
+                if (match.Groups["params"].Success)
+                {
+                    var parts = match.Groups["params"].Value.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var part in parts)
+                    {
+                        if (part.StartsWith("SENT-BY", StringComparison.OrdinalIgnoreCase))
+                        {
+                            SentBy = new SENT_BY(part);
+                        }
+
+                        if (part.StartsWith("CN", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var names = part.Split(new[] {'='}, StringSplitOptions.RemoveEmptyEntries);
+                            if (names.Length < 2) throw new FormatException("Invalid Common Name Format");
+                            CN = names[1];
+                        }
+                        if (part.StartsWith("DIR", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Directory = new DIR(part);
+                        }
+
+                        if (part.StartsWith("LANGUAGE", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Language = new LANGUAGE(part);
+                        }
+                    }
+                }
+
+                if (match.Groups["address"].Success)
+                {
+                    var address = match.Groups["address"].Value;
+                    Address = new CAL_ADDRESS(address);
+                }
+            }
+        }
+
         /// <summary>
         /// Overloaded ToString Method
         /// </summary>
-        /// <returns>String Representation of the Organizer oroperty in form of "ORGANIZER;CN;Directory;SentBy;Language:Address"</returns>
+        /// <returns>String Representation of the Organizer property"</returns>
         public override string ToString()
         {
             var sb = new StringBuilder();
             sb.Append("ORGANIZER");
             if (CN != null) sb.AppendFormat(";CN={0}", CN);
             if (Directory != null) sb.AppendFormat(";{0}", Directory);
-            if (SentBy != null) sb.AppendFormat(";SENT-BY=\"mailto:{0}\"", SentBy);
+            if (SentBy != null) sb.AppendFormat(";{0}", SentBy);
             if (Language != null) sb.AppendFormat(";{0}", Language);
-            sb.AppendFormat(":mailto:{0}", Address);
+            sb.AppendFormat(":{0}", Address);
             return sb.ToString();
         }
 
@@ -1494,7 +2017,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((ORGANIZER)obj);
+            return Equals((ORGANIZER) obj);
         }
 
         public override int GetHashCode()
@@ -1560,18 +2083,62 @@ namespace reexjungle.xcal.domain.models
         {
             Value = default(DATE_TIME);
             TimeZoneId = null;
-            Range = RANGE.UNKNOWN;
+            Range = RANGE.NONE;
         }
 
-        /// <summary>
+        ///  <summary>
         ///
-        /// </summary>
-        /// <param name="value"> Gets or sets the Time when the original recurrence instance would occur</param>
-        /// <param name="tzid">ID of the  current Time Zone</param>
+        ///  </summary>
+        ///  <param name="value"> Gets or sets the Time when the original recurrence instance would occur</param>
+        /// <param name="range"></param>
         public RECURRENCE_ID(DATE_TIME value, RANGE range = RANGE.THISANDFUTURE)
         {
             Value = value;
             Range = range;
+        }
+
+        public RECURRENCE_ID(string value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+
+            var pattern =
+                @"^RECURRENCE-ID(?<params>;(\w+\S*))*:(?<values>((((TZID=((\P{L}*\p{L}\p{M}*\P{L}*)+)?/((\P{L}*\p{L}\p{M}*\P{L}*)+)):)?(\d{2,4})(\d{1,2})(\d{1,2})(T(\d{1,2})(\d{1,2})(\d{1,2})(Z)?)?),?)+)$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+            foreach (Match match in regex.Matches(value))
+            {
+                if (match.Groups["params"].Success)
+                {
+                    var parts = match.Groups["params"].Value.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var part in parts)
+                    {
+                        if (part.StartsWith("VALUE", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var dateType = part.ParseEnumParameter<VALUE>();
+                            if (dateType != VALUE.DATE && dateType != VALUE.DATE_TIME)
+                                throw new FormatException("Invalid VALUE format");
+                        }
+
+                        if (part.StartsWith("TZID", StringComparison.OrdinalIgnoreCase))
+                        {
+                            TimeZoneId = new TZID(part);
+                        }
+
+                        if (part.StartsWith("RANGE", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Range = part.ParseEnumParameter<RANGE>();
+                        }
+                    }
+                }
+
+                if (match.Groups["value"].Success)
+                {
+                    Value = new DATE_TIME(match.Groups["value"].Value);
+                }
+            }
         }
 
         /// <summary>
@@ -1583,7 +2150,7 @@ namespace reexjungle.xcal.domain.models
             var sb = new StringBuilder();
             sb.Append("RECURRENCE-ID");
             if (TimeZoneId != null) sb.AppendFormat(";{0}", TimeZoneId);
-            if (Range != RANGE.UNKNOWN) sb.AppendFormat(";RANGE={0}", Range);
+            if (Range != RANGE.NONE) sb.AppendFormat(";RANGE={0}", Range);
             sb.AppendFormat(":{0}", Value);
             return sb.ToString();
         }
@@ -1600,7 +2167,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((RECURRENCE_ID)obj);
+            return Equals((RECURRENCE_ID) obj);
         }
 
         public override int GetHashCode()
@@ -1628,6 +2195,7 @@ namespace reexjungle.xcal.domain.models
         /// <summary>
         /// ID of the Relationship or Reference between one calendar component and another
         /// </summary>
+        [DataMember]
         public Guid Id { get; set; }
 
         /// <summary>
@@ -1645,18 +2213,45 @@ namespace reexjungle.xcal.domain.models
         public RELATEDTO()
         {
             Reference = null;
-            RelationshipType = RELTYPE.UNKNOWN;
+            RelationshipType = RELTYPE.NONE;
         }
 
         /// <summary>
         /// Constructor specifying the Text and Type properties of the Related_To property
         /// </summary>
-        /// <param name="text">Description of the relationship or reference to another Calendar component</param>
+        /// <param name="reference">Description of the relationship or reference to another Calendar component</param>
         /// <param name="type"> Type of the relationship: dafault - PARENT, can be: CHILD and SIBLING</param>
-        public RELATEDTO(string text, RELTYPE type = RELTYPE.UNKNOWN)
+        public RELATEDTO(string reference, RELTYPE type = RELTYPE.NONE)
         {
-            Reference = text;
+            if (reference == null) throw new ArgumentNullException("reference");
+            Reference = reference;
             RelationshipType = type;
+        }
+
+        public RELATEDTO(string value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+
+            var pattern =
+                @"^RELATED-TO(;(?<reltype>RELTYPE=(PARENT|CHILD|SIBLING))?:(?<reference>(\P{L}*\p{L}\p{M}*\P{L}*)+))$";
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+            foreach (Match match in regex.Matches(value))
+            {
+                if (match.Groups["reltype"].Success)
+                {
+                    RelationshipType =
+                        match.Groups["reltype"].Value.ParseEnumParameter<RELTYPE>();
+                }
+
+                if (match.Groups["reference"].Success)
+                {
+                    Reference = match.Groups["reference"].Value;
+                }
+            }
         }
 
         /// <summary>
@@ -1668,7 +2263,7 @@ namespace reexjungle.xcal.domain.models
             if (string.IsNullOrEmpty(Reference)) return string.Empty;
             var sb = new StringBuilder();
             sb.Append("RELATED-TO");
-            if (RelationshipType != RELTYPE.UNKNOWN) sb.AppendFormat(";{0}", RelationshipType);
+            if (RelationshipType != RELTYPE.NONE) sb.AppendFormat(";{0}", RelationshipType);
             sb.AppendFormat(":{0}", Reference);
             return sb.ToString();
         }
@@ -1685,7 +2280,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((RELATEDTO)obj);
+            return Equals((RELATEDTO) obj);
         }
 
         public override int GetHashCode()
@@ -1701,6 +2296,87 @@ namespace reexjungle.xcal.domain.models
         public static bool operator !=(RELATEDTO left, RELATEDTO right)
         {
             return !Equals(left, right);
+        }
+    }
+
+    [DataContract]
+    public class URL: IContainsKey<Guid>, IEquatable<URL>
+    {
+        [DataMember]
+        public Guid Id { get; set; }
+
+        [DataMember]
+        public Uri Uri { get; set; }
+
+        public URL()
+        {
+        }
+
+        public URL(Uri uri)
+        {
+            if (uri == null) throw new ArgumentNullException("uri");
+            Uri = new Uri(uri.ToString());
+        }
+
+        public URL(string value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+
+            const string pattern = @"^RECURRENCE-ID(?<params>;(\w+\S*))*:(?<value>((\w+:\S+))$";
+            const RegexOptions options =
+                RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+            foreach (Match match in regex.Matches(value))
+            {
+                if (match.Groups["value"].Success)
+                {
+                    Uri = new Uri(match.Groups["value"].Value);
+                }
+            }
+        }
+
+        public bool Equals(URL other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return base.Equals(other) && Id.Equals(other.Id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((URL) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (base.GetHashCode()*397) ^ Id.GetHashCode();
+            }
+        }
+
+        public static bool operator ==(URL left, URL right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(URL left, URL right)
+        {
+            return !Equals(left, right);
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("URL");
+            sb.AppendFormat(":{0}", Uri);
+            return sb.ToString();
         }
     }
 
@@ -1729,29 +2405,67 @@ namespace reexjungle.xcal.domain.models
         [DataMember]
         public TZID TimeZoneId { get; set; }
 
-        /// <summary>
-        /// Format of the Exception Date
-        /// </summary>
-        [DataMember]
-        public VALUE ValueType { get; set; }
-
         public EXDATE()
         {
             DateTimes = new List<DATE_TIME>();
             TimeZoneId = null;
-            ValueType = VALUE.UNKNOWN;
         }
 
         /// <summary>
         /// Constructor based on the set of Dates of Recurrence Exceptions and ID of the Time Zone
         /// </summary>
-        /// <param name="values">Set of Dates of Recurrence Exceptions</param>
+        /// <param name="dateTimes">Set of Dates of Recurrence Exceptions</param>
         /// <param name="tzid"></param>
-        public EXDATE(List<DATE_TIME> values, TZID tzid, VALUE value_type = VALUE.UNKNOWN)
+        public EXDATE(IEnumerable<DATE_TIME> dateTimes, TZID tzid)
         {
-            DateTimes = values;
+            DateTimes = dateTimes.NullOrEmpty()
+                ? new List<DATE_TIME>()
+                : new List<DATE_TIME>(dateTimes);
+
             TimeZoneId = tzid;
-            ValueType = value_type;
+        }
+
+        public EXDATE(string value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+
+            var trimmed = Regex.Replace(value, @"\s", string.Empty);
+            const string pattern =
+                @"^EXDATE(?<params>;(\w+\S*))*:(?<values>((((TZID=((\P{L}*\p{L}\p{M}*\P{L}*)+)?/((\P{L}*\p{L}\p{M}*\P{L}*)+)):)?(\d{2,4})(\d{1,2})(\d{1,2})(T(\d{1,2})(\d{1,2})(\d{1,2})(Z)?)?),?)+)$";
+            const RegexOptions options =
+                RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(trimmed, pattern, options)) throw new FormatException("value");
+
+            foreach (Match match in regex.Matches(trimmed))
+            {
+                if (match.Groups["params"].Success)
+                {
+                    var parts = match.Groups["params"].Value.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var part in parts)
+                    {
+                        if (part.StartsWith("VALUE", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var dateType = part.ParseEnumParameter<VALUE>();
+                            if (dateType != VALUE.DATE && dateType != VALUE.DATE_TIME)
+                                throw new FormatException("Invalid VALUE format");
+                        }
+
+                        if (part.StartsWith("TZID", StringComparison.OrdinalIgnoreCase))
+                        {
+                            TimeZoneId = new TZID(part);
+                        }
+                    }
+                }
+
+                if (match.Groups["values"].Success)
+                {
+                    var values = match.Groups["values"].Value.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
+                    DateTimes.AddRange(values.Select(x => new DATE_TIME(x)));
+                }
+            }
         }
 
         /// <summary>
@@ -1760,15 +2474,14 @@ namespace reexjungle.xcal.domain.models
         /// <returns>String representation of the EXDATE property in form of "EXDATE;TimeZone:comma splited dates of exctptions"</returns>
         public override string ToString()
         {
-            if (DateTimes.NullOrEmpty()) return base.ToString();
+            if (DateTimes.NullOrEmpty()) return string.Empty;
 
             var sb = new StringBuilder();
             sb.Append("EXDATE");
-            
-            if (ValueType != VALUE.UNKNOWN) sb.AppendFormat(";VALUE={0}", ValueType);
-            else if (TimeZoneId != null) sb.AppendFormat(";{0}", TimeZoneId);
-            sb.Append(":"); 
-            
+
+            if (TimeZoneId != null) sb.AppendFormat(";{0}", TimeZoneId);
+            sb.Append(":");
+
             var last = DateTimes.Last();
             foreach (var datetime in DateTimes)
             {
@@ -1789,7 +2502,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((EXDATE)obj);
+            return Equals((EXDATE) obj);
         }
 
         public override int GetHashCode()
@@ -1849,7 +2562,7 @@ namespace reexjungle.xcal.domain.models
             DateTimes = new List<DATE_TIME>();
             TimeZoneId = null;
             Periods = new List<PERIOD>();
-            ValueType = VALUE.UNKNOWN;
+            ValueType = VALUE.NONE;
         }
 
         /// <summary>
@@ -1857,7 +2570,7 @@ namespace reexjungle.xcal.domain.models
         /// </summary>
         /// <param name="values">List of DATE-TIME values for recurring events, to-dos, journal entries or time-zone definitions</param>
         /// <param name="tzid">ID of the current Time Zone</param>
-        public RDATE(List<DATE_TIME> values, TZID tzid = null, VALUE value_type = VALUE.UNKNOWN)
+        public RDATE(List<DATE_TIME> values, TZID tzid = null, VALUE value_type = VALUE.NONE)
         {
             DateTimes = values;
             TimeZoneId = tzid;
@@ -1870,12 +2583,66 @@ namespace reexjungle.xcal.domain.models
         /// </summary>
         /// <param name="periods">List of Periods between recurring events, to-dos, journal entries or time-zone definitions</param>
         /// <param name="tzid">ID of the current Time Zone</param>
-        public RDATE(List<PERIOD> periods, TZID tzid = null, VALUE value_type = VALUE.UNKNOWN)
+        public RDATE(List<PERIOD> periods, TZID tzid = null, VALUE value_type = VALUE.NONE)
         {
             DateTimes = new List<DATE_TIME>();
             Periods = periods;
             TimeZoneId = tzid;
             ValueType = value_type;
+        }
+
+        public RDATE(string value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+
+            var trimmed = Regex.Replace(value, @"\s", string.Empty);
+            const string pattern =
+                @"^RDATE(;(?<params>(\w+\S*)))?:(?<values>(((((TZID=((\P{L}*\p{L}\p{M}*\P{L}*)+)?/((\P{L}*\p{L}\p{M}*\P{L}*)+)):)?(\d{2,4})(\d{1,2})(\d{1,2})(T(\d{1,2})(\d{1,2})(\d{1,2})(Z)?)?)|((\d{2,4}\d{1,2}\d{1,2})(T\d{1,2}\d{1,2}\d{1,2}Z?)?/(\d{2,4}\d{1,2}\d{1,2})(T\d{1,2}\d{1,2}\d{1,2}Z?)?)|((\d{2,4}\d{1,2}\d{1,2})(T\d{1,2}\d{1,2}\d{1,2}Z?)?/(\-)?P(\d*W)?(\d*D)?(T(\d*H)?((\d*)M)?((\d*)S)?)?)),?)+)$";
+
+            const RegexOptions options =
+                RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(trimmed, pattern, options)) throw new FormatException("value");
+
+            string[] values = null;
+            foreach (Match match in regex.Matches(trimmed))
+            {
+                if (match.Groups["params"].Success)
+                {
+                    var parts = match.Groups["params"].Value.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var part in parts)
+                    {
+                        if (part.StartsWith("VALUE", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var valueType = part.ParseEnumParameter<VALUE>();
+                            if (valueType != VALUE.DATE && valueType != VALUE.DATE_TIME && valueType != VALUE.PERIOD)
+                                throw new FormatException("Invalid VALUE format");
+                        }
+
+                        if (part.StartsWith("TZID", StringComparison.OrdinalIgnoreCase))
+                        {
+                            TimeZoneId = new TZID(part);
+                        }
+                    }
+                }
+
+                if (match.Groups["values"].Success)
+                {
+                    values = match.Groups["values"].Value.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
+                }
+            }
+
+            if ((ValueType == VALUE.DATE || ValueType == VALUE.DATE_TIME) && !values.NullOrEmpty())
+            {
+                DateTimes = values.Select(x => new DATE_TIME(x)).ToList();
+            }
+
+            if (ValueType == VALUE.PERIOD && !values.NullOrEmpty())
+            {
+                Periods = values.Select(x => new PERIOD(x)).ToList();
+            }
         }
 
         /// <summary>
@@ -1886,7 +2653,7 @@ namespace reexjungle.xcal.domain.models
         {
             var sb = new StringBuilder();
             sb.Append("RDATE");
-            if (ValueType != VALUE.UNKNOWN) sb.AppendFormat(";VALUE={0}", ValueType);
+            if (ValueType != VALUE.NONE) sb.AppendFormat(";VALUE={0}", ValueType);
             else if (TimeZoneId != null) sb.AppendFormat(";{0}", TimeZoneId);
             sb.AppendFormat(":");
             if (!DateTimes.NullOrEmpty())
@@ -1894,8 +2661,7 @@ namespace reexjungle.xcal.domain.models
                 var last = DateTimes.Last();
                 foreach (var datetime in DateTimes)
                 {
-                    if (datetime != last) sb.AppendFormat("{0}, ", datetime);
-                    else sb.AppendFormat("{0}", datetime);
+                    sb.AppendFormat(datetime != last ? "{0}, " : "{0}", datetime);
                 }
             }
             else if (!Periods.NullOrEmpty())
@@ -1903,8 +2669,7 @@ namespace reexjungle.xcal.domain.models
                 var last = Periods.Last();
                 foreach (var period in Periods)
                 {
-                    if (period != last) sb.AppendFormat("{0}, ", period);
-                    else sb.AppendFormat("{0}", period);
+                    sb.AppendFormat(period != last ? "{0}, " : "{0}", period);
                 }
             }
             return sb.ToString();
@@ -1922,7 +2687,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((RDATE)obj);
+            return Equals((RDATE) obj);
         }
 
         public override int GetHashCode()
@@ -1985,7 +2750,7 @@ namespace reexjungle.xcal.domain.models
             type = TriggerType.Related;
         }
 
-        public TRIGGER(DURATION duration, RELATED related = RELATED.UNKNOWN, VALUE valueType = VALUE.UNKNOWN)
+        public TRIGGER(DURATION duration, RELATED related = RELATED.NONE, VALUE valueType = VALUE.NONE)
         {
             Duration = duration;
             Related = related;
@@ -1993,11 +2758,63 @@ namespace reexjungle.xcal.domain.models
             type = TriggerType.Related;
         }
 
-        public TRIGGER(DATE_TIME datetime, VALUE valueType = VALUE.UNKNOWN)
+        public TRIGGER(DATE_TIME datetime, VALUE valueType = VALUE.NONE)
         {
             ValueType = valueType;
             DateTime = datetime;
             type = TriggerType.Absolute;
+        }
+
+        public TRIGGER(ITRIGGER other)
+        {
+            DateTime = other.DateTime;
+            ValueType = other.ValueType;
+            Related = other.Related;
+            Duration = other.Duration;
+        }
+
+        public TRIGGER(string value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+
+            var trimmed = Regex.Replace(value, @"\s", string.Empty);
+            const string pattern =
+                @"^TRIGGER(;((?<valueType>VALUE=DURATION|VALUE=DATE-TIME)?(?<related>RELATED=(START|END))?))?:
+((?<trigrel>((\-)?P((\d*)W)?((\d*)D)?(T((\d*)H)?((\d*)M)?((\d*)S)?)?))|
+((?<trigabs>((?<tzid>TZID=((\P{L}*\p{L}\p{M}*\P{L}*)+)?/((\P{L}*\p{L}\p{M}*\P{L}*)+)):)?(\d{2,4})(\d{1,2})(\d{1,2})(T(\d{1,2})(\d{1,2})(\d{1,2})(Z)?)?)))$";
+
+            const RegexOptions options =
+                RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(trimmed, pattern, options)) throw new FormatException("value");
+
+            foreach (Match match in regex.Matches(trimmed))
+            {
+                if (match.Groups["valueType"].Success)
+                {
+                    ValueType = match.Groups["valueType"].Value.ParseEnumParameter<VALUE>();
+                    if (ValueType != VALUE.DURATION && ValueType != VALUE.DATE_TIME)
+                        throw new FormatException("Not Supported format");
+                }
+
+                if (match.Groups["related"].Success)
+                {
+                    Related = match.Groups["related"].Value.ParseEnumParameter<RELATED>();
+                    if (Related == RELATED.NONE) throw new FormatException("Not Supported format");
+                }
+
+                if (match.Groups["trigrel"].Success)
+                {
+                    Duration = new DURATION(match.Groups["trigrel"].Value);
+                }
+
+                if (match.Groups["trigabs"].Success)
+                {
+                    DateTime = new DATE_TIME(match.Groups["trigabs"].Value);
+                }
+            }
         }
 
         /// <summary>
@@ -2034,7 +2851,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((TRIGGER)obj);
+            return Equals((TRIGGER) obj);
         }
 
         public override int GetHashCode()
@@ -2055,74 +2872,112 @@ namespace reexjungle.xcal.domain.models
 
     #endregion Alarm Component Properties
 
-    #region Miscellaneous Component Properties
+    #region Miscellaneous Properties
 
-    /// <summary>
-    /// Internet Assigned Numbers Authority properties
-    /// </summary>
-    /// <typeparam name="TValue">Specific Value Type</typeparam>
+
     [DataContract]
-    [KnownType(typeof(IANA_PROPERTY))]
-    [KnownType(typeof(X_PROPERTY))]
-    [KnownType(typeof(TZID))]
-    [KnownType(typeof(FMTTYPE))]
-    [KnownType(typeof(LANGUAGE))]
-    [KnownType(typeof(DELEGATE))]
-    [KnownType(typeof(MEMBER))]
-    public abstract class MISC_PROPERTY<TValue> : IMISC_PROPERTY<TValue>, IContainsKey<Guid>, IEquatable<MISC_PROPERTY<TValue>>
+    public class IANA_PROPERTY: IIANA_PROPERTY, IEquatable<IANA_PROPERTY>
     {
-        [DataMember]
-        public string Name { get; set; }
-
         [DataMember]
         public Guid Id { get; set; }
 
         /// <summary>
-        /// The value assigned to the IANA-Property
+        /// An IANA-registered property name.
         /// </summary>
         [DataMember]
-        public TValue Value { get; set; }
+        public string Token { get; set; }
 
         /// <summary>
-        /// List of any nescessary parameters
+        /// A list of registered iCalendar parameters. Any iCalendar parameter can be specified in the list.
         /// </summary>
         [DataMember]
         [Ignore]
         public List<object> Parameters { get; set; }
 
+        /// <summary>
+        /// A value for the IANA-registered property. The default value type is TEXT (string) although any value type can be set.
+        /// </summary>
         [DataMember]
-        public VALUE ValueType { get; set; }
+        public object Value { get; set; }
 
-        protected MISC_PROPERTY()
+        public IANA_PROPERTY()
         {
+            Parameters = new List<object>();
         }
 
-        /// <summary>
-        /// Constructor based on the value of the IANA-Property
-        /// </summary>
-        /// <param name="value"> The value assigned to the IANA-Property</param>
-        protected MISC_PROPERTY(string name, TValue value, List<object> parameters)
+        public IANA_PROPERTY(string token, object value): this()
         {
-            Name = name;
+            if (string.IsNullOrWhiteSpace(token) || string.IsNullOrEmpty(token)) throw new ArgumentException("token");
+            if (value == null) throw new ArgumentNullException("value");
+
             Value = value;
-            Parameters = parameters;
         }
 
-        /// <summary>
-        /// Overloaded ToString method
-        /// </summary>
-        /// <returns>String Representation of the IANA-Property in form of "Key;semicolon separated Parameters:value"</returns>
+        public IANA_PROPERTY(string token, IEnumerable<object> parameters, object value)
+        {
+            if (string.IsNullOrWhiteSpace(token) || string.IsNullOrEmpty(token)) throw new ArgumentException("token");
+            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (value == null) throw new ArgumentNullException("value");
+
+            Parameters = parameters.Any() 
+                ? new List<object>(parameters) 
+                : new List<object>();
+
+            Value = value;
+
+        }
+
+        public IANA_PROPERTY(string serialized, Func<string, IEnumerable<object>> paramsCtor = null, Func<string, object> valueCtor = null)
+        {
+            if (serialized == null) throw new ArgumentNullException("serialized");
+
+            const string tokenPattern = @"(?<token>(\w[-]?)+)";
+            const string paramsPattern = @"(?<params>(;(?:\w[-]?)+=(\w|\\:|\\;|\\,|\d)+)+)*";
+            const string valuesPattern = @"(?<value>((\w\S*)|\d)+)";
+
+            string pattern = string.Format(@"^{0}{1}:{2}$", tokenPattern, paramsPattern, valuesPattern);
+
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+              RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(serialized, pattern, options)) throw new FormatException("value");
+            foreach (Match match in regex.Matches(serialized))
+            {
+                if (match.Groups["params"].Success)
+                {
+                    var @params = match.Groups["params"].Value;
+                    var parameters = paramsCtor != null? paramsCtor(@params): @params.Split(new []{';'}, StringSplitOptions.RemoveEmptyEntries);
+                    if (parameters.NullOrEmpty())
+                        throw new FormatException("parameters");
+                    Parameters.AddRange(parameters);
+                }
+
+                if (match.Groups["value"].Success)
+                {
+                    var value = valueCtor != null ? valueCtor(match.Groups["value"].Value) : match.Groups["value"].Value;
+                    if (value == null)
+                        throw new FormatException("value");
+                    Value = value;
+                }
+            }
+        }
+
         public override string ToString()
         {
+            if (Token == null) return string.Empty;
+
             var sb = new StringBuilder();
-            sb.Append(Name);
-            foreach (var parameter in Parameters) sb.AppendFormat(";{0}", parameter);
-            if (ValueType == VALUE.UNKNOWN) sb.AppendFormat(":{0}", Value);
-            else sb.AppendFormat("VALUE={0}:{1}", ValueType, Value);
+            sb.Append(Token);
+            foreach (var parameter in Parameters)
+            {
+                sb.AppendFormat(";{0}", parameter);
+            }
+            sb.AppendFormat(":{0}", Value);
             return sb.ToString();
         }
 
-        public bool Equals(MISC_PROPERTY<TValue> other)
+        public bool Equals(IANA_PROPERTY other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -2133,8 +2988,8 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((MISC_PROPERTY<TValue>)obj);
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((IANA_PROPERTY) obj);
         }
 
         public override int GetHashCode()
@@ -2142,55 +2997,119 @@ namespace reexjungle.xcal.domain.models
             return Id.GetHashCode();
         }
 
-        public static bool operator ==(MISC_PROPERTY<TValue> left, MISC_PROPERTY<TValue> right)
+        public static bool operator ==(IANA_PROPERTY left, IANA_PROPERTY right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(MISC_PROPERTY<TValue> left, MISC_PROPERTY<TValue> right)
+        public static bool operator !=(IANA_PROPERTY left, IANA_PROPERTY right)
         {
             return !Equals(left, right);
         }
     }
 
     [DataContract]
-    public class IANA_PROPERTY : MISC_PROPERTY<object>
+    public class X_PROPERTY: IX_PROPERTY, IEquatable<X_PROPERTY>
     {
-        public IANA_PROPERTY() { }
+        [DataMember]
+        public Guid Id { get; set; }
 
-        public IANA_PROPERTY(string name, object value, List<object> parameters)
-            : base(name, value, parameters)
-        {
-        }
-    }
+        /// <summary>
+        /// An custom property name. The name must have an &quot;X-&quot; prefix.
+        /// </summary>
+        [DataMember]
+        public string Name { get; set; }
 
-    [DataContract]
-    public class X_PROPERTY : MISC_PROPERTY<object>
-    {
+        /// <summary>
+        /// A list of registered iCalendar parameters. Any iCalendar parameter can be specified in the list.
+        /// </summary>
+        [DataMember]
+        public List<object> Parameters { get; set; }
+
+        /// <summary>
+        /// A value for the custom property. The default value type is TEXT (string) although any value type can be set.
+        /// </summary>
+        [DataMember]
+        public object Value { get; set; }
+
         public X_PROPERTY()
         {
+            Parameters = new List<object>();
         }
 
-        public X_PROPERTY(string name, object value, List<object> parameters)
-            : base(name, value, parameters)
+        public X_PROPERTY(string name, object value): this()
         {
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrEmpty(name)) throw new ArgumentException("token");
+            if (value == null) throw new ArgumentNullException("value");
+
+            Value = value;
+        }
+
+        public X_PROPERTY(string name, IEnumerable<object> parameters, object value)
+        {
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrEmpty(name)) throw new ArgumentException("token");
+            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (value == null) throw new ArgumentNullException("value");
+
+            Parameters = parameters.Any() 
+                ? new List<object>(parameters) 
+                : new List<object>();
+
+            Value = value;
+
+        }
+
+        public override string ToString()
+        {
+            if (Name == null) return string.Empty;
+
+            var sb = new StringBuilder();
+            sb.Append(Name);
+            foreach (var parameter in Parameters)
+            {
+                sb.AppendFormat(";{0}", parameter);
+            }
+            sb.AppendFormat(":{0}", Value);
+            return sb.ToString();
+        }
+
+        public bool Equals(X_PROPERTY other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Id.Equals(other.Id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((X_PROPERTY) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
+        public static bool operator ==(X_PROPERTY left, X_PROPERTY right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(X_PROPERTY left, X_PROPERTY right)
+        {
+            return !Equals(left, right);
         }
     }
 
     [DataContract]
-    public struct STATCODE : ISTATCODE, IEquatable<STATCODE>, IComparable<STATCODE>, IContainsKey<Guid>
+    public struct STATCODE : ISTATCODE, IEquatable<STATCODE>
     {
-        private Guid id;
         private uint l1;
         private uint l2;
-        private uint l3;
-
-        [DataMember]
-        public Guid Id
-        {
-            get { return id; }
-            set { id = value; }
-        }
+        private uint? l3;
 
         [DataMember]
         public uint L1
@@ -2207,44 +3126,83 @@ namespace reexjungle.xcal.domain.models
         }
 
         [DataMember]
-        public uint L3
+        public uint? L3
         {
             get { return l3; }
             set { l3 = value; }
         }
 
-        public STATCODE(uint l1, uint l2 = 0, uint l3 = 0)
+        public STATCODE(uint l1, uint l2 = 0, uint? l3 = null)
             : this()
         {
-            id = Guid.Empty;
-
             this.l1 = l1;
             this.l2 = l2;
             this.l3 = l3;
         }
 
+        public STATCODE(ISTATCODE other)
+        {
+            l1 = other.L1;
+            l2 = other.L2;
+            l3 = other.L3;
+        }
+
         public STATCODE(string value)
         {
-            id = Guid.Empty;
-            this.l1 = this.l2 = this.l3 = default(uint);
+            l1 = l2 = default(uint);
+            l3 = null;
 
-            //todo: Parser here
+            if (value == null) throw new ArgumentNullException("value");
+
+            var trimmed = Regex.Replace(value, @"\s", string.Empty);
+            const string pattern = @"^(?<l1>\d+).(?<l2>\d+)(.(?<l3>\d+))?$";
+
+            const RegexOptions options =
+                RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(trimmed, pattern, options)) throw new FormatException("value");
+
+            foreach (Match match in regex.Matches(trimmed))
+            {
+                if (match.Groups["l1"].Success)
+                {
+                    l1 = uint.Parse(match.Groups["l1"].Value);
+                }
+
+                if (match.Groups["l2"].Success)
+                {
+                    l2 = uint.Parse(match.Groups["l2"].Value);
+                }
+
+                if (match.Groups["l3"].Success)
+                {
+                    l3 = uint.Parse(match.Groups["l3"].Value);
+                }
+            }
         }
 
         public bool Equals(STATCODE other)
         {
-            return Id.Equals(other.Id);
+            return l1 == other.l1 && l2 == other.l2 && l3 == other.l3;
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            return obj is STATCODE && Equals((STATCODE)obj);
+            return obj is STATCODE && Equals((STATCODE) obj);
         }
 
         public override int GetHashCode()
         {
-            return Id.GetHashCode();
+            unchecked
+            {
+                var hashCode = (int) l1;
+                hashCode = (hashCode*397) ^ (int) l2;
+                hashCode = (hashCode*397) ^ l3.GetHashCode();
+                return hashCode;
+            }
         }
 
         public static bool operator ==(STATCODE left, STATCODE right)
@@ -2257,28 +3215,11 @@ namespace reexjungle.xcal.domain.models
             return !left.Equals(right);
         }
 
-        public int CompareTo(STATCODE other)
-        {
-            return L1.CompareTo(other.L1) +
-                L2.CompareTo(other.L2) +
-                L3.CompareTo(other.L3);
-        }
-
         public override string ToString()
         {
-            return (L3 != 0) ?
-                string.Format("{0:D1}.{1:D1}.{2:D1}", L1, L2, L3) :
-                string.Format("{0:D1}.{1:D1}", L1, L2);
-        }
-
-        public static bool operator <(STATCODE a, STATCODE b)
-        {
-            return a.CompareTo(b) < 0;
-        }
-
-        public static bool operator >(STATCODE a, STATCODE b)
-        {
-            return a.CompareTo(b) > 0;
+            return (L3.HasValue)
+                ? string.Format("{0}.{1}.{2}", L1, L2, L3)
+                : string.Format("{0}.{1}", L1, L2);
         }
     }
 
@@ -2298,7 +3239,7 @@ namespace reexjungle.xcal.domain.models
         /// Status code returned for a scheduling request
         /// </summary>
         [DataMember]
-        public ISTATCODE Code { get; set; }
+        public STATCODE Code { get; set; }
 
         /// <summary>
         /// Description of the status (what does the code mean)
@@ -2320,7 +3261,7 @@ namespace reexjungle.xcal.domain.models
 
         public REQUEST_STATUS()
         {
-            Code = null;
+            Code = default(STATCODE);
             Description = null;
             ExceptionData = null;
             Language = null;
@@ -2341,6 +3282,43 @@ namespace reexjungle.xcal.domain.models
             Language = language;
         }
 
+        public REQUEST_STATUS(string value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+
+            var trimmed = Regex.Replace(value, @"\s", string.Empty);
+            const string pattern = @"^REQUEST-STATUS(;(?<lang>LANGUAGE=(\w+)(\-(\w+))?))?:(?<statcode>(\d+).(\d+)(.(\d+))?)(;(?<desc>(\P{L}*\p{L}\p{M}*\P{L}*)+))(;(?<exdata>(\P{L}*\p{L}\p{M}*\P{L}*)+))?$";
+
+            const RegexOptions options =
+                RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(trimmed, pattern, options)) throw new FormatException("value");
+
+            foreach (Match match in regex.Matches(trimmed))
+            {
+                if (match.Groups["lang"].Success)
+                {
+                    Language = new LANGUAGE(match.Groups["lang"].Value);
+                }
+
+                if (match.Groups["statcode"].Success)
+                {
+                    Code = new STATCODE(match.Groups["statcode"].Value);
+                }
+
+                if (match.Groups["description"].Success)
+                {
+                    ExceptionData = match.Groups["description"].Value;
+                }
+                if (match.Groups["exdata"].Success)
+                {
+                    ExceptionData = match.Groups["exdata"].Value;
+                }
+            }
+        }
+
         /// <summary>
         /// Overloaded ToString method
         /// </summary>
@@ -2351,9 +3329,9 @@ namespace reexjungle.xcal.domain.models
             sb.Append("REQUEST-STATUS");
             if (Language != null) sb.AppendFormat(";{0}", Language);
             sb.AppendFormat(":{0}", Code);
-            sb.AppendFormat(";{0}", Description.EscapeStrings());
+            sb.AppendFormat(";{0}", Description);
             if (!string.IsNullOrEmpty(ExceptionData)) sb.AppendFormat(";{0}", ExceptionData);
-            return sb.ToString();
+            return sb.ToString().EscapeStrings();
         }
 
         public bool Equals(REQUEST_STATUS other)
@@ -2367,8 +3345,8 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((REQUEST_STATUS)obj);
+            if (obj.GetType() != GetType()) return false;
+            return Equals((REQUEST_STATUS) obj);
         }
 
         public override int GetHashCode()
