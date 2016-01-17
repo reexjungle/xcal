@@ -83,7 +83,7 @@ namespace reexjungle.xcal.tests.concretes.factories
 
         public LANGUAGE CreateLanguage()
         {
-            return new LANGUAGE(Pick<string>.RandomItemFrom(new[]
+            return new LANGUAGE("LANGUAGE=" + Pick<string>.RandomItemFrom(new[]
             {
                 "en",
                 "en-US",
@@ -127,7 +127,7 @@ namespace reexjungle.xcal.tests.concretes.factories
 
         public TZID CreateTimeZoneId()
         {
-            return new TZID(Pick<string>.RandomItemFrom(new[]
+            return new TZID("TZID=" + Pick<string>.RandomItemFrom(new[]
             {
                 string.Format("/{0}", "Greenwich"),
                 "America/New_York",

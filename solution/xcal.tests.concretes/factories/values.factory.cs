@@ -50,9 +50,8 @@ namespace reexjungle.xcal.tests.concretes.factories
                 "ir",
                 "ro",
                 "co.uk",
-                "net"   
+                "net"
         };
-
 
         public ValuesFactory(IKeyGenerator<Guid> keyGenerator)
         {
@@ -320,7 +319,7 @@ namespace reexjungle.xcal.tests.concretes.factories
         {
             return new CAL_ADDRESS(
                 string.Format("{0}@{1}.{2}",
-                Regex.Replace(username, @"\s","."),
+                Regex.Replace(username, @"\s", "."),
                 Pick<string>.RandomItemFrom(hostnames),
                 Pick<string>.RandomItemFrom(extensions)));
         }
@@ -339,10 +338,10 @@ namespace reexjungle.xcal.tests.concretes.factories
         public Uri CreateUri()
         {
             return new Uri(
-                string.Format("{0}{1}.{2}",
-                Pick<string>.RandomItemFrom(prefixes),
-                Pick<string>.RandomItemFrom(hostnames),
-                Pick<string>.RandomItemFrom(extensions)));
+                 string.Format("{0}://{1}.{2}",
+                 Pick<string>.RandomItemFrom(prefixes),
+                 Pick<string>.RandomItemFrom(hostnames),
+                 Pick<string>.RandomItemFrom(extensions)));
         }
 
         public IEnumerable<Uri> CreateUris(int quantity)

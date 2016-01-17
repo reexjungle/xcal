@@ -268,9 +268,9 @@ namespace reexjungle.xcal.domain.models
         public LANGUAGE(string value)
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
-            var pattern = @"^LANGUAGE=(?<tag>\w+)(\-(?<subtag>\w+))?$";
+            var pattern = @"^LANGUAGE=(?<tag>\w{2})(-(?<subtag>\w{2}))?$";
             if (!Regex.IsMatch(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
-                throw new FormatException("Invalid Format type");
+                throw new FormatException("Invalid Language Format type");
             foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
             {
                 if (match.Groups["tag"].Success) 

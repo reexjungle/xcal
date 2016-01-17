@@ -206,12 +206,12 @@ namespace reexjungle.xcal.tests.concretes.units
         [Fact]
         public void CheckHourlyRecurrenceRule()
         {
-            var x = factory.Create();
-            x.Start = new DATE_TIME(2014, 1, 1, 9, 0, 0, TimeType.Utc);
-            x.End = new DATE_TIME(2014, 1, 1, 11, 30, 0, TimeType.Utc);
+            var vevent = factory.Create();
+            vevent.Start = new DATE_TIME(2014, 1, 1, 9, 0, 0, TimeType.Utc);
+            vevent.End = new DATE_TIME(2014, 1, 1, 11, 30, 0, TimeType.Utc);
 
             //check byday filter
-            x.RecurrenceRule = new RECUR
+            vevent.RecurrenceRule = new RECUR
             {
                 FREQ = FREQ.HOURLY,
                 INTERVAL = 1,
@@ -220,11 +220,11 @@ namespace reexjungle.xcal.tests.concretes.units
                 BYSETPOS = new List<int> { 1, -1 }
             };
 
-            var Rx = x.GenerateRecurrences(keyGenerator);
-            Assert.Equal(Rx.Count, 6);
-            Assert.Equal(Rx.First().Start, new DATE_TIME(2014, 1, 1, 9, 5, 0, TimeType.Utc));
-            Assert.Equal(Rx.Last().Start, new DATE_TIME(2014, 1, 1, 11, 25, 0, TimeType.Utc));
-            Assert.Equal(Rx.ElementAt(2).End, new DATE_TIME(2014, 1, 1, 12, 35, 0, TimeType.Utc));
+            var recurrences = vevent.GenerateRecurrences(keyGenerator);
+            Assert.Equal(recurrences.Count, 6);
+            Assert.Equal(recurrences.First().Start, new DATE_TIME(2014, 1, 1, 9, 5, 0, TimeType.Utc));
+            Assert.Equal(recurrences.Last().Start, new DATE_TIME(2014, 1, 1, 11, 25, 0, TimeType.Utc));
+            Assert.Equal(recurrences.ElementAt(2).End, new DATE_TIME(2014, 1, 1, 12, 35, 0, TimeType.Utc));
         }
 
         [Fact]
