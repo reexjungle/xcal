@@ -35,6 +35,7 @@ namespace reexjungle.xcal.tests.concretes.units
             var created = factory.Create(3);
             var events = created as IList<VEVENT> ?? created.ToList();
             var event1 = events[0];
+            
             event1.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0, TimeType.LocalAndTimeZone, new TZID("America", "New_York"));
             event1.End = new DATE_TIME(2014, 9, 1, 11, 30, 0, TimeType.LocalAndTimeZone, new TZID("America", "New_York"));
             event1.RecurrenceRule = new RECUR
@@ -43,10 +44,10 @@ namespace reexjungle.xcal.tests.concretes.units
                 INTERVAL = 1,
             };
 
-            var rx = event1.GenerateRecurrences(keyGenerator);
-            Assert.Equal(rx.First().Start.Type, TimeType.LocalAndTimeZone);
-            Assert.Equal(rx.First().End.Type, TimeType.LocalAndTimeZone);
-            Assert.Equal(rx.First().End.TimeZoneId, new TZID("America", "New_York"));
+            var xRecurrences = event1.GenerateRecurrences(keyGenerator);
+            Assert.Equal(xRecurrences.First().Start.Type, TimeType.LocalAndTimeZone);
+            Assert.Equal(xRecurrences.First().End.Type, TimeType.LocalAndTimeZone);
+            Assert.Equal(xRecurrences.First().End.TimeZoneId, new TZID("America", "New_York"));
 
             var y = events[1];
             y.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0);
@@ -57,10 +58,10 @@ namespace reexjungle.xcal.tests.concretes.units
                 UNTIL = new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeType.Utc)
             };
 
-            var ry = y.GenerateRecurrences(keyGenerator);
-            Assert.Equal(ry.First().Start.Type, TimeType.Local);
-            Assert.Equal(ry.First().End.Type, TimeType.Local);
-            Assert.Equal(ry.First().End.TimeZoneId, null);
+            var yRecurrences = y.GenerateRecurrences(keyGenerator);
+            Assert.Equal(yRecurrences.First().Start.Type, TimeType.Local);
+            Assert.Equal(yRecurrences.First().End.Type, TimeType.Local);
+            Assert.Equal(yRecurrences.First().End.TimeZoneId, null);
 
             var z = events[2];
             z.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0, TimeType.Utc);
@@ -72,10 +73,10 @@ namespace reexjungle.xcal.tests.concretes.units
                 INTERVAL = 1
             };
 
-            var rz = z.GenerateRecurrences(keyGenerator);
-            Assert.Equal(rz.First().Start.Type, TimeType.Utc);
-            Assert.Equal(rz.First().End.Type, TimeType.Utc);
-            Assert.Equal(rz.First().End.TimeZoneId, null);
+            var zRecurrences = z.GenerateRecurrences(keyGenerator);
+            Assert.Equal(zRecurrences.First().Start.Type, TimeType.Utc);
+            Assert.Equal(zRecurrences.First().End.Type, TimeType.Utc);
+            Assert.Equal(zRecurrences.First().End.TimeZoneId, null);
         }
 
         [Fact]
@@ -230,11 +231,11 @@ namespace reexjungle.xcal.tests.concretes.units
         [Fact]
         public void CheckDailyRecurrenceRule()
         {
-            var x = factory.Create();
-            x.Start = new DATE_TIME(2014, 06, 15, 06, 0, 0, TimeType.Utc);
-            x.End = new DATE_TIME(2014, 06, 15, 08, 45, 0, TimeType.Utc);
+            var @event = factory.Create();
+            @event.Start = new DATE_TIME(2014, 06, 15, 06, 0, 0, TimeType.Utc);
+            @event.End = new DATE_TIME(2014, 06, 15, 08, 45, 0, TimeType.Utc);
 
-            x.RecurrenceRule = new RECUR
+            @event.RecurrenceRule = new RECUR
             {
                 FREQ = FREQ.DAILY,
                 INTERVAL = 1,
@@ -244,8 +245,8 @@ namespace reexjungle.xcal.tests.concretes.units
                 BYSETPOS = new List<int> { 2, -2 }
             };
 
-            var Rx = x.GenerateRecurrences(keyGenerator);
-            Assert.Equal(Rx.Count, 10);
+            var Rx = @event.GenerateRecurrences(keyGenerator);
+            Assert.Equal(Rx.Count, 2); //10
             Assert.Equal(Rx.First().Start, new DATE_TIME(2014, 06, 15, 09, 10, 0, TimeType.Utc));
             Assert.Equal(Rx.Last().Start, new DATE_TIME(2014, 06, 15, 21, 20, 0, TimeType.Utc));
         }

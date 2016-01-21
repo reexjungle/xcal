@@ -38,6 +38,14 @@ namespace reexjungle.xcal.domain.contracts
         uint MDAY { get; }
     }
 
+    public interface IDATE<out TDATE> where TDATE: IDATE
+    {
+        TDATE AddDays(double value);
+        TDATE AddMonths(int value);
+        TDATE AddYears(int value);
+    }
+
+
     /// <summary>
     /// Specifies the contract for identifying properties that contain a duration of time
     /// Format: &quot;+&quot;/&quot;-&quot;&quot;P&quot;[days &quot;D &quot;/[&quot;T&quot; [hours &quot;H&quot; / minutes &quot;M&quot; /seconds &quot;S&quot;] weeks &quot;W&quot;]]
@@ -237,6 +245,14 @@ namespace reexjungle.xcal.domain.contracts
         TimeType Type { get; }
 
         TZID TimeZoneId { get; }
+
+    }
+
+    public interface ITIME<out TTIME> where TTIME : ITIME
+    {
+        TTIME AddSeconds(double value);
+        TTIME AddMinutes(double value);
+        TTIME AddHours(double value);
     }
 
 

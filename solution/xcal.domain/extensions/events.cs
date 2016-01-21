@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
 using reexjungle.xmisc.foundation.concretes;
@@ -26,20 +24,42 @@ namespace reexjungle.xcal.domain.extensions
             if (keyGenerator == null) throw new ArgumentNullException("keyGenerator");
 
             var recurs = new List<VEVENT>();
-            var dates = @event.Start.GenerateRecurrences(@event.RecurrenceRule);
-            if (!@event.RecurrenceDates.NullOrEmpty())
+            var dates = @event.RecurrenceRule.GenerateRecurrentDates(@event.Start);
+            if (@event.RecurrenceDates.Any())
             {
-                var rdates = @event.RecurrenceDates.Where(x => !x.DateTimes.NullOrEmpty()).SelectMany(x => x.DateTimes).ToList();
-                var rperiods = @event.RecurrenceDates.Where(x => !x.Periods.NullOrEmpty()).SelectMany(x => x.Periods).ToList();
+                var recurrentDates = @event
+                    .RecurrenceDates
+                    .Where(x => x.DateTimes.Any())
+                    .SelectMany(x => x.DateTimes);
 
-                if (!rdates.NullOrEmpty()) dates.AddRange(rdates);
-                if (!rperiods.NullOrEmpty()) dates.AddRange(rperiods.Select(x => x.Start));
+                var recurrentPeriods = @event
+                    .RecurrenceDates
+                    .Where(x => x.Periods.Any())
+                    .SelectMany(x => x.Periods);
+
+                var recurrentDatesList = recurrentDates as IList<DATE_TIME> ?? recurrentDates.ToList();
+                if (recurrentDatesList.Any())
+                {
+                    dates.AddRange(recurrentDatesList);
+                }
+
+                var recurrentPeriodsList = recurrentPeriods as IList<PERIOD> ?? recurrentPeriods.ToList();
+                if (recurrentPeriodsList.Any())
+                {
+                    dates.AddRange(recurrentPeriodsList.Select(x => x.Start));
+                }
             }
 
-            if (!@event.ExceptionDates.NullOrEmpty())
+            if (@event.ExceptionDates.Any())
             {
-                var exdates = @event.ExceptionDates.Where(x => !x.DateTimes.NullOrEmpty()).SelectMany(x => x.DateTimes).ToList();
-                if (!exdates.NullOrEmpty()) dates = dates.Except(exdates).ToList();
+                var exdates = @event
+                    .ExceptionDates
+                    .Where(x => x.DateTimes.Any())
+                    .SelectMany(x => x.DateTimes);
+
+                var exceptionDatesList = exdates as IList<DATE_TIME> ?? exdates.ToList();
+                if (exceptionDatesList.Any()) 
+                    dates = dates.Except(exceptionDatesList).ToList();
             }
 
             foreach (var recurrence in dates)

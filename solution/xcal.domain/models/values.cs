@@ -144,7 +144,7 @@ namespace reexjungle.xcal.domain.models
     /// Format: [YYYYMMDD] where YYYY is 4-digit year, MM is 2-digit month and DD is 2-digit day
     /// </summary>
     [DataContract]
-    public struct DATE : IDATE, IEquatable<DATE>, IComparable<DATE>
+    public struct DATE : IDATE, IDATE<DATE>, IEquatable<DATE>, IComparable<DATE>
     {
         private readonly uint fullyear, month, mday;
 
@@ -313,6 +313,8 @@ namespace reexjungle.xcal.domain.models
             return mday > other.MDAY ? 1 : 0;
         }
 
+        #region overloaded operators
+
         /// <summary>
         /// Implements the equality operator ==.
         /// </summary>
@@ -428,8 +430,23 @@ namespace reexjungle.xcal.domain.models
         public static DATE operator -(DATE end, DURATION duration)
         {
             return (end.ToDateTime().Subtract(duration.ToTimeSpan())).ToDATE();
+        } 
+        #endregion
+
+        public DATE AddDays(double value)
+        {
+            return new DateTime((int)FULLYEAR, (int)MONTH, (int)MDAY).AddDays(value).ToDATE();
         }
 
+        public DATE AddMonths(int value)
+        {
+            return new DateTime((int)FULLYEAR, (int)MONTH, (int)MDAY).AddMonths(value).ToDATE();
+        }
+
+        public DATE AddYears(int value)
+        {
+            return new DateTime((int)FULLYEAR, (int)MONTH, (int)MDAY).AddYears(value).ToDATE();
+        }
     }
 
     /// <summary>
@@ -438,7 +455,7 @@ namespace reexjungle.xcal.domain.models
     /// where YYYY is 4-digit year, MM is 2-digit month and DD is 2-digit day
     /// </summary>
     [DataContract]
-    public struct DATE_TIME : IDATE, ITIME, IEquatable<DATE_TIME>, IComparable<DATE_TIME>
+    public struct DATE_TIME : IDATE, IDATE<DATE_TIME>, ITIME, ITIME<DATE_TIME>, IEquatable<DATE_TIME>, IComparable<DATE_TIME>
     {
         private readonly uint hour, minute, second, fullyear, month, mday;
         private readonly TimeType type;
@@ -596,8 +613,6 @@ namespace reexjungle.xcal.domain.models
             type = TimeType.Utc;
             tzid = null;
         }
-
-
 
         /// <summary>
         /// Deserializes a new instance of the <see cref="DATE_TIME"/> struct from string.
@@ -836,10 +851,47 @@ namespace reexjungle.xcal.domain.models
         }
 
         #endregion overloaded operators
+
+
+        public DATE_TIME AddSeconds(double value)
+        {
+            return this.ToDateTime().AddSeconds(value).ToDATE_TIME(tzid);
+        }
+
+        public DATE_TIME AddMinutes(double value)
+        {
+
+            return this.ToDateTime()
+                .AddMinutes(value)
+                .ToDATE_TIME(tzid);
+        }
+
+        public DATE_TIME AddHours(double value)
+        {
+            return this.ToDateTime()
+                .AddHours(value)
+                .ToDATE_TIME(tzid);
+        }
+
+        public DATE_TIME AddDays(double value)
+        {
+            return this.ToDateTime().AddDays(value).ToDATE_TIME();
+        }
+
+        public DATE_TIME AddMonths(int value)
+        {
+            return this.ToDateTime().AddMonths(value).ToDATE_TIME();
+        }
+
+        public DATE_TIME AddYears(int value)
+        {
+            return this.ToDateTime().AddYears(value).ToDATE_TIME();
+        }
+
     }
 
     [DataContract]
-    public struct TIME : ITIME, IEquatable<TIME>, IComparable<TIME>
+    public struct TIME : ITIME, ITIME<TIME>, IEquatable<TIME>, IComparable<TIME>
     {
         private readonly uint hour, minute, second;
         private readonly TimeType type;
@@ -1064,6 +1116,21 @@ namespace reexjungle.xcal.domain.models
         }
 
         #endregion overloaded operators
+
+        public TIME AddSeconds(double value)
+        {
+            return this.ToDateTime().AddSeconds(value).ToTIME(tzid);
+        }
+
+        public TIME AddMinutes(double value)
+        {
+            return this.ToDateTime().AddMinutes(value).ToTIME(tzid);
+        }
+
+        public TIME AddHours(double value)
+        {
+            return this.ToDateTime().AddHours(value).ToTIME(tzid);
+        }
     }
 
     /// <summary>
@@ -1992,19 +2059,31 @@ namespace reexjungle.xcal.domain.models
             COUNT = 0u;
             INTERVAL = 1u;
             WKST = WEEKDAY.SU;
+
+            BYMONTH = new List<uint>();
+            BYWEEKNO = new List<int>();
+            BYYEARDAY = new List<int>();
+            BYMONTHDAY = new List<int>();
+            BYDAY = new List<WEEKDAYNUM>();
+            BYHOUR = new List<uint>();
+            BYMINUTE = new List<uint>();
+            BYSECOND = new List<uint>();
+            BYSETPOS = new List<int>();
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="value"></param>
-        public RECUR(string value)
+        public RECUR(string value): this()
         {
             FREQ = FREQ.NONE;
             UNTIL = default(DATE_TIME);
             COUNT = 0u;
             INTERVAL = 1u;
             WKST = WEEKDAY.SU;
+
+
             var tokens = value.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
             if (tokens == null || tokens.Length == 0) throw new FormatException("Invalid Recur format");
 
@@ -2090,13 +2169,10 @@ namespace reexjungle.xcal.domain.models
         /// </summary>
         /// <param name="freq"></param>
         /// <param name="until"></param>
-        public RECUR(FREQ freq, DATE_TIME until)
+        public RECUR(FREQ freq, DATE_TIME until): this()
         {
             FREQ = freq;
             UNTIL = until;
-            COUNT = 0u;
-            INTERVAL = 1u;
-            WKST = WEEKDAY.SU;
         }
 
         /// <summary>
@@ -2108,10 +2184,8 @@ namespace reexjungle.xcal.domain.models
         public RECUR(FREQ freq, uint count, uint interval)
         {
             FREQ = freq;
-            UNTIL = new DATE_TIME();
             COUNT = count;
             INTERVAL = interval;
-            WKST = WEEKDAY.SU;
         }
 
         /// <summary>
