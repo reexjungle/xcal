@@ -24,7 +24,7 @@ namespace reexjungle.xcal.domain.extensions
             if (keyGenerator == null) throw new ArgumentNullException("keyGenerator");
 
             var recurs = new List<VEVENT>();
-            var dates = @event.RecurrenceRule.GenerateRecurrentDates(@event.Start);
+            var dates = @event.RecurrenceRule.GenerateRecurrences(@event.Start).ToList();
             if (@event.RecurrenceDates.Any())
             {
                 var recurrentDates = @event
