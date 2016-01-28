@@ -70,17 +70,6 @@ namespace reexjungle.xcal.application.server.web.local.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Server = localhost; Uid = local; Pwd = local; Database=xcal_elmah_local_db; allow" +
-            " user variables=true;")]
-        public string elmah_mysql_db {
-            get {
-                return ((string)(this["elmah_mysql_db"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("xcal_elmah_local_db")]
         public string elmah_db_name {
             get {
@@ -247,6 +236,17 @@ namespace reexjungle.xcal.application.server.web.local.Properties {
         public string Setting {
             get {
                 return ((string)(this["Setting"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server = localhost; Uid = local; Pwd = local; Database=xcal_elmah_local_db; allow" +
+            " user variables=true;")]
+        public string elmah_mysql_db {
+            get {
+                return ((string)(this["elmah_mysql_db"]));
             }
         }
     }

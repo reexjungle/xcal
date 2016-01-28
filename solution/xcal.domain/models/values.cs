@@ -1395,7 +1395,7 @@ namespace reexjungle.xcal.domain.models
         /// <summary>
         /// Gets or sets the nth occurence of the day within the MONTHLY or YEARLY recurrence rule
         /// </summary>
-        public int OrdinalWeek
+        public int Number
         {
             get { return ordweek; }
         }
@@ -1461,13 +1461,13 @@ namespace reexjungle.xcal.domain.models
         public WEEKDAYNUM(IWEEKDAYNUM weekdaynum)
         {
             if (weekdaynum == null) throw new ArgumentNullException("weekdaynum");
-            ordweek = weekdaynum.OrdinalWeek;
+            ordweek = weekdaynum.Number;
             weekday = weekdaynum.Weekday;
         }
 
         public bool Equals(WEEKDAYNUM other)
         {
-            return OrdinalWeek == other.OrdinalWeek && Weekday == other.Weekday;
+            return Number == other.Number && Weekday == other.Weekday;
         }
 
         public override bool Equals(object obj)
@@ -1478,25 +1478,25 @@ namespace reexjungle.xcal.domain.models
 
         public override int GetHashCode()
         {
-            return OrdinalWeek.GetHashCode() ^ Weekday.GetHashCode();
+            return Number.GetHashCode() ^ Weekday.GetHashCode();
         }
 
         public override string ToString()
         {
-            if (OrdinalWeek != 0)
+            if (Number != 0)
             {
-                return (OrdinalWeek < 0) ?
-                    string.Format("-{0} {1}", (uint)OrdinalWeek, Weekday) :
-                    string.Format("+{0} {1}", (uint)OrdinalWeek, Weekday);
+                return (Number < 0) ?
+                    string.Format("-{0} {1}", (uint)Number, Weekday) :
+                    string.Format("+{0} {1}", (uint)Number, Weekday);
             }
             else return string.Format("{0}", Weekday);
         }
 
         public int CompareTo(WEEKDAYNUM other)
         {
-            if (ordweek == 0 && other.OrdinalWeek == 0)  return weekday.CompareTo(other.Weekday);
-            if (ordweek < other.OrdinalWeek)  return -1;
-            if (ordweek > other.OrdinalWeek) return 1;
+            if (ordweek == 0 && other.Number == 0)  return weekday.CompareTo(other.Weekday);
+            if (ordweek < other.Number)  return -1;
+            if (ordweek > other.Number) return 1;
             return weekday.CompareTo(other.Weekday);
         }
 

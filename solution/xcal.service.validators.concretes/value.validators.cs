@@ -88,7 +88,7 @@ namespace reexjungle.xcal.service.validators.concretes
         public WeekDayNumValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
         {
             CascadeMode = mode;
-            RuleFor(x => x.OrdinalWeek).InclusiveBetween(1, 53).When(x => x.OrdinalWeek != 0);
+            RuleFor(x => x.Number).InclusiveBetween(1, 53).When(x => x.Number != 0);
             RuleFor(x => x.Weekday).NotEqual(WEEKDAY.NONE);
         }
     }

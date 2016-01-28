@@ -107,7 +107,7 @@ namespace reexjungle.xcal.domain.contracts
         /// <summary>
         /// Gets or sets the nth occurence of the day within the MONTHLY or YEARLY recurrence rule
         /// </summary>
-        int OrdinalWeek { get; }
+        int Number { get; }
 
         /// <summary>
         /// Gets or sets the weekday
