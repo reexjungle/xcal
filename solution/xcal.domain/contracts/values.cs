@@ -41,8 +41,14 @@ namespace reexjungle.xcal.domain.contracts
     public interface IDATE<out TDATE> where TDATE: IDATE
     {
         TDATE AddDays(double value);
+
+        TDATE AddWeeks(int value);
+
         TDATE AddMonths(int value);
         TDATE AddYears(int value);
+   
+        WEEKDAY GetWeekday();
+
     }
 
 
@@ -107,7 +113,7 @@ namespace reexjungle.xcal.domain.contracts
         /// <summary>
         /// Gets or sets the nth occurence of the day within the MONTHLY or YEARLY recurrence rule
         /// </summary>
-        int Number { get; }
+        int NthOccurrence { get; }
 
         /// <summary>
         /// Gets or sets the weekday

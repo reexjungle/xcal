@@ -16,6 +16,7 @@ namespace reexjungle.xcal.tests.concretes.units
     {
         private readonly IEventFactory factory;
         private readonly IKeyGenerator<Guid> keyGenerator;
+        private readonly TZID tzid;
 
         public EventUnitTests()
         {
@@ -24,343 +25,77 @@ namespace reexjungle.xcal.tests.concretes.units
             var parametersFactory = new ParametersFactory(valuesFactory);
             var propertiesFactory = new PropertiesFactory(keyGenerator, valuesFactory, parametersFactory);
             var alarmFactory = new AlarmFactory(keyGenerator, propertiesFactory, valuesFactory);
+
             factory = new EventFactory(keyGenerator, alarmFactory, propertiesFactory, valuesFactory);
+
+            tzid = new TZID("America", "New_York");
         }
 
-        #region Test Recurrence Rules
+        #region Standard (RFC5545) Recurrence Tests
 
         [Fact]
-        public void CheckRecurrenceRuleForDifferentTimeTypes()
-        {
-            var created = factory.Create(3);
-            var events = created as IList<VEVENT> ?? created.ToList();
-            var event1 = events[0];
-            
-            event1.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0, TimeType.LocalAndTimeZone, new TZID("America", "New_York"));
-            event1.End = new DATE_TIME(2014, 9, 1, 11, 30, 0, TimeType.LocalAndTimeZone, new TZID("America", "New_York"));
-            event1.RecurrenceRule = new RECUR
-            {
-                FREQ = FREQ.DAILY,
-                INTERVAL = 1,
-            };
-
-            var xRecurrences = event1.GenerateRecurrences(keyGenerator);
-            Assert.Equal(xRecurrences.First().Start.Type, TimeType.LocalAndTimeZone);
-            Assert.Equal(xRecurrences.First().End.Type, TimeType.LocalAndTimeZone);
-            Assert.Equal(xRecurrences.First().End.TimeZoneId, new TZID("America", "New_York"));
-
-            var y = events[1];
-            y.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0);
-            y.End = new DATE_TIME(2014, 9, 1, 11, 30, 0);
-            y.RecurrenceRule = new RECUR
-            {
-                FREQ = FREQ.DAILY,
-                UNTIL = new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeType.Utc)
-            };
-
-            var yRecurrences = y.GenerateRecurrences(keyGenerator);
-            Assert.Equal(yRecurrences.First().Start.Type, TimeType.Local);
-            Assert.Equal(yRecurrences.First().End.Type, TimeType.Local);
-            Assert.Equal(yRecurrences.First().End.TimeZoneId, null);
-
-            var z = events[2];
-            z.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0, TimeType.Utc);
-            z.End = new DATE_TIME(2014, 9, 1, 11, 30, 0, TimeType.Utc);
-            z.RecurrenceRule = new RECUR
-            {
-                FREQ = FREQ.DAILY,
-                COUNT = 29,
-                INTERVAL = 1
-            };
-
-            var zRecurrences = z.GenerateRecurrences(keyGenerator);
-            Assert.Equal(zRecurrences.First().Start.Type, TimeType.Utc);
-            Assert.Equal(zRecurrences.First().End.Type, TimeType.Utc);
-            Assert.Equal(zRecurrences.First().End.TimeZoneId, null);
-        }
-
-        [Fact]
-        public void CheckSecondlyRecurrenceRule()
-        {
-            var x = factory.Create();
-            x.Start = new DATE_TIME(2014, 9, 1, 9, 0, 0, TimeType.Utc);
-            x.End = new DATE_TIME(2014, 9, 1, 11, 30, 0, TimeType.Utc);
-            x.RecurrenceRule = new RECUR
-            {
-                FREQ = FREQ.SECONDLY,
-                INTERVAL = 24 * 60 * 60,
-                UNTIL = new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeType.Utc)
-            };
-
-            var Rx = x.GenerateRecurrences(keyGenerator);
-            Assert.Equal(Rx.Count, 29);
-            Assert.Equal(Rx.Last().Start, new DATE_TIME(2014, 9, 30, 9, 0, 0, TimeType.Utc));
-
-            //check bymonth filter
-            x.Start = new DATE_TIME(2014, 1, 1, 9, 0, 0, TimeType.Utc);
-            x.End = new DATE_TIME(2014, 1, 1, 11, 30, 0, TimeType.Utc);
-
-            x.RecurrenceRule = new RECUR
-            {
-                FREQ = FREQ.SECONDLY,
-                INTERVAL = 24 * 60 * 60,
-                UNTIL = new DATE_TIME(2014, 12, 31, 23, 59, 59, TimeType.Utc),
-                BYMONTH = new List<uint> { 1, 3, 9, 7 }
-            };
-
-            Rx = x.GenerateRecurrences(keyGenerator);
-            Assert.Equal(Rx.Count, 122);
-            Assert.Equal(Rx.Last().Start, new DATE_TIME(2014, 09, 30, 9, 0, 0, TimeType.Utc));
-
-            //check byyeardday filter
-            x.RecurrenceRule = new RECUR
-            {
-                FREQ = FREQ.SECONDLY,
-                INTERVAL = 24 * 60 * 60,
-                UNTIL = new DATE_TIME(2014, 12, 31, 23, 59, 59, TimeType.Utc),
-                BYYEARDAY = new List<int> { -31, 36, 38, 40 }
-            };
-
-            Rx = x.GenerateRecurrences(keyGenerator);
-            Assert.Equal(Rx.First().Start.MDAY, 5u);
-            Assert.Equal(Rx.Last().Start.MONTH, 12u);
-
-            //check bymonthday filter
-            x.RecurrenceRule = new RECUR
-            {
-                FREQ = FREQ.SECONDLY,
-                INTERVAL = 24 * 60 * 60,
-                UNTIL = new DATE_TIME(2014, 12, 31, 23, 59, 59, TimeType.Utc),
-                BYMONTHDAY = new List<int> { 1, -1 }
-            };
-
-            Rx = x.GenerateRecurrences(keyGenerator);
-            Assert.Equal(Rx.Count(), 23);
-            Assert.Equal(Rx.First().Start, new DATE_TIME(2014, 1, 31, 9, 0, 0, TimeType.Utc));
-            Assert.Equal(Rx.Last().End, new DATE_TIME(2014, 12, 31, 11, 30, 0, TimeType.Utc));
-
-            //check byday filter
-            x.Start = new DATE_TIME(2014, 11, 1, 10, 15, 0, TimeType.Utc);
-            x.End = new DATE_TIME(2014, 11, 1, 12, 45, 0, TimeType.Utc);
-            x.RecurrenceRule = new RECUR
-            {
-                FREQ = FREQ.SECONDLY,
-                INTERVAL = 24 * 60 * 60,
-                UNTIL = new DATE_TIME(2014, 11, 30, 23, 59, 59, TimeType.Utc),
-                BYDAY = new List<WEEKDAYNUM>
-                {
-                    new WEEKDAYNUM(WEEKDAY.MO),
-                    new WEEKDAYNUM(WEEKDAY.TU),
-                    new WEEKDAYNUM(WEEKDAY.WE),
-                    new WEEKDAYNUM(WEEKDAY.TH),
-                    new WEEKDAYNUM(WEEKDAY.FR),
-                }
-            };
-
-            Rx = x.GenerateRecurrences(keyGenerator);
-            Assert.Equal(Rx.Count(), 20);
-            Assert.Equal(Rx.First().Start, new DATE_TIME(2014, 11, 03, 10, 15, 0, TimeType.Utc));
-            Assert.Equal(Rx.Last().Start, new DATE_TIME(2014, 11, 28, 10, 15, 0, TimeType.Utc));
-
-            //check byhour, byminute and bysecond filters
-            x.Start = new DATE_TIME(2014, 12, 1, 08, 30, 30, TimeType.Utc);
-            x.End = new DATE_TIME(2014, 12, 1, 08, 30, 0, TimeType.Utc);
-            x.RecurrenceRule = new RECUR
-            {
-                FREQ = FREQ.SECONDLY,
-                INTERVAL = 60,
-                UNTIL = new DATE_TIME(2014, 12, 01, 10, 30, 30, TimeType.Utc),
-                BYHOUR = new List<uint> { 9, 10 },
-                BYMINUTE = new List<uint> { 15, 20, 25 },
-                BYSECOND = new List<uint> { 30 }
-            };
-
-            Rx = x.GenerateRecurrences(keyGenerator);
-            Assert.Equal(Rx.Count(), 6);
-            Assert.Equal(Rx.ElementAt(1).Start, new DATE_TIME(2014, 12, 01, 9, 20, 30, TimeType.Utc));
-            Assert.Equal(Rx.ElementAt(3).Start, new DATE_TIME(2014, 12, 01, 10, 15, 30, TimeType.Utc));
-        }
-
-        [Fact]
-        public void CheckMinutelyRecurrenceRule()
-        {
-            var x = factory.Create();
-            x.Start = new DATE_TIME(2014, 01, 02, 08, 30, 00, TimeType.Utc);
-            x.End = new DATE_TIME(2014, 01, 02, 11, 30, 00, TimeType.Utc);
-
-            x.RecurrenceRule = new RECUR
-            {
-                FREQ = FREQ.MINUTELY,
-                INTERVAL = 1,
-                UNTIL = new DATE_TIME(2014, 01, 02, 08, 45, 0, TimeType.Utc),
-                BYMINUTE = new List<uint> {30, 31, 33, 35, 37, 39, 40, 45},
-                BYSECOND = new List<uint> {0, 15, 30, 45},
-                BYSETPOS = new List<int> {1, -1},
-            };
-
-            var Rx = x.GenerateRecurrences(keyGenerator);
-            Assert.Equal(Rx.Count, 14);
-            Assert.Equal(Rx.First().Start, new DATE_TIME(2014, 1, 02, 08, 30, 45, TimeType.Utc));
-            Assert.Equal(Rx.Last().Start, new DATE_TIME(2014, 1, 02, 08, 45, 00, TimeType.Utc));
-        }
-
-        [Fact]
-        public void CheckHourlyRecurrenceRule()
+        public void CheckGeneratedDailyRecurrencesLimitedByCount()
         {
             var vevent = factory.Create();
-            vevent.Start = new DATE_TIME(2014, 1, 1, 9, 0, 0, TimeType.Utc);
-            vevent.End = new DATE_TIME(2014, 1, 1, 11, 30, 0, TimeType.Utc);
+            vevent.Start = new DATE_TIME(1997, 09, 02, 09, 00, 00, TimeType.LocalAndTimeZone, tzid);
+            vevent.End = new DATE_TIME(1997, 09, 02, 10, 00, 00, TimeType.LocalAndTimeZone, tzid);
 
             //check byday filter
             vevent.RecurrenceRule = new RECUR
             {
-                FREQ = FREQ.HOURLY,
-                INTERVAL = 1,
-                UNTIL = new DATE_TIME(2014, 1, 1, 12, 0, 0, TimeType.Utc),
-                BYMINUTE = new List<uint> { 5, 10, 15, 20, 25 },
-                BYSETPOS = new List<int> { 1, -1 }
+                FREQ = FREQ.DAILY,
+                COUNT = 10
             };
 
-            var recurrences = vevent.GenerateRecurrences(keyGenerator);
-            Assert.Equal(recurrences.Count, 6);
-            Assert.Equal(recurrences.First().Start, new DATE_TIME(2014, 1, 1, 9, 5, 0, TimeType.Utc));
-            Assert.Equal(recurrences.Last().Start, new DATE_TIME(2014, 1, 1, 11, 25, 0, TimeType.Utc));
-            Assert.Equal(recurrences.ElementAt(2).End, new DATE_TIME(2014, 1, 1, 12, 35, 0, TimeType.Utc));
+            var occurences = vevent.GenerateOccurrences(keyGenerator);
+            Assert.Equal(occurences.Count, 10);
+
+            //(1997 9:00 AM EDT) September 2-11
+            Assert.Equal(occurences[0].Start, new DATE_TIME(1997, 09, 02, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[1].Start, new DATE_TIME(1997, 09, 03, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[2].Start, new DATE_TIME(1997, 09, 04, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[3].Start, new DATE_TIME(1997, 09, 05, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[4].Start, new DATE_TIME(1997, 09, 06, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[5].Start, new DATE_TIME(1997, 09, 07, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[6].Start, new DATE_TIME(1997, 09, 08, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[7].Start, new DATE_TIME(1997, 09, 09, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[8].Start, new DATE_TIME(1997, 09, 10, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[9].Start, new DATE_TIME(1997, 09, 11, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
         }
 
         [Fact]
-        public void CheckDailyRecurrenceRule()
+        public void CheckGeneratedDailyRecurrencesLimitedByUntil()
         {
-            var @event = factory.Create();
-            @event.Start = new DATE_TIME(2014, 06, 15, 06, 0, 0, TimeType.Utc);
-            @event.End = new DATE_TIME(2014, 06, 15, 08, 45, 0, TimeType.Utc);
+            var vevent = factory.Create();
+            vevent.Start = new DATE_TIME(1997, 09, 02, 09, 00, 00, TimeType.LocalAndTimeZone, tzid);
+            vevent.End = new DATE_TIME(1997, 09, 02, 10, 00, 00, TimeType.LocalAndTimeZone, tzid);
 
-            @event.RecurrenceRule = new RECUR
+            //check byday filter
+            vevent.RecurrenceRule = new RECUR
             {
                 FREQ = FREQ.DAILY,
-                INTERVAL = 1,
-                UNTIL = new DATE_TIME(2014, 06, 16, 06, 0, 0, TimeType.Utc),
-                BYHOUR = new List<uint> { 9, 12, 15, 18, 21 },
-                BYMINUTE = new List<uint> { 5, 10, 15, 20, 25 },
-                BYSETPOS = new List<int> { 2, -2 }
+                UNTIL = new DATE_TIME(1997,12,24,00,00,00, TimeType.Utc)
             };
 
-            var Rx = @event.GenerateRecurrences(keyGenerator);
-            Assert.Equal(Rx.Count, 2); //10
-            Assert.Equal(Rx.First().Start, new DATE_TIME(2014, 06, 15, 09, 10, 0, TimeType.Utc));
-            Assert.Equal(Rx.Last().Start, new DATE_TIME(2014, 06, 15, 21, 20, 0, TimeType.Utc));
+            var occurences = vevent.GenerateOccurrences(keyGenerator);
+            Assert.Equal(occurences.Count, 113);
+
+            //(1997 9:00 AM EDT) September 2-30;October 1-25
+            Assert.Equal(occurences[000].Start, new DATE_TIME(1997, 09, 02, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[028].Start, new DATE_TIME(1997, 09, 30, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[029].Start, new DATE_TIME(1997, 10, 01, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[053].Start, new DATE_TIME(1997, 10, 25, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+
+            //(1997 9:00 AM EST) October 26-31;November 1-30;December 1-23
+            Assert.Equal(occurences[054].Start, new DATE_TIME(1997, 10, 26, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[059].Start, new DATE_TIME(1997, 10, 31, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[060].Start, new DATE_TIME(1997, 11, 01, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[089].Start, new DATE_TIME(1997, 11, 30, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[090].Start, new DATE_TIME(1997, 12, 01, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
+            Assert.Equal(occurences[112].Start, new DATE_TIME(1997, 12, 23, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
         }
 
-        [Fact]
-        public void CheckWeeklyRecurrenceRule()
-        {
-            var x = factory.Create();
-            x.Start = new DATE_TIME(2014, 12, 1, 10, 0, 0, TimeType.Utc);
-            x.End = new DATE_TIME(2014, 12, 1, 15, 30, 0, TimeType.Utc);
-            x.ExceptionDates = new List<EXDATE>
-            {
-                new EXDATE{ DateTimes = new List<DATE_TIME>
-                {
-                    new DATE_TIME(2014,12,24, 10,0,0, TimeType.Utc),
-                    new DATE_TIME(2014,12,25, 10,0,0, TimeType.Utc),
-                    new DATE_TIME(2014,12,26, 10,0,0, TimeType.Utc),
-                    new DATE_TIME(2014,12,31, 10,0,0, TimeType.Utc),
-                } }
-            };
-
-            //check byday filter
-            x.RecurrenceRule = new RECUR
-            {
-                FREQ = FREQ.WEEKLY,
-                INTERVAL = 1,
-                UNTIL = new DATE_TIME(2014, 12, 31, 9, 45, 0, TimeType.Utc),
-                BYDAY = new List<WEEKDAYNUM>
-                {
-                  new WEEKDAYNUM (WEEKDAY.MO),
-                  new WEEKDAYNUM (WEEKDAY.TU),
-                  new WEEKDAYNUM (WEEKDAY.FR)
-                },
-                BYSETPOS = new List<int> { 2, -1 }
-            };
-
-            var Rx = x.GenerateRecurrences(keyGenerator);
-            Assert.Equal(Rx.Count, 2);
-            Assert.Equal(Rx.First().Start, new DATE_TIME(2014, 12, 02, 10, 00, 0, TimeType.Utc));
-            Assert.Equal(Rx.Last().Start, new DATE_TIME(2014, 12, 30, 10, 00, 0, TimeType.Utc));
-        }
-
-        [Fact]
-        public void CheckMonthlyRecurrenceRule()
-        {
-            var x = factory.Create();
-            x.Start = new DATE_TIME(2014, 1, 1, 9, 0, 0, TimeType.Utc);
-            x.End = new DATE_TIME(2014, 1, 1, 11, 30, 0, TimeType.Utc);
-
-            //check byday filter
-            x.RecurrenceRule = new RECUR
-            {
-                FREQ = FREQ.MONTHLY,
-                INTERVAL = 1,
-                UNTIL = new DATE_TIME(2014, 12, 31, 23, 59, 59, TimeType.Utc),
-                BYDAY = new List<WEEKDAYNUM>
-                {
-                    new WEEKDAYNUM(WEEKDAY.MO),
-                    new WEEKDAYNUM(WEEKDAY.TU),
-                    new WEEKDAYNUM(WEEKDAY.WE),
-                    new WEEKDAYNUM(WEEKDAY.TH),
-                    new WEEKDAYNUM(WEEKDAY.FR),
-                },
-                BYSETPOS = new List<int> { -1 }
-            };
-
-            var Rx = x.GenerateRecurrences(keyGenerator);
-            Assert.Equal(Rx.Count, 12);
-            Assert.Equal(Rx.ElementAt(7).Start, new DATE_TIME(2014, 08, 29, 09, 00, 0, TimeType.Utc));
-        }
-
-        [Fact]
-        public void CheckYearlyRecurrenceRule()
-        {
-            var x = factory.Create();
-            x.Start = new DATE_TIME(2014, 1, 1, 7, 0, 0, TimeType.Utc);
-            x.End = new DATE_TIME(2014, 1, 1, 10, 15, 0, TimeType.Utc);
-
-            //check byday filter
-            x.RecurrenceRule = new RECUR
-            {
-                FREQ = FREQ.YEARLY,
-                INTERVAL = 1,
-                UNTIL = new DATE_TIME(2016, 12, 31, 23, 59, 59, TimeType.Utc),
-                BYMONTH = new List<uint> { 3, 9 },
-                BYMONTHDAY = new List<int> { 15, 25 },
-                BYDAY = new List<WEEKDAYNUM>
-                {
-                    new WEEKDAYNUM(WEEKDAY.MO),
-                    new WEEKDAYNUM(WEEKDAY.TU),
-                    new WEEKDAYNUM(WEEKDAY.WE),
-                    new WEEKDAYNUM(WEEKDAY.TH),
-                    new WEEKDAYNUM(WEEKDAY.FR),
-                },
-                BYSETPOS = new List<int> { -1 }
-            };
-
-            var Rx = x.GenerateRecurrences(keyGenerator);
-            Assert.Equal(Rx.Count, 6);
-            Assert.Equal(Rx.ElementAt(0).Start, new DATE_TIME(2014, 03, 25, 07, 00, 0, TimeType.Utc));
-            Assert.Equal(Rx.ElementAt(1).Start, new DATE_TIME(2014, 09, 25, 07, 00, 0, TimeType.Utc));
-            Assert.Equal(Rx.ElementAt(2).Start, new DATE_TIME(2015, 03, 25, 07, 00, 0, TimeType.Utc));
-            Assert.Equal(Rx.ElementAt(3).Start, new DATE_TIME(2015, 09, 25, 07, 00, 0, TimeType.Utc));
-            Assert.Equal(Rx.ElementAt(4).Start, new DATE_TIME(2016, 03, 25, 07, 00, 0, TimeType.Utc));
-            Assert.Equal(Rx.ElementAt(5).Start, new DATE_TIME(2016, 09, 15, 07, 00, 0, TimeType.Utc));
-        }
-
-        [Fact]
-        public void CheckNoRecurrenceRule()
-        {
-            //TODO: Test case where no recurrence rule is applied but usage of recurrence and exception dates
-        }
-
-        #endregion Test Recurrence Rules
+        #endregion
     }
 
 }

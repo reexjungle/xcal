@@ -219,7 +219,7 @@ namespace reexjungle.xcal.tests.concretes.integration
                 BYSETPOS = new List<int> { 2, -2 }
             };
 
-            var Rx = e1.GenerateRecurrences(GuidKeyGenerator);
+            var Rx = e1.GenerateOccurrences(GuidKeyGenerator);
 
             e2.Start = new DATE_TIME(new DateTime(2014, 6, 16, 10, 30, 0, 0, DateTimeKind.Local));
             e2.Duration = new DURATION(0, 1, 10, 00);

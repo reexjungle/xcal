@@ -283,7 +283,7 @@
         </xs:attribute>
         <xs:attribute name="batchSize" type="xs:integer">
           <xs:annotation>
-            <xs:documentation>Number of log events that should be processed in a batch by the lazy writer thread.</xs:documentation>
+            <xs:documentation>NthOccurrence of log events that should be processed in a batch by the lazy writer thread.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="overflowAction" type="NLog.Targets.Wrappers.AsyncTargetWrapperOverflowAction">
@@ -341,7 +341,7 @@
         </xs:attribute>
         <xs:attribute name="bufferSize" type="xs:integer">
           <xs:annotation>
-            <xs:documentation>Number of log events to be buffered.</xs:documentation>
+            <xs:documentation>NthOccurrence of log events to be buffered.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="flushTimeout" type="xs:integer">
@@ -986,7 +986,7 @@
           <xs:element name="footer" minOccurs="0" maxOccurs="1" type="Layout" />
           <xs:element name="encoding" minOccurs="0" maxOccurs="1" type="xs:string" />
           <xs:element name="lineEnding" minOccurs="0" maxOccurs="1" type="LineEndingMode" />
-          <xs:element name="archiveNumbering" minOccurs="0" maxOccurs="1" type="NLog.Targets.ArchiveNumberingMode" />
+          <xs:element name="archiveNthOccurrenceing" minOccurs="0" maxOccurs="1" type="NLog.Targets.ArchiveNthOccurrenceingMode" />
           <xs:element name="archiveFileName" minOccurs="0" maxOccurs="1" type="Layout" />
           <xs:element name="archiveEvery" minOccurs="0" maxOccurs="1" type="NLog.Targets.FileArchivePeriod" />
           <xs:element name="archiveAboveSize" minOccurs="0" maxOccurs="1" type="xs:long" />
@@ -1043,7 +1043,7 @@
             <xs:documentation>Line ending mode.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="archiveNumbering" type="NLog.Targets.ArchiveNumberingMode">
+        <xs:attribute name="archiveNthOccurrenceing" type="NLog.Targets.ArchiveNthOccurrenceingMode">
           <xs:annotation>
             <xs:documentation>Way file archives are numbered.</xs:documentation>
           </xs:annotation>
@@ -1145,7 +1145,7 @@
         </xs:attribute>
         <xs:attribute name="openFileCacheSize" type="xs:integer">
           <xs:annotation>
-            <xs:documentation>Number of files to be kept open. Setting this to a higher value may improve performance in a situation where a single File target is writing to many files (such as splitting by level or by logger).</xs:documentation>
+            <xs:documentation>NthOccurrence of files to be kept open. Setting this to a higher value may improve performance in a situation where a single File target is writing to many files (such as splitting by level or by logger).</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="openFileCacheTimeout" type="xs:integer">
@@ -1165,7 +1165,7 @@
         </xs:attribute>
         <xs:attribute name="concurrentWriteAttempts" type="xs:integer">
           <xs:annotation>
-            <xs:documentation>Number of times the write is appended on the file before NLog discards the log message.</xs:documentation>
+            <xs:documentation>NthOccurrence of times the write is appended on the file before NLog discards the log message.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="keepFileOpen" type="xs:boolean">
@@ -1176,7 +1176,7 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:simpleType name="NLog.Targets.ArchiveNumberingMode">
+  <xs:simpleType name="NLog.Targets.ArchiveNthOccurrenceingMode">
     <xs:restriction base="xs:string">
       <xs:enumeration value="Sequence" />
       <xs:enumeration value="Rolling" />
@@ -1974,10 +1974,10 @@
   </xs:complexType>
   <xs:simpleType name="System.Diagnostics.PerformanceCounterType">
     <xs:restriction base="xs:string">
-      <xs:enumeration value="NumberOfItems32" />
-      <xs:enumeration value="NumberOfItems64" />
-      <xs:enumeration value="NumberOfItemsHEX32" />
-      <xs:enumeration value="NumberOfItemsHEX64" />
+      <xs:enumeration value="NthOccurrenceOfItems32" />
+      <xs:enumeration value="NthOccurrenceOfItems64" />
+      <xs:enumeration value="NthOccurrenceOfItemsHEX32" />
+      <xs:enumeration value="NthOccurrenceOfItemsHEX64" />
       <xs:enumeration value="RateOfCountsPerSecond32" />
       <xs:enumeration value="RateOfCountsPerSecond64" />
       <xs:enumeration value="CountPerTimeInterval32" />
@@ -2069,7 +2069,7 @@
         </xs:attribute>
         <xs:attribute name="repeatCount" type="xs:integer">
           <xs:annotation>
-            <xs:documentation>Number of times to repeat each log message.</xs:documentation>
+            <xs:documentation>NthOccurrence of times to repeat each log message.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
       </xs:extension>
@@ -2090,7 +2090,7 @@
         </xs:attribute>
         <xs:attribute name="retryCount" type="xs:integer">
           <xs:annotation>
-            <xs:documentation>Number of retries that should be attempted on the wrapped target in case of a failure.</xs:documentation>
+            <xs:documentation>NthOccurrence of retries that should be attempted on the wrapped target in case of a failure.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="retryDelayMilliseconds" type="xs:integer">

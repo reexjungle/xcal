@@ -13,26 +13,21 @@ namespace reexjungle.xcal.domain.extensions
     /// </summary>
     public static class EventExtensions
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="event"></param>
-        /// <param name="keyGenerator"></param>
-        /// <returns></returns>
-        public static List<VEVENT> GenerateRecurrences(this VEVENT @event, IKeyGenerator<Guid> keyGenerator)
+
+        public static List<VEVENT> GenerateOccurrences(this VEVENT vevent, IKeyGenerator<Guid> keyGenerator)
         {
             if (keyGenerator == null) throw new ArgumentNullException("keyGenerator");
 
-            var recurs = new List<VEVENT>();
-            var dates = @event.RecurrenceRule.GenerateRecurrences(@event.Start).ToList();
-            if (@event.RecurrenceDates.Any())
+            var occurrences = new List<VEVENT> {vevent};
+            var dates = vevent.RecurrenceRule.GenerateRecurrences(vevent.Start).ToList();
+            if (vevent.RecurrenceDates.Any())
             {
-                var recurrentDates = @event
+                var recurrentDates = vevent
                     .RecurrenceDates
                     .Where(x => x.DateTimes.Any())
                     .SelectMany(x => x.DateTimes);
 
-                var recurrentPeriods = @event
+                var recurrentPeriods = vevent
                     .RecurrenceDates
                     .Where(x => x.Periods.Any())
                     .SelectMany(x => x.Periods);
@@ -50,9 +45,9 @@ namespace reexjungle.xcal.domain.extensions
                 }
             }
 
-            if (@event.ExceptionDates.Any())
+            if (vevent.ExceptionDates.Any())
             {
-                var exdates = @event
+                var exdates = vevent
                     .ExceptionDates
                     .Where(x => x.DateTimes.Any())
                     .SelectMany(x => x.DateTimes);
@@ -62,17 +57,17 @@ namespace reexjungle.xcal.domain.extensions
                     dates = dates.Except(exceptionDatesList).ToList();
             }
 
-            foreach (var recurrence in dates)
+            foreach (var date in dates.Except(vevent.Start.ToSingleton()))
             {
                 var now = DateTime.UtcNow.ToDATE_TIME();
-                var instance = new VEVENT(@event)
+                var instance = new VEVENT(vevent)
                 {
                     Id = keyGenerator.GetNext(),
                     Created = now,
                     Datestamp = now,
                     LastModified = now,
-                    Start = recurrence,
-                    End = recurrence + @event.Duration,
+                    Start = date,
+                    End = date + vevent.Duration,
                     RecurrenceRule = null
                 };
 
@@ -80,13 +75,13 @@ namespace reexjungle.xcal.domain.extensions
                 {
                     Id = instance.Id,
                     Range = RANGE.THISANDFUTURE,
-                    TimeZoneId = recurrence.TimeZoneId,
+                    TimeZoneId = date.TimeZoneId,
                     Value = instance.Start
                 };
-                recurs.Add(instance);
+                occurrences.Add(instance);
             }
 
-            return recurs;
+            return occurrences;
         }
     }
 }

@@ -438,6 +438,11 @@ namespace reexjungle.xcal.domain.models
             return new DateTime((int)FULLYEAR, (int)MONTH, (int)MDAY).AddDays(value).ToDATE();
         }
 
+        public DATE AddWeeks(int value)
+        {
+            return this.ToDateTime().AddWeeks(value).ToDATE();
+        }
+
         public DATE AddMonths(int value)
         {
             return new DateTime((int)FULLYEAR, (int)MONTH, (int)MDAY).AddMonths(value).ToDATE();
@@ -446,6 +451,11 @@ namespace reexjungle.xcal.domain.models
         public DATE AddYears(int value)
         {
             return new DateTime((int)FULLYEAR, (int)MONTH, (int)MDAY).AddYears(value).ToDATE();
+        }
+
+        public WEEKDAY GetWeekday()
+        {
+            return this.ToDateTime().DayOfWeek.ToWEEKDAY();
         }
     }
 
@@ -702,7 +712,7 @@ namespace reexjungle.xcal.domain.models
             if (type == TimeType.Utc)
                 return string.Format("{0:D4}{1:D2}{2:D2}T{3:D2}{4:D2}{5:D2}Z", fullyear, month, mday, hour, minute, second);
             
-            if (Type == TimeType.LocalAndTimeZone)
+            if (type == TimeType.LocalAndTimeZone)
                 return string.Format("{0}:{1:D4}{2:D2}{3:D2}T{4:D2}{5:D2}{6:D2}", tzid, fullyear, month, mday, hour, minute, second);
             
             return 
@@ -781,7 +791,7 @@ namespace reexjungle.xcal.domain.models
             if (minute < other.MINUTE) return -1;
             if (minute > other.MINUTE) return 1;
             if (second < other.SECOND) return -1;
-            if (second > other.SECOND ) return 1;
+            if (second > other.SECOND) return 1;
             return 0;
         }
 
@@ -875,19 +885,28 @@ namespace reexjungle.xcal.domain.models
 
         public DATE_TIME AddDays(double value)
         {
-            return this.ToDateTime().AddDays(value).ToDATE_TIME();
+            return this.ToDateTime().AddDays(value).ToDATE_TIME(TimeZoneId);
+        }
+
+        public DATE_TIME AddWeeks(int value)
+        {
+            return this.ToDateTime().AddWeeks(value).ToDATE_TIME(TimeZoneId);
         }
 
         public DATE_TIME AddMonths(int value)
         {
-            return this.ToDateTime().AddMonths(value).ToDATE_TIME();
+            return this.ToDateTime().AddMonths(value).ToDATE_TIME(TimeZoneId);
         }
 
         public DATE_TIME AddYears(int value)
         {
-            return this.ToDateTime().AddYears(value).ToDATE_TIME();
+            return this.ToDateTime().AddYears(value).ToDATE_TIME(TimeZoneId);
         }
 
+        public WEEKDAY GetWeekday()
+        {
+            return this.ToDateTime().DayOfWeek.ToWEEKDAY();
+        }
     }
 
     [DataContract]
@@ -1395,7 +1414,7 @@ namespace reexjungle.xcal.domain.models
         /// <summary>
         /// Gets or sets the nth occurence of the day within the MONTHLY or YEARLY recurrence rule
         /// </summary>
-        public int Number
+        public int NthOccurrence
         {
             get { return ordweek; }
         }
@@ -1461,13 +1480,13 @@ namespace reexjungle.xcal.domain.models
         public WEEKDAYNUM(IWEEKDAYNUM weekdaynum)
         {
             if (weekdaynum == null) throw new ArgumentNullException("weekdaynum");
-            ordweek = weekdaynum.Number;
+            ordweek = weekdaynum.NthOccurrence;
             weekday = weekdaynum.Weekday;
         }
 
         public bool Equals(WEEKDAYNUM other)
         {
-            return Number == other.Number && Weekday == other.Weekday;
+            return NthOccurrence == other.NthOccurrence && Weekday == other.Weekday;
         }
 
         public override bool Equals(object obj)
@@ -1478,25 +1497,25 @@ namespace reexjungle.xcal.domain.models
 
         public override int GetHashCode()
         {
-            return Number.GetHashCode() ^ Weekday.GetHashCode();
+            return NthOccurrence.GetHashCode() ^ Weekday.GetHashCode();
         }
 
         public override string ToString()
         {
-            if (Number != 0)
+            if (NthOccurrence != 0)
             {
-                return (Number < 0) ?
-                    string.Format("-{0} {1}", (uint)Number, Weekday) :
-                    string.Format("+{0} {1}", (uint)Number, Weekday);
+                return (NthOccurrence < 0) ?
+                    string.Format("-{0} {1}", (uint)NthOccurrence, Weekday) :
+                    string.Format("+{0} {1}", (uint)NthOccurrence, Weekday);
             }
-            else return string.Format("{0}", Weekday);
+            return string.Format("{0}", Weekday);
         }
 
         public int CompareTo(WEEKDAYNUM other)
         {
-            if (ordweek == 0 && other.Number == 0)  return weekday.CompareTo(other.Weekday);
-            if (ordweek < other.Number)  return -1;
-            if (ordweek > other.Number) return 1;
+            if (ordweek == 0 && other.NthOccurrence == 0)  return weekday.CompareTo(other.Weekday);
+            if (ordweek < other.NthOccurrence)  return -1;
+            if (ordweek > other.NthOccurrence) return 1;
             return weekday.CompareTo(other.Weekday);
         }
 
