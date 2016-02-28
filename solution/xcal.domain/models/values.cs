@@ -2,7 +2,6 @@
 using reexjungle.xcal.domain.extensions;
 using reexjungle.xmisc.foundation.concretes;
 using reexjungle.xmisc.foundation.contracts;
-using reexjungle.xmisc.infrastructure.concretes.operations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,8 +18,6 @@ namespace reexjungle.xcal.domain.models
     [DataContract]
     public class BINARY : IBINARY, IEquatable<BINARY>
     {
-        private ENCODING encoding;
-
         /// <summary>
         /// Gets or sets the value of this type
         /// </summary>
@@ -28,42 +25,29 @@ namespace reexjungle.xcal.domain.models
         public string Value { get; set; }
 
         /// <summary>
-        /// Gets or sets the encoding used for this type
-        /// </summary>
-        [DataMember]
-        public ENCODING Encoding
-        {
-            get { return encoding; }
-            set
-            {
-                encoding = value;
-                if (!string.IsNullOrEmpty(Value))
-                {
-                    Value = encoding == ENCODING.BASE64 
-                        ? Value.ToBase64String() 
-                        : Value.ToUtf8String();
-                };
-            }
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="BINARY"/> class.
         /// </summary>
         public BINARY()
         {
             Value = string.Empty;
-            Encoding = ENCODING.UNKNOWN;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BINARY"/> class.
+        /// Initializes a new instance of the <see cref="BINARY"/> class from a string.
         /// </summary>
-        /// <param name="value">The serialized value of an instance of the <see cref="BINARY"/> class.</param>
-        /// <param name="encoding">The encoding used for this instance.</param>
-        public BINARY(string value, ENCODING encoding)
+        /// <param name="value">The string representation of the &quot;Value&quot; of the <see cref="BINARY"/> class.</param>
+        public BINARY(string value)
         {
+            if (value == null) throw new ArgumentNullException("value");
+            var pattern = @"^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$";
+
+            var options = RegexOptions.IgnoreCase
+                | RegexOptions.ExplicitCapture
+                | RegexOptions.IgnorePatternWhitespace
+                | RegexOptions.CultureInvariant;
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
             Value = value;
-            Encoding = encoding;
         }
 
         /// <summary>
@@ -73,23 +57,39 @@ namespace reexjungle.xcal.domain.models
         /// <exception cref="System.ArgumentNullException">binary</exception>
         public BINARY(IBINARY binary)
         {
-            if (binary == null) throw new ArgumentNullException("binary");
-            Value = binary.Value;
-            Encoding = binary.Encoding;
+            if (binary != null)
+            {
+                Value = binary.Value;
+
+            }        }
+
+        private static bool IsBase64String(string @string)
+        {
+            if (string.IsNullOrEmpty(@string)) return false;
+            try
+            {
+                var bytes = Convert.FromBase64String(@string.Trim());
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public bool Equals(BINARY other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return encoding == other.encoding && string.Equals(Value, other.Value);
+            return string.Equals(Value, other.Value);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((BINARY)obj);
         }
 
@@ -97,15 +97,31 @@ namespace reexjungle.xcal.domain.models
         {
             unchecked
             {
-                return ((int)encoding * 397) ^ (Value != null ? Value.GetHashCode() : 0);
+                return (Value != null ? Value.GetHashCode() : 0);
             }
         }
 
+        /// <summary>
+        /// Implements the equality operator ==.
+        /// </summary>
+        /// <param name="left">The instance to compare for equality</param>
+        /// <param name="right">The other instance to compare against this instance for equality.</param>
+        /// <returns>
+        /// True if both instances are equal, otherwise false
+        /// </returns>
         public static bool operator ==(BINARY left, BINARY right)
         {
             return Equals(left, right);
         }
 
+        /// <summary>
+        /// Implements the equality operator !=.
+        /// </summary>
+        /// <param name="left">The instance to compare for equality</param>
+        /// <param name="right">The other instance to compare against this instance for equality.</param>
+        /// <returns>
+        /// True if both instances are equal, otherwise false
+        /// </returns>
         public static bool operator !=(BINARY left, BINARY right)
         {
             return !Equals(left, right);
@@ -128,7 +144,7 @@ namespace reexjungle.xcal.domain.models
     /// Format: [YYYYMMDD] where YYYY is 4-digit year, MM is 2-digit month and DD is 2-digit day
     /// </summary>
     [DataContract]
-    public struct DATE : IDATE, IEquatable<DATE>, IComparable<DATE>
+    public struct DATE : IDATE, IDATE<DATE>, IEquatable<DATE>, IComparable<DATE>
     {
         private readonly uint fullyear, month, mday;
 
@@ -200,7 +216,7 @@ namespace reexjungle.xcal.domain.models
             fullyear = 1u;
             month = 1u;
             mday = 1u;
-            var pattern = @"^(?<year>\d{2,4})(?<month>\d{1,2})(?<day>\d{1,2})$";
+            var pattern = @"^(?<year>\d{4,})(?<month>\d{2})(?<day>\d{2})$";
             if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
             {
                 foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
@@ -232,7 +248,7 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public override string ToString()
         {
-            return string.Format("{0:D4}{1:D2}{2:D2}", fullyear, month, mday);  //YYYYMMDD
+            return $"{fullyear:D4}{month:D2}{mday:D2}";  //YYYYMMDD
         }
 
         /// <summary>
@@ -244,10 +260,9 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public bool Equals(DATE other)
         {
-            if (other == default(DATE)) return false;
-            return (fullyear == other.FULLYEAR) &&
-                (month == other.MONTH) &&
-                (mday == other.MDAY);
+            return fullyear == other.FULLYEAR &&
+                month == other.MONTH &&
+                mday == other.MDAY;
         }
 
         /// <summary>
@@ -259,8 +274,8 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return Equals((DATE)obj);
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is DATE && Equals((DATE)obj);
         }
 
         /// <summary>
@@ -271,7 +286,13 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public override int GetHashCode()
         {
-            return fullyear.GetHashCode() ^ month.GetHashCode() ^ mday.GetHashCode();
+            unchecked
+            {
+                var hashCode = (int)fullyear;
+                hashCode = (hashCode * 397) ^ (int)month;
+                hashCode = (hashCode * 397) ^ (int)mday;
+                return hashCode;
+            }
         }
 
         /// <summary>
@@ -292,6 +313,8 @@ namespace reexjungle.xcal.domain.models
             return mday > other.MDAY ? 1 : 0;
         }
 
+        #region overloaded operators
+
         /// <summary>
         /// Implements the equality operator ==.
         /// </summary>
@@ -302,7 +325,6 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public static bool operator ==(DATE a, DATE b)
         {
-            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
@@ -316,7 +338,6 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public static bool operator !=(DATE a, DATE b)
         {
-            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
@@ -330,8 +351,7 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public static bool operator <(DATE a, DATE b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == -1;
+            return a.CompareTo(b) < 0;
         }
 
         /// <summary>
@@ -344,8 +364,7 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public static bool operator <=(DATE a, DATE b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return (a.CompareTo(b) == -1 || a.CompareTo(b) == 0);
+            return a.CompareTo(b) <= 0;
         }
 
         /// <summary>
@@ -358,8 +377,7 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public static bool operator >(DATE a, DATE b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == 1;
+            return a.CompareTo(b) > 0;
         }
 
         /// <summary>
@@ -372,8 +390,7 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public static bool operator >=(DATE a, DATE b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return (a.CompareTo(b) == 1 || a.CompareTo(b) == 0);
+            return a.CompareTo(b) >= 0;
         }
 
         /// <summary>
@@ -414,16 +431,45 @@ namespace reexjungle.xcal.domain.models
         {
             return (end.ToDateTime().Subtract(duration.ToTimeSpan())).ToDATE();
         }
+
+        #endregion overloaded operators
+
+        public DATE AddDays(double value)
+        {
+            return new DateTime((int)FULLYEAR, (int)MONTH, (int)MDAY).AddDays(value).ToDATE();
+        }
+
+        public DATE AddWeeks(int value)
+        {
+            return this.ToDateTime().AddWeeks(value).ToDATE();
+        }
+
+        public DATE AddMonths(int value)
+        {
+            return new DateTime((int)FULLYEAR, (int)MONTH, (int)MDAY).AddMonths(value).ToDATE();
+        }
+
+        public DATE AddYears(int value)
+        {
+            return new DateTime((int)FULLYEAR, (int)MONTH, (int)MDAY).AddYears(value).ToDATE();
+        }
+
+        public WEEKDAY GetWeekday()
+        {
+            return this.ToDateTime().DayOfWeek.ToWEEKDAY();
+        }
     }
 
     /// <summary>
-    /// Value Type to identify values that specify a precise calendar date and time of day.
+    /// Represents a class for identifying values that specify a precise calendar date and time of the date
+    /// Format: [YYYYMMSS]&quot;T&quot;[HHMMSS]&quot;Z&quot;
+    /// where YYYY is 4-digit year, MM is 2-digit month and DD is 2-digit day
     /// </summary>
     [DataContract]
-    public struct DATE_TIME : IDATE_TIME, IEquatable<DATE_TIME>, IComparable<DATE_TIME>
+    public struct DATE_TIME : IDATE, IDATE<DATE_TIME>, ITIME, ITIME<DATE_TIME>, IEquatable<DATE_TIME>, IComparable<DATE_TIME>
     {
         private readonly uint hour, minute, second, fullyear, month, mday;
-        private readonly TimeType timeType;
+        private readonly TimeType type;
         private readonly TZID tzid;
 
         /// <summary>
@@ -480,7 +526,7 @@ namespace reexjungle.xcal.domain.models
         /// </summary>
         public TimeType Type
         {
-            get { return timeType; }
+            get { return type; }
         }
 
         /// <summary>
@@ -500,10 +546,10 @@ namespace reexjungle.xcal.domain.models
         /// <param name="hour">The hour of the date time.</param>
         /// <param name="minute">The minute of the date time.</param>
         /// <param name="second">The second of the date time.</param>
-        /// <param name="time_type">The time format of the <see cref="DATE_TIME"/> type.</param>
+        /// <param name="type">The time format of the <see cref="DATE_TIME"/> type.</param>
         /// <param name="tzid">The time zone identifer of the <see cref="DATE_TIME"/> type.</param>
         public DATE_TIME(uint fullyear, uint month, uint mday, uint hour, uint minute, uint second,
-            TimeType time_type = TimeType.Local, TZID tzid = null)
+            TimeType type = TimeType.Local, TZID tzid = null)
         {
             this.fullyear = fullyear;
             this.month = month;
@@ -511,7 +557,7 @@ namespace reexjungle.xcal.domain.models
             this.hour = hour;
             this.minute = minute;
             this.second = second;
-            this.timeType = time_type;
+            this.type = type;
             this.tzid = tzid;
         }
 
@@ -529,14 +575,14 @@ namespace reexjungle.xcal.domain.models
             minute = (uint)datetime.Minute;
             second = (uint)datetime.Second;
             tzid = null;
-            timeType = TimeType.Unknown;
+            type = TimeType.NONE;
             if (tzinfo != null)
             {
                 tzid = new TZID(null, tzinfo.Id);
-                timeType = TimeType.LocalAndTimeZone;
+                type = TimeType.LocalAndTimeZone;
             }
-            else timeType = TimeType.Local;
-            if (datetime.Kind == DateTimeKind.Utc) timeType = TimeType.Utc;
+            else type = TimeType.Local;
+            if (datetime.Kind == DateTimeKind.Utc) type = TimeType.Utc;
         }
 
         /// <summary>
@@ -553,14 +599,14 @@ namespace reexjungle.xcal.domain.models
             minute = (uint)datetime.Minute;
             second = (uint)datetime.Second;
             this.tzid = null;
-            timeType = TimeType.Unknown;
+            type = TimeType.NONE;
             if (tzid != null)
             {
                 this.tzid = tzid;
-                timeType = TimeType.LocalAndTimeZone;
+                type = TimeType.LocalAndTimeZone;
             }
-            else timeType = TimeType.Local;
-            if (datetime.Kind == DateTimeKind.Utc) timeType = TimeType.Utc;
+            else type = TimeType.Local;
+            if (datetime.Kind == DateTimeKind.Utc) type = TimeType.Utc;
         }
 
         /// <summary>
@@ -575,49 +621,8 @@ namespace reexjungle.xcal.domain.models
             hour = (uint)datetime.Hour;
             minute = (uint)datetime.Minute;
             second = (uint)datetime.Second;
-            timeType = TimeType.Utc;
+            type = TimeType.Utc;
             tzid = null;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct from a <see cref="DATE"/> instance.
-        /// </summary>
-        /// <param name="date">The source <see cref="DATE_TIME"/> struct.</param>
-        /// <param name="tzid">The time zone identifer (<see cref="TZID"/> ).</param>
-        /// <exception cref="System.ArgumentNullException">date</exception>
-        public DATE_TIME(DATE date, TZID tzid = null)
-        {
-            if (date == default(DATE)) throw new ArgumentNullException("date");
-            fullyear = date.FULLYEAR;
-            month = date.MONTH;
-            mday = date.MDAY;
-            hour = 0u;
-            minute = 0u;
-            second = 0u;
-            this.tzid = tzid;
-            if (this.tzid != null) timeType = TimeType.LocalAndTimeZone;
-            else timeType = TimeType.Unknown;
-            timeType = TimeType.Unknown;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct from a <see cref="TIME"/> instance.
-        /// </summary>
-        /// <param name="time">The source <see cref="TIME"/> struct.</param>
-        /// <exception cref="System.ArgumentNullException">time</exception>
-        public DATE_TIME(TIME time)
-        {
-            if (time == null) throw new ArgumentNullException("time");
-            fullyear = 1u;
-            month = 1u;
-            mday = 1u;
-            hour = time.HOUR;
-            minute = time.MINUTE;
-            second = time.SECOND;
-            tzid = time.TimeZoneId;
-            if (tzid != null) timeType = TimeType.LocalAndTimeZone;
-            else timeType = TimeType.Unknown;
-            timeType = TimeType.Unknown;
         }
 
         /// <summary>
@@ -633,9 +638,9 @@ namespace reexjungle.xcal.domain.models
             minute = 0u;
             second = 0u;
             tzid = null;
-            timeType = TimeType.Unknown;
+            type = TimeType.NONE;
 
-            var pattern = @"^(?<tzid>((\p{L})+)*(\/)*((\p{L}+\p{P}*\s*)+):)*(?<year>\d{2,4})(?<month>\d{1,2})(?<day>\d{1,2})(T(?<hour>\d{1,2})(?<min>\d{1,2})(?<sec>\d{1,2})(?<utc>Z?))?$";
+            var pattern = @"^((?<tzid>TZID=(\w+)?/(\w+)):)?(?<year>\d{4,})(?<month>\d{2})(?<day>\d{2})T(?<hour>\d{2})(?<min>\d{2})(?<sec>\d{2})(?<utc>Z)?$";
             if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
             {
                 foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
@@ -648,15 +653,12 @@ namespace reexjungle.xcal.domain.models
                     if (match.Groups["sec"].Success) second = uint.Parse(match.Groups["sec"].Value);
                     if (match.Groups["utc"].Success)
                     {
-                        if (match.Groups["utc"].Value.Equals("Z", StringComparison.OrdinalIgnoreCase))
-                            timeType = TimeType.Utc;
-                        else if (match.Groups["utc"].Value.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
-                            timeType = TimeType.Local;
+                        type = TimeType.Utc;
                     }
                     if (match.Groups["tzid"].Success)
                     {
                         tzid = new TZID(match.Groups["tzid"].Value);
-                        timeType = TimeType.LocalAndTimeZone;
+                        type = TimeType.LocalAndTimeZone;
                     }
                 }
             }
@@ -666,16 +668,35 @@ namespace reexjungle.xcal.domain.models
         /// Initializes a new instance of the <see cref="DATE_TIME"/> struct from an implementation of the <see cref="IDATE_TIME"/> interface.
         /// </summary>
         /// <param name="value">The <see cref="IDATE_TIME"/> interface.</param>
-        public DATE_TIME(IDATE_TIME value, TZID tzid = null)
+        /// <param name="tzid"></param>
+        public DATE_TIME(IDATE value)
         {
             fullyear = value.FULLYEAR;
             month = value.MONTH;
             mday = value.MDAY;
+            hour = 0u;
+            minute = 0u;
+            second = 0u;
+            tzid = null;
+            type = TimeType.NONE;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct from an <see cref="IDATE"/> instance.
+        /// </summary>
+        /// <param name="value">The source <see cref="DATE_TIME"/> struct.</param>
+        /// <param name="tzid">The time zone identifer (<see cref="TZID"/> ).</param>
+        /// <exception cref="System.ArgumentNullException">date</exception>
+        public DATE_TIME(ITIME value, TZID tzid = null)
+        {
+            fullyear = 0u;
+            month = 0u;
+            mday = 0u;
             hour = value.HOUR;
             minute = value.MINUTE;
             second = value.SECOND;
-            timeType = value.Type;
-            this.tzid = tzid == null ? value.TimeZoneId : tzid;
+            type = tzid != null ? TimeType.LocalAndTimeZone : TimeType.NONE;
+            this.tzid = tzid ?? value.TimeZoneId;
         }
 
         /// <summary>
@@ -686,13 +707,17 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public override string ToString()
         {
-            if (timeType == TimeType.Local) return string.Format("{0:D4}{1:D2}{2:D2}T{3:D2}{4:D2}{5:D2}", fullyear, month, mday, hour, minute, second);
-            else if (timeType == TimeType.Utc)
-                return string.Format("{0:D4}{1:D2}{2:D2}T{3:D2}{4:D2}{5:D2}Z", fullyear, month, mday, hour, minute, second);
-            else if (Type == TimeType.LocalAndTimeZone)
-                return string.Format("{0}:{1:D4}{2:D2}{3:D2}T{4:D2}{5:D2}{6:D2}", tzid, fullyear, month, mday, hour, minute, second);
-            else
-                return string.Format("{0:D4}{1:D2}{2:D2}T{3:D2}{4:D2}{5:D2}", fullyear, month, mday, hour, minute, second);
+            if (type == TimeType.Local)
+                return $"{fullyear:D4}{month:D2}{mday:D2}T{hour:D2}{minute:D2}{second:D2}";
+
+            if (type == TimeType.Utc)
+                return $"{fullyear:D4}{month:D2}{mday:D2}T{hour:D2}{minute:D2}{second:D2}Z";
+
+            if (type == TimeType.LocalAndTimeZone)
+                return $"{tzid}:{fullyear:D4}{month:D2}{mday:D2}T{hour:D2}{minute:D2}{second:D2}";
+
+            return
+                $"{fullyear:D4}{month:D2}{mday:D2}T{hour:D2}{minute:D2}{second:D2}";
         }
 
         /// <summary>
@@ -704,8 +729,13 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public bool Equals(DATE_TIME other)
         {
-            return (fullyear == other.FULLYEAR) && (month == other.MONTH) && (mday == other.MDAY) &&
-                (hour == other.HOUR) && (minute == other.MINUTE) && (second == other.SECOND);
+            return hour == other.HOUR &&
+                minute == other.MINUTE
+                && second == other.SECOND &&
+                fullyear == other.FULLYEAR &&
+                month == other.MONTH &&
+                mday == other.MDAY &&
+                Equals(tzid, other.tzid);
         }
 
         /// <summary>
@@ -717,8 +747,8 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return Equals((DATE_TIME)obj);
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is DATE_TIME && Equals((DATE_TIME)obj);
         }
 
         /// <summary>
@@ -729,13 +759,17 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public override int GetHashCode()
         {
-            return
-                fullyear.GetHashCode() ^
-                month.GetHashCode() ^
-                mday.GetHashCode() ^
-                hour.GetHashCode() ^
-                minute.GetHashCode() ^
-                second.GetHashCode();
+            unchecked
+            {
+                var hashCode = (int)hour;
+                hashCode = (hashCode * 397) ^ (int)minute;
+                hashCode = (hashCode * 397) ^ (int)second;
+                hashCode = (hashCode * 397) ^ (int)fullyear;
+                hashCode = (hashCode * 397) ^ (int)month;
+                hashCode = (hashCode * 397) ^ (int)mday;
+                hashCode = (hashCode * 397) ^ (tzid != null ? tzid.GetHashCode() : 0);
+                return hashCode;
+            }
         }
 
         /// <summary>
@@ -747,19 +781,19 @@ namespace reexjungle.xcal.domain.models
         /// </returns>
         public int CompareTo(DATE_TIME other)
         {
-            if (other == default(DATE_TIME)) return -2; //undefined
             if (fullyear < other.FULLYEAR) return -1;
             if (fullyear > other.FULLYEAR) return 1;
             if (month < other.MONTH) return -1;
             if (month > other.MONTH) return 1;
             if (mday < other.MDAY) return -1;
             if (mday > other.MDAY) return 1;
-            if (hour < other.hour) return -1;
-            if (hour > other.hour) return 1;
-            if (minute < other.minute) return -1;
-            if (minute > other.minute) return 1;
-            if (second < other.second) return -1;
-            return second > other.second ? 1 : 0;
+            if (hour < other.HOUR) return -1;
+            if (hour > other.HOUR) return 1;
+            if (minute < other.MINUTE) return -1;
+            if (minute > other.MINUTE) return 1;
+            if (second < other.SECOND) return -1;
+            if (second > other.SECOND) return 1;
+            return 0;
         }
 
         #region overloaded operators
@@ -793,54 +827,92 @@ namespace reexjungle.xcal.domain.models
         public static DURATION operator -(DATE_TIME end, DATE_TIME start)
         {
             if (end > start) return new DURATION(end.ToDateTime() - start.ToDateTime());
-            else if (end < start) return new DURATION(start.ToDateTime() - end.ToDateTime());
-            else return new DURATION();
+            if (end < start) return new DURATION(start.ToDateTime() - end.ToDateTime());
+            return new DURATION();
         }
 
         public static bool operator <(DATE_TIME a, DATE_TIME b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == -1;
+            return a.CompareTo(b) < 0;
         }
 
         public static bool operator >(DATE_TIME a, DATE_TIME b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == 1;
+            return a.CompareTo(b) > 0;
         }
 
         public static bool operator <=(DATE_TIME a, DATE_TIME b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return (a.CompareTo(b) == -1 || a.CompareTo(b) == 0);
+            return a.CompareTo(b) <= 0;
         }
 
         public static bool operator >=(DATE_TIME a, DATE_TIME b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return (a.CompareTo(b) == 1 || a.CompareTo(b) == 0);
+            return a.CompareTo(b) >= 0;
         }
 
-        public static bool operator ==(DATE_TIME a, DATE_TIME b)
+        public static bool operator ==(DATE_TIME left, DATE_TIME right)
         {
-            if ((object)a == null || (object)b == null) return Equals(a, b);
-            return a.Equals(b);
+            return left.Equals(right);
         }
 
-        public static bool operator !=(DATE_TIME a, DATE_TIME b)
+        public static bool operator !=(DATE_TIME left, DATE_TIME right)
         {
-            if ((object)a == null || (object)b == null) return !Equals(a, b);
-            return !a.Equals(b);
+            return !left.Equals(right);
         }
 
         #endregion overloaded operators
+
+        public DATE_TIME AddSeconds(double value)
+        {
+            return this.ToDateTime().AddSeconds(value).ToDATE_TIME(tzid);
+        }
+
+        public DATE_TIME AddMinutes(double value)
+        {
+            return this.ToDateTime()
+                .AddMinutes(value)
+                .ToDATE_TIME(tzid);
+        }
+
+        public DATE_TIME AddHours(double value)
+        {
+            return this.ToDateTime()
+                .AddHours(value)
+                .ToDATE_TIME(tzid);
+        }
+
+        public DATE_TIME AddDays(double value)
+        {
+            return this.ToDateTime().AddDays(value).ToDATE_TIME(TimeZoneId);
+        }
+
+        public DATE_TIME AddWeeks(int value)
+        {
+            return this.ToDateTime().AddWeeks(value).ToDATE_TIME(TimeZoneId);
+        }
+
+        public DATE_TIME AddMonths(int value)
+        {
+            return this.ToDateTime().AddMonths(value).ToDATE_TIME(TimeZoneId);
+        }
+
+        public DATE_TIME AddYears(int value)
+        {
+            return this.ToDateTime().AddYears(value).ToDATE_TIME(TimeZoneId);
+        }
+
+        public WEEKDAY GetWeekday()
+        {
+            return this.ToDateTime().DayOfWeek.ToWEEKDAY();
+        }
     }
 
     [DataContract]
-    public struct TIME : ITIME, IEquatable<TIME>, IComparable<TIME>
+    public struct TIME : ITIME, ITIME<TIME>, IEquatable<TIME>, IComparable<TIME>
     {
         private readonly uint hour, minute, second;
-        private readonly TimeType format;
+        private readonly TimeType type;
         private readonly TZID tzid;
 
         /// <summary>
@@ -872,7 +944,7 @@ namespace reexjungle.xcal.domain.models
 
         public TimeType Type
         {
-            get { return format; }
+            get { return type; }
         }
 
         public TZID TimeZoneId
@@ -880,12 +952,12 @@ namespace reexjungle.xcal.domain.models
             get { return tzid; }
         }
 
-        public TIME(uint hour, uint minute, uint second, TimeType format = TimeType.Local, TZID tzid = null)
+        public TIME(uint hour, uint minute, uint second, TimeType type = TimeType.Local, TZID tzid = null)
         {
             this.hour = hour;
             this.minute = minute;
             this.second = second;
-            this.format = format;
+            this.type = type;
             this.tzid = tzid;
         }
 
@@ -895,14 +967,14 @@ namespace reexjungle.xcal.domain.models
             minute = (uint)datetime.Minute;
             second = (uint)datetime.Second;
             tzid = null;
-            format = TimeType.Unknown;
+            type = TimeType.NONE;
             if (tzinfo != null)
             {
                 tzid = new TZID(null, tzinfo.Id);
-                format = TimeType.LocalAndTimeZone;
+                type = TimeType.LocalAndTimeZone;
             }
-            else format = TimeType.Local;
-            if (datetime.Kind == DateTimeKind.Utc) format = TimeType.Utc;
+            else type = TimeType.Local;
+            if (datetime.Kind == DateTimeKind.Utc) type = TimeType.Utc;
         }
 
         public TIME(DateTimeOffset datetime)
@@ -910,7 +982,7 @@ namespace reexjungle.xcal.domain.models
             hour = (uint)datetime.Hour;
             minute = (uint)datetime.Minute;
             second = (uint)datetime.Second;
-            format = TimeType.Utc;
+            type = TimeType.Utc;
             tzid = null;
         }
 
@@ -920,9 +992,9 @@ namespace reexjungle.xcal.domain.models
             minute = 0u;
             second = 0u;
             tzid = null;
-            format = TimeType.Unknown;
+            type = TimeType.NONE;
 
-            var pattern = @"^(?<tzid>((\p{L})+)*(\/)*((\p{L}+\p{P}*\s*)+):)*(T(?<hour>\d{1,2})(?<min>\d{1,2})(?<sec>\d{1,2})(?<utc>Z?))?$";
+            var pattern = @"^((?<tzid>TZID=(\w+)?/(\w+)):)?T(?<hour>\d{1,2})(?<min>\d{1,2})(?<sec>\d{1,2})(?<utc>Z)?$";
             if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
             {
                 foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
@@ -933,14 +1005,14 @@ namespace reexjungle.xcal.domain.models
                     if (match.Groups["utc"].Success)
                     {
                         if (match.Groups["utc"].Value.Equals("Z", StringComparison.OrdinalIgnoreCase))
-                            format = TimeType.Utc;
+                            type = TimeType.Utc;
                         else if (match.Groups["utc"].Value.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
-                            format = TimeType.Local;
+                            type = TimeType.Local;
                     }
                     if (match.Groups["tzid"].Success)
                     {
                         tzid = new TZID(match.Groups["tzid"].Value);
-                        format = TimeType.LocalAndTimeZone;
+                        type = TimeType.LocalAndTimeZone;
                     }
                 }
             }
@@ -951,7 +1023,7 @@ namespace reexjungle.xcal.domain.models
             hour = datetime.HOUR;
             minute = datetime.MINUTE;
             second = datetime.SECOND;
-            format = datetime.Type;
+            type = datetime.Type;
             tzid = datetime.TimeZoneId;
         }
 
@@ -961,45 +1033,57 @@ namespace reexjungle.xcal.domain.models
             hour = time.HOUR;
             minute = time.MINUTE;
             second = time.SECOND;
-            format = time.Type;
+            type = time.Type;
             this.tzid = tzid == null ? time.TimeZoneId : tzid;
         }
 
         public override string ToString()
         {
-            if (format == TimeType.Local) return string.Format("T{0:D2}{1:D2}{2:D2}", hour, minute, second);
-            else if (format == TimeType.Utc)
-                return string.Format("T{0:D2}{1:D2}{2:D2}Z", hour, minute, second);
+            if (type == TimeType.Local) return $"T{hour:D2}{minute:D2}{second:D2}";
+            else if (type == TimeType.Utc)
+                return $"T{hour:D2}{minute:D2}{second:D2}Z";
             else if (Type == TimeType.LocalAndTimeZone)
                 return string.Format("{0}:T{0:D2}{1:D2}{2:D2}", tzid, hour, minute, second);
             else
-                return string.Format("T{0:D2}{1:D2}{2:D2}", hour, minute, second);
+                return $"T{hour:D2}{minute:D2}{second:D2}";
         }
 
         public bool Equals(TIME other)
         {
-            return (hour == other.HOUR) && (minute == other.MINUTE) && (second == other.SECOND);
+            return hour == other.HOUR &&
+                minute == other.MINUTE &&
+                second == other.SECOND &&
+                type == other.Type &&
+                Equals(tzid, other.tzid);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return Equals((TIME)obj);
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is TIME && Equals((TIME)obj);
         }
 
         public override int GetHashCode()
         {
-            return hour.GetHashCode() ^ minute.GetHashCode() ^ second.GetHashCode();
+            unchecked
+            {
+                var hashCode = (int)hour;
+                hashCode = (hashCode * 397) ^ (int)minute;
+                hashCode = (hashCode * 397) ^ (int)second;
+                hashCode = (hashCode * 397) ^ (int)type;
+                hashCode = (hashCode * 397) ^ (tzid != null ? tzid.GetHashCode() : 0);
+                return hashCode;
+            }
         }
 
         public int CompareTo(TIME other)
         {
-            if (other == default(TIME)) return 2;
             if (hour > other.hour) return 1;
             if (minute < other.minute) return -1;
             if (minute > other.minute) return 1;
             if (second < other.second) return -1;
-            return second > other.second ? 1 : 0;
+            if (second > other.second) return 1;
+            return 0;
         }
 
         #region overloaded operators
@@ -1021,73 +1105,104 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator <(TIME a, TIME b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == -1;
+            return a.CompareTo(b) < 0;
         }
 
         public static bool operator >(TIME a, TIME b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == 1;
+            return a.CompareTo(b) > 0;
         }
 
         public static bool operator <=(TIME a, TIME b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == -2;
+            return a.CompareTo(b) <= 0;
         }
 
         public static bool operator >=(TIME a, TIME b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == 2;
+            return a.CompareTo(b) >= 0;
         }
 
         public static bool operator ==(TIME a, TIME b)
         {
-            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(TIME a, TIME b)
         {
-            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
         #endregion overloaded operators
+
+        public TIME AddSeconds(double value)
+        {
+            return this.ToDateTime().AddSeconds(value).ToTIME(tzid);
+        }
+
+        public TIME AddMinutes(double value)
+        {
+            return this.ToDateTime().AddMinutes(value).ToTIME(tzid);
+        }
+
+        public TIME AddHours(double value)
+        {
+            return this.ToDateTime().AddHours(value).ToTIME(tzid);
+        }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
     [DataContract]
     public struct DURATION : IDURATION, IEquatable<DURATION>, IComparable<DURATION>
     {
         private readonly int weeks, days, hours, minutes, seconds;
 
+        /// <summary>
+        /// Gets the duration in weeks
+        /// </summary>
         public int WEEKS
         {
             get { return weeks; }
         }
 
+        /// <summary>
+        /// Gets the duration in hours
+        /// </summary>
         public int HOURS
         {
             get { return hours; }
         }
 
+        /// <summary>
+        /// Gets the duration in minutes
+        /// </summary>
         public int MINUTES
         {
             get { return minutes; }
         }
 
+        /// <summary>
+        /// Gets the duration in seconds
+        /// </summary>
         public int SECONDS
         {
             get { return seconds; }
         }
 
+        /// <summary>
+        /// Gets the duration in days
+        /// </summary>
         public int DAYS
         {
             get { return days; }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="duration"></param>
         public DURATION(DURATION duration)
         {
             weeks = duration.WEEKS;
@@ -1097,6 +1212,14 @@ namespace reexjungle.xcal.domain.models
             seconds = duration.SECONDS;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="weeks"></param>
+        /// <param name="days"></param>
+        /// <param name="hours"></param>
+        /// <param name="minutes"></param>
+        /// <param name="seconds"></param>
         public DURATION(int weeks, int days = 0, int hours = 0, int minutes = 0, int seconds = 0)
         {
             this.weeks = weeks;
@@ -1106,6 +1229,10 @@ namespace reexjungle.xcal.domain.models
             this.seconds = seconds;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="span"></param>
         public DURATION(TimeSpan span)
         {
             days = span.Days;
@@ -1119,6 +1246,10 @@ namespace reexjungle.xcal.domain.models
                 + (span.Milliseconds / (24 * 3600000)) / 7;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="value"></param>
         public DURATION(string value)
         {
             weeks = days = hours = minutes = seconds = 0;
@@ -1143,6 +1274,10 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="duration"></param>
         public DURATION(IDURATION duration)
         {
             if (duration == null) throw new ArgumentNullException("duration");
@@ -1169,32 +1304,35 @@ namespace reexjungle.xcal.domain.models
 
         public bool Equals(DURATION other)
         {
-            return (weeks == other.WEEKS) && (days == other.DAYS) &&
-                (hours == other.HOURS) && (minutes == other.MINUTES) &&
-                (seconds == other.SECONDS);
+            return weeks == other.WEEKS &&
+                days == other.DAYS &&
+                hours == other.HOURS &&
+                minutes == other.MINUTES &&
+                seconds == other.SECONDS;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return Equals((DURATION)obj);
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is DURATION && Equals((DURATION)obj);
         }
 
         public override int GetHashCode()
         {
-            return
-                weeks.GetHashCode() ^
-                days.GetHashCode() ^
-                hours.GetHashCode() ^
-                minutes.GetHashCode() ^
-                seconds.GetHashCode();
+            unchecked
+            {
+                var hashCode = weeks;
+                hashCode = (hashCode * 397) ^ days;
+                hashCode = (hashCode * 397) ^ hours;
+                hashCode = (hashCode * 397) ^ minutes;
+                hashCode = (hashCode * 397) ^ seconds;
+                return hashCode;
+            }
         }
 
         public int CompareTo(DURATION other)
         {
-            var span = this.ToTimeSpan();
-            var ospan = other.ToTimeSpan();
-            return span.CompareTo(ospan);
+            return this.ToTimeSpan().CompareTo(other.ToTimeSpan());
         }
 
         #region overloaded operators
@@ -1232,85 +1370,101 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator <(DURATION a, DURATION b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == -1;
+            return a.CompareTo(b) < 0;
         }
 
         public static bool operator >(DURATION a, DURATION b)
         {
-            if ((object)a == null || (object)b == null) return false;
             return a.CompareTo(b) > 0;
         }
 
         public static bool operator <=(DURATION a, DURATION b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) < 0 || a.CompareTo(b) == 0;
+            return a.CompareTo(b) <= 0;
         }
 
         public static bool operator >=(DURATION a, DURATION b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) > 0 || a.CompareTo(b) == 0;
+            return a.CompareTo(b) >= 0;
         }
 
         public static bool operator ==(DURATION a, DURATION b)
         {
-            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(DURATION a, DURATION b)
         {
-            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
         #endregion overloaded operators
     }
 
+    /// <summary>
+    ///
+    /// </summary>
     [DataContract]
     public struct WEEKDAYNUM : IWEEKDAYNUM, IEquatable<WEEKDAYNUM>, IComparable<WEEKDAYNUM>
     {
         private readonly int ordweek;
         private readonly WEEKDAY weekday;
 
-        public int OrdinalWeek
+        /// <summary>
+        /// Gets or sets the nth occurence of the day within the MONTHLY or YEARLY recurrence rule
+        /// </summary>
+        public int NthOccurrence
         {
             get { return ordweek; }
         }
 
+        /// <summary>
+        /// Gets or sets the weekday
+        /// </summary>
         public WEEKDAY Weekday
         {
             get { return weekday; }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="weekday"></param>
         public WEEKDAYNUM(WEEKDAY weekday)
         {
             ordweek = 0;
             this.weekday = weekday;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ordweek"></param>
+        /// <param name="weekday"></param>
         public WEEKDAYNUM(int ordweek, WEEKDAY weekday)
         {
             this.ordweek = ordweek;
             this.weekday = weekday;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="value"></param>
         public WEEKDAYNUM(string value)
         {
             ordweek = 0;
-            weekday = WEEKDAY.UNKNOWN;
+            weekday = WEEKDAY.NONE;
 
-            var pattern = @"^((?<sign>\w)? <?ordwk>\d{1,2})?(?<weekday>(SU|MO|TU|WE|TH|FR|SA)$";
+            var pattern = @"^((?<minus>\-)? <?ordwk>\d{1,2})?(?<weekday>(SU|MO|TU|WE|TH|FR|SA)$";
             if (Regex.IsMatch(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
             {
                 var mulitplier = 1;
                 foreach (Match match in Regex.Matches(value, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture))
                 {
-                    if (match.Groups["sign"].Success)
+                    if (match.Groups["minus"].Success)
                     {
-                        if (match.Groups["sign"].Value == "-") mulitplier *= -1;
+                        if (match.Groups["minus"].Value == "-") mulitplier *= -1;
                     }
                     if (match.Groups["ordwk"].Success) ordweek = mulitplier * int.Parse(match.Groups["ordwk"].Value);
                     if (match.Groups["weekday"].Success) weekday = (WEEKDAY)Enum.Parse(typeof(WEEKDAY), match.Groups["weekday"].Value);
@@ -1318,16 +1472,20 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="weekdaynum"></param>
         public WEEKDAYNUM(IWEEKDAYNUM weekdaynum)
         {
             if (weekdaynum == null) throw new ArgumentNullException("weekdaynum");
-            ordweek = weekdaynum.OrdinalWeek;
+            ordweek = weekdaynum.NthOccurrence;
             weekday = weekdaynum.Weekday;
         }
 
         public bool Equals(WEEKDAYNUM other)
         {
-            return OrdinalWeek == other.OrdinalWeek && Weekday == other.Weekday;
+            return NthOccurrence == other.NthOccurrence && Weekday == other.Weekday;
         }
 
         public override bool Equals(object obj)
@@ -1338,60 +1496,62 @@ namespace reexjungle.xcal.domain.models
 
         public override int GetHashCode()
         {
-            return OrdinalWeek.GetHashCode() ^ Weekday.GetHashCode();
+            return NthOccurrence.GetHashCode() ^ Weekday.GetHashCode();
         }
 
         public override string ToString()
         {
-            if (OrdinalWeek != 0)
+            if (NthOccurrence != 0)
             {
-                return (OrdinalWeek < 0) ?
-                    string.Format("-{0} {1}", (uint)OrdinalWeek, Weekday) :
-                    string.Format("+{0} {1}", (uint)OrdinalWeek, Weekday);
+                return (NthOccurrence < 0) ?
+                    $"-{(uint) NthOccurrence} {Weekday}"
+                    : $"+{(uint) NthOccurrence} {Weekday}";
             }
-            else return string.Format("{0}", Weekday);
+            return $"{Weekday}";
         }
 
         public int CompareTo(WEEKDAYNUM other)
         {
-            if (ordweek == 0 && other.OrdinalWeek == 0) return weekday.CompareTo(other.Weekday);
-            if (ordweek < other.OrdinalWeek) return -1;
-            return ordweek > other.OrdinalWeek ? 1 : weekday.CompareTo(other.Weekday);
+            if (ordweek == 0 && other.NthOccurrence == 0) return weekday.CompareTo(other.Weekday);
+            if (ordweek < other.NthOccurrence) return -1;
+            if (ordweek > other.NthOccurrence) return 1;
+            return weekday.CompareTo(other.Weekday);
         }
 
         public static bool operator ==(WEEKDAYNUM a, WEEKDAYNUM b)
         {
-            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(WEEKDAYNUM a, WEEKDAYNUM b)
         {
-            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
         public static bool operator <(WEEKDAYNUM a, WEEKDAYNUM b)
         {
-            return a.CompareTo(b) == -1;
+            return a.CompareTo(b) < 0;
         }
 
         public static bool operator >(WEEKDAYNUM a, WEEKDAYNUM b)
         {
-            return a.CompareTo(b) == 1;
+            return a.CompareTo(b) > 0;
         }
 
         public static bool operator <=(WEEKDAYNUM a, WEEKDAYNUM b)
         {
-            return a.CompareTo(b) == -1 || a.CompareTo(b) == 0; ;
+            return a.CompareTo(b) <= 0;
         }
 
         public static bool operator >=(WEEKDAYNUM a, WEEKDAYNUM b)
         {
-            return a.CompareTo(b) == 1 || a.CompareTo(b) == 0;
+            return a.CompareTo(b) >= 0;
         }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
     [DataContract]
     public struct UTC_OFFSET : IUTC_OFFSET, IEquatable<UTC_OFFSET>, IComparable<UTC_OFFSET>
     {
@@ -1423,6 +1583,10 @@ namespace reexjungle.xcal.domain.models
             get { return second; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UTC_OFFSET"/> struct from a serialized string.
+        /// </summary>
+        /// <param name="value">A serialized string representing a <see cref="UTC_OFFSET"/> struct.</param>
         public UTC_OFFSET(string value)
         {
             hour = minute = 0;
@@ -1446,6 +1610,12 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UTC_OFFSET"/> struct.
+        /// </summary>
+        /// <param name="hour">The hour to initialize the <see cref="UTC_OFFSET"/> struct.</param>
+        /// <param name="minute">The minute to initialize the <see cref="UTC_OFFSET"/> struct.</param>
+        /// <param name="second">The second to initialize the <see cref="UTC_OFFSET"/> struct.</param>
         public UTC_OFFSET(int hour, int minute, int second)
         {
             this.hour = hour;
@@ -1453,6 +1623,10 @@ namespace reexjungle.xcal.domain.models
             this.second = second;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UTC_OFFSET"/> struct from a <see cref="IUTC_OFFSET"/> instance.
+        /// </summary>
+        /// <param name="offset"></param>
         public UTC_OFFSET(IUTC_OFFSET offset)
         {
             hour = offset.HOUR;
@@ -1463,48 +1637,47 @@ namespace reexjungle.xcal.domain.models
         public override string ToString()
         {
             if (hour < 0 || minute < 0 || second < 0)
-                return string.Format("-{0:D2}{1:D2}{2:D2}", hour, minute, second);
+                return $"-{hour:D2}{minute:D2}{second:D2}";
             else
-                return string.Format("+{0:D2}{1:D2}{2:D2}", hour, minute, second);
+                return $"+{hour:D2}{minute:D2}{second:D2}";
         }
 
         public bool Equals(UTC_OFFSET other)
         {
-            return (hour == other.HOUR) && (minute == other.MINUTE) && (second == other.SECOND);
+            return hour == other.hour &&
+                minute == other.minute &&
+                second == other.second;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return Equals((UTC_OFFSET)obj);
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is UTC_OFFSET && Equals((UTC_OFFSET)obj);
         }
 
         public override int GetHashCode()
         {
-            return hour.GetHashCode() ^ minute.GetHashCode() ^ second.GetHashCode();
+            unchecked
+            {
+                var hashCode = hour;
+                hashCode = (hashCode * 397) ^ minute;
+                hashCode = (hashCode * 397) ^ second;
+                return hashCode;
+            }
         }
 
         public int CompareTo(UTC_OFFSET other)
         {
-            if (hour < other.hour) return -1;
-            if (hour > other.hour) return 1;
-            if (minute < other.minute) return -1;
-            if (minute > other.minute) return 1;
-            if (second < other.second) return -1;
-            return second > other.second ? 1 : 0;
+            if (hour < other.HOUR) return -1;
+            if (hour > other.HOUR) return 1;
+            if (minute < other.MINUTE) return -1;
+            if (minute > other.MINUTE) return 1;
+            if (second < other.SECOND) return -1;
+            if (second > other.SECOND) return 1;
+            return 0;
         }
 
         #region overloaded operators
-
-        public static UTC_OFFSET operator +(UTC_OFFSET offset)
-        {
-            return new UTC_OFFSET(offset.HOUR, offset.MINUTE, offset.SECOND);
-        }
-
-        public static UTC_OFFSET operator -(UTC_OFFSET offset)
-        {
-            return new UTC_OFFSET(-offset.HOUR, -offset.MINUTE, -offset.SECOND);
-        }
 
         public static UTC_OFFSET operator +(UTC_OFFSET a, UTC_OFFSET b)
         {
@@ -1518,43 +1691,40 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator <(UTC_OFFSET a, UTC_OFFSET b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == -1;
+            return a.CompareTo(b) < 0;
         }
 
         public static bool operator >(UTC_OFFSET a, UTC_OFFSET b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == 1;
+            return a.CompareTo(b) > 0;
         }
 
         public static bool operator <=(UTC_OFFSET a, UTC_OFFSET b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == -2;
+            return a.CompareTo(b) <= 0;
         }
 
         public static bool operator >=(UTC_OFFSET a, UTC_OFFSET b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == 2;
+            return a.CompareTo(b) >= 0;
         }
 
-        public static bool operator ==(UTC_OFFSET a, UTC_OFFSET b)
+        public static bool operator ==(UTC_OFFSET left, UTC_OFFSET right)
         {
-            if ((object)a == null || (object)b == null) return Equals(a, b);
-            return a.Equals(b);
+            return left.Equals(right);
         }
 
-        public static bool operator !=(UTC_OFFSET a, UTC_OFFSET b)
+        public static bool operator !=(UTC_OFFSET left, UTC_OFFSET right)
         {
-            if ((object)a == null || (object)b == null) return !Equals(a, b);
-            return !a.Equals(b);
+            return !left.Equals(right);
         }
 
         #endregion overloaded operators
     }
 
+    /// <summary>
+    ///
+    /// </summary>
     [DataContract]
     public struct PERIOD : IPERIOD, IEquatable<PERIOD>, IComparable<PERIOD>
     {
@@ -1562,21 +1732,34 @@ namespace reexjungle.xcal.domain.models
         private readonly DURATION duration;
         private readonly PeriodType type;
 
+        /// <summary>
+        /// Gets or sets the start of the period
+        /// </summary>
         public DATE_TIME Start
         {
             get { return start; }
         }
 
+        /// <summary>
+        /// Gets or sets the end of the period.
+        /// </summary>
         public DATE_TIME End
         {
             get { return end; }
         }
 
+        /// <summary>
+        /// Gets or sets the duration of the period.
+        /// </summary>
         public DURATION Duration
         {
             get { return duration; }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="value"></param>
         public PERIOD(string value)
         {
             start = default(DATE_TIME);
@@ -1584,43 +1767,50 @@ namespace reexjungle.xcal.domain.models
             duration = default(DURATION);
             type = PeriodType.Start;
 
-            var parts = value.Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts == null || parts.Length != 2) throw new FormatException("Invalid PERIOD format");
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
 
-            try
+            var datetimePattern = @"((TZID=(\w+)?/(\w+)):)?(\d{4,})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z?";
+            var durationPattern = @"(\-)?P((\d*)W)?((\d*)D)?(T((\d*)H)?((\d*)M)?((\d*)S)?)?";
+            var explicitPattern = string.Format("{0}/{0}", datetimePattern);
+            var startPattern = $"{datetimePattern}/{durationPattern}";
+
+            var pattern = $@"^(?<periodExplicit>{explicitPattern})|(?<periodStart>{startPattern})$";
+
+            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
+                          RegexOptions.CultureInvariant;
+            var regex = new Regex(pattern, options);
+
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
+            foreach (Match match in regex.Matches(value))
             {
-                start = new DATE_TIME(parts[0]);
-                end = new DATE_TIME(parts[1]);
-                duration = end - start;
-            }
-            catch (ArgumentException)
-            {
-                try
+                if (match.Groups["periodExplicit"].Success)
                 {
+                    var periodExplicit = match.Groups["periodExplicit"].Value;
+                    var parts = periodExplicit.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                    start = new DATE_TIME(parts[0]);
+                    end = new DATE_TIME(parts[1]);
+                    duration = end - start;
+                    type = PeriodType.Explicit;
+                    break;
+                }
+                if (match.Groups["periodStart"].Success)
+                {
+                    var periodStart = match.Groups["periodStart"].Value;
+                    var parts = periodStart.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                    start = new DATE_TIME(parts[0]);
                     duration = new DURATION(parts[1]);
                     end = start + duration;
+                    type = PeriodType.Start;
+                    break;
                 }
-                catch (FormatException) { throw; }
-                catch (Exception) { throw; }
-            }
-            catch (FormatException)
-            {
-                try
-                {
-                    duration = new DURATION(parts[1]);
-                    end = start + duration;
-                }
-                catch (FormatException) { throw; }
-                catch (Exception) { throw; }
-            }
-            catch (Exception)
-            {
-                try { duration = new DURATION(parts[1]); }
-                catch (FormatException) { throw; }
-                catch (Exception) { throw; }
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
         public PERIOD(DATE_TIME start, DATE_TIME end)
         {
             this.start = start;
@@ -1629,6 +1819,11 @@ namespace reexjungle.xcal.domain.models
             type = PeriodType.Explicit;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="duration"></param>
         public PERIOD(DATE_TIME start, DURATION duration)
         {
             this.start = start;
@@ -1637,17 +1832,24 @@ namespace reexjungle.xcal.domain.models
             type = PeriodType.Start;
         }
 
-        public PERIOD(DateTime start, DateTime end, TimeZoneInfo stimezone = null, TimeZoneInfo etimezone = null)
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="startTimeZoneInfo"></param>
+        /// <param name="endTimeZoneInfo"></param>
+        public PERIOD(DateTime start, DateTime end, TimeZoneInfo startTimeZoneInfo = null, TimeZoneInfo endTimeZoneInfo = null)
         {
-            this.start = new DATE_TIME(start, stimezone);
-            this.end = new DATE_TIME(end, etimezone);
+            this.start = new DATE_TIME(start, startTimeZoneInfo);
+            this.end = new DATE_TIME(end, endTimeZoneInfo);
             duration = this.end - this.start;
             type = PeriodType.Explicit;
         }
 
-        public PERIOD(DateTime start, TimeSpan span, TimeZoneInfo stimezone = null)
+        public PERIOD(DateTime start, TimeSpan span, TimeZoneInfo timeZoneInfo = null)
         {
-            this.start = new DATE_TIME(start, stimezone);
+            this.start = new DATE_TIME(start, timeZoneInfo);
             duration = new DURATION(span);
             end = this.start + duration;
             type = PeriodType.Start;
@@ -1665,26 +1867,34 @@ namespace reexjungle.xcal.domain.models
         public override string ToString()
         {
             return (type == PeriodType.Start) ?
-                string.Format("{0}/{1}", start, end) :
-                string.Format("{0}/{1}", start, duration);
+                $"{start}/{end}"
+                : $"{start}/{duration}";
         }
 
         public bool Equals(PERIOD other)
         {
-            return start == other.Start && duration == other.Duration;
+            return start.Equals(other.Start) &&
+                end.Equals(other.End) &&
+                duration.Equals(other.Duration) &&
+                type == other.type;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return Equals((PERIOD)obj);
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is PERIOD && Equals((PERIOD)obj);
         }
 
         public override int GetHashCode()
         {
-            return type == PeriodType.Explicit ?
-                start.GetHashCode() ^ end.GetHashCode() :
-                start.GetHashCode() ^ duration.GetHashCode();
+            unchecked
+            {
+                var hashCode = start.GetHashCode();
+                hashCode = (hashCode * 397) ^ end.GetHashCode();
+                hashCode = (hashCode * 397) ^ duration.GetHashCode();
+                hashCode = (hashCode * 397) ^ (int)type;
+                return hashCode;
+            }
         }
 
         public int CompareTo(PERIOD other)
@@ -1698,48 +1908,48 @@ namespace reexjungle.xcal.domain.models
 
         public static bool operator <(PERIOD a, PERIOD b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == -2;
+            return a.CompareTo(b) < 0;
         }
 
         public static bool operator >(PERIOD a, PERIOD b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == 2;
+            return a.CompareTo(b) > 0;
         }
 
         public static bool operator <=(PERIOD a, PERIOD b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == -2 || a.CompareTo(b) == 0;
+            return a.CompareTo(b) <= 0;
         }
 
         public static bool operator >=(PERIOD a, PERIOD b)
         {
-            if ((object)a == null || (object)b == null) return false;
-            return a.CompareTo(b) == 2 || a.CompareTo(b) == 0;
+            return a.CompareTo(b) >= 0;
         }
 
         public static bool operator ==(PERIOD a, PERIOD b)
         {
-            if ((object)a == null || (object)b == null) return Equals(a, b);
             return a.Equals(b);
         }
 
         public static bool operator !=(PERIOD a, PERIOD b)
         {
-            if ((object)a == null || (object)b == null) return !Equals(a, b);
             return !a.Equals(b);
         }
 
         #endregion overloaded operators
     }
 
+    /// <summary>
+    ///
+    /// </summary>
     [DataContract]
     public class RECUR : IRECUR, IEquatable<RECUR>, IContainsKey<Guid>
     {
         #region properties
 
+        /// <summary>
+        /// Gets or sets the identifier.
+        /// </summary>
         [DataMember]
         public Guid Id { get; set; }
 
@@ -1854,22 +2064,40 @@ namespace reexjungle.xcal.domain.models
 
         #endregion properties
 
+        /// <summary>
+        ///
+        /// </summary>
         public RECUR()
         {
-            FREQ = FREQ.UNKNOWN;
+            FREQ = FREQ.NONE;
             UNTIL = default(DATE_TIME);
             COUNT = 0u;
             INTERVAL = 1u;
             WKST = WEEKDAY.SU;
+
+            BYMONTH = new List<uint>();
+            BYWEEKNO = new List<int>();
+            BYYEARDAY = new List<int>();
+            BYMONTHDAY = new List<int>();
+            BYDAY = new List<WEEKDAYNUM>();
+            BYHOUR = new List<uint>();
+            BYMINUTE = new List<uint>();
+            BYSECOND = new List<uint>();
+            BYSETPOS = new List<int>();
         }
 
-        public RECUR(string value)
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="value"></param>
+        public RECUR(string value) : this()
         {
-            FREQ = FREQ.UNKNOWN;
+            FREQ = FREQ.NONE;
             UNTIL = default(DATE_TIME);
             COUNT = 0u;
             INTERVAL = 1u;
             WKST = WEEKDAY.SU;
+
             var tokens = value.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
             if (tokens == null || tokens.Length == 0) throw new FormatException("Invalid Recur format");
 
@@ -1881,7 +2109,7 @@ namespace reexjungle.xcal.domain.models
                 var pair = token.Split(new[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
 
                 //check FREQ
-                if (pair[0].Equals("FREQ", StringComparison.OrdinalIgnoreCase)) FREQ = (FREQ) Enum.Parse(typeof(FREQ), pair[1], true);
+                if (pair[0].Equals("FREQ", StringComparison.OrdinalIgnoreCase)) FREQ = (FREQ)Enum.Parse(typeof(FREQ), pair[1], true);
                 if (pair[0].Equals("UNTIL", StringComparison.OrdinalIgnoreCase)) UNTIL = new DATE_TIME(pair[1]);
                 if (pair[0].Equals("COUNT", StringComparison.OrdinalIgnoreCase)) COUNT = uint.Parse(pair[1]);
                 if (pair[0].Equals("INTERVAL", StringComparison.OrdinalIgnoreCase)) INTERVAL = uint.Parse(pair[1]);
@@ -1939,7 +2167,7 @@ namespace reexjungle.xcal.domain.models
                     BYMONTH = parts.Select(uint.Parse).ToList();
                 }
 
-                if (pair[0].Equals("WKST", StringComparison.OrdinalIgnoreCase)) WKST = (WEEKDAY) Enum.Parse(typeof(WEEKDAY), pair[1], true);
+                if (pair[0].Equals("WKST", StringComparison.OrdinalIgnoreCase)) WKST = (WEEKDAY)Enum.Parse(typeof(WEEKDAY), pair[1], true);
 
                 if (pair[0].Equals("BYSETPOS", StringComparison.OrdinalIgnoreCase))
                 {
@@ -1950,56 +2178,71 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public RECUR(FREQ freq, DATE_TIME until)
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="freq"></param>
+        /// <param name="until"></param>
+        public RECUR(FREQ freq, DATE_TIME until) : this()
         {
-            this.FREQ = freq;
-            this.UNTIL = until;
-            COUNT = 0u;
-            INTERVAL = 1u;
-            WKST = WEEKDAY.SU;
+            FREQ = freq;
+            UNTIL = until;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="freq"></param>
+        /// <param name="count"></param>
+        /// <param name="interval"></param>
         public RECUR(FREQ freq, uint count, uint interval)
         {
-            this.FREQ = freq;
-            UNTIL = new DATE_TIME();
-            this.COUNT = count;
-            this.INTERVAL = interval;
-            WKST = WEEKDAY.SU;
+            FREQ = freq;
+            COUNT = count;
+            INTERVAL = interval;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="recur"></param>
         public RECUR(IRECUR recur)
         {
-            FREQ = recur.FREQ;
-            UNTIL = recur.UNTIL;
-            COUNT = recur.COUNT;
-            INTERVAL = recur.INTERVAL;
-            WKST = recur.WKST;
-            BYSECOND = recur.BYSECOND;
-            BYMINUTE = recur.BYMINUTE;
-            BYHOUR = recur.BYHOUR;
-            BYDAY = recur.BYDAY;
-            BYMONTHDAY = recur.BYMONTHDAY;
-            BYYEARDAY = recur.BYYEARDAY;
-            BYWEEKNO = recur.BYWEEKNO;
-            BYMONTH = recur.BYMONTH;
-            BYSETPOS = recur.BYSETPOS;
+            if (recur != null)
+            {
+                FREQ = recur.FREQ;
+                UNTIL = recur.UNTIL;
+                COUNT = recur.COUNT;
+                INTERVAL = recur.INTERVAL;
+                WKST = recur.WKST;
+                BYSECOND = new List<uint>(recur.BYSECOND);
+                BYMINUTE = new List<uint>(recur.BYMINUTE);
+                BYHOUR = new List<uint>(recur.BYHOUR);
+                BYDAY = new List<WEEKDAYNUM>(recur.BYDAY);
+                BYMONTHDAY = new List<int>(recur.BYMONTHDAY);
+                BYYEARDAY = new List<int>(recur.BYYEARDAY);
+                BYWEEKNO = new List<int>(recur.BYWEEKNO);
+                BYMONTH = new List<uint>(recur.BYMONTH);
+                BYSETPOS = new List<int>(recur.BYSETPOS); 
+            }
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
+
             sb.AppendFormat("FREQ={0};", FREQ);
+
             if (UNTIL != default(DATE_TIME)) sb.AppendFormat("UNTIL={0};", UNTIL);
             else if (COUNT != 0) sb.AppendFormat("COUNT={0};", COUNT);
-            sb.AppendFormat("INTERVAL={0};", INTERVAL.ToString());
+
+            sb.AppendFormat("INTERVAL={0};", INTERVAL);
             if (!BYSECOND.NullOrEmpty())
             {
                 sb.AppendFormat("BYSECOND=");
                 foreach (var val in BYSECOND)
                 {
-                    if (val != BYSECOND.Last()) sb.AppendFormat("{0},", val);
-                    else sb.AppendFormat("{0};", val);
+                    sb.AppendFormat(val != BYSECOND.Last() ? "{0}," : "{0};", val);
                 }
             }
 
@@ -2008,8 +2251,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("BYMINUTE=");
                 foreach (var val in BYMINUTE)
                 {
-                    if (val != BYMINUTE.Last()) sb.AppendFormat("{0},", val);
-                    else sb.AppendFormat("{0};", val);
+                    sb.AppendFormat(val != BYMINUTE.Last() ? "{0}," : "{0};", val);
                 }
             }
 
@@ -2018,8 +2260,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("BYHOUR=");
                 foreach (var val in BYHOUR)
                 {
-                    if (val != BYHOUR.Last()) sb.AppendFormat("{0},", val);
-                    else sb.AppendFormat("{0};", val);
+                    sb.AppendFormat(val != BYHOUR.Last() ? "{0}," : "{0};", val);
                 }
             }
 
@@ -2028,8 +2269,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("BYDAY=");
                 foreach (var val in BYDAY)
                 {
-                    if (val != BYDAY.Last()) sb.AppendFormat("{0},", val);
-                    else sb.AppendFormat("{0};", val);
+                    sb.AppendFormat(val != BYDAY.Last() ? "{0}," : "{0};", val);
                 }
             }
 
@@ -2038,8 +2278,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("BYMONTHDAY=");
                 foreach (var val in BYMONTHDAY)
                 {
-                    if (val != BYMONTHDAY.Last()) sb.AppendFormat("{0},", val);
-                    else sb.AppendFormat("{0};", val);
+                    sb.AppendFormat(val != BYMONTHDAY.Last() ? "{0}," : "{0};", val);
                 }
             }
 
@@ -2048,8 +2287,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("BYYEARDAY=");
                 foreach (var val in BYYEARDAY)
                 {
-                    if (val != BYYEARDAY.Last()) sb.AppendFormat("{0},", val);
-                    else sb.AppendFormat("{0};", val);
+                    sb.AppendFormat(val != BYYEARDAY.Last() ? "{0}," : "{0};", val);
                 }
             }
 
@@ -2058,8 +2296,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("BYWEEKNO=");
                 foreach (var val in BYWEEKNO)
                 {
-                    if (val != BYWEEKNO.Last()) sb.AppendFormat("{0},", val);
-                    else sb.AppendFormat("{0};", val);
+                    sb.AppendFormat(val != BYWEEKNO.Last() ? "{0}," : "{0};", val);
                 }
             }
 
@@ -2068,8 +2305,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("BYMONTH=");
                 foreach (var val in BYMONTH)
                 {
-                    if (val != BYMONTH.Last()) sb.AppendFormat("{0},", val);
-                    else sb.AppendFormat("{0};", val);
+                    sb.AppendFormat(val != BYMONTH.Last() ? "{0}," : "{0};", val);
                 }
             }
 
@@ -2108,7 +2344,7 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((RECUR)obj);
         }
 
@@ -2129,86 +2365,39 @@ namespace reexjungle.xcal.domain.models
     }
 
     [DataContract]
-    public class URI : IURI, IEquatable<URI>, IComparable<URI>
+    public class CAL_ADDRESS : Uri
     {
-        private string path;
-
-        [DataMember]
-        public string Path
+        public CAL_ADDRESS(CAL_ADDRESS other)
+            : base(other.ToString().StartsWith("mailto")
+                  ? $"mailto:{other.ToString().Replace("mailto:", string.Empty)}"
+                : other.ToString())
         {
-            get { return path; }
-            set
-            {
-                path = value;
-            }
         }
 
-        public bool IsDefault()
+        public CAL_ADDRESS(string uriString, bool emailable = true)
+            : base(emailable
+                  ? $"mailto:{uriString.Replace("mailto:", string.Empty)}"
+                : uriString)
         {
-            return (Path == null);
         }
 
-        public URI(string value)
+        public CAL_ADDRESS(string uriString, UriKind uriKind, bool emailable = true)
+            : base(emailable ? $"mailto:{uriString.Replace("mailto:", string.Empty)}" : uriString, uriKind)
         {
-            path = value;
         }
 
-        public URI(IURI uri)
+        public CAL_ADDRESS(Uri baseUri, string relativeUri, bool emailable = true)
+            : base(emailable ? new Uri($"mailto:{baseUri.ToString().Replace("mailto:", string.Empty)}") : baseUri, relativeUri)
         {
-            if (uri == null) throw new ArgumentNullException("uri");
-            path = uri.Path;
         }
 
-        public override string ToString()
+        public CAL_ADDRESS(Uri baseUri, Uri relativeUri, bool emailable = true) :
+            base(emailable ? new Uri($"mailto:{baseUri.ToString().Replace("mailto:", string.Empty)}") : baseUri, relativeUri)
         {
-            return path;
         }
 
-        public int CompareTo(URI other)
+        public CAL_ADDRESS(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext)
         {
-            return string.Compare(path, other.Path, StringComparison.OrdinalIgnoreCase);
-        }
-
-        public static bool operator <(URI x, URI y)
-        {
-            if (x == null || y == null) return false;
-            return x.CompareTo(y) < 0;
-        }
-
-        public static bool operator >(URI x, URI y)
-        {
-            if (x == null || y == null) return false;
-            return x.CompareTo(y) > 0;
-        }
-
-        public bool Equals(URI other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return string.Equals(path, other.path);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((URI)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return (path != null ? path.GetHashCode() : 0);
-        }
-
-        public static bool operator ==(URI left, URI right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(URI left, URI right)
-        {
-            return !Equals(left, right);
         }
     }
 }

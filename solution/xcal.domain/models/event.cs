@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using reexjungle.xcal.domain.contracts;
+﻿using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.extensions;
 using reexjungle.xmisc.foundation.concretes;
 using reexjungle.xmisc.foundation.contracts;
 using reexjungle.xmisc.infrastructure.concretes.operations;
 using ServiceStack.DataAnnotations;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Text;
 
 namespace reexjungle.xcal.domain.models
 {
@@ -24,11 +24,11 @@ namespace reexjungle.xcal.domain.models
         private DURATION duration;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public static readonly VEVENT Empty = new VEVENT
         {
-           Datestamp =  default(DATE_TIME)
+            Datestamp = default(DATE_TIME)
         };
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace reexjungle.xcal.domain.models
         public TRANSP Transparency { get; set; }
 
         [DataMember]
-        public URI Url { get; set; }
+        public URL Url { get; set; }
 
         [DataMember]
         [StringLength(int.MaxValue)]
@@ -231,35 +231,52 @@ namespace reexjungle.xcal.domain.models
 
         public VEVENT(IEVENT @event)
         {
-            if (@event == null) throw new ArgumentNullException("event");
+            if (@event == null) throw new ArgumentNullException(nameof(@event));
 
             Uid = @event.Uid;
             Created = @event.Created;
             Datestamp = @event.Datestamp;
             LastModified = @event.LastModified;
-            RecurrenceId = @event.RecurrenceId;
+            RecurrenceId = new RECURRENCE_ID(@event.RecurrenceId);
             Start = @event.Start;
-            Organizer = @event.Organizer;
-            Location = @event.Location;
+            Organizer = new ORGANIZER(@event.Organizer);
+            Location = new LOCATION(@event.Location);
             Sequence = @event.Sequence;
             Priority = @event.Priority;
             Status = @event.Status;
             Position = @event.Position;
             Classification = @event.Classification;
             Transparency = @event.Transparency;
-            Summary = @event.Summary;
-            Description = @event.Description;
-            Transparency = @event.Transparency;
-            RecurrenceId = @event.RecurrenceId;
-            RecurrenceRule = @event.RecurrenceRule;
+            Summary = new SUMMARY(@event.Summary);
+            Description = new DESCRIPTION(@event.Description);
+            RecurrenceRule = new RECUR(@event.RecurrenceRule);
             end = @event.End;
             duration = @event.Duration;
-            AttachmentBinaries = @event.AttachmentBinaries;
-            AttachmentUris = @event.AttachmentUris;
-            Comments = @event.Comments;
-            Contacts = @event.Contacts;
-            ExceptionDates = @event.ExceptionDates;
-            RecurrenceDates = @event.RecurrenceDates;
+
+            AttachmentBinaries = @event.AttachmentBinaries.Any()
+                ? @event.AttachmentBinaries.Select(x => new ATTACH_BINARY(x)).ToList()  
+                : new List<ATTACH_BINARY>();
+
+            AttachmentUris = @event.AttachmentUris.Any()
+                ? @event.AttachmentUris.Select(x => new ATTACH_URI(x)).ToList()
+                : new List<ATTACH_URI>();
+
+            Comments = @event.Comments.Any()
+                ? @event.Comments.Select(x => new COMMENT(x)).ToList()
+                : new List<COMMENT>();
+
+            Contacts = @event.Contacts.Any()
+                ? @event.Contacts.Select(x => new CONTACT(x)).ToList()
+                : new List<CONTACT>();
+
+            ExceptionDates = @event.ExceptionDates.Any()
+                ? @event.ExceptionDates.Select(x => x).ToList()
+                :new List<EXDATE>();
+
+            RecurrenceDates = @event.RecurrenceDates.Any()
+                ? @event.RecurrenceDates.Select(x => x).ToList():
+                new List<RDATE>();
+
             RequestStatuses = @event.RequestStatuses;
             Attendees = @event.Attendees;
             Categories = @event.Categories;
@@ -303,7 +320,7 @@ namespace reexjungle.xcal.domain.models
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
@@ -314,7 +331,7 @@ namespace reexjungle.xcal.domain.models
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
@@ -337,7 +354,7 @@ namespace reexjungle.xcal.domain.models
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -345,12 +362,12 @@ namespace reexjungle.xcal.domain.models
         public static bool operator <(VEVENT a, VEVENT b)
         {
             if (ReferenceEquals(null, a)) return false;
-            if (ReferenceEquals(null, b)) return true; 
+            if (ReferenceEquals(null, b)) return true;
             return a.CompareTo(b) < 0;
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -358,8 +375,8 @@ namespace reexjungle.xcal.domain.models
         public static bool operator >(VEVENT a, VEVENT b)
         {
             if (ReferenceEquals(null, a)) return false;
-            if (ReferenceEquals(null, b)) return true; 
-            
+            if (ReferenceEquals(null, b)) return true;
+
             return a.CompareTo(b) > 0;
         }
 
@@ -373,7 +390,7 @@ namespace reexjungle.xcal.domain.models
                 sb.AppendFormat("DTSTART;{0}:{1}", Start.TimeZoneId, Start).AppendLine();
             else
                 sb.AppendFormat("DTSTART:{0}", Start).AppendLine();
-            if (Classification != CLASS.UNKNOWN) sb.AppendFormat("CLASS:{0}", Classification).AppendLine();
+            if (Classification != CLASS.NONE) sb.AppendFormat("CLASS:{0}", Classification).AppendLine();
             sb.AppendFormat("CREATED:{0}", Created).AppendLine();
             if (Description != null) sb.Append(Description).AppendLine();
             if (Position != default(GEO)) sb.Append(Position).AppendLine();
@@ -382,9 +399,9 @@ namespace reexjungle.xcal.domain.models
             if (Organizer != null) sb.Append(Organizer).AppendLine();
             if (Priority != default(PRIORITY)) sb.Append(Priority).AppendLine();
             sb.AppendFormat("SEQUENCE:{0}", Sequence).AppendLine();
-            if (Status != STATUS.UNKNOWN) sb.AppendFormat("STATUS:{0}", Status).AppendLine();
+            if (Status != STATUS.NONE) sb.AppendFormat("STATUS:{0}", Status).AppendLine();
             if (Summary != null) sb.Append(Summary).AppendLine();
-            if (Transparency != TRANSP.UNKNOWN) sb.AppendFormat("TRANSP:{0}", Transparency).AppendLine();
+            if (Transparency != TRANSP.NONE) sb.AppendFormat("TRANSP:{0}", Transparency).AppendLine();
             if (Url != null) sb.AppendFormat("URL:{0}", Url).AppendLine();
             if (RecurrenceId != null) sb.Append(RecurrenceId).AppendLine();
             if (RecurrenceRule != null) sb.AppendFormat("RRULE:{0}", RecurrenceRule).AppendLine();
@@ -485,7 +502,5 @@ namespace reexjungle.xcal.domain.models
             sb.Append("END:VEVENT");
             return sb.ToString().ToUtf8String();
         }
-
-
     }
 }

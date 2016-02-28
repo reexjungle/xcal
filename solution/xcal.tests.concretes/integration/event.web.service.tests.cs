@@ -71,10 +71,9 @@ namespace reexjungle.xcal.tests.concretes.integration
                     "RO"
                 })));
 
-            var sharedFactory = new SharedFactory();
             var valuesFactory = new ValuesFactory(GuidKeyGenerator);
-            var parametersFactory = new ParametersFactory(valuesFactory, sharedFactory);
-            PropertiesFactory = new PropertiesFactory(GuidKeyGenerator, valuesFactory, parametersFactory, sharedFactory);
+            var parametersFactory = new ParametersFactory(valuesFactory);
+            PropertiesFactory = new PropertiesFactory(GuidKeyGenerator, valuesFactory, parametersFactory);
             AlarmFactory = new AlarmFactory(GuidKeyGenerator, PropertiesFactory, valuesFactory);
 
             EventFactory = new EventFactory(GuidKeyGenerator, AlarmFactory, PropertiesFactory, valuesFactory);
@@ -220,7 +219,7 @@ namespace reexjungle.xcal.tests.concretes.integration
                 BYSETPOS = new List<int> { 2, -2 }
             };
 
-            var Rx = e1.GenerateRecurrences(GuidKeyGenerator);
+            var Rx = e1.GenerateOccurrences(GuidKeyGenerator);
 
             e2.Start = new DATE_TIME(new DateTime(2014, 6, 16, 10, 30, 0, 0, DateTimeKind.Local));
             e2.Duration = new DURATION(0, 1, 10, 00);
@@ -255,7 +254,7 @@ namespace reexjungle.xcal.tests.concretes.integration
 
             Assert.Equal(u1.Attendees.Count, te1);
             Assert.Equal(u2.Attendees.Count, te2);
-            u1.Organizer.Language = new LANGUAGE("fr");
+            u1.Organizer.Language = new LANGUAGE("fr", null);
 
             var keys = client.Get(new GetEvents { Page = 1, Size = int.MaxValue }).Select(x => x.Id).ToList();
             client.Post(new PatchEvents
@@ -284,7 +283,7 @@ namespace reexjungle.xcal.tests.concretes.integration
                 End = u1.End,
                 Duration = u1.Duration,
                 Categories = u1.Categories,
-                Description = new DESCRIPTION("Patched again!!!"),
+                Description = new DESCRIPTION("Patched again!!!", null, null),
                 Transparency = TRANSP.TRANSPARENT,
                 Classification = CLASS.PRIVATE,
                 Priority = new PRIORITY(PRIORITYLEVEL.MEDIUM),
@@ -372,7 +371,7 @@ namespace reexjungle.xcal.tests.concretes.integration
 
             Assert.Equal(u1.Attendees.Count, e1.Attendees.Count);
             Assert.Equal(u2.Attendees.Count, e2.Attendees.Count);
-            u1.Organizer.Language = new LANGUAGE("fr");
+            u1.Organizer.Language = new LANGUAGE("fr", null);
 
             var keys = client.Get(new GetEventKeysCached { Page = 1, Size = int.MaxValue });
             client.Post(new PatchEvents
@@ -401,7 +400,7 @@ namespace reexjungle.xcal.tests.concretes.integration
                 End = u1.End,
                 Duration = u1.Duration,
                 Categories = u1.Categories,
-                Description = new DESCRIPTION("Patched again!!!"),
+                Description = new DESCRIPTION("Patched again!!!", null),
                 Transparency = TRANSP.TRANSPARENT,
                 Classification = CLASS.PRIVATE,
                 Priority = new PRIORITY(PRIORITYLEVEL.MEDIUM),

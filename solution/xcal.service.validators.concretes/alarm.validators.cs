@@ -11,7 +11,6 @@ namespace reexjungle.xcal.service.validators.concretes
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Trigger).NotNull().SetValidator(new TriggerValidator());
-            RuleFor(x => x.Duration).NotNull().SetValidator(new DurationValidator()).Unless(x => x.Repeat < 0);
             RuleFor(x => x.Repeat).GreaterThanOrEqualTo(0).Unless(x => x.Duration == default(DURATION));
         }
     }

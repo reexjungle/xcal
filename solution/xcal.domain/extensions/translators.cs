@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using reexjungle.xmisc.foundation.concretes;
+// ReSharper disable InconsistentNaming
 
 namespace reexjungle.xcal.domain.extensions
 {
@@ -13,7 +14,6 @@ namespace reexjungle.xcal.domain.extensions
     public static class Translators
     {
         #region specialized enumeration translators for iCalendar
-
 
         /// <summary>
         /// Converts an EncodingType to its equivalent string representation
@@ -25,7 +25,6 @@ namespace reexjungle.xcal.domain.extensions
         {
             return type == ENCODING.BIT8 ? "8BIT" : ENCODING.BASE64.ToString();
         }
-
 
         #endregion specialized enumeration translators for iCalendar
 
@@ -80,6 +79,7 @@ namespace reexjungle.xcal.domain.extensions
             return values.Select(x => x.ToDATE());
         }
 
+
         public static TIME ToTIME(this DateTime value, TimeZoneInfo tzinfo)
         {
             if (value == default(DateTime)) return new TIME(default(TIME), tzinfo != null ? tzinfo.ToTZID() : null);
@@ -104,6 +104,7 @@ namespace reexjungle.xcal.domain.extensions
                 ? new TIME((uint)value.Hour, (uint)value.Minute, (uint)value.Second, TimeType.Utc)
                 :  new TIME((uint)value.Hour, (uint)value.Minute, (uint)value.Second);
         }
+
 
         public static IEnumerable<TIME> ToTIMEs(this IEnumerable<DateTime> values, TimeZoneInfo tzinfo)
         {
@@ -147,6 +148,23 @@ namespace reexjungle.xcal.domain.extensions
                 (int)value.HOUR, (int)value.MINUTE, (int)value.SECOND, DateTimeKind.Unspecified);
         }
 
+        public static DateTime ToDateTime(this TIME value)
+        {
+            if (value == default(TIME)) return default(DateTime);
+            switch (value.Type)
+            {
+               case TimeType.Utc:
+                    return new DateTime(0001, 1, 1, (int)value.HOUR, (int)value.MINUTE, (int) value.SECOND, DateTimeKind.Utc);
+                case TimeType.Local:
+                case TimeType.LocalAndTimeZone:
+                    return new DateTime(0001, 1, 1, (int)value.HOUR, (int)value.MINUTE, (int)value.SECOND, DateTimeKind.Local);
+            }
+
+            return new DateTime(0001, 1, 1, (int) value.HOUR, (int) value.MINUTE, (int) value.SECOND,
+                DateTimeKind.Unspecified);
+        }
+
+
         public static TimeSpan ToTimeSpan(this DATE_TIME value)
         {
             return value == default(DATE_TIME) 
@@ -175,7 +193,7 @@ namespace reexjungle.xcal.domain.extensions
             return new DURATION(weeks, days, hours, minutes, seconds);
         }
 
-        public static TIME ToTIME(this TimeSpan span, TimeZoneInfo tzinfo = null, TimeType format = TimeType.Unknown)
+        public static TIME ToTIME(this TimeSpan span, TimeZoneInfo tzinfo = null, TimeType format = TimeType.NONE)
         {
             if (tzinfo != null)
             {
@@ -189,7 +207,7 @@ namespace reexjungle.xcal.domain.extensions
                 : new TIME((uint)span.Hours, (uint)span.Minutes, (uint)span.Seconds);
         }
 
-        public static TIME ToTIME(this TimeSpan span, TZID tzid, TimeType format = TimeType.Unknown)
+        public static TIME ToTIME(this TimeSpan span, TZID tzid, TimeType format = TimeType.NONE)
         {
             if (tzid != null)
             {
@@ -235,8 +253,7 @@ namespace reexjungle.xcal.domain.extensions
                 case DayOfWeek.Thursday: return WEEKDAY.TH;
                 case DayOfWeek.Friday: return WEEKDAY.FR;
                 case DayOfWeek.Saturday: return WEEKDAY.SA;
-                default:
-                    return WEEKDAY.UNKNOWN;
+                default: return WEEKDAY.NONE;
             }
         }
 

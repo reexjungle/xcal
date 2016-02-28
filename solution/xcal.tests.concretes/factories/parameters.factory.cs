@@ -9,32 +9,46 @@ namespace reexjungle.xcal.tests.concretes.factories
 {
     public class ParametersFactory : IParametersFactory
     {
-        private readonly ISharedFactory sharedFactory;
         private readonly IValuesFactory valuesFactory;
         private readonly RandomGenerator rndGenerator;
 
-        public ParametersFactory(IValuesFactory valuesFactory, ISharedFactory sharedFactory)
+        public ParametersFactory(IValuesFactory valuesFactory)
         {
             if (valuesFactory == null) throw new ArgumentNullException("valuesFactory");
-            if (sharedFactory == null) throw new ArgumentNullException("sharedFactory");
-
             this.valuesFactory = valuesFactory;
-            this.sharedFactory = sharedFactory;
-
             rndGenerator = new RandomGenerator();
         }
 
-        public DELEGATE CreateDelegate()
+        public DELEGATED_FROM CreateDelegator(IEnumerable<string> usernames, int quantity)
         {
-            return CreateDelegates(1).First();
+            return new DELEGATED_FROM
+            {
+                Addresses = valuesFactory.CreateEmails(usernames, rndGenerator.Next(1, quantity)).ToList()
+            };
         }
 
-        public IEnumerable<DELEGATE> CreateDelegates(int quantity)
+        public IEnumerable<DELEGATED_FROM> CreateDelegators(IEnumerable<string> usernames, int quantity)
         {
-            return Builder<DELEGATE>.CreateListOfSize(quantity)
+            return Builder<DELEGATED_FROM>.CreateListOfSize(quantity)
                 .All()
-                .With(x => x.Addresses = valuesFactory.CreateUris(sharedFactory.CreateEmails(rndGenerator.Next(1, quantity))).ToList())
+                .With(x => x.Addresses = valuesFactory.CreateEmails(usernames, rndGenerator.Next(1, quantity)).ToList())
                 .Build();
+        }
+
+        public IEnumerable<DELEGATED_TO> CreateDelegatees(IEnumerable<string> usernames, int quantity)
+        {
+            return Builder<DELEGATED_TO>.CreateListOfSize(quantity)
+                .All()
+                .With(x => x.Addresses = valuesFactory.CreateEmails(usernames, rndGenerator.Next(1, quantity)).ToList())
+                .Build();
+        }
+
+        public DELEGATED_TO CreateDelegatee(IEnumerable<string> usernames, int quantity)
+        {
+            return new DELEGATED_TO
+            {
+                Addresses = valuesFactory.CreateEmails(usernames, rndGenerator.Next(1, quantity)).ToList()
+            };
         }
 
         public FMTTYPE CreateFormatType()
@@ -69,20 +83,20 @@ namespace reexjungle.xcal.tests.concretes.factories
 
         public LANGUAGE CreateLanguage()
         {
-            return new LANGUAGE(Pick<string>.RandomItemFrom(new[]
-           {
-               "en",
-               "en-US",
-               "en-EN",
-               "fr",
-               "fr-FR",
-               "fr-FR",
-               "es",
-               "es-ES",
-               "it-IT",
-               "pl-PL",
-               "ro-RO"
-           }));
+            return new LANGUAGE("LANGUAGE=" + Pick<string>.RandomItemFrom(new[]
+            {
+                "en",
+                "en-US",
+                "en-EN",
+                "fr",
+                "fr-FR",
+                "fr-FR",
+                "es",
+                "es-ES",
+                "it-IT",
+                "pl-PL",
+                "ro-RO"
+            }));
         }
 
         public IEnumerable<LANGUAGE> CreateLanguages(int quantity)
@@ -95,22 +109,25 @@ namespace reexjungle.xcal.tests.concretes.factories
             return languages;
         }
 
-        public MEMBER CreateMember()
+        public MEMBER CreateMember(IEnumerable<string> usernames, int quantity)
         {
-            return CreateMembers(1).First();
+            return new MEMBER
+            {
+                Addresses = valuesFactory.CreateEmails(usernames, rndGenerator.Next(1, quantity)).ToList()
+            };
         }
 
-        public IEnumerable<MEMBER> CreateMembers(int quantity)
+        public IEnumerable<MEMBER> CreateMembers(IEnumerable<string> usernames, int quantity)
         {
             return Builder<MEMBER>.CreateListOfSize(quantity)
                 .All()
-                .With(x => x.Addresses = valuesFactory.CreateUris(sharedFactory.CreateEmails(rndGenerator.Next(1, quantity))).ToList())
+                .With(x => x.Addresses = valuesFactory.CreateEmails(usernames, rndGenerator.Next(1, quantity)).ToList())
                 .Build();
         }
 
         public TZID CreateTimeZoneId()
         {
-            return new TZID(Pick<string>.RandomItemFrom(new[]
+            return new TZID("TZID=" + Pick<string>.RandomItemFrom(new[]
             {
                 string.Format("/{0}", "Greenwich"),
                 "America/New_York",
@@ -119,7 +136,11 @@ namespace reexjungle.xcal.tests.concretes.factories
                 "France/Paris",
                 "Cameroon/Yaoundé",
                 "Spain/Madrid",
-                "Italy/Rome"
+                "Italy/Rome",
+                "England/London",
+                "Portugal/Lisbon",
+                "Sweden/Stockholm",
+                "Denmark/Copenhagen"
             }));
         }
 
@@ -132,6 +153,58 @@ namespace reexjungle.xcal.tests.concretes.factories
                 tzids.Add(CreateTimeZoneId());
             }
             return tzids;
+        }
+
+        public ALTREP CreateAlternativeTextRepresentation()
+        {
+            return new ALTREP
+            {
+                Uri = valuesFactory.CreateUri()
+            };
+        }
+
+        public IEnumerable<ALTREP> CreateAlternativeTextRepresentations(int quantity)
+        {
+            var altreps = new List<ALTREP>();
+            for (var i = 0; i < quantity; i++)
+            {
+                altreps.Add(CreateAlternativeTextRepresentation());
+            }
+            return altreps;
+        }
+
+        public DIR CreateDirectory()
+        {
+            return new DIR
+            {
+                Uri = valuesFactory.CreateUri()
+            };
+        }
+
+        public IEnumerable<DIR> CreateDirectories(int quantity)
+        {
+            var dirs = new List<DIR>();
+            for (var i = 0; i < quantity; i++)
+            {
+                dirs.Add(CreateDirectory());
+            }
+            return dirs;
+        }
+
+        public SENT_BY CreateSentBy(string username)
+        {
+            return new SENT_BY(valuesFactory.CreateEmail(username));
+        }
+
+        public IEnumerable<SENT_BY> CreateSentBys(IEnumerable<string> usernames, int quantity)
+        {
+            var sentbys = new List<SENT_BY>();
+            var names = usernames as IList<string> ?? usernames.ToList();
+            for (var i = 0; i < quantity; i++)
+            {
+                sentbys.Add(CreateSentBy(Pick<string>.RandomItemFrom(names)));
+            }
+            return sentbys;
         }
     }
 }

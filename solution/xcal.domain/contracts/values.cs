@@ -3,34 +3,24 @@ using System.Collections.Generic;
 
 namespace reexjungle.xcal.domain.contracts
 {
-    /// <summary>
-    /// Specifies the value type and format of a property value.
-    /// </summary>
-    /// <remarks>The property values MUST be of a single value type</remarks>
-    public interface IVALUE { }
 
     /// <summary>
     /// Specifies the contract for identifying properties that contain a character encoding of inline binary data.
     /// The character encoding is based on the Base64 encoding
     /// </summary>
-    public interface IBINARY : IVALUE
+    public interface IBINARY
     {
         /// <summary>
         /// Gets or sets the Base64 value of this type.
         /// </summary>
         string Value { get; set; }
-
-        /// <summary>
-        /// Gets or sets the encoding used for the binary type.
-        /// </summary>
-        ENCODING Encoding { get; set; }
     }
 
     /// <summary>
     /// Specifies the contract for identifying properties that contain a calendar date.
     /// Format: [YYYYMMDD] where YYYY is 4-digit year, MM is 2-digit month and DD is 2-digit day
     /// </summary>
-    public interface IDATE : IVALUE
+    public interface IDATE
     {
         /// <summary>
         /// Gets the 4-digit representation of a full year e.g. 2013
@@ -48,19 +38,25 @@ namespace reexjungle.xcal.domain.contracts
         uint MDAY { get; }
     }
 
-    /// <summary>
-    /// Specifies the contract for identifying values that specify a precise calendar date and time of the date
-    /// Format: [YYYYMMSS]&quot;T&quot;[HHMMSS]&quot;Z&quot;
-    /// where YYYY is 4-digit year, MM is 2-digit month and DD is 2-digit day
-    ///
-    /// </summary>
-    public interface IDATE_TIME : IDATE, ITIME { }
+    public interface IDATE<out TDATE> where TDATE: IDATE
+    {
+        TDATE AddDays(double value);
+
+        TDATE AddWeeks(int value);
+
+        TDATE AddMonths(int value);
+        TDATE AddYears(int value);
+   
+        WEEKDAY GetWeekday();
+
+    }
+
 
     /// <summary>
     /// Specifies the contract for identifying properties that contain a duration of time
     /// Format: &quot;+&quot;/&quot;-&quot;&quot;P&quot;[days &quot;D &quot;/[&quot;T&quot; [hours &quot;H&quot; / minutes &quot;M&quot; /seconds &quot;S&quot;] weeks &quot;W&quot;]]
     /// </summary>
-    public interface IDURATION : IVALUE
+    public interface IDURATION
     {
         /// <summary>
         /// Gets the duration in weeks
@@ -91,7 +87,7 @@ namespace reexjungle.xcal.domain.contracts
     /// <summary>
     /// Specifies a contract for identifying properties that contain a precise period of time
     /// </summary>
-    public interface IPERIOD : IVALUE
+    public interface IPERIOD
     {
         /// <summary>
         /// Gets or sets the start of the period
@@ -117,7 +113,7 @@ namespace reexjungle.xcal.domain.contracts
         /// <summary>
         /// Gets or sets the nth occurence of the day within the MONTHLY or YEARLY recurrence rule
         /// </summary>
-        int OrdinalWeek { get; }
+        int NthOccurrence { get; }
 
         /// <summary>
         /// Gets or sets the weekday
@@ -128,7 +124,7 @@ namespace reexjungle.xcal.domain.contracts
     /// <summary>
     /// Specifies the contract for identifying properties that contain a recurrence rule specification.
     /// </summary>
-    public interface IRECUR : IVALUE
+    public interface IRECUR
     {
         /// <summary>
         /// Gets or sets the frequency of the recurrence rule.
@@ -235,7 +231,7 @@ namespace reexjungle.xcal.domain.contracts
     /// Format 2 (UTC Time): [HHMMSS]&quot;Z&quot;
     /// where HH is 2-digit hour, MM is 2-digit minute, SS is 2-digit second and Z is UTC zone indicator
     /// </summary>
-    public interface ITIME : IVALUE
+    public interface ITIME
     {
         /// <summary>
         /// Gets the 2-digit representation of an hour
@@ -255,20 +251,21 @@ namespace reexjungle.xcal.domain.contracts
         TimeType Type { get; }
 
         TZID TimeZoneId { get; }
+
     }
 
-    /// <summary>
-    /// Specifies the contract for identifying properties that contain a uniform resource identifier (URI) type of reference to the property value
-    /// </summary>
-    public interface IURI : IVALUE
+    public interface ITIME<out TTIME> where TTIME : ITIME
     {
-        string Path { get; set; }
+        TTIME AddSeconds(double value);
+        TTIME AddMinutes(double value);
+        TTIME AddHours(double value);
     }
+
 
     /// <summary>
     /// Specifies the contract for identifying properties that contain an offset from UTC to local time
     /// </summary>
-    public interface IUTC_OFFSET : IVALUE
+    public interface IUTC_OFFSET
     {
         /// <summary>
         /// Gets or sets the 2-digit representation of an hour

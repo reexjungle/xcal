@@ -14,7 +14,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>reexjungle.xcal.application.server.web.local</RootNamespace>
     <AssemblyName>xcal.application.server.web.local</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -23,6 +23,8 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <NuGetPackageImportStamp>4bc0cb78</NuGetPackageImportStamp>
+    <UseGlobalApplicationHostFile />
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,6 +36,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>
     </DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -42,6 +45,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DotNetOpenAuth">
@@ -54,8 +58,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EnyimMemcached.2.13\lib\net35\Enyim.Caching.dll</HintPath>
     </Reference>
-    <Reference Include="FluentValidation">
-      <HintPath>..\packages\FluentValidation.5.6.2.0\lib\portable-net40+sl50+wp80+win8+wpa81\FluentValidation.dll</HintPath>
+    <Reference Include="FluentValidation, Version=6.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.6.0.2.0\lib\portable-net40+sl50+wp80+win8+wpa81\FluentValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.ApplicationServer.Caching.Client">
@@ -77,13 +81,13 @@
     <Reference Include="MsgPack">
       <HintPath>..\packages\ServiceStack.Plugins.MsgPack.3.9.71\lib\net40\MsgPack.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data, Version=6.9.7.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MySql.Data.6.9.7\lib\net40\MySql.Data.dll</HintPath>
+    <Reference Include="MySql.Data, Version=6.9.8.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.6.9.8\lib\net40\MySql.Data.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NLog.4.0.1\lib\net40\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.2.3\lib\net40\NLog.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ServiceStack, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -117,11 +121,11 @@
       <HintPath>..\packages\ServiceStack.Logging.NLog.3.9.71\lib\net35\ServiceStack.Logging.NLog.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.OrmLite, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ServiceStack.OrmLite.MySql.3.9.71.7\lib\net35\ServiceStack.OrmLite.dll</HintPath>
+      <HintPath>..\packages\Reexjungle.OrmLite.MySql.3.9.71.7\lib\net35\ServiceStack.OrmLite.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="ServiceStack.OrmLite.MySql">
-      <HintPath>..\packages\ServiceStack.OrmLite.MySql.3.9.71.7\lib\net35\ServiceStack.OrmLite.MySql.dll</HintPath>
+    <Reference Include="ServiceStack.OrmLite.MySql, Version=3.9.71.7, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Reexjungle.OrmLite.MySql.3.9.71.7\lib\net35\ServiceStack.OrmLite.MySql.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ServiceStack.OrmLite.SqlServer, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
@@ -150,36 +154,36 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="xmisc.foundation.concretes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\xmisc.foundation.concretes.1.0.78-rc-999002a\lib\net40\xmisc.foundation.concretes.dll</HintPath>
+      <HintPath>..\packages\xmisc.foundation.concretes.1.0.81-rc-f858a00\lib\net45\xmisc.foundation.concretes.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xmisc.foundation.contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\xmisc.foundation.contracts.1.0.78-rc-999002a\lib\net40\xmisc.foundation.contracts.dll</HintPath>
+      <HintPath>..\packages\xmisc.foundation.contracts.1.0.81-rc-f858a00\lib\net45\xmisc.foundation.contracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xmisc.infrastructure.concretes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\xmisc.infrastructure.concretes.1.0.78-rc-999002a\lib\net40\xmisc.infrastructure.concretes.dll</HintPath>
+      <HintPath>..\packages\xmisc.infrastructure.concretes.1.0.81-rc-f858a00\lib\net45\xmisc.infrastructure.concretes.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xmisc.infrastructure.contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\xmisc.infrastructure.contracts.1.0.78-rc-999002a\lib\net40\xmisc.infrastructure.contracts.dll</HintPath>
+      <HintPath>..\packages\xmisc.infrastructure.contracts.1.0.81-rc-f858a00\lib\net45\xmisc.infrastructure.contracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xmisc.technical.data.concretes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\xmisc.technical.data.concretes.1.0.78-rc-999002a\lib\net40\xmisc.technical.data.concretes.dll</HintPath>
+      <HintPath>..\packages\xmisc.technical.data.concretes.1.0.81-rc-f858a00\lib\net45\xmisc.technical.data.concretes.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xmisc.technical.data.contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\xmisc.technical.data.contracts.1.0.78-rc-999002a\lib\net40\xmisc.technical.data.contracts.dll</HintPath>
+      <HintPath>..\packages\xmisc.technical.data.contracts.1.0.81-rc-f858a00\lib\net45\xmisc.technical.data.contracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

@@ -1,4 +1,5 @@
-﻿using reexjungle.xcal.domain.models;
+﻿using System;
+using reexjungle.xcal.domain.models;
 using System.Collections.Generic;
 
 namespace reexjungle.xcal.domain.contracts
@@ -12,7 +13,7 @@ namespace reexjungle.xcal.domain.contracts
         /// <summary>
         /// Gets or sets the calendar addresses of the participation delegators
         /// </summary>
-        List<URI> Addresses { get; set; }
+        List<CAL_ADDRESS> Addresses { get; set; }
     }
 
     public interface IFMTTYPE
@@ -38,7 +39,7 @@ namespace reexjungle.xcal.domain.contracts
         /// <summary>
         /// Gets or sets the calendar addresses of the group members
         /// </summary>
-        List<URI> Addresses { get; set; }
+        List<CAL_ADDRESS> Addresses { get; set; }
     }
 
     /// <summary>
@@ -65,5 +66,15 @@ namespace reexjungle.xcal.domain.contracts
         /// Gets or sets the identifier for the time zone definition for a time component
         /// </summary>
         string Suffix { get; set; }
+    }
+
+    public interface IContainsUri
+    {
+        Uri Uri { get; set; }
+    }
+
+    public interface ISENT_BY
+    {
+        CAL_ADDRESS Address { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using reexjungle.xcal.domain.models;
+﻿using System;
+using reexjungle.xcal.domain.models;
 using System.Collections.Generic;
 
 namespace reexjungle.xcal.tests.contracts.factories
@@ -41,8 +42,12 @@ namespace reexjungle.xcal.tests.contracts.factories
 
         IEnumerable<RECUR> CreateRecurrences(int quantity);
 
-        URI CreateUri(string uri);
+        CAL_ADDRESS CreateEmail(string username);
 
-        IEnumerable<URI> CreateUris(IEnumerable<string> uris);
+        IEnumerable<CAL_ADDRESS> CreateEmails(IEnumerable<string> usernames, int quantity);
+
+        Uri CreateUri();
+
+        IEnumerable<Uri> CreateUris(int quantity);
     }
 }

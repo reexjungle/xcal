@@ -70,7 +70,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
 
         public TRANSP Transparency { get; set; }
 
-        public URI Url { get; set; }
+        public URL Url { get; set; }
 
         public RECUR RecurrenceRule { get; set; }
 
@@ -144,7 +144,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
 
         public TRANSP Transparency { get; set; }
 
-        public URI Url { get; set; }
+        public URL Url { get; set; }
 
         public RECUR RecurrenceRule { get; set; }
 

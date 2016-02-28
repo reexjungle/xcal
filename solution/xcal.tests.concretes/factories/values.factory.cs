@@ -7,6 +7,7 @@ using reexjungle.xmisc.infrastructure.contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace reexjungle.xcal.tests.concretes.factories
 {
@@ -15,6 +16,42 @@ namespace reexjungle.xcal.tests.concretes.factories
         private readonly IKeyGenerator<Guid> keyGenerator;
         private readonly RandomGenerator rndGenerator;
         private readonly SequentialGenerator<DateTime> dateTimeGenerator;
+
+        private readonly List<string> prefixes = new List<string>
+        {
+            "http",
+            "https",
+            "ftp",
+            "ftps",
+            "sftp",
+        };
+
+        private readonly List<string> hostnames = new List<string>
+        {
+            "microsoft",
+            "google",
+            "facebook",
+            "twitter",
+            "apple",
+            "reexux"
+        };
+
+        private readonly List<string> extensions = new List<string>
+        {
+                "com",
+                "edu",
+                "org",
+                "ca",
+                "de",
+                "es",
+                "fr",
+                "it",
+                "pl",
+                "ir",
+                "ro",
+                "co.uk",
+                "net"
+        };
 
         public ValuesFactory(IKeyGenerator<Guid> keyGenerator)
         {
@@ -37,7 +74,7 @@ namespace reexjungle.xcal.tests.concretes.factories
             };
         }
 
-        private List<uint> Generate(int quantity, uint min, uint max)
+        private List<uint> GenerateNumbers(int quantity, uint min, uint max)
         {
             var numbers = new List<uint>();
             for (var q = 0; q < quantity; q++)
@@ -47,7 +84,7 @@ namespace reexjungle.xcal.tests.concretes.factories
             return numbers;
         }
 
-        private List<int> Generate(int quantity, int min, int max)
+        private List<int> GenerateNumbers(int quantity, int min, int max)
         {
             var numbers = new List<int>();
             for (var q = 0; q < quantity; q++)
@@ -57,30 +94,30 @@ namespace reexjungle.xcal.tests.concretes.factories
             return numbers;
         }
 
-        private List<uint> Generate(FREQ freq)
+        private List<uint> GenerateNumbers(FREQ freq)
         {
             switch (freq)
             {
                 case FREQ.SECONDLY:
-                    return Generate(1, 1u, 59u);
+                    return GenerateNumbers(1, 1u, 59u);
 
                 case FREQ.MINUTELY:
-                    return Generate(1, 1u, 59u);
+                    return GenerateNumbers(1, 1u, 59u);
 
                 case FREQ.HOURLY:
-                    return Generate(1, 1u, 23u);
+                    return GenerateNumbers(1, 1u, 23u);
 
                 case FREQ.WEEKLY:
-                    return Generate(1, 1u, 53u);
+                    return GenerateNumbers(1, 1u, 53u);
 
                 case FREQ.MONTHLY:
-                    return Generate(1, 1u, 12u);
+                    return GenerateNumbers(1, 1u, 12u);
 
                 case FREQ.YEARLY:
-                    return Generate(1, 1u, 9999u);
+                    return GenerateNumbers(1, 1u, 9999u);
 
                 default:
-                    return Generate(1, 1u, 366u);
+                    return GenerateNumbers(1, 1u, 366u);
             }
         }
 
@@ -108,7 +145,6 @@ namespace reexjungle.xcal.tests.concretes.factories
             return Builder<BINARY>.CreateListOfSize(quantity)
                 .All()
                 .With(x => x.Value = Pick<string>.RandomItemFrom(new[] { rndGenerator.Phrase(rndGenerator.Next(1, 100)) }))
-                .And(x => x.Encoding = Pick<ENCODING>.RandomItemFrom(new[] { ENCODING.BASE64, ENCODING.BIT8 }))
                 .Build();
         }
 
@@ -254,14 +290,14 @@ namespace reexjungle.xcal.tests.concretes.factories
                 .All()
                 .With(x => x.Id = keyGenerator.GetNext())
                 .And(x => x.BYDAY = CreateWeekdaynums(rndGenerator.Next(0, quantity)).ToList())
-                .And(x => x.BYHOUR = Generate(rndGenerator.Next(0, quantity), 0u, 23u))
-                .And(x => x.BYMINUTE = Generate(rndGenerator.Next(0, quantity), 0u, 59u))
-                .And(x => x.BYMONTH = Generate(rndGenerator.Next(0, quantity), 1u, 12u))
-                .And(x => x.BYMONTHDAY = Generate(rndGenerator.Next(0, quantity), -31, 31))
-                .And(x => x.BYSECOND = Generate(rndGenerator.Next(0, quantity), 0u, 59u))
-                .And(x => x.BYSETPOS = Generate(rndGenerator.Next(0, quantity), -366, 366))
-                .And(x => x.BYWEEKNO = Generate(rndGenerator.Next(0, quantity), -53, 53))
-                .And(x => x.BYYEARDAY = Generate(rndGenerator.Next(0, quantity), -366, 366))
+                .And(x => x.BYHOUR = GenerateNumbers(rndGenerator.Next(0, quantity), 0u, 23u))
+                .And(x => x.BYMINUTE = GenerateNumbers(rndGenerator.Next(0, quantity), 0u, 59u))
+                .And(x => x.BYMONTH = GenerateNumbers(rndGenerator.Next(0, quantity), 1u, 12u))
+                .And(x => x.BYMONTHDAY = GenerateNumbers(rndGenerator.Next(0, quantity), -31, 31))
+                .And(x => x.BYSECOND = GenerateNumbers(rndGenerator.Next(0, quantity), 0u, 59u))
+                .And(x => x.BYSETPOS = GenerateNumbers(rndGenerator.Next(0, quantity), -366, 366))
+                .And(x => x.BYWEEKNO = GenerateNumbers(rndGenerator.Next(0, quantity), -53, 53))
+                .And(x => x.BYYEARDAY = GenerateNumbers(rndGenerator.Next(0, quantity), -366, 366))
                 .And(x => x.FREQ = Pick<FREQ>.RandomItemFrom(new[]
                 {
                     FREQ.SECONDLY,
@@ -273,20 +309,49 @@ namespace reexjungle.xcal.tests.concretes.factories
                     FREQ.YEARLY
                 }))
                 .And(x => x.COUNT = rndGenerator.Next(0u, 366u))
-                .And(x => x.INTERVAL = Generate(x.FREQ).First())
+                .And(x => x.INTERVAL = GenerateNumbers(x.FREQ).First())
                 .And(x => x.UNTIL = CreateDateTime())
                 .And(x => x.WKST = PickRandomWeekday())
                 .Build();
         }
 
-        public URI CreateUri(string uri)
+        public CAL_ADDRESS CreateEmail(string username)
         {
-            return !string.IsNullOrWhiteSpace(uri) ? new URI(uri): default(URI);
+            return new CAL_ADDRESS(
+                string.Format("{0}@{1}.{2}",
+                Regex.Replace(username, @"\s", "."),
+                Pick<string>.RandomItemFrom(hostnames),
+                Pick<string>.RandomItemFrom(extensions)));
         }
 
-        public IEnumerable<URI> CreateUris(IEnumerable<string> uris)
+        public IEnumerable<CAL_ADDRESS> CreateEmails(IEnumerable<string> usernames, int quantity)
         {
-            return uris !=null ? uris.Select(CreateUri): Enumerable.Empty<URI>();
+            var emails = new List<CAL_ADDRESS>();
+            var names = usernames as IList<string> ?? usernames.ToList();
+            for (var i = 0; i < quantity; i++)
+            {
+                emails.Add(CreateEmail(Pick<string>.RandomItemFrom(names)));
+            }
+            return emails;
+        }
+
+        public Uri CreateUri()
+        {
+            return new Uri(
+                 string.Format("{0}://{1}.{2}",
+                 Pick<string>.RandomItemFrom(prefixes),
+                 Pick<string>.RandomItemFrom(hostnames),
+                 Pick<string>.RandomItemFrom(extensions)));
+        }
+
+        public IEnumerable<Uri> CreateUris(int quantity)
+        {
+            var uris = new List<Uri>();
+            for (var i = 0; i < quantity; i++)
+            {
+                uris.Add(CreateUri());
+            }
+            return uris;
         }
     }
 }

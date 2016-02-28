@@ -239,7 +239,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         /// <summary>
         /// Gets or sets the unique identifier of the related contact entity
         /// </summary>
-        [ForeignKey(typeof(FREEBUSY_INFO), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        [ForeignKey(typeof(FREEBUSY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public Guid InfoId { get; set; }
 
         public bool Equals(REL_FREEBUSIES_INFOS other)

@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\xunit.runner.visualstudio.2.1.0-beta4-build1109\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\packages\xunit.runner.visualstudio.2.1.0-beta4-build1109\build\net20\xunit.runner.visualstudio.props')" />
-  <Import Project="..\packages\xunit.core.2.1.0-beta4-build3109\build\portable-net45+netcore45+wp8+wpa81\xunit.core.props" Condition="Exists('..\packages\xunit.core.2.1.0-beta4-build3109\build\portable-net45+netcore45+wp8+wpa81\xunit.core.props')" />
+  <Import Project="..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -13,7 +12,8 @@
     <AssemblyName>xcal.tests.concretes</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>5b801ca1</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -39,8 +39,8 @@
     <Reference Include="FizzWare.NBuilder">
       <HintPath>..\packages\NBuilder.3.0.1.1\lib\FizzWare.NBuilder.dll</HintPath>
     </Reference>
-    <Reference Include="FluentValidation, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
+    <Reference Include="FluentValidation, Version=6.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.6.0.2.0\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ServiceStack">
@@ -69,6 +69,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -76,38 +77,42 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="xmisc.foundation.concretes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\xmisc.foundation.concretes.1.0.78-rc-999002a\lib\net40\xmisc.foundation.concretes.dll</HintPath>
+      <HintPath>..\packages\xmisc.foundation.concretes.1.0.81-rc-f858a00\lib\net45\xmisc.foundation.concretes.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xmisc.foundation.contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\xmisc.foundation.contracts.1.0.78-rc-999002a\lib\net40\xmisc.foundation.contracts.dll</HintPath>
+      <HintPath>..\packages\xmisc.foundation.contracts.1.0.81-rc-f858a00\lib\net45\xmisc.foundation.contracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xmisc.infrastructure.concretes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\xmisc.infrastructure.concretes.1.0.78-rc-999002a\lib\net40\xmisc.infrastructure.concretes.dll</HintPath>
+      <HintPath>..\packages\xmisc.infrastructure.concretes.1.0.81-rc-f858a00\lib\net45\xmisc.infrastructure.concretes.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xmisc.infrastructure.contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\xmisc.infrastructure.contracts.1.0.78-rc-999002a\lib\net40\xmisc.infrastructure.contracts.dll</HintPath>
+      <HintPath>..\packages\xmisc.infrastructure.contracts.1.0.81-rc-f858a00\lib\net45\xmisc.infrastructure.contracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="xmisc.technical.data.concretes">
-      <HintPath>..\packages\xmisc.technical.data.concretes.1.0.78-rc-999002a\lib\net40\xmisc.technical.data.concretes.dll</HintPath>
+    <Reference Include="xmisc.technical.data.concretes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\xmisc.technical.data.concretes.1.0.81-rc-f858a00\lib\net45\xmisc.technical.data.concretes.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xmisc.technical.data.contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\xmisc.technical.data.contracts.1.0.78-rc-999002a\lib\net40\xmisc.technical.data.contracts.dll</HintPath>
+      <HintPath>..\packages\xmisc.technical.data.contracts.1.0.81-rc-f858a00\lib\net45\xmisc.technical.data.contracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <HintPath>..\packages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="xunit.assert, Version=2.1.0.3109, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\packages\xunit.assert.2.1.0-beta4-build3109\lib\portable-net45+netcore45+wp8+wpa81\xunit.assert.dll</HintPath>
+    <Reference Include="xunit.assert, Version=2.1.0.3179, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\packages\xunit.assert.2.1.0\lib\dotnet\xunit.assert.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="xunit.core, Version=2.1.0.3109, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\packages\xunit.extensibility.core.2.1.0-beta4-build3109\lib\portable-net45+netcore45+wp8+wpa81\xunit.core.dll</HintPath>
+    <Reference Include="xunit.core, Version=2.1.0.3179, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\packages\xunit.extensibility.core.2.1.0\lib\dotnet\xunit.core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xunit.execution.desktop, Version=2.1.0.3179, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\packages\xunit.extensibility.execution.2.1.0\lib\net45\xunit.execution.desktop.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -177,10 +182,9 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\xunit.core.2.1.0-beta4-build3109\build\portable-net45+netcore45+wp8+wpa81\xunit.core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.core.2.1.0-beta4-build3109\build\portable-net45+netcore45+wp8+wpa81\xunit.core.props'))" />
-    <Error Condition="!Exists('..\packages\xunit.runner.visualstudio.2.1.0-beta4-build1109\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.runner.visualstudio.2.1.0-beta4-build1109\build\net20\xunit.runner.visualstudio.props'))" />
+    <Error Condition="!Exists('..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
