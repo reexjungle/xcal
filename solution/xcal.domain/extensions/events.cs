@@ -1,25 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using reexjungle.xcal.domain.contracts;
+﻿using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
 using reexjungle.xmisc.foundation.concretes;
 using reexjungle.xmisc.infrastructure.contracts;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace reexjungle.xcal.domain.extensions
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public static class EventExtensions
     {
-
-        public static List<VEVENT> GenerateOccurrences(this VEVENT vevent, IKeyGenerator<Guid> keyGenerator)
+        public static List<VEVENT> GenerateOccurrences(this VEVENT vevent, IKeyGenerator<Guid> keyGenerator, uint window = 6)
         {
-            if (keyGenerator == null) throw new ArgumentNullException("keyGenerator");
+            if (keyGenerator == null) throw new ArgumentNullException(nameof(keyGenerator));
 
-            var occurrences = new List<VEVENT> {vevent};
-            var dates = vevent.RecurrenceRule.GenerateRecurrences(vevent.Start).ToList();
+            var occurrences = new List<VEVENT> { vevent };
+            var dates = vevent.RecurrenceRule.GenerateRecurrences(vevent.Start, window).ToList();
             if (vevent.RecurrenceDates.Any())
             {
                 var recurrentDates = vevent
@@ -53,7 +52,7 @@ namespace reexjungle.xcal.domain.extensions
                     .SelectMany(x => x.DateTimes);
 
                 var exceptionDatesList = exdates as IList<DATE_TIME> ?? exdates.ToList();
-                if (exceptionDatesList.Any()) 
+                if (exceptionDatesList.Any())
                     dates = dates.Except(exceptionDatesList).ToList();
             }
 
@@ -82,6 +81,22 @@ namespace reexjungle.xcal.domain.extensions
             }
 
             return occurrences;
+        }
+
+        public static List<VEVENT> GetNextOccurences(this IList<VEVENT> vevents, IKeyGenerator<Guid> keyGenerator, uint window = 6)
+        {
+            if (vevents.NullOrEmpty()) return vevents.ToList();
+
+            var first = vevents.First();
+            var last = vevents.Last();
+
+            var copy = new VEVENT(first)
+            {
+                Start = last.Start,
+                End = last.End
+            };
+
+            return copy.GenerateOccurrences(keyGenerator, window);
         }
     }
 }

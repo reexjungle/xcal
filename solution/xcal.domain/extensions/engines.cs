@@ -5,7 +5,6 @@ using ServiceStack.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
 
 namespace reexjungle.xcal.domain.extensions
 {
@@ -25,15 +24,15 @@ namespace reexjungle.xcal.domain.extensions
 
         private static DATE_TIME EquivalentWeekDate(this WEEKDAYNUM weekdaynum, DATE_TIME reference)
         {
-            return reference.AddDays((int) weekdaynum.Weekday - (int) reference.GetWeekday());
+            return reference.AddDays((int)weekdaynum.Weekday - (int)reference.GetWeekday());
         }
 
         private static DATE_TIME EquivalentMonthDate(this WEEKDAYNUM weekdaynun, DATE_TIME reference)
         {
             return weekdaynun.Weekday
                 .ToDayOfWeek()
-                .GetNthDateOfMonth(weekdaynun.NthOccurrence, (int) reference.FULLYEAR, (int) reference.MONTH,
-                    (int) reference.HOUR, (int) reference.MINUTE, (int) reference.SECOND)
+                .GetNthDateOfMonth(weekdaynun.NthOccurrence, (int)reference.FULLYEAR, (int)reference.MONTH,
+                    (int)reference.HOUR, (int)reference.MINUTE, (int)reference.SECOND)
                 .ToDATE_TIME(reference.TimeZoneId);
         }
 
@@ -41,7 +40,7 @@ namespace reexjungle.xcal.domain.extensions
         {
             return weekdaynun.Weekday
                 .ToDayOfWeek()
-                .GetNthDateOfYear(weekdaynun.NthOccurrence, (int) reference.FULLYEAR).ToDATE_TIME(reference.TimeZoneId);
+                .GetNthDateOfYear(weekdaynun.NthOccurrence, (int)reference.FULLYEAR).ToDATE_TIME(reference.TimeZoneId);
         }
 
         #region Limit BYSETPOS
@@ -508,15 +507,15 @@ namespace reexjungle.xcal.domain.extensions
             var bymonths = dates.GroupBy(x => x.MONTH).ToList(); // group by months
 
             if (pmonthdays.Any())
-                presults = bymonths.SelectMany(bymonth => bymonth.Where(x => pmonthdays.Contains((int) x.MDAY)));
+                presults = bymonths.SelectMany(bymonth => bymonth.Where(x => pmonthdays.Contains((int)x.MDAY)));
 
             if (!nmonthdays.NullOrEmpty())
             {
                 nresults = bymonths.SelectMany(bymonth => bymonth.Where(x =>
                 {
-                    var max = DateTime.DaysInMonth((int) x.FULLYEAR, (int) x.MONTH);
+                    var max = DateTime.DaysInMonth((int)x.FULLYEAR, (int)x.MONTH);
                     var normalized = nmonthdays.Select(n => (max + 1) + n); //max + 1 - N
-                    return normalized.Contains((int) x.MDAY);
+                    return normalized.Contains((int)x.MDAY);
                 }));
             }
             return presults.Union(nresults);
@@ -565,7 +564,7 @@ namespace reexjungle.xcal.domain.extensions
             {
                 nresults = byweeks.SelectMany(byweek => byweek.Where(date =>
                 {
-                    var max = new DateTime((int) date.FULLYEAR, 12, 31).WeekOfYear();
+                    var max = new DateTime((int)date.FULLYEAR, 12, 31).WeekOfYear();
                     var normalized = nweeknos.Select(n => (max + 1) + n); //max + 1 - N
                     return normalized.Contains(date.ToDateTime().WeekOfYear());
                 }));
@@ -613,7 +612,6 @@ namespace reexjungle.xcal.domain.extensions
                                     date.Type, date.TimeZoneId)));
         }
 
-
         public static IEnumerable<DATE_TIME> ExpandByDay(this IEnumerable<DATE_TIME> dates, RECUR rule)
         {
             return rule.BYDAY.Empty()
@@ -651,7 +649,6 @@ namespace reexjungle.xcal.domain.extensions
             return presults.Union(nresults);
         }
 
-
         public static IEnumerable<DATE_TIME> ExpandByMonthDay(this IEnumerable<DATE_TIME> dates, RECUR rule)
         {
             if (rule.BYMONTHDAY.Empty()) return dates;
@@ -664,14 +661,14 @@ namespace reexjungle.xcal.domain.extensions
             var presults = dates.SelectMany(date => pmonthdays
                 .Select(
                     pmonthday =>
-                        new DATE_TIME(date.FULLYEAR, date.MONTH, (uint) pmonthday, date.HOUR, date.MINUTE,
+                        new DATE_TIME(date.FULLYEAR, date.MONTH, (uint)pmonthday, date.HOUR, date.MINUTE,
                             date.SECOND)));
 
             var nresults = dates.SelectMany(date => nmonthdays
                 .Select(nmonthday =>
                 {
-                    var adjusted = DateTime.DaysInMonth((int) date.FULLYEAR, (int) date.MONTH) + nmonthday;
-                    return new DATE_TIME(date.FULLYEAR, date.MONTH, (uint) adjusted, date.HOUR, date.MINUTE,
+                    var adjusted = DateTime.DaysInMonth((int)date.FULLYEAR, (int)date.MONTH) + nmonthday;
+                    return new DATE_TIME(date.FULLYEAR, date.MONTH, (uint)adjusted, date.HOUR, date.MINUTE,
                         date.SECOND);
                 }));
 
@@ -740,11 +737,11 @@ namespace reexjungle.xcal.domain.extensions
 
         private static DATE_TIME CalculateWindowLimit(this RECUR rule, DATE_TIME start, int window)
         {
-            if (rule.FREQ == FREQ.SECONDLY && rule.INTERVAL < 24*60*60)
+            if (rule.FREQ == FREQ.SECONDLY && rule.INTERVAL < 24 * 60 * 60)
             {
                 return start.ToDateTime().AddMinutes(window).ToDATE_TIME(start.TimeZoneId);
             }
-            if (rule.FREQ == FREQ.MINUTELY && rule.INTERVAL < 24*60)
+            if (rule.FREQ == FREQ.MINUTELY && rule.INTERVAL < 24 * 60)
             {
                 return start.ToDateTime().AddHours(window).ToDATE_TIME(start.TimeZoneId);
             }
@@ -752,6 +749,13 @@ namespace reexjungle.xcal.domain.extensions
             {
                 return start.ToDateTime().AddDays(window).ToDATE_TIME(start.TimeZoneId);
             }
+
+            if (rule.FREQ == FREQ.YEARLY)
+            {
+                return start.ToDateTime().AddYears(window).ToDATE_TIME(start.TimeZoneId);
+            }
+
+            //Default window period defined in months
             return start.ToDateTime().AddMonths(window).ToDATE_TIME(start.TimeZoneId);
         }
 
@@ -814,7 +818,7 @@ namespace reexjungle.xcal.domain.extensions
 
         public static IEnumerable<DATE_TIME> GenerateDailyRecurrences(this RECUR rule, DATE_TIME start, DATE_TIME end)
         {
-            var dates = new List<DATE_TIME> { start};
+            var dates = new List<DATE_TIME> { start };
             while (start < end) dates.Add(start = start.AddDays(rule.INTERVAL));
             return dates
                 .LimitByMonth(rule)
@@ -830,7 +834,7 @@ namespace reexjungle.xcal.domain.extensions
         public static IEnumerable<DATE_TIME> GenerateWeeklyRecurrences(this RECUR rule, DATE_TIME start, DATE_TIME end)
         {
             var dates = new List<DATE_TIME> { start };
-            while (start < end) dates.Add(start = start.AddDays(7*rule.INTERVAL));
+            while (start < end) dates.Add(start = start.AddDays(7 * rule.INTERVAL));
             return dates
                 .LimitByMonth(rule)
                 .ExpandByDay(rule)
@@ -843,7 +847,7 @@ namespace reexjungle.xcal.domain.extensions
         public static IEnumerable<DATE_TIME> GenerateMonthlyRecurrences(this RECUR rule, DATE_TIME start, DATE_TIME end)
         {
             var dates = new List<DATE_TIME> { start };
-            while (start < end) dates.Add(start = start.AddMonths((int) rule.INTERVAL));
+            while (start < end) dates.Add(start = start.AddMonths((int)rule.INTERVAL));
 
             var results = dates.LimitByMonth(rule);
 
@@ -862,7 +866,7 @@ namespace reexjungle.xcal.domain.extensions
         public static IEnumerable<DATE_TIME> GenerateYearlyRecurrences(this RECUR rule, DATE_TIME start, DATE_TIME end)
         {
             var dates = new List<DATE_TIME> { start };
-            while (start < end) dates.Add(start = start.AddYears((int) rule.INTERVAL));
+            while (start < end) dates.Add(start = start.AddYears((int)rule.INTERVAL));
 
             var results = dates
                 .ExpandByMonth(rule)
@@ -922,7 +926,7 @@ namespace reexjungle.xcal.domain.extensions
         {
             IEnumerable<DATE_TIME> recurrences;
 
-            var limit = rule.CalculateWindowLimit(start, (int) window);
+            var limit = rule.CalculateWindowLimit(start, (int)window);
             var current = start;
 
             if (rule.UNTIL != default(DATE_TIME)) //rule is based on UNTIL constraint
@@ -940,10 +944,10 @@ namespace reexjungle.xcal.domain.extensions
                 {
                     temp.AddRange(rule.GenerateRecurrences(current, limit));
                     current = temp.Last();
-                    limit = rule.CalculateWindowLimit(current, (int) window);
+                    limit = rule.CalculateWindowLimit(current, (int)window);
                 } while (temp.Count < rule.COUNT);
 
-                recurrences = temp.Take((int) rule.COUNT);
+                recurrences = temp.Take((int)rule.COUNT);
             }
             else //rule is neither based on UNTIL nor COUNT  => generate "forever" (bounded by limit)
             {

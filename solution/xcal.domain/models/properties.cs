@@ -51,8 +51,11 @@ namespace reexjungle.xcal.domain.models
 
         public ATTACH_BINARY(IATTACH<BINARY> attachment)
         {
-            FormatType = attachment.FormatType;
-            Content = attachment.Content;
+            if (attachment != null)
+            {
+                FormatType = new FMTTYPE(attachment.FormatType);
+                Content = new BINARY(attachment.Content); 
+            }
         }
 
         public ATTACH_BINARY(BINARY content, FMTTYPE format = null)
@@ -161,8 +164,11 @@ namespace reexjungle.xcal.domain.models
 
         public ATTACH_URI(IATTACH<Uri> attachment)
         {
-            Content = attachment.Content;
-            FormatType = attachment.FormatType;
+            if (attachment != null)
+            {
+                Content = attachment.Content;
+                FormatType = attachment.FormatType; 
+            }
         }
 
         /// <summary>
@@ -267,12 +273,13 @@ namespace reexjungle.xcal.domain.models
 
         public CATEGORIES(ICATEGORIES categories)
         {
-            if (categories == null) throw new ArgumentNullException("categories");
-
-            Language = categories.Language;
-            Values = categories.Values.NullOrEmpty()
-                ? new List<string>()
-                : new List<string>(categories.Values);
+            if (categories != null)
+            {
+                Language = categories.Language;
+                Values = categories.Values.NullOrEmpty()
+                    ? new List<string>()
+                    : new List<string>(categories.Values); 
+            }
         }
 
         /// <summary>
@@ -508,6 +515,21 @@ namespace reexjungle.xcal.domain.models
         {
         }
 
+        public DESCRIPTION(DESCRIPTION other)
+        {
+            if (other != null)
+            {
+                if (other.Text != null)
+                    Text = string.Copy(other.Text);
+
+                if (other.AlternativeText != null)
+                    AlternativeText = new ALTREP(other.AlternativeText);
+
+                if (other.Language != null)
+                    Language = new LANGUAGE(other.Language); 
+            }
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder("DESCRIPTION");
@@ -558,6 +580,21 @@ namespace reexjungle.xcal.domain.models
         public COMMENT(string text, ALTREP altrep, LANGUAGE language = null)
             : base(text, altrep, language)
         {
+        }
+
+        public COMMENT(COMMENT other)
+        {
+            if (other != null)
+            {
+                if (other.Text != null)
+                    Text = string.Copy(other.Text);
+
+                if (other.AlternativeText != null)
+                    AlternativeText = new ALTREP(other.AlternativeText);
+
+                if (other.Language != null)
+                    Language = new LANGUAGE(other.Language);
+            }
         }
 
         public override string ToString()
@@ -612,6 +649,21 @@ namespace reexjungle.xcal.domain.models
         {
         }
 
+        public CONTACT(CONTACT other)
+        {
+            if (other != null)
+            {
+                if (other.Text != null)
+                    Text = string.Copy(other.Text);
+
+                if (other.AlternativeText != null)
+                    AlternativeText = new ALTREP(other.AlternativeText);
+
+                if (other.Language != null)
+                    Language = new LANGUAGE(other.Language);
+            }
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder("CONTACT");
@@ -627,6 +679,21 @@ namespace reexjungle.xcal.domain.models
     {
         public SUMMARY()
         {
+        }
+
+        public SUMMARY(SUMMARY other)
+        {
+            if (other != null)
+            {
+                if (other.Text != null)
+                    Text = string.Copy(other.Text);
+
+                if (other.AlternativeText != null)
+                    AlternativeText = new ALTREP(other.AlternativeText);
+
+                if (other.Language != null)
+                    Language = new LANGUAGE(other.Language);
+            }
         }
 
         public SUMMARY(string value)
@@ -715,6 +782,22 @@ namespace reexjungle.xcal.domain.models
             : base(text, altrep, language)
         {
         }
+
+        public LOCATION(LOCATION other)
+        {
+            if (other != null)
+            {
+                if (other.Text != null)
+                    Text = string.Copy(other.Text);
+
+                if (other.AlternativeText != null)
+                    AlternativeText = new ALTREP(other.AlternativeText);
+
+                if (other.Language != null)
+                    Language = new LANGUAGE(other.Language);
+            }
+        }
+
 
         public override string ToString()
         {
@@ -882,12 +965,14 @@ namespace reexjungle.xcal.domain.models
 
         public RESOURCES(IRESOURCES resources)
         {
-            if (resources == null) throw new ArgumentNullException("resources");
-            AlternativeText = resources.AlternativeText;
-            Language = resources.Language;
-            Values = resources.Values.NullOrEmpty()
-                ? new List<string>()
-                : new List<string>(resources.Values);
+            if (resources != null)
+            {
+                AlternativeText = resources.AlternativeText;
+                Language = resources.Language;
+                Values = resources.Values.NullOrEmpty()
+                    ? new List<string>()
+                    : new List<string>(resources.Values); 
+            }
         }
 
         /// <summary>
@@ -1383,10 +1468,13 @@ namespace reexjungle.xcal.domain.models
 
         public FREEBUSY(IFREEBUSY_PROPERTY other)
         {
-            Type = other.Type;
-            Periods = other.Periods.NullOrEmpty()
-                ? new List<PERIOD>()
-                : new List<PERIOD>(other.Periods);
+            if (other != null)
+            {
+                Type = other.Type;
+                Periods = other.Periods.NullOrEmpty()
+                    ? new List<PERIOD>()
+                    : new List<PERIOD>(other.Periods); 
+            }
         }
 
         public FREEBUSY(string value)
@@ -1525,8 +1613,11 @@ namespace reexjungle.xcal.domain.models
 
         public TZNAME(ITZNAME tzname)
         {
-            Language = tzname.Language;
-            Text = tzname.Text;
+            if (tzname != null)
+            {
+                Language = tzname.Language;
+                Text = tzname.Text; 
+            }
         }
 
         public TZNAME(string value)
@@ -1813,6 +1904,24 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
+        public ATTENDEE(IATTENDEE other)
+        {
+            if (other != null)
+            {
+                Address = new CAL_ADDRESS(other.Address);
+                CalendarUserType = other.CalendarUserType;
+                Role = other.Role;
+                Participation = other.Participation;
+                Rsvp = other.Rsvp;
+                Delegatee = new DELEGATED_TO(other.Delegatee);
+                Delegator = new DELEGATED_FROM(other.Delegatee);
+                SentBy = new SENT_BY(other.SentBy);
+                if (other.CN != null) CN = string.Copy(other.CN);
+                Directory = new DIR(other.Directory);
+
+            }
+        }
+
         /// <summary>
         /// Overloaded To String Method
         /// </summary>
@@ -1931,14 +2040,16 @@ namespace reexjungle.xcal.domain.models
             Directory = null;
         }
 
-        public ORGANIZER(IORGANIZER organizer, Guid id)
+        public ORGANIZER(IORGANIZER organizer)
         {
-            Id = id;
-            Address = organizer.Address;
-            CN = organizer.CN;
-            Directory = organizer.Directory;
-            SentBy = organizer.SentBy;
-            Language = organizer.Language;
+            if (organizer != null)
+            {
+                Address = new CAL_ADDRESS(organizer.Address);
+                CN = organizer.CN;
+                Directory = new DIR(organizer.Directory);
+                SentBy = new SENT_BY(organizer.SentBy);
+                Language = new LANGUAGE(organizer.Language); 
+            }
         }
 
         public ORGANIZER(string value)
@@ -2042,6 +2153,8 @@ namespace reexjungle.xcal.domain.models
     [DataContract]
     public class RECURRENCE_ID : IRECURRENCE_ID, IEquatable<RECURRENCE_ID>, IContainsKey<Guid>
     {
+        private readonly IRECURRENCE_ID other;
+
         /// <summary>
         /// Original date time: settable only once
         /// </summary>
@@ -2095,6 +2208,16 @@ namespace reexjungle.xcal.domain.models
         {
             Value = value;
             Range = range;
+        }
+
+        public RECURRENCE_ID(IRECURRENCE_ID other)
+        {
+            if (other != null)
+            {
+                Value = other.Value;
+                if (other.TimeZoneId != null) TimeZoneId = new TZID(other.TimeZoneId);
+                Range = other.Range; 
+            }
         }
 
         public RECURRENCE_ID(string value)
@@ -2314,9 +2437,11 @@ namespace reexjungle.xcal.domain.models
 
         public URL(Uri uri)
         {
-            if (uri == null) throw new ArgumentNullException("uri");
-            Uri = new Uri(uri.ToString());
-        }
+            if (uri != null)
+            {
+                Uri = new Uri(uri.ToString());
+
+            }        }
 
         public URL(string value)
         {
@@ -2409,6 +2534,20 @@ namespace reexjungle.xcal.domain.models
         {
             DateTimes = new List<DATE_TIME>();
             TimeZoneId = null;
+        }
+
+        public EXDATE(IEXDATE other)
+        {
+            if (other != null)
+            {
+                if (other.DateTimes.Any())
+                {
+                    DateTimes = new List<DATE_TIME>(other.DateTimes.Select(x => x));
+                }
+
+                if (other.TimeZoneId != null)
+                    TimeZoneId = new TZID(other.TimeZoneId); 
+            }
         }
 
         /// <summary>
@@ -2645,6 +2784,17 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
+        public RDATE(IRDATE other)
+        {
+            if (other != null)
+            {
+                ValueType = other.ValueType;
+                if(other.DateTimes != null) DateTimes = new List<DATE_TIME>(other.DateTimes);
+                if(other.Periods != null) Periods = new List<PERIOD>(other.Periods);
+                TimeZoneId = other.TimeZoneId;
+            }
+        }
+
         /// <summary>
         /// Overloaded ToString Method
         /// </summary>
@@ -2767,10 +2917,13 @@ namespace reexjungle.xcal.domain.models
 
         public TRIGGER(ITRIGGER other)
         {
-            DateTime = other.DateTime;
-            ValueType = other.ValueType;
-            Related = other.Related;
-            Duration = other.Duration;
+            if (other != null)
+            {
+                DateTime = other.DateTime;
+                ValueType = other.ValueType;
+                Related = other.Related;
+                Duration = other.Duration; 
+            }
         }
 
         public TRIGGER(string value)
@@ -2929,13 +3082,13 @@ namespace reexjungle.xcal.domain.models
 
         public IANA_PROPERTY(string serialized, Func<string, IEnumerable<object>> paramsCtor = null, Func<string, object> valueCtor = null)
         {
-            if (serialized == null) throw new ArgumentNullException("serialized");
+            if (serialized == null) throw new ArgumentNullException(nameof(serialized));
 
             const string tokenPattern = @"(?<token>(\w[-]?)+)";
             const string paramsPattern = @"(?<params>(;(?:\w[-]?)+=(\w|\\:|\\;|\\,|\d)+)+)*";
             const string valuesPattern = @"(?<value>((\w\S*)|\d)+)";
 
-            string pattern = string.Format(@"^{0}{1}:{2}$", tokenPattern, paramsPattern, valuesPattern);
+            string pattern = $@"^{tokenPattern}{paramsPattern}:{valuesPattern}$";
 
             var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
               RegexOptions.CultureInvariant;
@@ -2960,6 +3113,16 @@ namespace reexjungle.xcal.domain.models
                         throw new FormatException("value");
                     Value = value;
                 }
+            }
+        }
+
+        public IANA_PROPERTY(IIANA_PROPERTY other)
+        {
+            if (other != null)
+            {
+                if (other.Token != null) Token = String.Copy(other.Token);
+                Value = other.Value;
+                if(other.Parameters != null) other.Parameters = new List<object>(other.Parameters);
             }
         }
 
@@ -2988,7 +3151,7 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((IANA_PROPERTY) obj);
         }
 
@@ -3059,6 +3222,16 @@ namespace reexjungle.xcal.domain.models
 
         }
 
+        public X_PROPERTY(IX_PROPERTY other)
+        {
+            if (other != null)
+            {
+                if (other.Name != null) Name = String.Copy(other.Name);
+                Value = other.Value;
+                if (other.Parameters != null) other.Parameters = new List<object>(other.Parameters);
+            }
+        }
+
         public override string ToString()
         {
             if (Name == null) return string.Empty;
@@ -3084,7 +3257,7 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((X_PROPERTY) obj);
         }
 
@@ -3142,9 +3315,16 @@ namespace reexjungle.xcal.domain.models
 
         public STATCODE(ISTATCODE other)
         {
-            l1 = other.L1;
-            l2 = other.L2;
-            l3 = other.L3;
+            if (other != null)
+            {
+                l1 = other.L1;
+                l2 = other.L2;
+                l3 = other.L3; 
+            }
+
+            l1 = 0;
+            l2 = 0;
+            l3 = null;
         }
 
         public STATCODE(string value)
@@ -3316,6 +3496,26 @@ namespace reexjungle.xcal.domain.models
                 {
                     ExceptionData = match.Groups["exdata"].Value;
                 }
+            }
+        }
+
+        public REQUEST_STATUS(IREQUEST_STATUS other)
+        {
+            if (other != null)
+            {
+                Code = other.Code;
+                if (other.Description != null)
+                {
+                    Description = string.Copy(other.Description);
+
+                }
+
+                Language = new LANGUAGE(other.Language);
+                if (other.ExceptionData != null)
+                {
+                    ExceptionData = string.Copy(other.ExceptionData);
+                }
+
             }
         }
 

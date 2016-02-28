@@ -16,10 +16,7 @@ namespace reexjungle.xcal.service.repositories.concretes.dapper
         private readonly IKeyGenerator<Guid> keygenerator;
         private readonly IEventRepository eventrepository;
 
-        private IDbConnection db
-        {
-            get { return dbconnection ?? (dbconnection = factory.OpenDbConnection()); }
-        }
+        private IDbConnection db => dbconnection ?? (dbconnection = factory.OpenDbConnection());
 
         public IDbConnectionFactory DbConnectionFactory
         {

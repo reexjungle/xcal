@@ -414,9 +414,9 @@ namespace reexjungle.xcal.tests.concretes.integration
                 Assert.Equal(result.Events.First().Id, events[3].Id);
             }
 
-            client.Post(new DeleteCalendars { CalendarIds = keys });
-            var deleted = client.Post(new FindCalendars { CalendarIds = keys });
-            Assert.Equal(deleted.Count, 0);
+            //client.Post(new DeleteCalendars { CalendarIds = keys });
+            //var deleted = client.Post(new FindCalendars { CalendarIds = keys });
+            //Assert.Equal(deleted.Count, 0);
         }
 
         [Fact]

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.models;
+﻿using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.extensions;
+using reexjungle.xcal.domain.models;
 using reexjungle.xcal.tests.concretes.factories;
 using reexjungle.xcal.tests.contracts.factories;
 using reexjungle.xmisc.infrastructure.concretes.operations;
 using reexjungle.xmisc.infrastructure.contracts;
+using System;
 using Xunit;
 
 namespace reexjungle.xcal.tests.concretes.units
@@ -34,7 +32,7 @@ namespace reexjungle.xcal.tests.concretes.units
         #region Standard (RFC5545) Recurrence Tests
 
         [Fact]
-        public void CheckGeneratedDailyRecurrencesLimitedByCount()
+        public void CheckDailyRecurrencesLimitedByCount()
         {
             var vevent = factory.Create();
             vevent.Start = new DATE_TIME(1997, 09, 02, 09, 00, 00, TimeType.LocalAndTimeZone, tzid);
@@ -64,7 +62,7 @@ namespace reexjungle.xcal.tests.concretes.units
         }
 
         [Fact]
-        public void CheckGeneratedDailyRecurrencesLimitedByUntil()
+        public void CheckDailyRecurrencesLimitedByUntil()
         {
             var vevent = factory.Create();
             vevent.Start = new DATE_TIME(1997, 09, 02, 09, 00, 00, TimeType.LocalAndTimeZone, tzid);
@@ -74,7 +72,7 @@ namespace reexjungle.xcal.tests.concretes.units
             vevent.RecurrenceRule = new RECUR
             {
                 FREQ = FREQ.DAILY,
-                UNTIL = new DATE_TIME(1997,12,24,00,00,00, TimeType.Utc)
+                UNTIL = new DATE_TIME(1997, 12, 24, 00, 00, 00, TimeType.Utc)
             };
 
             var occurences = vevent.GenerateOccurrences(keyGenerator);
@@ -95,7 +93,23 @@ namespace reexjungle.xcal.tests.concretes.units
             Assert.Equal(occurences[112].Start, new DATE_TIME(1997, 12, 23, 09, 00, 00, TimeType.LocalAndTimeZone, tzid));
         }
 
-        #endregion
-    }
+        [Fact]
+        public void CheckDailyRecurrencesUnlimited()
+        {
+            var vevent = factory.Create();
+            vevent.Start = new DATE_TIME(1997, 09, 02, 09, 00, 00, TimeType.LocalAndTimeZone, tzid);
+            vevent.End = new DATE_TIME(1997, 09, 02, 10, 00, 00, TimeType.LocalAndTimeZone, tzid);
 
+            //check byday filter
+            vevent.RecurrenceRule = new RECUR
+            {
+                FREQ = FREQ.DAILY,
+                INTERVAL = 2
+            };
+
+            var occurences = vevent.GenerateOccurrences(keyGenerator);
+        }
+
+        #endregion Standard (RFC5545) Recurrence Tests
+    }
 }

@@ -1,11 +1,11 @@
-﻿using System;
+﻿using reexjungle.xcal.domain.contracts;
+using reexjungle.xmisc.foundation.concretes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
-using reexjungle.xcal.domain.contracts;
-using reexjungle.xmisc.foundation.concretes;
 
 namespace reexjungle.xcal.domain.models
 {
@@ -57,10 +57,11 @@ namespace reexjungle.xcal.domain.models
 
         public TZID(ITZID other)
         {
-            if (other == null) throw new ArgumentNullException("other");
-
-            Prefix = other.Prefix;
-            Suffix = other.Suffix;
+            if (other != null)
+            {
+                Prefix = other.Prefix;
+                Suffix = other.Suffix; 
+            }
         }
 
         public TZID(string value)
@@ -73,7 +74,7 @@ namespace reexjungle.xcal.domain.models
               RegexOptions.CultureInvariant;
             var regex = new Regex(pattern, options);
 
-            if(!Regex.IsMatch(value, pattern, options)) throw  new FormatException("value");
+            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
 
             GloballyUnique = true;
             foreach (Match match in regex.Matches(value))
@@ -180,15 +181,14 @@ namespace reexjungle.xcal.domain.models
         public FMTTYPE(string value)
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
-            
+
             var pattern = @"^FMTTYPE=(?<type>\w+)/(?<subtype>\w+\S*)$";
             var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
               RegexOptions.CultureInvariant;
             var regex = new Regex(pattern, options);
 
-
             if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
-            
+
             foreach (Match match in regex.Matches(value))
             {
                 if (match.Groups["type"].Success) TypeName = match.Groups["type"].Value;
@@ -198,10 +198,14 @@ namespace reexjungle.xcal.domain.models
 
         public FMTTYPE(IFMTTYPE fmttype)
         {
-            if (fmttype == null) throw new ArgumentNullException("fmttype");
-            
-            TypeName = fmttype.TypeName;
-            SubTypeName = fmttype.SubTypeName;
+            if (fmttype != null)
+            {
+                if (!string.IsNullOrEmpty(fmttype.TypeName))
+                    TypeName = string.Copy(fmttype.TypeName);
+
+                if (!string.IsNullOrEmpty(fmttype.SubTypeName))
+                    SubTypeName = string.Copy(fmttype.SubTypeName); 
+            }
         }
 
         public override string ToString()
@@ -273,18 +277,20 @@ namespace reexjungle.xcal.domain.models
                 throw new FormatException("Invalid Language Format type");
             foreach (Match match in Regex.Matches(value, pattern, RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase))
             {
-                if (match.Groups["tag"].Success) 
+                if (match.Groups["tag"].Success)
                     Tag = match.Groups["tag"].Value;
-                if (match.Groups["subtag"].Success) 
+                if (match.Groups["subtag"].Success)
                     SubTag = match.Groups["subtag"].Value;
             }
         }
 
         public LANGUAGE(ILANGUAGE language)
         {
-            if (language == null) throw new ArgumentNullException("language");
-            Tag = language.Tag;
-            SubTag = language.SubTag;
+            if (language != null)
+            {
+                Tag = language.Tag;
+                SubTag = language.SubTag; 
+            }
         }
 
         public override string ToString()
@@ -363,10 +369,12 @@ namespace reexjungle.xcal.domain.models
 
         protected DELEGATE(IDELEGATE @delegate)
         {
-            if (@delegate == null) throw new ArgumentNullException("delegate");
-            Addresses = @delegate.Addresses.NullOrEmpty()
-                ? new List<CAL_ADDRESS>()
-                : new List<CAL_ADDRESS>(@delegate.Addresses);
+            if (@delegate != null)
+            {
+                Addresses = @delegate.Addresses.NullOrEmpty()
+            ? new List<CAL_ADDRESS>()
+            : new List<CAL_ADDRESS>(@delegate.Addresses); 
+            }
         }
 
         public override string ToString()
@@ -374,8 +382,8 @@ namespace reexjungle.xcal.domain.models
             var sb = new StringBuilder();
             foreach (var address in Addresses)
             {
-                sb.AppendFormat(address != Addresses.Last() 
-                    ? "\"mailto:{0}\", " 
+                sb.AppendFormat(address != Addresses.Last()
+                    ? "\"mailto:{0}\", "
                     : "\"mailto:{0}\"", address);
             }
             return sb.ToString();
@@ -425,7 +433,7 @@ namespace reexjungle.xcal.domain.models
             var pattern = @"DELEGATED-FROM=mailto:(?<uri>\s*(\w+:\S+)\s*)";
             var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
                           RegexOptions.CultureInvariant;
-            var regex = new Regex(pattern, options); 
+            var regex = new Regex(pattern, options);
 
             if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("Invalid Delegate format");
 
@@ -437,7 +445,7 @@ namespace reexjungle.xcal.domain.models
                 }
             }
         }
-        
+
         public DELEGATED_FROM(List<CAL_ADDRESS> addresses) : base(addresses)
         {
         }
@@ -448,7 +456,7 @@ namespace reexjungle.xcal.domain.models
 
         public override string ToString()
         {
-            return string.Format("DELEGATED-FROM={0}",base.ToString());
+            return string.Format("DELEGATED-FROM={0}", base.ToString());
         }
     }
 
@@ -519,8 +527,8 @@ namespace reexjungle.xcal.domain.models
         /// <param name="addresses">The enumerable collection of addresses representing users in the membership list</param>
         public MEMBER(IEnumerable<CAL_ADDRESS> addresses)
         {
-            Addresses = addresses.NullOrEmpty() 
-                ? new List<CAL_ADDRESS>() 
+            Addresses = addresses.NullOrEmpty()
+                ? new List<CAL_ADDRESS>()
                 : new List<CAL_ADDRESS>(addresses);
         }
 
@@ -539,7 +547,7 @@ namespace reexjungle.xcal.domain.models
             {
                 if (match.Groups["emails"].Success)
                 {
-                    var emails = match.Groups["emails"].Value.Split(new[] {'\"', ','}, StringSplitOptions.RemoveEmptyEntries);
+                    var emails = match.Groups["emails"].Value.Split(new[] { '\"', ',' }, StringSplitOptions.RemoveEmptyEntries);
                     Addresses = emails.Select(e => new CAL_ADDRESS(e.Trim())).ToList();
                 }
             }
@@ -547,9 +555,11 @@ namespace reexjungle.xcal.domain.models
 
         public MEMBER(IMEMBER member)
         {
-            if (member == null) throw new ArgumentNullException("member");
-            member.Addresses = member.Addresses;
-        }
+            if (member?.Addresses != null)
+            {
+                member.Addresses = member.Addresses;
+
+            }        }
 
         public override string ToString()
         {
@@ -599,10 +609,17 @@ namespace reexjungle.xcal.domain.models
     {
         [DataMember]
         public Uri Uri { get; set; }
-        
+
         public ALTREP()
         {
+        }
 
+        public ALTREP(ALTREP other)
+        {
+            if (other?.Uri != null && other.Uri.IsWellFormedOriginalString())
+            {
+                Uri = new Uri(other.Uri.ToString());
+            }
         }
 
         public ALTREP(string uriString, UriKind kind)
@@ -636,7 +653,7 @@ namespace reexjungle.xcal.domain.models
 
         public override string ToString()
         {
-            return Uri != null 
+            return Uri != null
                 ? string.Format(@"ALTREP=""{0}""", Uri)
                 : string.Empty;
         }
@@ -653,7 +670,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((ALTREP) obj);
+            return Equals((ALTREP)obj);
         }
 
         public override int GetHashCode()
@@ -677,6 +694,14 @@ namespace reexjungle.xcal.domain.models
     {
         [DataMember]
         public Uri Uri { get; set; }
+
+        public DIR(DIR other)
+        {
+            if (other?.Uri != null)
+            {
+                Uri = new Uri(other.Uri.ToString());
+            }
+        }
 
         public DIR()
         {
@@ -714,7 +739,7 @@ namespace reexjungle.xcal.domain.models
 
         public override string ToString()
         {
-            return Uri != null 
+            return Uri != null
                 ? string.Format("DIR=\"{0}\"", Uri)
                 : string.Empty;
         }
@@ -731,7 +756,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((DIR) obj);
+            return Equals((DIR)obj);
         }
 
         public override int GetHashCode()
@@ -751,22 +776,28 @@ namespace reexjungle.xcal.domain.models
     }
 
     [DataContract]
-    public class SENT_BY: ISENT_BY, IEquatable<SENT_BY>
+    public class SENT_BY : ISENT_BY, IEquatable<SENT_BY>
     {
         [DataMember]
         public CAL_ADDRESS Address { get; set; }
 
         public SENT_BY()
         {
-            
+        }
+
+        public SENT_BY(SENT_BY other)
+        {
+            if (other?.Address != null)
+            {
+                Address = new CAL_ADDRESS(other.Address);
+            }
         }
 
         public SENT_BY(CAL_ADDRESS address)
         {
-            if (address == null) throw new ArgumentNullException("address");
             Address = address;
         }
-        
+
         public SENT_BY(string value)
         {
             var pattern = @"^SENT-BY=""(?<value>(\s*(\w+\S+)\s*))""$";
@@ -787,7 +818,7 @@ namespace reexjungle.xcal.domain.models
 
         public override string ToString()
         {
-            return Address != null 
+            return Address != null
                 ? string.Format(@"SENT-BY=""{0}""", Address)
                 : string.Empty;
         }
@@ -804,7 +835,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((SENT_BY) obj);
+            return Equals((SENT_BY)obj);
         }
 
         public override int GetHashCode()

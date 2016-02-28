@@ -23,7 +23,7 @@ namespace reexjungle.xcal.service.plugins.formats.concretes
                 {
                     if (req.ResponseContentType.Equals(mime_type, StringComparison.OrdinalIgnoreCase))
                         res.AddHeader(HttpHeaders.ContentDisposition,
-                        string.Format("attachment;filename={0}.{1}", req.OperationName, ext));
+                            $"attachment;filename={req.OperationName}.{ext}");
                 });
         }
 
