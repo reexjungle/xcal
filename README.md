@@ -78,14 +78,9 @@ solution/
 |   ├── xcal.service.repositories.concretes
 |   ├── xcal.service.repositories.contracts
 |   ├── xcal.service.validators.concretes
-├── technical/
-|   ├── technical.data.concretes
-|   ├── technical.data.contracts
 ├── tests/
-|   ├── xcal.test.server.integration.contracts
-|   ├── xcal.test.server.integration.concretes
-|   ├── xcal.test.units.contracts
-|   ├── xcal.test.units.concretes
+|   ├── xcal.tests.contracts
+|   ├── xcal.tests.concretes
 ```
 
 ### Development Tools for xCal
