@@ -8,6 +8,8 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
+using reexjungle.xcal.infrastructure.contracts;
+using reexjungle.xcal.infrastructure.serialization;
 
 namespace reexjungle.xcal.domain.models
 {
@@ -466,7 +468,7 @@ namespace reexjungle.xcal.domain.models
     /// where YYYY is 4-digit year, MM is 2-digit month and DD is 2-digit day
     /// </summary>
     [DataContract]
-    public struct DATE_TIME : IDATE, IDATE<DATE_TIME>, ITIME, ITIME<DATE_TIME>, IEquatable<DATE_TIME>, IComparable<DATE_TIME>
+    public struct DATE_TIME : IDATE, IDATE<DATE_TIME>, ITIME, ITIME<DATE_TIME>, IEquatable<DATE_TIME>, IComparable<DATE_TIME>, ICalendarSerializable
     {
         private readonly uint hour, minute, second, fullyear, month, mday;
         private readonly TimeType type;
@@ -700,27 +702,6 @@ namespace reexjungle.xcal.domain.models
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            if (type == TimeType.Local)
-                return $"{fullyear:D4}{month:D2}{mday:D2}T{hour:D2}{minute:D2}{second:D2}";
-
-            if (type == TimeType.Utc)
-                return $"{fullyear:D4}{month:D2}{mday:D2}T{hour:D2}{minute:D2}{second:D2}Z";
-
-            if (type == TimeType.LocalAndTimeZone)
-                return $"{tzid}:{fullyear:D4}{month:D2}{mday:D2}T{hour:D2}{minute:D2}{second:D2}";
-
-            return
-                $"{fullyear:D4}{month:D2}{mday:D2}T{hour:D2}{minute:D2}{second:D2}";
-        }
-
-        /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
@@ -905,6 +886,30 @@ namespace reexjungle.xcal.domain.models
         public WEEKDAY GetWeekday()
         {
             return this.ToDateTime().DayOfWeek.ToWEEKDAY();
+        }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            switch (type)
+            {
+                case TimeType.Local:
+                    writer.WriteValue($"{fullyear:D4}{month:D2}{mday:D2}T{hour:D2}{minute:D2}{second:D2}");
+                    break;
+                case TimeType.Utc:
+                    writer.WriteValue($"{fullyear:D4}{month:D2}{mday:D2}T{hour:D2}{minute:D2}{second:D2}Z");
+                    break;
+                case TimeType.LocalAndTimeZone:
+                    writer.WriteValue($"{tzid}:{fullyear:D4}{month:D2}{mday:D2}T{hour:D2}{minute:D2}{second:D2}");
+                    break;
+                default:
+                    writer.WriteValue($"{fullyear:D4}{month:D2}{mday:D2}T{hour:D2}{minute:D2}{second:D2}");
+                    break;
+            }
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 

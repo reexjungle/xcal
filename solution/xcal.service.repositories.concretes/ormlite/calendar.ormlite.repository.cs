@@ -271,15 +271,16 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
 
                         if (!sprimitives.NullOrEmpty())
                         {
-                            var patchstr = string.Format("f => new {{ {0} }}",
-                                string.Join(", ", sprimitives.Select(x => string.Format("f.{0}", x))));
+                            var patchstr = $"f => new {{ {string.Join(", ", sprimitives.Select(x => $"f.{x}"))} }}";
 
                             var patchexpr = patchstr.CompileToExpressionFunc<VCALENDAR, object>(CodeDomLanguage.csharp,
                                 "System.dll", "System.Core.dll", typeof (VCALENDAR).Assembly.Location,
                                 typeof (IContainsKey<Guid>).Assembly.Location);
 
-                            if (!okeys.NullOrEmpty()) db.UpdateOnly(source, patchexpr, q => Sql.In(q.Id, okeys));
-                            else db.UpdateOnly(source, patchexpr);
+                            if (!okeys.NullOrEmpty())
+                                db.UpdateOnly(source, patchexpr, q => Sql.In(q.Id, okeys));
+                            else
+                                db.UpdateOnly(source, patchexpr);
                         }
 
                         transaction.Commit();

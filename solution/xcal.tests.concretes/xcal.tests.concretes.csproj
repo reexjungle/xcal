@@ -150,6 +150,10 @@
       <Project>{5b708e08-1f69-4fde-9d99-afa3784a49d7}</Project>
       <Name>xcal.domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\xcal.infrastructure\xcal.infrastructure.csproj">
+      <Project>{4195e2aa-2b16-4a73-afda-b8a919000f2d}</Project>
+      <Name>xcal.infrastructure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\xcal.service.interfaces.concretes\xcal.service.interfaces.concretes.csproj">
       <Project>{0b922294-6a3f-4232-a150-cac6bfc7bcfd}</Project>
       <Name>xcal.service.interfaces.concretes</Name>
@@ -172,7 +176,7 @@
     </ProjectReference>
     <ProjectReference Include="..\xcal.tests.contracts\xcal.tests.contracts.csproj">
       <Project>{1f6c2586-112b-4e92-97a6-b74568707070}</Project>
-      <Name>xcal.test.server.contracts</Name>
+      <Name>xcal.tests.contracts</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

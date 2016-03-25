@@ -47,6 +47,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.tests.contracts", "xca
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.tests.concretes", "xcal.tests.concretes\xcal.tests.concretes.csproj", "{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infrastructure", "infrastructure", "{49C067DA-19B7-4FEF-B502-65C894C19DAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.infrastructure", "xcal.infrastructure\xcal.infrastructure.csproj", "{4195E2AA-2B16-4A73-AFDA-B8A919000F2D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -193,6 +197,18 @@ Global
 		{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA}.Release|x86.ActiveCfg = Release|Any CPU
+		{4195E2AA-2B16-4A73-AFDA-B8A919000F2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4195E2AA-2B16-4A73-AFDA-B8A919000F2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4195E2AA-2B16-4A73-AFDA-B8A919000F2D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4195E2AA-2B16-4A73-AFDA-B8A919000F2D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4195E2AA-2B16-4A73-AFDA-B8A919000F2D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4195E2AA-2B16-4A73-AFDA-B8A919000F2D}.Debug|x86.Build.0 = Debug|Any CPU
+		{4195E2AA-2B16-4A73-AFDA-B8A919000F2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4195E2AA-2B16-4A73-AFDA-B8A919000F2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4195E2AA-2B16-4A73-AFDA-B8A919000F2D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4195E2AA-2B16-4A73-AFDA-B8A919000F2D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4195E2AA-2B16-4A73-AFDA-B8A919000F2D}.Release|x86.ActiveCfg = Release|Any CPU
+		{4195E2AA-2B16-4A73-AFDA-B8A919000F2D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -215,6 +231,7 @@ Global
 		{F21CB427-5DD9-41B2-A993-17CD8085535A} = {0C7DBB41-D410-47F4-9457-A30932FF94F2}
 		{1F6C2586-112B-4E92-97A6-B74568707070} = {994ADDCE-FC85-436E-8F9A-FCCE54BE307C}
 		{D1DACBEF-EA12-490B-9AB2-498BE42B3FAA} = {994ADDCE-FC85-436E-8F9A-FCCE54BE307C}
+		{4195E2AA-2B16-4A73-AFDA-B8A919000F2D} = {49C067DA-19B7-4FEF-B502-65C894C19DAB}
 	EndGlobalSection
 	GlobalSection(CodealikeProperties) = postSolution
 		SolutionGuid = 1352b368-b41e-43bd-abe6-2b78282795b3
