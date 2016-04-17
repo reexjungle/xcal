@@ -18,7 +18,7 @@ namespace reexjungle.xcal.infrastructure.serialization
             this.type = type;
         }
 
-        protected void SerializePrimitive(CalendarWriter writer, object o)
+        protected void SerializePrimitive(iCalWriter writer, object o)
         {
             var otype = o.GetType();
             switch (Type.GetTypeCode(otype))
@@ -103,7 +103,7 @@ namespace reexjungle.xcal.infrastructure.serialization
             }
         }
 
-        public void Serialize(CalendarWriter writer, object o)
+        public void Serialize(iCalWriter writer, object o)
         {
             if (o == null) return;
 
@@ -122,7 +122,7 @@ namespace reexjungle.xcal.infrastructure.serialization
                     return;
                 }
 
-                var serializable = o as ICalendarSerializable;
+                var serializable = o as IiCalSerializable;
                 if (serializable == null)
                     throw new InvalidOperationException("Object of type:" + otype.FullName + " does not support ICalendarSerializable!");
 
@@ -144,7 +144,7 @@ namespace reexjungle.xcal.infrastructure.serialization
         }
 
 
-        protected object DeserializePrimitive(CalendarReader reader)
+        protected object DeserializePrimitive(iCalReader reader)
         {
             object o;
             switch (Type.GetTypeCode(type))
@@ -156,7 +156,7 @@ namespace reexjungle.xcal.infrastructure.serialization
 
             throw new NotImplementedException();
         }
-        public object Deserialize(CalendarReader reader)
+        public object Deserialize(iCalReader reader)
         {
             if (type.IsPrimitive
                 || type == typeof(decimal)
@@ -188,7 +188,7 @@ namespace reexjungle.xcal.infrastructure.serialization
         {
         }
 
-        public void Serialize(CalendarWriter writer, TValue value)
+        public void Serialize(iCalWriter writer, TValue value)
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
 
@@ -206,7 +206,7 @@ namespace reexjungle.xcal.infrastructure.serialization
                     SerializePrimitive(writer, value);
                 }
 
-                var serializable = value as ICalendarSerializable;
+                var serializable = value as IiCalSerializable;
                 if (serializable == null)
                     throw new InvalidOperationException("Object of type:" + otype.FullName + " does not support ICalendarSerializable!");
 
@@ -227,7 +227,7 @@ namespace reexjungle.xcal.infrastructure.serialization
             writer.Flush();
         }
 
-        public new TValue Deserialize(CalendarReader reader)
+        public new TValue Deserialize(iCalReader reader)
         {
             throw new NotImplementedException();
         }

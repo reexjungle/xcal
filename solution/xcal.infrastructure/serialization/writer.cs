@@ -8,7 +8,7 @@ namespace reexjungle.xcal.infrastructure.serialization
     /// <summary>
     /// Represents a writer that provides a fast, non-cached, forward-only way to generate streams or files that contain iCalendar data.
     /// </summary>
-    public class CalendarWriter : TextWriter
+    public class iCalWriter : TextWriter
     {
         //literal Constants
         private const char HTAB = '\u0009';
@@ -23,34 +23,34 @@ namespace reexjungle.xcal.infrastructure.serialization
         private const string EscapedCOLON = @"\:";
         private const string EscapedSEMICOLON = @"\;";
 
-        public CalendarWriter(Encoding encoding = null)
+        public iCalWriter(Encoding encoding = null)
         {
             Encoding = encoding ?? Encoding.UTF8;
         }
 
-        public CalendarWriter(IFormatProvider provider, Encoding encoding = null): base(provider)
+        public iCalWriter(IFormatProvider provider, Encoding encoding = null): base(provider)
         {
             Encoding = encoding ?? Encoding.UTF8;
         }
 
-        public static CalendarWriter Create(Stream stream)
+        public static iCalWriter Create(Stream stream)
         {
             return Create(new StreamWriter(stream));
         }
 
-        public static CalendarWriter Create(StringBuilder builder)
+        public static iCalWriter Create(StringBuilder builder)
         {
             return Create(new StringWriter(builder));
         }
 
-        public static CalendarWriter Create(TextWriter writer)
+        public static iCalWriter Create(TextWriter writer)
         {
-            return new CalendarWriter(writer.FormatProvider, writer.Encoding);
+            return new iCalWriter(writer.FormatProvider, writer.Encoding);
         }
 
-        public static CalendarWriter Create(CalendarWriter writer)
+        public static iCalWriter Create(iCalWriter writer)
         {
-            return new CalendarWriter(writer.FormatProvider, writer.Encoding);
+            return new iCalWriter(writer.FormatProvider, writer.Encoding);
         }
 
         public void WriteStartComponent(string name)

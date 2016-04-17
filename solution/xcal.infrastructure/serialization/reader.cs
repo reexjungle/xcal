@@ -3,45 +3,57 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using reexjungle.xcal.infrastructure.contracts;
+using reexjungle.xcal.infrastructure.extensions;
+using Sprache;
 
 namespace reexjungle.xcal.infrastructure.serialization
 {
     /// <summary>
     /// Represents a reader that provides fast, noncached, forward-only access to iCalendar data.
     /// </summary>
-    public class CalendarReader : TextReader
+    public class iCalReader : TextReader
     {
-        private FragmentData[] fragments;
+        static readonly Parser<char> HTabDelimiter = Parse.Char('\u0009');
+        static readonly Parser<char> EmptyCharDelimiter = Parse.Char('\0');
+        static readonly Parser<char> DQuoteDelimiter = Parse.Char('"');
+        static readonly Parser<char> CommaDelimiter = Parse.Char(',');
+        static readonly Parser<char> ColonDelimiter = Parse.Char(':');
+        static readonly Parser<char> SemicolonDelimiter = Parse.Char(';');
 
-        private FragmentData current;
+        static readonly Parser<char> DQuotedStringDelimiter= Parse.AnyChar
+            .Except(DQuoteDelimiter).Or(DQuoteDelimiter.CalEscaped());
 
-        private int index = 0;
+        static readonly Parser<char> SafeStringDelimiter = Parse.AnyChar
+            .Except(CommaDelimiter).Or(CommaDelimiter.CalEscaped())
+            .Except(ColonDelimiter).Or(ColonDelimiter.CalEscaped())
+            .Except(SemicolonDelimiter).Or(SemicolonDelimiter.CalEscaped());
+
 
         public CalendarFragmentType FragmentType { get; private set; }
 
-        public CalendarReader()
+        public iCalReader()
         {
             FragmentType = CalendarFragmentType.UNKNOWN;
 
         }
 
-        public CalendarReader(Stream stream)
+        public iCalReader(Stream stream)
         {
             FragmentType = CalendarFragmentType.UNKNOWN;
 
         }
 
-        public CalendarReader(TextReader reader)
+        public iCalReader(TextReader reader)
         {
             
         }
 
-        public CalendarReader(string fragment, CalendarFragmentType fragmentType)
+        public iCalReader(string fragment, CalendarFragmentType fragmentType)
         {
             FragmentType = fragmentType;
         }
 
-        public CalendarReader(Stream fragment, CalendarFragmentType fragmentType)
+        public iCalReader(Stream fragment, CalendarFragmentType fragmentType)
         {
             FragmentType = fragmentType;
             if (fragment != null)
@@ -54,24 +66,24 @@ namespace reexjungle.xcal.infrastructure.serialization
         }
 
 
-        public static CalendarReader Create(Stream stream)
+        public static iCalReader Create(Stream stream)
         {
             return Create(new StreamReader(stream));
         }
 
-        public static CalendarReader Create(string @string)
+        public static iCalReader Create(string @string)
         {
             return Create(new StringReader(@string));
         }
 
-        public static CalendarReader Create(TextReader reader)
+        public static iCalReader Create(TextReader reader)
         {
-            return new CalendarReader(reader);
+            return new iCalReader(reader);
         }
 
-        public static CalendarReader Create(CalendarReader reader)
+        public static iCalReader Create(iCalReader reader)
         {
-            return new CalendarReader(reader);
+            return new iCalReader(reader);
         }
 
         protected virtual CalendarFragmentType MoveToValue(CalendarFragmentType type)
@@ -227,23 +239,15 @@ namespace reexjungle.xcal.infrastructure.serialization
         }
 
 
-        private class FragmentData
+        public override int Peek()
         {
-            private string value;
-            private char[] buffer;
-            private int startpos;
-            private int length;
-
-            private static volatile FragmentData s_None;
-
-            internal static FragmentData None => s_None ?? new FragmentData();
-
-            internal string StringValue => value ?? new string(buffer, startpos, length);
-
-            internal CalendarFragmentType FragmentType { get; }
-
-
+            return base.Peek();
         }
 
+
+        public override int Read()
+        {
+            return base.Read();
+        }
     }
 }

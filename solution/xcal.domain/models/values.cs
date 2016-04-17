@@ -468,7 +468,7 @@ namespace reexjungle.xcal.domain.models
     /// where YYYY is 4-digit year, MM is 2-digit month and DD is 2-digit day
     /// </summary>
     [DataContract]
-    public struct DATE_TIME : IDATE, IDATE<DATE_TIME>, ITIME, ITIME<DATE_TIME>, IEquatable<DATE_TIME>, IComparable<DATE_TIME>, ICalendarSerializable
+    public struct DATE_TIME : IDATE, IDATE<DATE_TIME>, ITIME, ITIME<DATE_TIME>, IEquatable<DATE_TIME>, IComparable<DATE_TIME>, IiCalSerializable
     {
         private readonly uint hour, minute, second, fullyear, month, mday;
         private readonly TimeType type;
@@ -888,7 +888,7 @@ namespace reexjungle.xcal.domain.models
             return this.ToDateTime().DayOfWeek.ToWEEKDAY();
         }
 
-        public void WriteCalendar(CalendarWriter writer)
+        public void WriteCalendar(iCalWriter writer)
         {
             switch (type)
             {
@@ -907,7 +907,7 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public void ReadCalendar(CalendarReader reader)
+        public void ReadCalendar(iCalReader reader)
         {
             throw new NotImplementedException();
         }

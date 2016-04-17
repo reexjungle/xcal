@@ -11,16 +11,16 @@ namespace reexjungle.xcal.infrastructure.contracts
 
     public interface ICalendarSerializer
     {
-        void Serialize(CalendarWriter writer, object o);
+        void Serialize(iCalWriter writer, object o);
 
-        object Deserialize(CalendarReader reader);
+        object Deserialize(iCalReader reader);
     }
 
     public interface ICalendarSerializer<TValue>
     {
-        void Serialize(CalendarWriter writer, TValue value);
+        void Serialize(iCalWriter writer, TValue value);
 
-        TValue Deserialize(CalendarReader reader);
+        TValue Deserialize(iCalReader reader);
 
     }
 
