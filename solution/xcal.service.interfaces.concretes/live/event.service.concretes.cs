@@ -194,7 +194,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                     Start = request.Start,
                     Classification = request.Classification,
                     Description = request.Description,
-                    Position = request.Position,
+                    GeoPosition = request.Position,
                     Location = request.Location,
                     Organizer = request.Organizer,
                     Priority = request.Priority,
@@ -206,8 +206,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                     RecurrenceRule = request.RecurrenceRule,
                     End = request.End,
                     Duration = request.Duration,
-                    AttachmentBinaries = request.AttachmentBinaries,
-                    AttachmentUris = request.AttachmentUris,
+                    Attachments = request.Attachments,
                     Attendees = request.Attendees,
                     Categories = request.Categories,
                     Comments = request.Comments,
@@ -216,18 +215,14 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                     RequestStatuses = request.RequestStatuses,
                     Resources = request.Resources,
                     RelatedTos = request.RelatedTos,
-                    AudioAlarms = request.AudioAlarms,
-                    DisplayAlarms = request.DisplayAlarms,
-                    EmailAlarms = request.EmailAlarms,
-                    IANAProperties = request.IANAProperties,
-                    XProperties = request.XProperties
+                    Alarms = request.Alarms,
                 };
 
                 var fields = new List<string>();
                 if (source.Start != default(DATE_TIME)) fields.Add("Start");
                 if (source.Classification != default(CLASS)) fields.Add("Classification");
                 if (source.Description != null) fields.Add("Description");
-                if (source.Position != default(GEO)) fields.Add("Position");
+                if (source.GeoPosition != default(GEO)) fields.Add("Position");
                 if (source.Location != null) fields.Add("Location");
                 if (source.Organizer != null) fields.Add("Organizer");
                 if (source.Priority != default(PRIORITY)) fields.Add("Priority");
@@ -240,8 +235,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 if (source.End != default(DATE_TIME)) fields.Add("End");
                 if (source.Duration != default(DURATION)) fields.Add("Duration");
                 if (source.Categories != null) fields.Add("Categories");
-                if (source.AttachmentBinaries != null) fields.Add("AttachmentBinaries");
-                if (source.AttachmentUris != null) fields.Add("AttachmentUris");
+                if (source.Attachments != null) fields.Add("Attachments");
                 if (source.Attendees != null) fields.Add("Attendees");
                 if (source.Comments != null) fields.Add("Comments");
                 if (source.Contacts != null) fields.Add("Contacts");
@@ -249,11 +243,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 if (source.RequestStatuses != null) fields.Add("RequestStatuses");
                 if (source.Resources != null) fields.Add("Resources");
                 if (source.RelatedTos != null) fields.Add("RelatedTos");
-                if (source.AudioAlarms != null) fields.Add("AudioAlarms");
-                if (source.DisplayAlarms != null) fields.Add("DisplayAlarms");
-                if (source.EmailAlarms != null) fields.Add("EmailAlarms");
-                if (source.IANAProperties != null) fields.Add("IANAProperties");
-                if (source.XProperties != null) fields.Add("XProperties");
+                if (source.Alarms != null) fields.Add("Alarms");
 
                 eventRepository.Patch(source, fields, request.EventId.ToSingleton());
 
@@ -286,7 +276,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                     Start = request.Start,
                     Classification = request.Classification,
                     Description = request.Description,
-                    Position = request.Position,
+                    GeoPosition = request.Position,
                     Location = request.Location,
                     Organizer = request.Organizer,
                     Priority = request.Priority,
@@ -298,8 +288,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                     RecurrenceRule = request.RecurrenceRule,
                     End = request.End,
                     Duration = request.Duration,
-                    AttachmentBinaries = request.AttachmentBinaries,
-                    AttachmentUris = request.AttachmentUris,
+                    Attachments = request.Attachments,
                     Attendees = request.Attendees,
                     Categories = request.Categories,
                     Comments = request.Comments,
@@ -308,18 +297,14 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                     RequestStatuses = request.RequestStatuses,
                     Resources = request.Resources,
                     RelatedTos = request.RelatedTos,
-                    AudioAlarms = request.AudioAlarms,
-                    DisplayAlarms = request.DisplayAlarms,
-                    EmailAlarms = request.EmailAlarms,
-                    IANAProperties = request.IANAProperties,
-                    XProperties = request.XProperties
+                    Alarms = request.Alarms,
                 };
 
                 var fields = new List<string>();
                 if (source.Start != default(DATE_TIME)) fields.Add("Start");
                 if (source.Classification != default(CLASS)) fields.Add("Classification");
                 if (source.Description != null) fields.Add("Description");
-                if (source.Position != default(GEO)) fields.Add("Position");
+                if (source.GeoPosition != default(GEO)) fields.Add("Position");
                 if (source.Location != null) fields.Add("Location");
                 if (source.Organizer != null) fields.Add("Organizer");
                 if (source.Priority != default(PRIORITY)) fields.Add("Priority");
@@ -332,8 +317,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 if (source.End != default(DATE_TIME)) fields.Add("End");
                 if (source.Duration != default(DURATION)) fields.Add("Duration");
                 if (source.Categories != null) fields.Add("Categories");
-                if (source.AttachmentBinaries != null) fields.Add("AttachmentBinaries");
-                if (source.AttachmentUris != null) fields.Add("AttachmentUris");
+                if (source.Attachments != null) fields.Add("Attachments");
                 if (source.Attendees != null) fields.Add("Attendees");
                 if (source.Comments != null) fields.Add("Comments");
                 if (source.Contacts != null) fields.Add("Contacts");
@@ -341,11 +325,7 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 if (source.RequestStatuses != null) fields.Add("RequestStatuses");
                 if (source.Resources != null) fields.Add("Resources");
                 if (source.RelatedTos != null) fields.Add("RelatedTos");
-                if (source.AudioAlarms != null) fields.Add("AudioAlarms");
-                if (source.DisplayAlarms != null) fields.Add("DisplayAlarms");
-                if (source.EmailAlarms != null) fields.Add("EmailAlarms");
-                if (source.IANAProperties != null) fields.Add("IANAProperties");
-                if (source.XProperties != null) fields.Add("XProperties");
+                if (source.Alarms != null) fields.Add("Alarms");
                 
                 eventRepository.Patch(source, fields, request.EventIds);
 

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
+using reexjungle.xcal.infrastructure.serialization;
 using xs = System.Transactions;
 
 namespace reexjungle.xcal.service.repositories.concretes.ormlite
@@ -28,10 +29,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
         /// <summary>
         /// Gets the connection factory of ORMLite datasources
         /// </summary>
-        public IDbConnectionFactory DbConnectionFactory
-        {
-            get { return factory; }
-        }
+        public IDbConnectionFactory DbConnectionFactory => factory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CalendarOrmRepository"/> class.
@@ -41,9 +39,9 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
         /// <param name="factory">The database connection factory</param>
         public CalendarOrmRepository(IKeyGenerator<Guid> keygenerator, IEventRepository eventrepository, IDbConnectionFactory factory)
         {
-            if (keygenerator == null) throw new ArgumentNullException("keygenerator");
-            if (eventrepository == null) throw new ArgumentNullException("eventrepository");
-            if (factory == null) throw new ArgumentNullException("factory");
+            if (keygenerator == null) throw new ArgumentNullException(nameof(keygenerator));
+            if (eventrepository == null) throw new ArgumentNullException(nameof(eventrepository));
+            if (factory == null) throw new ArgumentNullException(nameof(factory));
 
             this.keygenerator = keygenerator;
             this.eventrepository = eventrepository;
@@ -223,8 +221,6 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 x.FreeBusies,
                 x.Journals,
                 x.TimeZones,
-                x.IanaComponents,
-                x.XComponents
             };
 
             var selection = fields as IList<string> ?? fields.ToList();
@@ -269,15 +265,19 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                             }
                         }
 
-                        if (!sprimitives.NullOrEmpty())
+                        if (sprimitives.Any())
                         {
                             var patchstr = $"f => new {{ {string.Join(", ", sprimitives.Select(x => $"f.{x}"))} }}";
 
-                            var patchexpr = patchstr.CompileToExpressionFunc<VCALENDAR, object>(CodeDomLanguage.csharp,
-                                "System.dll", "System.Core.dll", typeof (VCALENDAR).Assembly.Location,
+                            var patchexpr = patchstr.CompileToExpressionFunc<VCALENDAR, object>(
+                                CodeDomLanguage.csharp,
+                                "System.dll", 
+                                "System.Core.dll", 
+                                typeof(CalendarWriter).Assembly.Location,
+                                typeof (VCALENDAR).Assembly.Location,
                                 typeof (IContainsKey<Guid>).Assembly.Location);
 
-                            if (!okeys.NullOrEmpty())
+                            if (okeys.Any())
                                 db.UpdateOnly(source, patchexpr, q => Sql.In(q.Id, okeys));
                             else
                                 db.UpdateOnly(source, patchexpr);
@@ -477,8 +477,6 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
             if (!dry.ToDos.NullOrEmpty()) dry.ToDos.Clear();
             if (!dry.Journals.NullOrEmpty()) dry.Journals.Clear();
             if (!dry.TimeZones.NullOrEmpty()) dry.TimeZones.Clear();
-            if (!dry.IanaComponents.NullOrEmpty()) dry.IanaComponents.Clear();
-            if (!dry.XComponents.NullOrEmpty()) dry.XComponents.Clear();
             return dry;
         }
 

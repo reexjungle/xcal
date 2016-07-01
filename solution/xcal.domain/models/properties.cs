@@ -1,16 +1,18 @@
-﻿using reexjungle.xcal.domain.contracts;
-using reexjungle.xcal.domain.extensions;
-using reexjungle.xmisc.foundation.concretes;
-using reexjungle.xmisc.foundation.contracts;
-using ServiceStack.DataAnnotations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.domain.extensions;
+using reexjungle.xcal.infrastructure.contracts;
+using reexjungle.xcal.infrastructure.extensions;
+using reexjungle.xcal.infrastructure.serialization;
+using reexjungle.xmisc.foundation.concretes;
+using reexjungle.xmisc.foundation.contracts;
+using ServiceStack.DataAnnotations;
 
 namespace reexjungle.xcal.domain.models
 {
@@ -20,10 +22,10 @@ namespace reexjungle.xcal.domain.models
     /// Specifies a contract for attaching an inline binary encooded content information.
     /// </summary>
     [DataContract]
-    public class ATTACH_BINARY : IATTACH<BINARY>, IEquatable<ATTACH_BINARY>, IContainsKey<Guid>
+    public abstract class ATTACH : IATTACH, IEquatable<ATTACH>, IContainsKey<Guid>, ICalendarSerializable
     {
         /// <summary>
-        /// ID of an Attachment for a particular Calendar component
+        /// ID of an AttachmentBinary for a particular Calendar component
         /// </summary>
         [DataMember]
         public Guid Id { get; set; }
@@ -32,7 +34,7 @@ namespace reexjungle.xcal.domain.models
         /// Binary encoded content of the attachment
         /// </summary>
         [DataMember]
-        public BINARY Content { get; set; }
+        public string Content { get; set; }
 
         /// <summary>
         /// Media Type of the resource in an Attachmant
@@ -43,33 +45,33 @@ namespace reexjungle.xcal.domain.models
         /// <summary>
         /// Default constructor
         /// </summary>
-        public ATTACH_BINARY()
+        protected ATTACH()
         {
             FormatType = null;
             Content = null;
         }
 
-        public ATTACH_BINARY(IATTACH<BINARY> attachment)
+        protected ATTACH(IATTACH attachment)
         {
             if (attachment != null)
             {
                 FormatType = new FMTTYPE(attachment.FormatType);
-                Content = new BINARY(attachment.Content); 
+                Content = attachment.Content;
             }
         }
 
-        public ATTACH_BINARY(BINARY content, FMTTYPE format = null)
+        protected ATTACH(string base64, FMTTYPE format = null)
         {
-            Content = content;
+            Content = base64;
             FormatType = format;
         }
 
-        public ATTACH_BINARY(string value)
+        protected ATTACH(string value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
             var pattern =
                 @"^ATTACH(;(?<fmttype>FMTTYPE=\w+/\w+\S*))?;(?<encoding>ENCODING=BASE64;VALUE=BINARY):(?<binary>(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?)$";
-            
+
             var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
                           RegexOptions.CultureInvariant;
             var regex = new Regex(pattern, options);
@@ -78,29 +80,11 @@ namespace reexjungle.xcal.domain.models
             foreach (Match match in regex.Matches(value))
             {
                 if (match.Groups["fmttype"].Success) FormatType = new FMTTYPE(match.Groups["fmttype"].Value);
-                if (match.Groups["binary"].Success) Content = new BINARY(match.Groups["binary"].Value);
+                if (match.Groups["binary"].Success) Content = match.Groups["binary"].Value;
             }
         }
 
-        /// <summary>
-        /// Overloaded ToString method
-        /// </summary>
-        /// <returns>String of the format "ATTACH;FormatType;ENCODING=Encoding; VALUE=BINARY:Content"</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            if (Content != null)
-            {
-                sb.AppendFormat("ATTACH");
-                if (FormatType != null) sb.AppendFormat(";{0}", FormatType);
-                sb.AppendFormat(";ENCODING={0}", ENCODING.BASE64);
-                sb.AppendFormat(";VALUE=BINARY:{0}", Content);
-            }
-
-            return sb.ToString();
-        }
-
-        public bool Equals(ATTACH_BINARY other)
+        public bool Equals(ATTACH other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -112,7 +96,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((ATTACH_BINARY) obj);
+            return Equals((ATTACH)obj);
         }
 
         public override int GetHashCode()
@@ -120,126 +104,79 @@ namespace reexjungle.xcal.domain.models
             return Id.GetHashCode();
         }
 
-        public static bool operator ==(ATTACH_BINARY left, ATTACH_BINARY right)
+        public static bool operator ==(ATTACH left, ATTACH right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(ATTACH_BINARY left, ATTACH_BINARY right)
+        public static bool operator !=(ATTACH left, ATTACH right)
         {
             return !Equals(left, right);
         }
+
+        public abstract void WriteCalendar(CalendarWriter writer);
+
+        public abstract void ReadCalendar(CalendarReader reader);
     }
 
-    /// <summary>
-    /// Capability to associate a document or another resource given by it's URI with a calendar component
-    /// </summary>
-    [DataContract]
-    public class ATTACH_URI : IATTACH<Uri>, IEquatable<ATTACH_URI>, IContainsKey<Guid>
+    public class ATTACH_BINARY : ATTACH
     {
-        /// <summary>
-        /// ID of an Attachment for a particular Calendar component
-        /// </summary>
-        [DataMember]
-        public Guid Id { get; set; }
+        public ATTACH_BINARY()
+        {
+        }
 
-        /// <summary>
-        /// Media Type of the resource in an Attachmant
-        /// </summary>
-        [DataMember]
-        public FMTTYPE FormatType { get; set; }
+        public ATTACH_BINARY(IATTACH attachment) : base(attachment)
+        {
+        }
 
-        /// <summary>
-        /// Universal Resource Identifier of the attached Content
-        /// </summary>
-        [DataMember]
-        public Uri Content { get; set; }
+        public ATTACH_BINARY(string base64, FMTTYPE format = null) : base(base64, format)
+        {
+        }
 
-        /// <summary>
-        /// Default Constructor
-        /// </summary>
+        public override void WriteCalendar(CalendarWriter writer)
+        {
+            if (string.IsNullOrEmpty(Content) || string.IsNullOrWhiteSpace(Content)) return;
+
+            writer.Write("ATTACH");
+            if (FormatType != null) writer.AppendParameter(FormatType);
+            writer.AppendParameter("ENCODING", ENCODING.BASE64.ToString());
+            writer.AppendPropertyValue(Content);
+        }
+
+        public override void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class ATTACH_URI : ATTACH
+    {
         public ATTACH_URI()
         {
         }
 
-        public ATTACH_URI(IATTACH<Uri> attachment)
+        public ATTACH_URI(IATTACH attachment) : base(attachment)
         {
-            if (attachment != null)
-            {
-                Content = attachment.Content;
-                FormatType = attachment.FormatType; 
-            }
         }
 
-        /// <summary>
-        /// Constructor on the base of CONTENT of the Attachment and it's TYPE
-        /// </summary>
-        /// <param name="content">URI of the attached content</param>
-        /// <param name="format">The format type of the attachmen</param>
-        public ATTACH_URI(Uri content, FMTTYPE format = null)
+        public ATTACH_URI(Uri uri, FMTTYPE format = null) : base(uri.ToString(), format)
         {
-            FormatType = format;
-            Content = content;
         }
 
-        public ATTACH_URI(string value)
+        public override void WriteCalendar(CalendarWriter writer)
         {
-            if (value == null) throw new ArgumentNullException("value");
-            var pattern = @"^ATTACH(;(?<fmttype>FMTTYPE=\w+/\w+\S*))?:(?<uri>\s*(\w+:\S+)\s*)$";
-            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
-                          RegexOptions.CultureInvariant;
-            var regex = new Regex(pattern, options);
+            if (string.IsNullOrEmpty(Content) || string.IsNullOrWhiteSpace(Content)) return;
 
-            if (!Regex.IsMatch(value, pattern, options)) throw new FormatException("value");
-            foreach (Match match in regex.Matches(value))
-            {
-                if (match.Groups["fmttype"].Success) FormatType = new FMTTYPE(match.Groups["fmttype"].Value);
-                if (match.Groups["uri"].Success)
-                    Content = new Uri(match.Groups["uri"].Value, UriKind.RelativeOrAbsolute);
-            }
+            writer.Write("ATTACH");
+
+            if (FormatType != null) writer.AppendParameter(FormatType);
+
+            writer.AppendPropertyValue(Content);
         }
 
-        /// <summary>
-        /// Overloaded ToString method
-        /// </summary>
-        /// <returns>String of the format "ATTACH;FormatType;ENCODING=Encoding; VALUE=BINARY:Content"</returns>
-        public override string ToString()
+        public override void ReadCalendar(CalendarReader reader)
         {
-            var sb = new StringBuilder();
-            sb.AppendFormat("ATTACH");
-            if (!FormatType.Equals(default(FMTTYPE))) sb.AppendFormat(";{0}", FormatType);
-            sb.AppendFormat(":{0}", Content);
-            return sb.ToString();
-        }
-
-        public bool Equals(ATTACH_URI other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Id.Equals(other.Id);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((ATTACH_URI) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
-
-        public static bool operator ==(ATTACH_URI left, ATTACH_URI right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(ATTACH_URI left, ATTACH_URI right)
-        {
-            return !Equals(left, right);
+            throw new NotImplementedException();
         }
     }
 
@@ -247,7 +184,7 @@ namespace reexjungle.xcal.domain.models
     /// Defines the categories or subtypes for a calendar component
     /// </summary>
     [DataContract]
-    public class CATEGORIES : ICATEGORIES, IEquatable<CATEGORIES>, IContainsKey<Guid>
+    public class CATEGORIES : ICATEGORIES, IEquatable<CATEGORIES>, IContainsKey<Guid>, ICalendarSerializable
     {
         /// <summary>
         /// ID of the category
@@ -278,7 +215,7 @@ namespace reexjungle.xcal.domain.models
                 Language = categories.Language;
                 Values = categories.Values.NullOrEmpty()
                     ? new List<string>()
-                    : new List<string>(categories.Values); 
+                    : new List<string>(categories.Values);
             }
         }
 
@@ -289,7 +226,7 @@ namespace reexjungle.xcal.domain.models
         /// <param name="language">Language, used in a given category of calendar components</param>
         public CATEGORIES(IEnumerable<string> values, LANGUAGE language = null)
         {
-            if (values == null) throw new ArgumentNullException("values");
+            if (values == null) throw new ArgumentNullException(nameof(values));
 
             Language = language;
             Values = values.NullOrEmpty()
@@ -299,7 +236,7 @@ namespace reexjungle.xcal.domain.models
 
         public CATEGORIES(string value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
             var pattern = @"^CATEGORIES(;(?<language>LANGUAGE=\w{2}-\w{2}))?:(?<text>(\w+\s*,?)+)$";
             var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
                           RegexOptions.CultureInvariant;
@@ -311,29 +248,10 @@ namespace reexjungle.xcal.domain.models
                 if (match.Groups["lang"].Success) Language = new LANGUAGE(match.Groups["lang"].Value);
                 if (match.Groups["text"].Success)
                 {
-                    var lines = match.Groups["text"].Value.Split(new[] {',', ' '}, StringSplitOptions.RemoveEmptyEntries);
+                    var lines = match.Groups["text"].Value.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     Values = new List<string>(lines);
                 }
             }
-        }
-
-        /// <summary>
-        /// Overloaded ToString method
-        /// </summary>
-        /// <returns>String representation of a category property in the form of "CATEGORIES;Language;Text"</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("CATEGORIES");
-            if (Language != null) sb.AppendFormat(";{0}", Language);
-            sb.Append(":");
-
-            foreach (var value in Values)
-            {
-                if (value != Values.Last()) sb.AppendFormat("{0}, ", value);
-                else sb.Append(value);
-            }
-            return sb.ToString();
         }
 
         public bool Equals(CATEGORIES other)
@@ -348,7 +266,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((CATEGORIES) obj);
+            return Equals((CATEGORIES)obj);
         }
 
         public override int GetHashCode()
@@ -365,13 +283,27 @@ namespace reexjungle.xcal.domain.models
         {
             return !Equals(left, right);
         }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (Values.NullOrEmpty()) return;
+
+            writer.Write("CATEGORIES");
+            if (Language != null) writer.AppendParameter(Language);
+            writer.Append(Values);
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
     /// Specify non-processing information intended to provide a comment to the calendar user
     /// </summary>
     [DataContract]
-    public abstract class TEXTUAL : ITEXTUAL, IEquatable<TEXTUAL>, IComparable<TEXTUAL>, IContainsKey<Guid>
+    public abstract class TEXTUAL : ITEXTUAL, IEquatable<TEXTUAL>, IComparable<TEXTUAL>, IContainsKey<Guid>, ICalendarSerializable
     {
         /// <summary>
         /// ID of the Comment to the Calendar Component
@@ -440,7 +372,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((TEXTUAL) obj);
+            return Equals((TEXTUAL)obj);
         }
 
         public override int GetHashCode()
@@ -472,6 +404,10 @@ namespace reexjungle.xcal.domain.models
         {
             return a.CompareTo(b) > 0;
         }
+
+        public abstract void WriteCalendar(CalendarWriter writer);
+
+        public abstract void ReadCalendar(CalendarReader reader);
     }
 
     [DataContract]
@@ -483,7 +419,7 @@ namespace reexjungle.xcal.domain.models
 
         public DESCRIPTION(string value)
         {
-            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
 
             var pattern =
                 @"^DESCRIPTION(;(?<altrep>ALTREP=\p{P}\s*(\w+:\S+)\s*\p{P}))?(;(?<lang>LANGUAGE=\p{L}{2}\-\p{L}{2}))?:(?<text>(\P{L}*\p{L}\p{M}*\P{L}*)+)$";
@@ -526,17 +462,23 @@ namespace reexjungle.xcal.domain.models
                     AlternativeText = new ALTREP(other.AlternativeText);
 
                 if (other.Language != null)
-                    Language = new LANGUAGE(other.Language); 
+                    Language = new LANGUAGE(other.Language);
             }
         }
 
-        public override string ToString()
+        public override void WriteCalendar(CalendarWriter writer)
         {
-            var sb = new StringBuilder("DESCRIPTION");
-            if (AlternativeText != null) sb.AppendFormat(";{0}", AlternativeText);
-            if (Language != null) sb.AppendFormat(";{0}", Language);
-            sb.AppendFormat(":{0}", Text.EscapeStrings());
-            return sb.ToString();
+            if (string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text)) return;
+
+            writer.Write("DESCRIPTION");
+            if (AlternativeText != null) writer.AppendParameter(AlternativeText);
+            if (Language != null) writer.AppendParameter(Language);
+            writer.AppendPropertyValue(Text);
+        }
+
+        public override void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -549,7 +491,7 @@ namespace reexjungle.xcal.domain.models
 
         public COMMENT(string value)
         {
-            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
 
             var pattern =
                 @"^COMMENT(;(?<altrep>ALTREP=\p{P}\s*(\w+:\S+)\s*\p{P}))?(;(?<lang>LANGUAGE=\p{L}{2}\-\p{L}{2}))?:(?<text>(\P{L}*\p{L}\p{M}*\P{L}*)+)$";
@@ -605,6 +547,21 @@ namespace reexjungle.xcal.domain.models
             sb.AppendFormat(":{0}", Text.EscapeStrings());
             return sb.ToString();
         }
+
+        public override void WriteCalendar(CalendarWriter writer)
+        {
+            if (string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text)) return;
+
+            writer.Write("COMMENT");
+            if (AlternativeText != null) writer.AppendParameter(AlternativeText);
+            if (Language != null) writer.AppendParameter(Language);
+            writer.AppendPropertyValue(Text);
+        }
+
+        public override void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [DataContract]
@@ -616,7 +573,7 @@ namespace reexjungle.xcal.domain.models
 
         public CONTACT(string value)
         {
-            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
 
             var pattern =
                 @"^CONTACT(;(?<altrep>ALTREP=\p{P}\s*(\w+:\S+)\s*\p{P}))?(;(?<lang>LANGUAGE=\p{L}{2}\-\p{L}{2}))?:(?<text>(\P{L}*\p{L}\p{M}*\P{L}*)+)$";
@@ -664,13 +621,27 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public override string ToString()
+        public override void WriteCalendar(CalendarWriter writer)
         {
-            var sb = new StringBuilder("CONTACT");
-            if (AlternativeText != null) sb.AppendFormat(";{0}", AlternativeText);
-            if (Language != null) sb.AppendFormat(";{0}", Language);
-            sb.AppendFormat(":{0}", Text.EscapeStrings());
-            return sb.ToString();
+            if (string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text)) return;
+
+            writer.Write("CONTACT");
+            if (AlternativeText != null)
+            {
+                writer.WriteSemicolon();
+                AlternativeText.WriteCalendar(writer);
+            }
+            if (Language != null)
+            {
+                writer.WriteSemicolon();
+                Language.WriteCalendar(writer);
+            }
+            writer.WriteColon().WriteSafeStringValue(Text);
+        }
+
+        public override void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -698,7 +669,7 @@ namespace reexjungle.xcal.domain.models
 
         public SUMMARY(string value)
         {
-            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
 
             var pattern =
                 @"^SUMMARY(;(?<altrep>ALTREP=\p{P}\s*(\w+:\S+)\s*\p{P}))?(;(?<lang>LANGUAGE=\p{L}{2}\-\p{L}{2}))?:(?<text>(\P{L}*\p{L}\p{M}*\P{L}*)+)$";
@@ -731,13 +702,19 @@ namespace reexjungle.xcal.domain.models
         {
         }
 
-        public override string ToString()
+        public override void WriteCalendar(CalendarWriter writer)
         {
-            var sb = new StringBuilder("SUMMARY");
-            if (AlternativeText != null) sb.AppendFormat(";{0}", AlternativeText);
-            if (Language != null) sb.AppendFormat(";{0}", Language);
-            sb.AppendFormat(":{0}", Text.EscapeStrings());
-            return sb.ToString();
+            if (string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text)) return;
+
+            writer.Write("SUMMARY");
+            if (AlternativeText != null) writer.AppendParameter(AlternativeText);
+            if (Language != null) writer.AppendParameter(Language);
+            writer.AppendPropertyValue(Text);
+        }
+
+        public override void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -750,7 +727,7 @@ namespace reexjungle.xcal.domain.models
 
         public LOCATION(string value)
         {
-            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
 
             var pattern =
                 @"^LOCATION(;(?<altrep>ALTREP=\p{P}\s*(\w+:\S+)\s*\p{P}))?(;(?<lang>LANGUAGE=\p{L}{2}\-\p{L}{2}))?:(?<text>(\P{L}*\p{L}\p{M}*\P{L}*)+)$";
@@ -798,22 +775,28 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-
-        public override string ToString()
+        public override void WriteCalendar(CalendarWriter writer)
         {
-            var sb = new StringBuilder("LOCATION");
-            if (AlternativeText != null) sb.AppendFormat(";{0}", AlternativeText);
-            if (Language != null) sb.AppendFormat(";{0}", Language);
-            sb.AppendFormat(":{0}", Text.EscapeStrings());
-            return sb.ToString();
+            if (string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text)) return;
+
+            writer.Write("LOCATION");
+            if (AlternativeText != null) writer.AppendParameter(AlternativeText);
+            if (Language != null) writer.AppendParameter(Language);
+            writer.AppendPropertyValue(Text);
+        }
+
+        public override void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 
     /// <summary>
-    /// Specifies the information related to the global position for the activity spiecified by a calendar component
+    /// Specifies the information related to the global position for the activity spiecified by a
+    /// calendar component
     /// </summary>
     [DataContract]
-    public struct GEO : IGEO, IEquatable<GEO>, IContainsKey<Guid>
+    public struct GEO : IGEO, IEquatable<GEO>, IContainsKey<Guid>, ICalendarSerializable
     {
         private float longitude;
         private float latitude;
@@ -894,14 +877,14 @@ namespace reexjungle.xcal.domain.models
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            return obj is GEO && Equals((GEO) obj);
+            return obj is GEO && Equals((GEO)obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return (longitude.GetHashCode()*397) ^
+                return (longitude.GetHashCode() * 397) ^
                        latitude.GetHashCode();
             }
         }
@@ -916,15 +899,14 @@ namespace reexjungle.xcal.domain.models
             return !left.Equals(right);
         }
 
-        /// <summary>
-        /// Overloaded ToString Method
-        /// </summary>
-        /// <returns>String representation of the GEO property in form of "GEO:Lattilude;Longitude" </returns>
-        public override string ToString()
+        public void WriteCalendar(CalendarWriter writer)
         {
-            var sb = new StringBuilder();
-            sb.AppendFormat("GEO:{0};{1}", Latitude, Longitude);
-            return sb.ToString();
+            writer.WriteProperty("GEO", $"{Latitude};{Longitude}");
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -932,7 +914,7 @@ namespace reexjungle.xcal.domain.models
     /// Defines the Equipment or resources anticipated for an activity specified by a calendar component
     /// </summary>
     [DataContract]
-    public class RESOURCES : IRESOURCES, IEquatable<RESOURCES>, IContainsKey<Guid>
+    public class RESOURCES : IRESOURCES, IEquatable<RESOURCES>, IContainsKey<Guid>, ICalendarSerializable
     {
         /// <summary>
         /// ID of a particular Resource
@@ -971,7 +953,7 @@ namespace reexjungle.xcal.domain.models
                 Language = resources.Language;
                 Values = resources.Values.NullOrEmpty()
                     ? new List<string>()
-                    : new List<string>(resources.Values); 
+                    : new List<string>(resources.Values);
             }
         }
 
@@ -979,13 +961,15 @@ namespace reexjungle.xcal.domain.models
         /// Constructor specifying the Text, Alternative Text and Language for Resource Property
         /// </summary>
         /// <param name="values"></param>
-        /// <param name="alt">Alternative Text, can represent particular the description of the Resource</param>
+        /// <param name="alt">
+        /// Alternative Text, can represent particular the description of the Resource
+        /// </param>
         /// <param name="language">Language nescessary for the Resource</param>
         public RESOURCES(IEnumerable<string> values, ALTREP alt = null, LANGUAGE language = null)
         {
-            if (values == null) throw new ArgumentNullException("values");
-            if (alt == null) throw new ArgumentNullException("alt");
-            if (language == null) throw new ArgumentNullException("language");
+            if (values == null) throw new ArgumentNullException(nameof(values));
+            if (alt == null) throw new ArgumentNullException(nameof(alt));
+            if (language == null) throw new ArgumentNullException(nameof(language));
 
             AlternativeText = alt;
             Language = language;
@@ -997,7 +981,7 @@ namespace reexjungle.xcal.domain.models
 
         public RESOURCES(string value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
             var pattern =
                 @"^RESOURCES(;(?<altrep>ALTREP=\p{P}\s*(\w+:\S+)\s*\p{P}))?(;(?<lang>LANGUAGE=\p{L}{2}\-\p{L}{2}))?:(?<text>(\P{L}*\p{L}\p{M}*\P{L}*)+)$";
             var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
@@ -1019,30 +1003,10 @@ namespace reexjungle.xcal.domain.models
                 }
                 if (match.Groups["text"].Success)
                 {
-                    var lines = match.Groups["text"].Value.Split(new[] {',', ' '}, StringSplitOptions.RemoveEmptyEntries);
+                    var lines = match.Groups["text"].Value.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     Values = new List<string>(lines);
                 }
             }
-        }
-
-        /// <summary>
-        /// Overloaded ToString Method
-        /// </summary>
-        /// <returns>String representation of the Resource property in form of "RESOURCES;AlternativeText;Language:Text"</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("RESOURCES");
-            if (AlternativeText != null) sb.AppendFormat(";{0}", AlternativeText);
-            if (Language != null) sb.AppendFormat(";{0}", Language);
-            sb.Append(":");
-            var last = Values.Last();
-            foreach (var val in Values)
-            {
-                if (val != last) sb.AppendFormat("{0}, ", val);
-                else sb.Append(val);
-            }
-            return sb.ToString();
         }
 
         public bool Equals(RESOURCES other)
@@ -1057,7 +1021,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((RESOURCES) obj);
+            return Equals((RESOURCES)obj);
         }
 
         public override int GetHashCode()
@@ -1074,10 +1038,25 @@ namespace reexjungle.xcal.domain.models
         {
             return !Equals(left, right);
         }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (Values.NullOrEmpty()) return;
+
+            writer.Write("RESOURCES");
+            if (AlternativeText != null) writer.AppendParameter(AlternativeText);
+            if (Language != null) writer.AppendParameter(Language);
+            writer.AppendPropertyValues(Values.Select(writer.ConvertToSAFE_STRING));
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [DataContract]
-    public struct PRIORITY : IPRIORITY, IEquatable<PRIORITY>, IComparable<PRIORITY>
+    public struct PRIORITY : IPRIORITY, IEquatable<PRIORITY>, IComparable<PRIORITY>, ICalendarSerializable
     {
         private readonly int value;
         private readonly PRIORITYLEVEL level;
@@ -1342,7 +1321,7 @@ namespace reexjungle.xcal.domain.models
 
         public PRIORITY(string value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
 
             format = PriorityType.Integral;
             this.value = 0;
@@ -1355,7 +1334,7 @@ namespace reexjungle.xcal.domain.models
 
             var regex = new Regex(pattern, options);
 
-            if (!regex.IsMatch(value)) throw new FormatException("value");
+            if (!regex.IsMatch(value)) return;
 
             foreach (Match match in Regex.Matches(value, pattern, options))
             {
@@ -1368,14 +1347,6 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public override string ToString()
-        {
-            return Format == PriorityType.Integral
-                ? string.Format("PRIORITY:{0}", value)
-                : string.Format("PRIORITY:{0}",
-                    Format == PriorityType.Level ? LevelToValue(level) : SchemaToValue(schema));
-        }
-
         public bool Equals(PRIORITY other)
         {
             return value == other.value;
@@ -1384,7 +1355,7 @@ namespace reexjungle.xcal.domain.models
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            return obj is PRIORITY && Equals((PRIORITY) obj);
+            return obj is PRIORITY && Equals((PRIORITY)obj);
         }
 
         public override int GetHashCode()
@@ -1416,6 +1387,29 @@ namespace reexjungle.xcal.domain.models
         {
             return a.CompareTo(b) > 0;
         }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (Format == PriorityType.Integral)
+            {
+                writer.WriteProperty("PRIORITY", value.ToString());
+            }
+
+            if (Format == PriorityType.Level)
+            {
+                writer.WriteProperty("PRIORITY", LevelToValue(level).ToString());
+            }
+
+            if (Format == PriorityType.Schema)
+            {
+                writer.WriteProperty("PRIORITY", SchemaToValue(schema).ToString());
+            }
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     #endregion Descriptive Properties
@@ -1426,7 +1420,7 @@ namespace reexjungle.xcal.domain.models
     /// Defines one or more free or busy time intervals
     /// </summary>
     [DataContract]
-    public class FREEBUSY : IFREEBUSY_PROPERTY, IContainsKey<Guid>, IEquatable<FREEBUSY>
+    public class FREEBUSY : IFREEBUSY_PROPERTY, IContainsKey<Guid>, IEquatable<FREEBUSY>, ICalendarSerializable
     {
         /// <summary>
         /// ID of a free od busy time interval
@@ -1473,13 +1467,13 @@ namespace reexjungle.xcal.domain.models
                 Type = other.Type;
                 Periods = other.Periods.NullOrEmpty()
                     ? new List<PERIOD>()
-                    : new List<PERIOD>(other.Periods); 
+                    : new List<PERIOD>(other.Periods);
             }
         }
 
         public FREEBUSY(string value)
         {
-            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+            if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
 
             var trimmed = Regex.Replace(value, @"\s", string.Empty);
             var pattern =
@@ -1500,7 +1494,7 @@ namespace reexjungle.xcal.domain.models
                 }
                 if (match.Groups["periods"].Success)
                 {
-                    var lines = match.Groups["periods"].Value.Split(new[] {',', ' '},
+                    var lines = match.Groups["periods"].Value.Split(new[] { ',', ' ' },
                         StringSplitOptions.RemoveEmptyEntries);
 
                     Periods.AddRange(lines.Select(x => new PERIOD(x)));
@@ -1520,7 +1514,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((FREEBUSY) obj);
+            return Equals((FREEBUSY)obj);
         }
 
         public override int GetHashCode()
@@ -1538,26 +1532,16 @@ namespace reexjungle.xcal.domain.models
             return !Equals(left, right);
         }
 
-        /// <summary>
-        /// Overloaded ToString Method
-        /// </summary>
-        /// <returns>String representation of the FREEBUSY property in form of "FREEBUSY;Type:Period"</returns>
-        public override string ToString()
+        public void WriteCalendar(CalendarWriter writer)
         {
-            var sb = new StringBuilder();
-            sb.Append("FREEBUSY");
-            if (Type != FBTYPE.NONE) sb.AppendFormat(";{0}", Type);
-            sb.Append(":");
+            if (Periods.NullOrEmpty()) return;
+            if (Type != default(FBTYPE)) writer.WriteSemicolon().WriteParameter("FBTYPE", Type.ToString());
+            if (Periods.Any()) writer.AppendPropertyValues(Periods);
+        }
 
-            if (Periods.Count > 0)
-            {
-                var last = Periods.Last();
-                foreach (var period in Periods)
-                {
-                    sb.AppendFormat(period != last ? "{0}, " : "{0}", period);
-                }
-            }
-            return sb.ToString();
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -1569,11 +1553,8 @@ namespace reexjungle.xcal.domain.models
     /// Specifies the customary designation for a time zone description
     /// </summary>
     [DataContract]
-    public class TZNAME : ITZNAME, IEquatable<TZNAME>, IComparable<TZNAME>, IContainsKey<Guid>
+    public class TZNAME : ITZNAME, IEquatable<TZNAME>, IComparable<TZNAME>, IContainsKey<Guid>, ICalendarSerializable
     {
-        private LANGUAGE language;
-        private string text;
-
         [DataMember]
         public Guid Id { get; set; }
 
@@ -1581,21 +1562,13 @@ namespace reexjungle.xcal.domain.models
         /// Language, inherent for this time zone
         /// </summary>
         [DataMember]
-        public LANGUAGE Language
-        {
-            get { return language; }
-            set { language = value; }
-        }
+        public LANGUAGE Language { get; set; }
 
         /// <summary>
         /// Text, containing the Name of the Time-Zone
         /// </summary>
         [DataMember]
-        public string Text
-        {
-            get { return text; }
-            set { text = value; }
-        }
+        public string Text { get; set; }
 
         public TZNAME()
         {
@@ -1607,8 +1580,8 @@ namespace reexjungle.xcal.domain.models
         /// <param name="text"></param>
         public TZNAME(string text, LANGUAGE language = null)
         {
-            this.text = text;
-            this.language = language;
+            this.Text = text;
+            this.Language = language;
         }
 
         public TZNAME(ITZNAME tzname)
@@ -1616,13 +1589,13 @@ namespace reexjungle.xcal.domain.models
             if (tzname != null)
             {
                 Language = tzname.Language;
-                Text = tzname.Text; 
+                Text = tzname.Text;
             }
         }
 
         public TZNAME(string value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
 
             var pattern = @"^TZNAME(;(?<lang>LANGUAGE=\p{L}{2}\-\p{L}{2}))?:(?<text>(\P{L}*\p{L}\p{M}*\P{L}*)+)$";
             var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
@@ -1656,7 +1629,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((TZNAME) obj);
+            return Equals((TZNAME)obj);
         }
 
         public override int GetHashCode()
@@ -1676,32 +1649,33 @@ namespace reexjungle.xcal.domain.models
 
         public int CompareTo(TZNAME other)
         {
-            return text.CompareTo(other.Text);
+            return Text.CompareTo(other.Text);
         }
 
         public static bool operator <(TZNAME a, TZNAME b)
         {
-            if ((object) a == null || (object) b == null) return false;
+            if ((object)a == null || (object)b == null) return false;
             return a.CompareTo(b) < 0;
         }
 
         public static bool operator >(TZNAME a, TZNAME b)
         {
-            if ((object) a == null || (object) b == null) return false;
+            if ((object)a == null || (object)b == null) return false;
             return a.CompareTo(b) > 0;
         }
 
-        /// <summary>
-        /// Overloaded ToString method
-        /// </summary>
-        /// <returns>String Representation of the Time Zone Name property in form of "TZNAME;Language:Text"</returns>
-        public override string ToString()
+        public void WriteCalendar(CalendarWriter writer)
         {
-            var sb = new StringBuilder();
-            sb.Append("TZNAME");
-            if (language != null) sb.AppendFormat(";{0}", language);
-            else sb.AppendFormat(":{0}", text);
-            return sb.ToString();
+            if (string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text)) return;
+
+            writer.Write("TZNAME");
+            if (Language != null) writer.AppendParameter(Language);
+            writer.AppendPropertyValue(writer.ConvertToSAFE_STRING(Text));
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -1713,7 +1687,7 @@ namespace reexjungle.xcal.domain.models
     /// Defines an "Attendee" within a calendar component
     /// </summary>
     [DataContract]
-    public class ATTENDEE : IATTENDEE, IEquatable<ATTENDEE>, IContainsKey<Guid>
+    public class ATTENDEE : IATTENDEE, IEquatable<ATTENDEE>, IContainsKey<Guid>, ICalendarSerializable
     {
         private CAL_ADDRESS address;
 
@@ -1805,7 +1779,6 @@ namespace reexjungle.xcal.domain.models
         public LANGUAGE Language { get; set; }
 
         /// <summary>
-        ///
         /// </summary>
         public ATTENDEE()
         {
@@ -1824,7 +1797,7 @@ namespace reexjungle.xcal.domain.models
 
         public ATTENDEE(string value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
 
             var pattern = @"^ATTENDEE(?<params>;(\w+\S*))*:(?<value>\w+:\S*)$";
             var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
@@ -1836,7 +1809,7 @@ namespace reexjungle.xcal.domain.models
             {
                 if (match.Groups["params"].Success)
                 {
-                    var parts = match.Groups["params"].Value.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+                    var parts = match.Groups["params"].Value.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
                     foreach (var part in parts)
                     {
                         if (part.StartsWith("CUTYPE", StringComparison.OrdinalIgnoreCase))
@@ -1881,7 +1854,7 @@ namespace reexjungle.xcal.domain.models
 
                         if (part.StartsWith("CN", StringComparison.OrdinalIgnoreCase))
                         {
-                            var names = part.Split(new[] {'='}, StringSplitOptions.RemoveEmptyEntries);
+                            var names = part.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
                             if (names.Length < 2) throw new FormatException("Invalid Common Name Format");
                             CN = names[1];
                         }
@@ -1918,31 +1891,7 @@ namespace reexjungle.xcal.domain.models
                 SentBy = new SENT_BY(other.SentBy);
                 if (other.CN != null) CN = string.Copy(other.CN);
                 Directory = new DIR(other.Directory);
-
             }
-        }
-
-        /// <summary>
-        /// Overloaded To String Method
-        /// </summary>
-        /// <returns>String representation of the Attendee property in form of "ATTENDEE;UserType;RSVP:TRUE(or FALSE);Delegatee;Delegator;SentBy;CN;Directory;Language:Address"</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("ATTENDEE");
-            if (CalendarUserType != CUTYPE.UNKNOWN) sb.AppendFormat(";CUTYPE={0}", CalendarUserType);
-            if (Member != null) sb.AppendFormat(";{0}", Member);
-            if (Role != default(ROLE)) sb.AppendFormat(";ROLE={0}", Role);
-            if (Participation != default(PARTSTAT)) sb.AppendFormat(";PARTSTAT={0}", Participation);
-            if (Rsvp != BOOLEAN.TRUE) sb.AppendFormat(";RSVP={0}", Rsvp);
-            if (Delegatee != null) sb.AppendFormat(";{0}", Delegatee);
-            if (Delegator != null) sb.AppendFormat(";{0}", Delegator);
-            if (SentBy != null) sb.AppendFormat(";{0}", SentBy);
-            if (!string.IsNullOrEmpty(CN)) sb.AppendFormat(";CN={0}", CN);
-            if (Directory != null) sb.AppendFormat(";{0}", Directory);
-            if (Language != null) sb.AppendFormat(";{0}", Language);
-            sb.AppendFormat(":{0}", Address);
-            return sb.ToString();
         }
 
         public bool Equals(ATTENDEE other)
@@ -1957,7 +1906,7 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((ATTENDEE) obj);
+            return Equals((ATTENDEE)obj);
         }
 
         public override int GetHashCode()
@@ -1974,13 +1923,49 @@ namespace reexjungle.xcal.domain.models
         {
             return !Equals(left, right);
         }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (Address == null) return;
+
+            writer.Write("ATTENDEE");
+
+            if (CalendarUserType != default(CUTYPE)) writer.AppendParameter("CUTYPE", CalendarUserType.ToString());
+
+            if (Member != null) writer.AppendParameter(Member);
+
+            if (Role != default(ROLE)) writer.AppendParameter("ROLE", Role.ToString());
+
+            if (Participation != default(PARTSTAT)) writer.AppendParameter("PARTSTAT", Participation.ToString());
+
+            if (Rsvp != BOOLEAN.TRUE) writer.AppendParameter("RSVP", Rsvp.ToString());
+
+            if (Delegatee != null) writer.AppendParameter(Delegatee);
+
+            if (Delegator != null) writer.AppendParameter(Delegator);
+
+            if (SentBy != null) writer.AppendParameter(SentBy);
+
+            if (!string.IsNullOrEmpty(CN) && !string.IsNullOrWhiteSpace(CN)) writer.AppendParameter("CN", CN);
+
+            if (Directory != null) writer.AppendParameter(Directory);
+
+            if (Language != null) writer.AppendParameter(Language);
+
+            writer.AppendPropertyValue(Address);
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
     /// Defines the Organizer for Calendar Component
     /// </summary>
     [DataContract]
-    public class ORGANIZER : IORGANIZER, IEquatable<ORGANIZER>, IContainsKey<Guid>
+    public class ORGANIZER : IORGANIZER, IEquatable<ORGANIZER>, IContainsKey<Guid>, ICalendarSerializable
     {
         private CAL_ADDRESS address;
 
@@ -2048,13 +2033,13 @@ namespace reexjungle.xcal.domain.models
                 CN = organizer.CN;
                 Directory = new DIR(organizer.Directory);
                 SentBy = new SENT_BY(organizer.SentBy);
-                Language = new LANGUAGE(organizer.Language); 
+                Language = new LANGUAGE(organizer.Language);
             }
         }
 
         public ORGANIZER(string value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
 
             var pattern = @"^ORGANIZER(?<params>;(\w+\S*))*:(?<address>\w+:\S*)$";
             var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
@@ -2066,7 +2051,7 @@ namespace reexjungle.xcal.domain.models
             {
                 if (match.Groups["params"].Success)
                 {
-                    var parts = match.Groups["params"].Value.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+                    var parts = match.Groups["params"].Value.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
                     foreach (var part in parts)
                     {
                         if (part.StartsWith("SENT-BY", StringComparison.OrdinalIgnoreCase))
@@ -2076,7 +2061,7 @@ namespace reexjungle.xcal.domain.models
 
                         if (part.StartsWith("CN", StringComparison.OrdinalIgnoreCase))
                         {
-                            var names = part.Split(new[] {'='}, StringSplitOptions.RemoveEmptyEntries);
+                            var names = part.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
                             if (names.Length < 2) throw new FormatException("Invalid Common Name Format");
                             CN = names[1];
                         }
@@ -2128,12 +2113,34 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((ORGANIZER) obj);
+            return Equals((ORGANIZER)obj);
         }
 
         public override int GetHashCode()
         {
             return Id.GetHashCode();
+        }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (Address == null) return;
+
+            writer.Write("ORGANIZER");
+
+            if (SentBy != null) writer.AppendParameter(SentBy);
+
+            if (!string.IsNullOrEmpty(CN) && !string.IsNullOrWhiteSpace(CN)) writer.AppendParameter("CN", CN);
+
+            if (Directory != null) writer.AppendParameter(Directory);
+
+            if (Language != null) writer.AppendParameter(Language);
+
+            writer.AppendPropertyValue(Address);
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
 
         public static bool operator ==(ORGANIZER left, ORGANIZER right)
@@ -2151,10 +2158,8 @@ namespace reexjungle.xcal.domain.models
     /// Identifies a specific instance of a recurring "VEVENT", "VTODO", "VJOURNAL" calendar component
     /// </summary>
     [DataContract]
-    public class RECURRENCE_ID : IRECURRENCE_ID, IEquatable<RECURRENCE_ID>, IContainsKey<Guid>
+    public class RECURRENCE_ID : IRECURRENCE_ID, IEquatable<RECURRENCE_ID>, IContainsKey<Guid>, ICalendarSerializable
     {
-        private readonly IRECURRENCE_ID other;
-
         /// <summary>
         /// Original date time: settable only once
         /// </summary>
@@ -2181,7 +2186,7 @@ namespace reexjungle.xcal.domain.models
         }
 
         /// <summary>
-        /// ID of the  current Time Zone
+        /// ID of the current Time Zone
         /// </summary>
         [DataMember]
         public TZID TimeZoneId { get; set; }
@@ -2199,10 +2204,11 @@ namespace reexjungle.xcal.domain.models
             Range = RANGE.NONE;
         }
 
-        ///  <summary>
-        ///
-        ///  </summary>
-        ///  <param name="value"> Gets or sets the Time when the original recurrence instance would occur</param>
+        /// <summary>
+        /// </summary>
+        /// <param name="value">
+        /// Gets or sets the Time when the original recurrence instance would occur
+        /// </param>
         /// <param name="range"></param>
         public RECURRENCE_ID(DATE_TIME value, RANGE range = RANGE.THISANDFUTURE)
         {
@@ -2216,13 +2222,13 @@ namespace reexjungle.xcal.domain.models
             {
                 Value = other.Value;
                 if (other.TimeZoneId != null) TimeZoneId = new TZID(other.TimeZoneId);
-                Range = other.Range; 
+                Range = other.Range;
             }
         }
 
         public RECURRENCE_ID(string value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
 
             var pattern =
                 @"^RECURRENCE-ID(?<params>;(\w+\S*))*:(?<values>((((TZID=((\P{L}*\p{L}\p{M}*\P{L}*)+)?/((\P{L}*\p{L}\p{M}*\P{L}*)+)):)?(\d{2,4})(\d{1,2})(\d{1,2})(T(\d{1,2})(\d{1,2})(\d{1,2})(Z)?)?),?)+)$";
@@ -2235,7 +2241,7 @@ namespace reexjungle.xcal.domain.models
             {
                 if (match.Groups["params"].Success)
                 {
-                    var parts = match.Groups["params"].Value.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+                    var parts = match.Groups["params"].Value.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
                     foreach (var part in parts)
                     {
                         if (part.StartsWith("VALUE", StringComparison.OrdinalIgnoreCase))
@@ -2264,20 +2270,6 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        /// <summary>
-        /// Overloaded ToStringMethod
-        /// </summary>
-        /// <returns>String representation of the Recurrence property in form of "RECURRENCE-ID;TimeZoneId;Range:DateTime"</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("RECURRENCE-ID");
-            if (TimeZoneId != null) sb.AppendFormat(";{0}", TimeZoneId);
-            if (Range != RANGE.NONE) sb.AppendFormat(";RANGE={0}", Range);
-            sb.AppendFormat(":{0}", Value);
-            return sb.ToString();
-        }
-
         public bool Equals(RECURRENCE_ID other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -2290,12 +2282,31 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((RECURRENCE_ID) obj);
+            return Equals((RECURRENCE_ID)obj);
         }
 
         public override int GetHashCode()
         {
             return Id.GetHashCode();
+        }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (Value == default(DATE_TIME)) return;
+
+            writer.Write("RECURRENCE-ID");
+
+            if (TimeZoneId != null)
+            {
+                writer.AppendParameter(TimeZoneId);
+                writer.AppendParameter("RANGE", Range.ToString());
+            }
+            writer.AppendPropertyValue(Value);
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
 
         public static bool operator ==(RECURRENCE_ID left, RECURRENCE_ID right)
@@ -2313,7 +2324,7 @@ namespace reexjungle.xcal.domain.models
     /// Represents the relationship or reference between one calendar component and another
     /// </summary>
     [DataContract]
-    public class RELATEDTO : IRELATEDTO, IEquatable<RELATEDTO>, IContainsKey<Guid>
+    public class RELATEDTO : IRELATEDTO, IEquatable<RELATEDTO>, IContainsKey<Guid>, ICalendarSerializable
     {
         /// <summary>
         /// ID of the Relationship or Reference between one calendar component and another
@@ -2342,18 +2353,20 @@ namespace reexjungle.xcal.domain.models
         /// <summary>
         /// Constructor specifying the Text and Type properties of the Related_To property
         /// </summary>
-        /// <param name="reference">Description of the relationship or reference to another Calendar component</param>
-        /// <param name="type"> Type of the relationship: dafault - PARENT, can be: CHILD and SIBLING</param>
+        /// <param name="reference">
+        /// Description of the relationship or reference to another Calendar component
+        /// </param>
+        /// <param name="type">Type of the relationship: dafault - PARENT, can be: CHILD and SIBLING</param>
         public RELATEDTO(string reference, RELTYPE type = RELTYPE.NONE)
         {
-            if (reference == null) throw new ArgumentNullException("reference");
+            if (reference == null) throw new ArgumentNullException(nameof(reference));
             Reference = reference;
             RelationshipType = type;
         }
 
         public RELATEDTO(string value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
 
             var pattern =
                 @"^RELATED-TO(;(?<reltype>RELTYPE=(PARENT|CHILD|SIBLING))?:(?<reference>(\P{L}*\p{L}\p{M}*\P{L}*)+))$";
@@ -2381,15 +2394,6 @@ namespace reexjungle.xcal.domain.models
         /// Overloaded ToString Method
         /// </summary>
         /// <returns>String Representation of the Related_To property in form of "RELATED-TO;Relationship:Text"</returns>
-        public override string ToString()
-        {
-            if (string.IsNullOrEmpty(Reference)) return string.Empty;
-            var sb = new StringBuilder();
-            sb.Append("RELATED-TO");
-            if (RelationshipType != RELTYPE.NONE) sb.AppendFormat(";{0}", RelationshipType);
-            sb.AppendFormat(":{0}", Reference);
-            return sb.ToString();
-        }
 
         public bool Equals(RELATEDTO other)
         {
@@ -2403,12 +2407,26 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((RELATEDTO) obj);
+            return Equals((RELATEDTO)obj);
         }
 
         public override int GetHashCode()
         {
             return Id.GetHashCode();
+        }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (string.IsNullOrEmpty(Reference) || string.IsNullOrWhiteSpace(Reference)) return;
+
+            writer.Write("RELATED-TO");
+            if (RelationshipType != default(RELTYPE)) writer.AppendParameter("RELTYPE", RelationshipType.ToString());
+            writer.AppendPropertyValue(Reference);
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
 
         public static bool operator ==(RELATEDTO left, RELATEDTO right)
@@ -2423,7 +2441,7 @@ namespace reexjungle.xcal.domain.models
     }
 
     [DataContract]
-    public class URL: IContainsKey<Guid>, IEquatable<URL>
+    public class URL : IContainsKey<Guid>, IEquatable<URL>, ICalendarSerializable
     {
         [DataMember]
         public Guid Id { get; set; }
@@ -2440,12 +2458,12 @@ namespace reexjungle.xcal.domain.models
             if (uri != null)
             {
                 Uri = new Uri(uri.ToString());
-
-            }        }
+            }
+        }
 
         public URL(string value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
 
             const string pattern = @"^RECURRENCE-ID(?<params>;(\w+\S*))*:(?<value>((\w+:\S+))$";
             const RegexOptions options =
@@ -2475,14 +2493,14 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((URL) obj);
+            return Equals((URL)obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return (base.GetHashCode()*397) ^ Id.GetHashCode();
+                return (base.GetHashCode() * 397) ^ Id.GetHashCode();
             }
         }
 
@@ -2496,12 +2514,15 @@ namespace reexjungle.xcal.domain.models
             return !Equals(left, right);
         }
 
-        public override string ToString()
+        public void WriteCalendar(CalendarWriter writer)
         {
-            var sb = new StringBuilder();
-            sb.Append("URL");
-            sb.AppendFormat(":{0}", Uri);
-            return sb.ToString();
+            if (Uri == null) return;
+            writer.WriteProperty("URL", Uri.ToString());
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -2513,10 +2534,10 @@ namespace reexjungle.xcal.domain.models
     /// Defines the list of DATE-TIME exceptions for recurring events, to-dos, entries, or time zone definitions
     /// </summary>
     [DataContract]
-    public class EXDATE : IEXDATE, IEquatable<EXDATE>, IContainsKey<Guid>
+    public class EXDATE : IEXDATE, IEquatable<EXDATE>, IContainsKey<Guid>, ICalendarSerializable
     {
         /// <summary>
-        ///  ID of the Date-Time Exception
+        /// ID of the Date-Time Exception
         /// </summary>
         [DataMember]
         public Guid Id { get; set; }
@@ -2546,7 +2567,7 @@ namespace reexjungle.xcal.domain.models
                 }
 
                 if (other.TimeZoneId != null)
-                    TimeZoneId = new TZID(other.TimeZoneId); 
+                    TimeZoneId = new TZID(other.TimeZoneId);
             }
         }
 
@@ -2566,7 +2587,7 @@ namespace reexjungle.xcal.domain.models
 
         public EXDATE(string value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
 
             var trimmed = Regex.Replace(value, @"\s", string.Empty);
             const string pattern =
@@ -2582,7 +2603,7 @@ namespace reexjungle.xcal.domain.models
             {
                 if (match.Groups["params"].Success)
                 {
-                    var parts = match.Groups["params"].Value.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+                    var parts = match.Groups["params"].Value.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
                     foreach (var part in parts)
                     {
                         if (part.StartsWith("VALUE", StringComparison.OrdinalIgnoreCase))
@@ -2601,32 +2622,10 @@ namespace reexjungle.xcal.domain.models
 
                 if (match.Groups["values"].Success)
                 {
-                    var values = match.Groups["values"].Value.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
+                    var values = match.Groups["values"].Value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                     DateTimes.AddRange(values.Select(x => new DATE_TIME(x)));
                 }
             }
-        }
-
-        /// <summary>
-        /// Overloaded ToString Method
-        /// </summary>
-        /// <returns>String representation of the EXDATE property in form of "EXDATE;TimeZone:comma splited dates of exctptions"</returns>
-        public override string ToString()
-        {
-            if (DateTimes.NullOrEmpty()) return string.Empty;
-
-            var sb = new StringBuilder();
-            sb.Append("EXDATE");
-
-            if (TimeZoneId != null) sb.AppendFormat(";{0}", TimeZoneId);
-            sb.Append(":");
-
-            var last = DateTimes.Last();
-            foreach (var datetime in DateTimes)
-            {
-                sb.AppendFormat(datetime != last ? "{0}, " : "{0}", datetime);
-            }
-            return sb.ToString();
         }
 
         public bool Equals(EXDATE other)
@@ -2641,12 +2640,25 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((EXDATE) obj);
+            return Equals((EXDATE)obj);
         }
 
         public override int GetHashCode()
         {
             return Id.GetHashCode();
+        }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (DateTimes.NullOrEmpty()) return;
+            writer.Write("EXDATE");
+            if (TimeZoneId != null) writer.AppendParameter(TimeZoneId);
+            writer.AppendPropertyValues(DateTimes);
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
 
         public static bool operator ==(EXDATE left, EXDATE right)
@@ -2661,13 +2673,15 @@ namespace reexjungle.xcal.domain.models
     }
 
     /// <summary>
-    /// Defines the list of DATE-TIME values for recurring events, to-dos, journal entries or time-zone definitions
+    /// Defines the list of DATE-TIME values for recurring events, to-dos, journal entries or
+    /// time-zone definitions
     /// </summary>
     [DataContract]
-    public class RDATE : IRDATE, IEquatable<RDATE>, IContainsKey<Guid>
+    public class RDATE : IRDATE, IEquatable<RDATE>, IContainsKey<Guid>, ICalendarSerializable
     {
         /// <summary>
-        /// ID of the list of DATE-TIME values for recurring events, to-dos, journal entries or time-zone definitions
+        /// ID of the list of DATE-TIME values for recurring events, to-dos, journal entries or
+        /// time-zone definitions
         /// </summary>
         [DataMember]
         public Guid Id { get; set; }
@@ -2707,7 +2721,9 @@ namespace reexjungle.xcal.domain.models
         /// <summary>
         /// Constructor based on the list of DATE-TIME values and the ID of the current Time Zone
         /// </summary>
-        /// <param name="values">List of DATE-TIME values for recurring events, to-dos, journal entries or time-zone definitions</param>
+        /// <param name="values">
+        /// List of DATE-TIME values for recurring events, to-dos, journal entries or time-zone definitions
+        /// </param>
         /// <param name="tzid">ID of the current Time Zone</param>
         public RDATE(List<DATE_TIME> values, TZID tzid = null, VALUE value_type = VALUE.NONE)
         {
@@ -2720,7 +2736,9 @@ namespace reexjungle.xcal.domain.models
         /// <summary>
         /// Constructor based on the list of periods and the ID of currtnt time zone
         /// </summary>
-        /// <param name="periods">List of Periods between recurring events, to-dos, journal entries or time-zone definitions</param>
+        /// <param name="periods">
+        /// List of Periods between recurring events, to-dos, journal entries or time-zone definitions
+        /// </param>
         /// <param name="tzid">ID of the current Time Zone</param>
         public RDATE(List<PERIOD> periods, TZID tzid = null, VALUE value_type = VALUE.NONE)
         {
@@ -2732,7 +2750,7 @@ namespace reexjungle.xcal.domain.models
 
         public RDATE(string value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
 
             var trimmed = Regex.Replace(value, @"\s", string.Empty);
             const string pattern =
@@ -2750,7 +2768,7 @@ namespace reexjungle.xcal.domain.models
             {
                 if (match.Groups["params"].Success)
                 {
-                    var parts = match.Groups["params"].Value.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+                    var parts = match.Groups["params"].Value.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
                     foreach (var part in parts)
                     {
                         if (part.StartsWith("VALUE", StringComparison.OrdinalIgnoreCase))
@@ -2769,7 +2787,7 @@ namespace reexjungle.xcal.domain.models
 
                 if (match.Groups["values"].Success)
                 {
-                    values = match.Groups["values"].Value.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
+                    values = match.Groups["values"].Value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 }
             }
 
@@ -2789,40 +2807,10 @@ namespace reexjungle.xcal.domain.models
             if (other != null)
             {
                 ValueType = other.ValueType;
-                if(other.DateTimes != null) DateTimes = new List<DATE_TIME>(other.DateTimes);
-                if(other.Periods != null) Periods = new List<PERIOD>(other.Periods);
+                if (other.DateTimes != null) DateTimes = new List<DATE_TIME>(other.DateTimes);
+                if (other.Periods != null) Periods = new List<PERIOD>(other.Periods);
                 TimeZoneId = other.TimeZoneId;
             }
-        }
-
-        /// <summary>
-        /// Overloaded ToString Method
-        /// </summary>
-        /// <returns>String representation of the RDATE property in form of "RDATE;VALUE=Mode;TimeZoneId:coma separated list of DATE-TIME values(or Periods)"</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("RDATE");
-            if (ValueType != VALUE.NONE) sb.AppendFormat(";VALUE={0}", ValueType);
-            else if (TimeZoneId != null) sb.AppendFormat(";{0}", TimeZoneId);
-            sb.AppendFormat(":");
-            if (!DateTimes.NullOrEmpty())
-            {
-                var last = DateTimes.Last();
-                foreach (var datetime in DateTimes)
-                {
-                    sb.AppendFormat(datetime != last ? "{0}, " : "{0}", datetime);
-                }
-            }
-            else if (!Periods.NullOrEmpty())
-            {
-                var last = Periods.Last();
-                foreach (var period in Periods)
-                {
-                    sb.AppendFormat(period != last ? "{0}, " : "{0}", period);
-                }
-            }
-            return sb.ToString();
         }
 
         public bool Equals(RDATE other)
@@ -2837,12 +2825,28 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((RDATE) obj);
+            return Equals((RDATE)obj);
         }
 
         public override int GetHashCode()
         {
             return Id.GetHashCode();
+        }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (DateTimes.NullOrEmpty() || Periods.NullOrEmpty()) return;
+
+            writer.Write("RDATE");
+            if (ValueType != default(VALUE)) writer.AppendParameter("VALUE", ValueType.ToString());
+
+            if (DateTimes.Any()) writer.AppendPropertyValues(DateTimes);
+            else if (Periods.Any()) writer.AppendPropertyValues(Periods);
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
 
         public static bool operator ==(RDATE left, RDATE right)
@@ -2864,7 +2868,7 @@ namespace reexjungle.xcal.domain.models
     /// Specifies, when the alarm will trigger
     /// </summary>
     [DataContract]
-    public class TRIGGER : ITRIGGER, IEquatable<TRIGGER>, IContainsKey<Guid>
+    public class TRIGGER : ITRIGGER, IEquatable<TRIGGER>, IContainsKey<Guid>, ICalendarSerializable
     {
         private readonly TriggerType type;
 
@@ -2922,13 +2926,13 @@ namespace reexjungle.xcal.domain.models
                 DateTime = other.DateTime;
                 ValueType = other.ValueType;
                 Related = other.Related;
-                Duration = other.Duration; 
+                Duration = other.Duration;
             }
         }
 
         public TRIGGER(string value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
 
             var trimmed = Regex.Replace(value, @"\s", string.Empty);
             const string pattern =
@@ -2970,28 +2974,6 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        /// <summary>
-        /// Overloaded ToString Method
-        /// </summary>
-        /// <returns>String Representation of the Trigger property in Form of "TRIGGER;VALUE=Mode:Dutarion(or DateTime)"</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.AppendFormat("TRIGGER");
-            if (type == TriggerType.Related)
-            {
-                if (ValueType == VALUE.DURATION) sb.AppendFormat(";VALUE={0}", ValueType);
-                else if (Related != default(RELATED)) sb.AppendFormat(";RELATED={0}", Related);
-                sb.AppendFormat(":{0}", Duration);
-            }
-            else
-            {
-                if (ValueType == VALUE.DATE_TIME) sb.AppendFormat(";VALUE={0}", ValueType);
-                sb.AppendFormat(":{0}", DateTime);
-            }
-            return sb.ToString();
-        }
-
         public bool Equals(TRIGGER other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -3004,12 +2986,35 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((TRIGGER) obj);
+            return Equals((TRIGGER)obj);
         }
 
         public override int GetHashCode()
         {
             return Id.GetHashCode();
+        }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (ValueType == VALUE.DURATION && Duration == default(DURATION) || ValueType == VALUE.DATE_TIME && DateTime == default(DATE_TIME)) return;
+
+            writer.Write("TRIGGER");
+            if (type == TriggerType.Related)
+            {
+                if (ValueType == VALUE.DURATION) writer.AppendParameter("VALUE", VALUE.DURATION.ToString());
+                else if (Related != default(RELATED)) writer.AppendParameter("RELATED", Related.ToString());
+                writer.AppendPropertyValue(Duration);
+            }
+            if (type == TriggerType.Absolute)
+            {
+                if (ValueType == VALUE.DATE_TIME) writer.WriteParameter("VALUE", VALUE.DATE_TIME.ToString());
+                writer.AppendPropertyValue(DateTime);
+            }
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
 
         public static bool operator ==(TRIGGER left, TRIGGER right)
@@ -3027,258 +3032,8 @@ namespace reexjungle.xcal.domain.models
 
     #region Miscellaneous Properties
 
-
     [DataContract]
-    public class IANA_PROPERTY: IIANA_PROPERTY, IEquatable<IANA_PROPERTY>
-    {
-        [DataMember]
-        public Guid Id { get; set; }
-
-        /// <summary>
-        /// An IANA-registered property name.
-        /// </summary>
-        [DataMember]
-        public string Token { get; set; }
-
-        /// <summary>
-        /// A list of registered iCalendar parameters. Any iCalendar parameter can be specified in the list.
-        /// </summary>
-        [DataMember]
-        [Ignore]
-        public List<object> Parameters { get; set; }
-
-        /// <summary>
-        /// A value for the IANA-registered property. The default value type is TEXT (string) although any value type can be set.
-        /// </summary>
-        [DataMember]
-        public object Value { get; set; }
-
-        public IANA_PROPERTY()
-        {
-            Parameters = new List<object>();
-        }
-
-        public IANA_PROPERTY(string token, object value): this()
-        {
-            if (string.IsNullOrWhiteSpace(token) || string.IsNullOrEmpty(token)) throw new ArgumentException("token");
-            if (value == null) throw new ArgumentNullException("value");
-
-            Value = value;
-        }
-
-        public IANA_PROPERTY(string token, IEnumerable<object> parameters, object value)
-        {
-            if (string.IsNullOrWhiteSpace(token) || string.IsNullOrEmpty(token)) throw new ArgumentException("token");
-            if (parameters == null) throw new ArgumentNullException("parameters");
-            if (value == null) throw new ArgumentNullException("value");
-
-            Parameters = parameters.Any() 
-                ? new List<object>(parameters) 
-                : new List<object>();
-
-            Value = value;
-
-        }
-
-        public IANA_PROPERTY(string serialized, Func<string, IEnumerable<object>> paramsCtor = null, Func<string, object> valueCtor = null)
-        {
-            if (serialized == null) throw new ArgumentNullException(nameof(serialized));
-
-            const string tokenPattern = @"(?<token>(\w[-]?)+)";
-            const string paramsPattern = @"(?<params>(;(?:\w[-]?)+=(\w|\\:|\\;|\\,|\d)+)+)*";
-            const string valuesPattern = @"(?<value>((\w\S*)|\d)+)";
-
-            string pattern = $@"^{tokenPattern}{paramsPattern}:{valuesPattern}$";
-
-            var options = RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.IgnorePatternWhitespace |
-              RegexOptions.CultureInvariant;
-            var regex = new Regex(pattern, options);
-
-            if (!Regex.IsMatch(serialized, pattern, options)) throw new FormatException("value");
-            foreach (Match match in regex.Matches(serialized))
-            {
-                if (match.Groups["params"].Success)
-                {
-                    var @params = match.Groups["params"].Value;
-                    var parameters = paramsCtor != null? paramsCtor(@params): @params.Split(new []{';'}, StringSplitOptions.RemoveEmptyEntries);
-                    if (parameters.NullOrEmpty())
-                        throw new FormatException("parameters");
-                    Parameters.AddRange(parameters);
-                }
-
-                if (match.Groups["value"].Success)
-                {
-                    var value = valueCtor != null ? valueCtor(match.Groups["value"].Value) : match.Groups["value"].Value;
-                    if (value == null)
-                        throw new FormatException("value");
-                    Value = value;
-                }
-            }
-        }
-
-        public IANA_PROPERTY(IIANA_PROPERTY other)
-        {
-            if (other != null)
-            {
-                if (other.Token != null) Token = String.Copy(other.Token);
-                Value = other.Value;
-                if(other.Parameters != null) other.Parameters = new List<object>(other.Parameters);
-            }
-        }
-
-        public override string ToString()
-        {
-            if (Token == null) return string.Empty;
-
-            var sb = new StringBuilder();
-            sb.Append(Token);
-            foreach (var parameter in Parameters)
-            {
-                sb.AppendFormat(";{0}", parameter);
-            }
-            sb.AppendFormat(":{0}", Value);
-            return sb.ToString();
-        }
-
-        public bool Equals(IANA_PROPERTY other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Id.Equals(other.Id);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((IANA_PROPERTY) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
-
-        public static bool operator ==(IANA_PROPERTY left, IANA_PROPERTY right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(IANA_PROPERTY left, IANA_PROPERTY right)
-        {
-            return !Equals(left, right);
-        }
-    }
-
-    [DataContract]
-    public class X_PROPERTY: IX_PROPERTY, IEquatable<X_PROPERTY>
-    {
-        [DataMember]
-        public Guid Id { get; set; }
-
-        /// <summary>
-        /// An custom property name. The name must have an &quot;X-&quot; prefix.
-        /// </summary>
-        [DataMember]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// A list of registered iCalendar parameters. Any iCalendar parameter can be specified in the list.
-        /// </summary>
-        [DataMember]
-        public List<object> Parameters { get; set; }
-
-        /// <summary>
-        /// A value for the custom property. The default value type is TEXT (string) although any value type can be set.
-        /// </summary>
-        [DataMember]
-        public object Value { get; set; }
-
-        public X_PROPERTY()
-        {
-            Parameters = new List<object>();
-        }
-
-        public X_PROPERTY(string name, object value): this()
-        {
-            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrEmpty(name)) throw new ArgumentException("token");
-            if (value == null) throw new ArgumentNullException("value");
-
-            Value = value;
-        }
-
-        public X_PROPERTY(string name, IEnumerable<object> parameters, object value)
-        {
-            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrEmpty(name)) throw new ArgumentException("token");
-            if (parameters == null) throw new ArgumentNullException("parameters");
-            if (value == null) throw new ArgumentNullException("value");
-
-            Parameters = parameters.Any() 
-                ? new List<object>(parameters) 
-                : new List<object>();
-
-            Value = value;
-
-        }
-
-        public X_PROPERTY(IX_PROPERTY other)
-        {
-            if (other != null)
-            {
-                if (other.Name != null) Name = String.Copy(other.Name);
-                Value = other.Value;
-                if (other.Parameters != null) other.Parameters = new List<object>(other.Parameters);
-            }
-        }
-
-        public override string ToString()
-        {
-            if (Name == null) return string.Empty;
-
-            var sb = new StringBuilder();
-            sb.Append(Name);
-            foreach (var parameter in Parameters)
-            {
-                sb.AppendFormat(";{0}", parameter);
-            }
-            sb.AppendFormat(":{0}", Value);
-            return sb.ToString();
-        }
-
-        public bool Equals(X_PROPERTY other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Id.Equals(other.Id);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((X_PROPERTY) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
-
-        public static bool operator ==(X_PROPERTY left, X_PROPERTY right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(X_PROPERTY left, X_PROPERTY right)
-        {
-            return !Equals(left, right);
-        }
-    }
-
-    [DataContract]
-    public struct STATCODE : ISTATCODE, IEquatable<STATCODE>
+    public struct STATCODE : ISTATCODE, IEquatable<STATCODE>, ICalendarSerializable
     {
         private uint l1;
         private uint l2;
@@ -3319,7 +3074,7 @@ namespace reexjungle.xcal.domain.models
             {
                 l1 = other.L1;
                 l2 = other.L2;
-                l3 = other.L3; 
+                l3 = other.L3;
             }
 
             l1 = 0;
@@ -3332,7 +3087,7 @@ namespace reexjungle.xcal.domain.models
             l1 = l2 = default(uint);
             l3 = null;
 
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
 
             var trimmed = Regex.Replace(value, @"\s", string.Empty);
             const string pattern = @"^(?<l1>\d+).(?<l2>\d+)(.(?<l3>\d+))?$";
@@ -3371,16 +3126,16 @@ namespace reexjungle.xcal.domain.models
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            return obj is STATCODE && Equals((STATCODE) obj);
+            return obj is STATCODE && Equals((STATCODE)obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                var hashCode = (int) l1;
-                hashCode = (hashCode*397) ^ (int) l2;
-                hashCode = (hashCode*397) ^ l3.GetHashCode();
+                var hashCode = (int)l1;
+                hashCode = (hashCode * 397) ^ (int)l2;
+                hashCode = (hashCode * 397) ^ l3.GetHashCode();
                 return hashCode;
             }
         }
@@ -3395,11 +3150,14 @@ namespace reexjungle.xcal.domain.models
             return !left.Equals(right);
         }
 
-        public override string ToString()
+        public void WriteCalendar(CalendarWriter writer)
         {
-            return (L3.HasValue)
-                ? string.Format("{0}.{1}.{2}", L1, L2, L3)
-                : string.Format("{0}.{1}", L1, L2);
+            writer.Write(L3.HasValue ? $"{L1}.{L2}.{L3}" : $"{L1}.{L2}");
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -3407,7 +3165,7 @@ namespace reexjungle.xcal.domain.models
     /// Defines the status code returned for a scheduling request
     /// </summary>
     [DataContract]
-    public class REQUEST_STATUS : IREQUEST_STATUS, IContainsKey<Guid>, IEquatable<REQUEST_STATUS>
+    public class REQUEST_STATUS : IREQUEST_STATUS, IContainsKey<Guid>, IEquatable<REQUEST_STATUS>, ICalendarSerializable
     {
         /// <summary>
         /// ID of the status code
@@ -3464,7 +3222,7 @@ namespace reexjungle.xcal.domain.models
 
         public REQUEST_STATUS(string value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
 
             var trimmed = Regex.Replace(value, @"\s", string.Empty);
             const string pattern = @"^REQUEST-STATUS(;(?<lang>LANGUAGE=(\w+)(\-(\w+))?))?:(?<statcode>(\d+).(\d+)(.(\d+))?)(;(?<desc>(\P{L}*\p{L}\p{M}*\P{L}*)+))(;(?<exdata>(\P{L}*\p{L}\p{M}*\P{L}*)+))?$";
@@ -3507,7 +3265,6 @@ namespace reexjungle.xcal.domain.models
                 if (other.Description != null)
                 {
                     Description = string.Copy(other.Description);
-
                 }
 
                 Language = new LANGUAGE(other.Language);
@@ -3515,23 +3272,7 @@ namespace reexjungle.xcal.domain.models
                 {
                     ExceptionData = string.Copy(other.ExceptionData);
                 }
-
             }
-        }
-
-        /// <summary>
-        /// Overloaded ToString method
-        /// </summary>
-        /// <returns>String representation of the REQUEST_STATUS property in form of "REQUEST-STQTUS;Lanquage:Code;Description;ExceptionData"</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("REQUEST-STATUS");
-            if (Language != null) sb.AppendFormat(";{0}", Language);
-            sb.AppendFormat(":{0}", Code);
-            sb.AppendFormat(";{0}", Description);
-            if (!string.IsNullOrEmpty(ExceptionData)) sb.AppendFormat(";{0}", ExceptionData);
-            return sb.ToString().EscapeStrings();
         }
 
         public bool Equals(REQUEST_STATUS other)
@@ -3546,12 +3287,27 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((REQUEST_STATUS) obj);
+            return Equals((REQUEST_STATUS)obj);
         }
 
         public override int GetHashCode()
         {
             return Id.GetHashCode();
+        }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (Code == default(STATCODE) || string.IsNullOrEmpty(Description) || string.IsNullOrWhiteSpace(Description)) return;
+
+            writer.Write("REQUEST-STATUS");
+            if (Language != null) writer.AppendParameter(Language);
+            writer.AppendPropertyValue(Code).AppendSpecial(writer.ConvertToSAFE_STRING(Description));
+            if (!string.IsNullOrEmpty(ExceptionData) && !string.IsNullOrWhiteSpace(ExceptionData)) writer.AppendSpecial(ExceptionData);
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
 
         public static bool operator ==(REQUEST_STATUS left, REQUEST_STATUS right)
@@ -3565,5 +3321,5 @@ namespace reexjungle.xcal.domain.models
         }
     }
 
-    #endregion Miscellaneous Component Properties
+    #endregion Miscellaneous Properties
 }

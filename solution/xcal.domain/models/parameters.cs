@@ -1,11 +1,13 @@
-﻿using reexjungle.xcal.domain.contracts;
-using reexjungle.xmisc.foundation.concretes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Text.RegularExpressions;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.infrastructure.contracts;
+using reexjungle.xcal.infrastructure.extensions;
+using reexjungle.xcal.infrastructure.serialization;
+using reexjungle.xmisc.foundation.concretes;
 
 namespace reexjungle.xcal.domain.models
 {
@@ -13,7 +15,7 @@ namespace reexjungle.xcal.domain.models
     /// Time Zone ID class
     /// </summary>
     [DataContract]
-    public class TZID : ITZID, IEquatable<TZID>, IComparable<TZID>
+    public class TZID : ITZID, IEquatable<TZID>, IComparable<TZID>, ICalendarSerializable
     {
         private string prefix;
         private bool globallyUnique;
@@ -60,7 +62,7 @@ namespace reexjungle.xcal.domain.models
             if (other != null)
             {
                 Prefix = other.Prefix;
-                Suffix = other.Suffix; 
+                Suffix = other.Suffix;
             }
         }
 
@@ -95,12 +97,6 @@ namespace reexjungle.xcal.domain.models
 
             Prefix = prefix;
             Suffix = suffix;
-        }
-
-        public override string ToString()
-        {
-            if (GloballyUnique) return string.Format("TZID=/{0}", Suffix);
-            return string.Format("TZID={0}/{1}", Prefix, Suffix);
         }
 
         public bool Equals(TZID other)
@@ -155,10 +151,22 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(a, null) || ReferenceEquals(b, null)) return false;
             return a.CompareTo(b) > 0;
         }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (string.IsNullOrEmpty(Suffix) || string.IsNullOrWhiteSpace(Suffix)) return;
+
+            writer.WriteParameter("TZID", GloballyUnique ? $"/{Suffix}" : $"{Prefix}/{Suffix}");
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [DataContract]
-    public class FMTTYPE : IFMTTYPE, IEquatable<FMTTYPE>
+    public class FMTTYPE : IFMTTYPE, IEquatable<FMTTYPE>, ICalendarSerializable
     {
         [DataMember]
         public string TypeName { get; set; }
@@ -204,13 +212,8 @@ namespace reexjungle.xcal.domain.models
                     TypeName = string.Copy(fmttype.TypeName);
 
                 if (!string.IsNullOrEmpty(fmttype.SubTypeName))
-                    SubTypeName = string.Copy(fmttype.SubTypeName); 
+                    SubTypeName = string.Copy(fmttype.SubTypeName);
             }
-        }
-
-        public override string ToString()
-        {
-            return string.Format("FMTTYPE={0}/{1}", TypeName, SubTypeName);
         }
 
         public bool Equals(FMTTYPE other)
@@ -245,10 +248,21 @@ namespace reexjungle.xcal.domain.models
         {
             return !Equals(left, right);
         }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (string.IsNullOrEmpty(TypeName) || string.IsNullOrWhiteSpace(TypeName)) return;
+            writer.WriteParameter("FMTTYPE", $"{TypeName}/{SubTypeName}");
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [DataContract]
-    public class LANGUAGE : ILANGUAGE, IEquatable<LANGUAGE>
+    public class LANGUAGE : ILANGUAGE, IEquatable<LANGUAGE>, ICalendarSerializable
     {
         [DataMember]
         public string Tag { get; set; }
@@ -289,20 +303,8 @@ namespace reexjungle.xcal.domain.models
             if (language != null)
             {
                 Tag = language.Tag;
-                SubTag = language.SubTag; 
+                SubTag = language.SubTag;
             }
-        }
-
-        public override string ToString()
-        {
-            if (!string.IsNullOrEmpty(Tag))
-            {
-                return (!string.IsNullOrEmpty(SubTag)) ?
-                    string.Format("LANGUAGE={0}-{1}", Tag, SubTag) :
-                    string.Format("LANGUAGE={0}", Tag);
-            }
-
-            return string.Empty;
         }
 
         public bool Equals(LANGUAGE other)
@@ -337,10 +339,24 @@ namespace reexjungle.xcal.domain.models
         {
             return !Equals(left, right);
         }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (string.IsNullOrEmpty(Tag) || string.IsNullOrWhiteSpace(Tag)) return;
+
+            writer.WriteParameter("LANGUAGE", !string.IsNullOrEmpty(SubTag) && !string.IsNullOrWhiteSpace(SubTag)
+                ? $"{Tag}-{SubTag}"
+                : $"{Tag}");
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [DataContract]
-    public abstract class DELEGATE : IDELEGATE, IEquatable<DELEGATE>
+    public abstract class DELEGATE : IDELEGATE, IEquatable<DELEGATE>, ICalendarSerializable
     {
         /// <summary>
         /// Gets or sets the calendar addresses of the participation delegators
@@ -359,7 +375,9 @@ namespace reexjungle.xcal.domain.models
         /// <summary>
         /// Overloaded Constructor
         /// </summary>
-        /// <param name="addresses">The enumerable collection of calendar addresses, which represent the delegators</param>
+        /// <param name="addresses">
+        /// The enumerable collection of calendar addresses, which represent the delegators
+        /// </param>
         protected DELEGATE(IEnumerable<CAL_ADDRESS> addresses)
         {
             Addresses = addresses.NullOrEmpty()
@@ -373,20 +391,8 @@ namespace reexjungle.xcal.domain.models
             {
                 Addresses = @delegate.Addresses.NullOrEmpty()
             ? new List<CAL_ADDRESS>()
-            : new List<CAL_ADDRESS>(@delegate.Addresses); 
+            : new List<CAL_ADDRESS>(@delegate.Addresses);
             }
-        }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            foreach (var address in Addresses)
-            {
-                sb.AppendFormat(address != Addresses.Last()
-                    ? "\"mailto:{0}\", "
-                    : "\"mailto:{0}\"", address);
-            }
-            return sb.ToString();
         }
 
         public bool Equals(DELEGATE other)
@@ -418,6 +424,10 @@ namespace reexjungle.xcal.domain.models
         {
             return !Equals(left, right);
         }
+
+        public abstract void WriteCalendar(CalendarWriter writer);
+
+        public abstract void ReadCalendar(CalendarReader reader);
     }
 
     [DataContract]
@@ -454,9 +464,15 @@ namespace reexjungle.xcal.domain.models
         {
         }
 
-        public override string ToString()
+        public override void WriteCalendar(CalendarWriter writer)
         {
-            return string.Format("DELEGATED-FROM={0}", base.ToString());
+            if (Addresses.NullOrEmpty()) return;
+            writer.WriteParameterWithDQuotedValues("DELEGATED-FROM", Addresses.ToArray());
+        }
+
+        public override void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -494,18 +510,25 @@ namespace reexjungle.xcal.domain.models
         {
         }
 
-        public override string ToString()
+        public override void WriteCalendar(CalendarWriter writer)
         {
-            return string.Format("DELEGATED-TO={0}", base.ToString());
+            if (Addresses.NullOrEmpty()) return;
+            writer.WriteParameterWithDQuotedValues("DELEGATED-TO", Addresses.ToArray());
+
+        }
+
+        public override void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 
     /// <summary>
-    /// Group or List Membership.
-    /// Provides the group or list membership of the calendar user specified by a property
+    /// Group or List Membership. Provides the group or list membership of the calendar user
+    /// specified by a property
     /// </summary>
     [DataContract]
-    public class MEMBER : IMEMBER, IEquatable<MEMBER>
+    public class MEMBER : IMEMBER, IEquatable<MEMBER>, ICalendarSerializable
     {
         /// <summary>
         /// Gets or sets the calendar addresses of the group members
@@ -524,7 +547,9 @@ namespace reexjungle.xcal.domain.models
         /// <summary>
         /// Overloaded Constructor.
         /// </summary>
-        /// <param name="addresses">The enumerable collection of addresses representing users in the membership list</param>
+        /// <param name="addresses">
+        /// The enumerable collection of addresses representing users in the membership list
+        /// </param>
         public MEMBER(IEnumerable<CAL_ADDRESS> addresses)
         {
             Addresses = addresses.NullOrEmpty()
@@ -534,7 +559,7 @@ namespace reexjungle.xcal.domain.models
 
         public MEMBER(string value)
         {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
 
             var trimmed = value.Replace(" ", string.Empty);
             var pattern = @"^MEMBER=(?<emails>(?:""mailto:(\w+\S+)""(,\s*)?)+)$";
@@ -558,19 +583,7 @@ namespace reexjungle.xcal.domain.models
             if (member?.Addresses != null)
             {
                 member.Addresses = member.Addresses;
-
-            }        }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("MEMBER=");
-            foreach (var address in Addresses)
-            {
-                sb.AppendFormat(address != Addresses.Last() ? "{0}, " : "{0}", address);
             }
-
-            return sb.ToString();
         }
 
         public bool Equals(MEMBER other)
@@ -602,10 +615,22 @@ namespace reexjungle.xcal.domain.models
         {
             return !Equals(left, right);
         }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (Addresses.NullOrEmpty()) return;
+            writer.WriteParameterWithDQuotedValues("MEMBER", Addresses.ToArray());
+
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [DataContract]
-    public class ALTREP : IEquatable<ALTREP>
+    public class ALTREP : IEquatable<ALTREP>, ICalendarSerializable
     {
         [DataMember]
         public Uri Uri { get; set; }
@@ -651,13 +676,6 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public override string ToString()
-        {
-            return Uri != null
-                ? string.Format(@"ALTREP=""{0}""", Uri)
-                : string.Empty;
-        }
-
         public bool Equals(ALTREP other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -687,10 +705,21 @@ namespace reexjungle.xcal.domain.models
         {
             return !Equals(left, right);
         }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (Uri == null) return;
+            writer.WriteParameter("ALTREP", writer.ConvertToQuotedString(Uri.ToString()));
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [DataContract]
-    public class DIR : IEquatable<DIR>
+    public class DIR : IEquatable<DIR>, ICalendarSerializable
     {
         [DataMember]
         public Uri Uri { get; set; }
@@ -737,13 +766,6 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public override string ToString()
-        {
-            return Uri != null
-                ? string.Format("DIR=\"{0}\"", Uri)
-                : string.Empty;
-        }
-
         public bool Equals(DIR other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -773,10 +795,21 @@ namespace reexjungle.xcal.domain.models
         {
             return !Equals(left, right);
         }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (Uri == null) return;
+            writer.WriteParameter("DIR", writer.ConvertToQuotedString(Uri.ToString()));
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [DataContract]
-    public class SENT_BY : ISENT_BY, IEquatable<SENT_BY>
+    public class SENT_BY : ISENT_BY, IEquatable<SENT_BY>, ICalendarSerializable
     {
         [DataMember]
         public CAL_ADDRESS Address { get; set; }
@@ -816,13 +849,6 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public override string ToString()
-        {
-            return Address != null
-                ? string.Format(@"SENT-BY=""{0}""", Address)
-                : string.Empty;
-        }
-
         public bool Equals(SENT_BY other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -851,6 +877,18 @@ namespace reexjungle.xcal.domain.models
         public static bool operator !=(SENT_BY left, SENT_BY right)
         {
             return !Equals(left, right);
+        }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            if (Address == null) return;
+            writer.WriteParameterWithDQuotedvalue("SENT-BY", Address);
+
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 }

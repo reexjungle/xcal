@@ -20,8 +20,8 @@ namespace reexjungle.xcal.service.validators.concretes
         public AudioAlarmValidator()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.AttachmentBinary).NotNull().SetValidator(new AttachmentBinaryValidator()).When(x => x.AttachmentBinary != null);
-            RuleFor(x => x.AttachmentUri).NotNull().SetValidator(new AttachmentUriValidator()).When(x => x.AttachmentUri != null);
+            //RuleFor(x => x.AttachmentBinary).NotNull().SetValidator(new AttachmentBinaryValidator()).When(x => x.AttachmentBinary != null);
+            //RuleFor(x => x.AttachmentUri).NotNull().SetValidator(new AttachmentUriValidator()).When(x => x.AttachmentUri != null);
         }
     }
 
@@ -42,8 +42,6 @@ namespace reexjungle.xcal.service.validators.concretes
             RuleFor(x => x.Description).NotNull().SetValidator(new TextValidator());
             RuleFor(x => x.Summary).NotNull().SetValidator(new TextValidator());
             RuleFor(x => x.Attendees).NotNull().NotEmpty().SetCollectionValidator(new AttendeeValidator());
-            RuleFor(x => x.AttachmentBinaries).SetCollectionValidator(new AttachmentBinaryValidator()).When(x => !x.AttachmentBinaries.NullOrEmpty());
-            RuleFor(x => x.AttachmentUris).SetCollectionValidator(new AttachmentUriValidator()).When(x => !x.AttachmentUris.NullOrEmpty());
         }
     }
 }

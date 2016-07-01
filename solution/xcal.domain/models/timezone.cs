@@ -1,36 +1,62 @@
-﻿using reexjungle.xcal.domain.contracts;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.infrastructure.contracts;
+using reexjungle.xcal.infrastructure.extensions;
+using reexjungle.xcal.infrastructure.serialization;
 using reexjungle.xmisc.foundation.concretes;
 using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
-using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Text;
 
 namespace reexjungle.xcal.domain.models
 {
     [DataContract]
-    public class VTIMEZONE : ITIMEZONE, IEquatable<VTIMEZONE>, IContainsKey<Guid>
+    public class VTIMEZONE : ITIMEZONE, IEquatable<VTIMEZONE>, IContainsKey<Guid>, ICalendarSerializable
     {
         [DataMember]
         public Guid Id { get; set; }
 
         [DataMember]
-        public TZID TimeZoneId { get; set; }
+        public TZID TimeZoneId { get; protected set; }
 
         [DataMember]
-        public URL Url { get; set; }
+        public URL Url { get; protected set; }
 
         [DataMember]
-        public DATE_TIME LastModified { get; set; }
-
-        [DataMember]
-        [Ignore]
-        public List<STANDARD> StandardTimes { get; set; }
+        public DATE_TIME LastModified { get; protected set; }
 
         [DataMember]
         [Ignore]
-        public List<DAYLIGHT> DaylightTimes { get; set; }
+        public List<OBSERVANCE> Observances { get; protected set; }
+
+        public VTIMEZONE()
+        {
+            Observances = new List<OBSERVANCE>();
+        }
+
+        public VTIMEZONE(TZID tzid, IEnumerable<STANDARD> standardTimes, DATE_TIME lastModified = default(DATE_TIME), URL url = null)
+        {
+            if (tzid == null) throw new ArgumentNullException(nameof(tzid));
+            if (standardTimes == null) throw new ArgumentNullException(nameof(standardTimes));
+
+            TimeZoneId = tzid;
+            Observances = standardTimes.NullOrEmpty() ? new List<OBSERVANCE>() : new List<OBSERVANCE>(standardTimes);
+            LastModified = lastModified;
+            Url = url;
+        }
+
+        public VTIMEZONE(TZID tzid, IEnumerable<DAYLIGHT> daylights, DATE_TIME lastModified = default(DATE_TIME), URL url = null)
+        {
+            if (tzid == null) throw new ArgumentNullException(nameof(tzid));
+            if (daylights == null) throw new ArgumentNullException(nameof(daylights));
+
+            TimeZoneId = tzid;
+            Observances = daylights.NullOrEmpty() ? new List<OBSERVANCE>() : new List<OBSERVANCE>(daylights);
+            LastModified = lastModified;
+            Url = url;
+        }
 
         public bool Equals(VTIMEZONE other)
         {
@@ -62,50 +88,59 @@ namespace reexjungle.xcal.domain.models
             return !Equals(left, right);
         }
 
-        public override string ToString()
+
+        public void WriteCalendar(CalendarWriter writer)
         {
-            var sb = new StringBuilder();
-            sb.Append("BEGIN:VTIMEZONE").AppendLine();
-            sb.AppendFormat("TZID={0}", TimeZoneId).AppendLine();
-            if (!StandardTimes.NullOrEmpty()) StandardTimes.ForEach(x => sb.Append(x).AppendLine());
-            else if (!DaylightTimes.NullOrEmpty()) DaylightTimes.ForEach(x => sb.Append(x).AppendLine());
-            sb.Append("END:VTIMEZONE");
-            return sb.ToString();
+            if (TimeZoneId == null || Observances.Empty()) return;
+            writer.WriteStartComponent("VTIMEZONE");
+            writer.AppendProperty(TimeZoneId);
+            writer.AppendProperties(Observances);
+
+            if (LastModified != default(DATE_TIME)) writer.AppendProperty("LAST-MODIFIED", LastModified.ToString());
+
+            if (Url != null) writer.AppendProperty(Url);
+
+            writer.WriteEndComponent("VTIMEZONE");
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 
     [DataContract]
     [KnownType(typeof(STANDARD))]
     [KnownType(typeof(DAYLIGHT))]
-    public abstract class OBSERVANCE : IOBSERVANCE, IEquatable<OBSERVANCE>, IContainsKey<Guid>
+    public abstract class OBSERVANCE : IOBSERVANCE, IEquatable<OBSERVANCE>, IContainsKey<Guid>, ICalendarSerializable
     {
         [DataMember]
         public Guid Id { get; set; }
 
         [DataMember]
-        public DATE_TIME Start { get; set; }
+        public DATE_TIME Start { get; protected set; }
 
         [DataMember]
-        public UTC_OFFSET TimeZoneOffsetFrom { get; set; }
+        public UTC_OFFSET TimeZoneOffsetFrom { get; protected set; }
 
         [DataMember]
-        public UTC_OFFSET TimeZoneOffsetTo { get; set; }
-
-        [DataMember]
-        [Ignore]
-        public RECUR RecurrenceRule { get; set; }
+        public UTC_OFFSET TimeZoneOffsetTo { get; protected set; }
 
         [DataMember]
         [Ignore]
-        public List<COMMENT> Comments { get; set; }
+        public RECUR RecurrenceRule { get; protected set; }
 
         [DataMember]
         [Ignore]
-        public List<RDATE> RecurrenceDates { get; set; }
+        public List<COMMENT> Comments { get; protected set; }
 
         [DataMember]
         [Ignore]
-        public List<TZNAME> TimeZoneNames { get; set; }
+        public List<RDATE> RecurrenceDates { get; protected set; }
+
+        [DataMember]
+        [Ignore]
+        public List<TZNAME> TimeZoneNames { get; protected set; }
 
         protected OBSERVANCE()
         {
@@ -114,11 +149,19 @@ namespace reexjungle.xcal.domain.models
             TimeZoneNames = new List<TZNAME>();
         }
 
-        protected OBSERVANCE(DATE_TIME start, UTC_OFFSET from, UTC_OFFSET to)
+        protected OBSERVANCE(DATE_TIME start, UTC_OFFSET from, UTC_OFFSET to,
+            RECUR rrule = null,
+            IEnumerable<COMMENT> comments = null,
+            IEnumerable<RDATE> rdates = null,
+            IEnumerable<TZNAME> tznames = null)
         {
             Start = start;
             TimeZoneOffsetFrom = from;
             TimeZoneOffsetTo = to;
+            RecurrenceRule = rrule;
+            Comments = comments.NullOrEmpty() ? new List<COMMENT>() : new List<COMMENT>(comments);
+            RecurrenceDates = rdates.NullOrEmpty() ? new List<RDATE>() : new List<RDATE>(rdates);
+            TimeZoneNames = tznames.NullOrEmpty() ? new List<TZNAME>() : new List<TZNAME>(tznames);
         }
 
         public bool Equals(OBSERVANCE other)
@@ -140,6 +183,10 @@ namespace reexjungle.xcal.domain.models
                 TimeZoneOffsetTo.GetHashCode();
         }
 
+        public abstract void WriteCalendar(CalendarWriter writer);
+
+        public abstract void ReadCalendar(CalendarReader reader);
+
         public static bool operator ==(OBSERVANCE a, OBSERVANCE b)
         {
             if ((object)a == null || (object)b == null) return Equals(a, b);
@@ -160,24 +207,41 @@ namespace reexjungle.xcal.domain.models
         {
         }
 
-        public STANDARD(DATE_TIME start, UTC_OFFSET from, UTC_OFFSET to)
-            : base(start, from, to)
+        public STANDARD(DATE_TIME start, UTC_OFFSET from, UTC_OFFSET to,
+            RECUR rrule = null,
+            IEnumerable<COMMENT> comments = null,
+            IEnumerable<RDATE> rdates = null,
+            IEnumerable<TZNAME> tznames = null)
+            : base(start, from, to, rrule, comments, rdates, tznames)
         {
         }
 
-        public override string ToString()
+        public override void ReadCalendar(CalendarReader reader)
         {
-            var sb = new StringBuilder();
-            sb.Append("BEGIN:STANDARD").AppendLine();
-            sb.AppendFormat("DTSTART:{0}", Start).AppendLine();
-            sb.AppendFormat("TZOFFSETFROM", TimeZoneOffsetFrom).AppendLine();
-            sb.AppendFormat("TZOFFSETTO", TimeZoneOffsetTo).AppendLine();
-            if (RecurrenceRule != null) sb.Append(RecurrenceRule).AppendLine();
-            if (!RecurrenceDates.NullOrEmpty()) RecurrenceDates.ForEach(x => sb.Append(x).AppendLine());
-            if (!Comments.NullOrEmpty()) Comments.ForEach(x => sb.Append(x).AppendLine());
-            if (!TimeZoneNames.NullOrEmpty()) TimeZoneNames.ForEach(x => sb.Append(x).AppendLine());
-            sb.Append("END:STANDARD");
-            return sb.ToString();
+            throw new NotImplementedException();
+        }
+
+        public override void WriteCalendar(CalendarWriter writer)
+        {
+            if (Start == default(DATE_TIME)
+                || TimeZoneOffsetFrom == default(UTC_OFFSET)
+                || TimeZoneOffsetTo == default(UTC_OFFSET))
+                return;
+
+            writer.WriteStartComponent("STANDARD");
+            writer.AppendProperty("DTSTART", TimeZoneOffsetFrom);
+            writer.AppendProperty("TZOFFSETFROM", TimeZoneOffsetFrom);
+            writer.AppendProperty("TZOFFSETTO", TimeZoneOffsetTo);
+
+            if (RecurrenceRule != null) writer.WriteProperty("RRULE", RecurrenceRule);
+
+            if (RecurrenceDates.Any())writer.AppendProperties(RecurrenceDates);
+
+            if (Comments.Any()) writer.AppendProperties(Comments);
+
+            if (TimeZoneNames.Any())writer.AppendProperties(TimeZoneNames);
+
+            writer.WriteEndComponent("STANDARD");
         }
     }
 
@@ -188,24 +252,41 @@ namespace reexjungle.xcal.domain.models
         {
         }
 
-        public DAYLIGHT(DATE_TIME start, UTC_OFFSET from, UTC_OFFSET to)
-            : base(start, from, to)
+        public DAYLIGHT(DATE_TIME start, UTC_OFFSET from, UTC_OFFSET to,
+            RECUR rrule = null,
+            IEnumerable<COMMENT> comments = null,
+            IEnumerable<RDATE> rdates = null,
+            IEnumerable<TZNAME> tznames = null)
+            : base(start, from, to, rrule, comments, rdates, tznames)
         {
         }
 
-        public override string ToString()
+        public override void ReadCalendar(CalendarReader reader)
         {
-            var sb = new StringBuilder();
-            sb.Append("BEGIN:DAYLIGHT").AppendLine();
-            sb.AppendFormat("DTSTART:{0}", Start).AppendLine();
-            sb.AppendFormat("TZOFFSETFROM", TimeZoneOffsetFrom).AppendLine();
-            sb.AppendFormat("TZOFFSETTO", TimeZoneOffsetTo).AppendLine();
-            if (RecurrenceRule != null) sb.Append(RecurrenceRule).AppendLine();
-            if (!RecurrenceDates.NullOrEmpty()) RecurrenceDates.ForEach(x => sb.Append(x).AppendLine());
-            if (!Comments.NullOrEmpty()) Comments.ForEach(x => sb.Append(x).AppendLine());
-            if (!TimeZoneNames.NullOrEmpty()) TimeZoneNames.ForEach(x => sb.Append(x).AppendLine());
-            sb.Append("END:DAYLIGHT");
-            return sb.ToString();
+            throw new NotImplementedException();
+        }
+
+        public override void WriteCalendar(CalendarWriter writer)
+        {
+            if (Start == default(DATE_TIME)
+                || TimeZoneOffsetFrom == default(UTC_OFFSET)
+                || TimeZoneOffsetTo == default(UTC_OFFSET))
+                return;
+
+            writer.WriteStartComponent("DAYLIGHT");
+            writer.AppendProperty("DTSTART", TimeZoneOffsetFrom);
+            writer.AppendProperty("TZOFFSETFROM", TimeZoneOffsetFrom);
+            writer.AppendProperty("TZOFFSETTO", TimeZoneOffsetTo);
+
+            if (RecurrenceRule != null) writer.WriteProperty("RRULE", RecurrenceRule);
+
+            if (RecurrenceDates.Any()) writer.AppendProperties(RecurrenceDates);
+
+            if (Comments.Any()) writer.AppendProperties(Comments);
+
+            if (TimeZoneNames.Any()) writer.AppendProperties(TimeZoneNames);
+
+            writer.WriteEndComponent("DAYLIGHT");
         }
     }
 }

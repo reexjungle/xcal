@@ -1,61 +1,82 @@
-﻿using reexjungle.xcal.domain.contracts;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.infrastructure.contracts;
+using reexjungle.xcal.infrastructure.serialization;
 using reexjungle.xmisc.foundation.concretes;
 using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
-using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Text;
+using reexjungle.xcal.infrastructure.extensions;
 
 namespace reexjungle.xcal.domain.models
 {
     [DataContract]
-    public class AUDIO_ALARM : IAUDIO_ALARM, IEquatable<AUDIO_ALARM>, IContainsKey<Guid>
+    public abstract class VALARM : IALARM, IContainsKey<Guid>, ICalendarSerializable
     {
         [DataMember]
         public Guid Id { get; set; }
 
         [DataMember]
-        public ACTION Action { get; set; }
+        public ACTION Action { get;  set; }
 
         [DataMember]
-        public TRIGGER Trigger { get; set; }
+        public TRIGGER Trigger { get;  set; }
 
         [DataMember]
-        public DURATION Duration { get; set; }
+        public DURATION Duration { get;  set; }
 
         [DataMember]
-        public int Repeat { get; set; }
+        public int Repeat { get;  set; }
 
-        [DataMember]
-        [Ignore]
-        public ATTACH_BINARY AttachmentBinary { get; set; }
-
-        [DataMember]
-        [Ignore]
-        public ATTACH_URI AttachmentUri { get; set; }
-
-        public AUDIO_ALARM()
-        {
-            Action = ACTION.AUDIO;
-        }
-
-        public AUDIO_ALARM(ACTION action, TRIGGER trigger, ATTACH_BINARY attachbin = null, ATTACH_URI attachuri = null)
+        protected VALARM(ACTION action)
         {
             Action = action;
-            Trigger = trigger;
-            AttachmentBinary = attachbin;
-            AttachmentUri = attachuri;
         }
 
-        public AUDIO_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, ATTACH_BINARY attachbin = null, ATTACH_URI attachuri = null)
+        protected VALARM(ACTION action, TRIGGER trigger, DURATION duration = default(DURATION), int repeat = 0)
         {
+            if (trigger == null)
+                throw new ArgumentNullException(nameof(trigger));
+
+            if (duration != default(DURATION) && repeat == default(int))
+                throw new ArgumentException($"{nameof(duration)} and {nameof(repeat)} MUST be valid and occur together");
+
+            if (repeat != default(int) && duration == default(DURATION))
+                throw new ArgumentException($"{nameof(duration)} and {nameof(repeat)} MUST be valid and occur together");
+
             Action = action;
             Trigger = trigger;
             Duration = duration;
             Repeat = repeat;
-            AttachmentBinary = attachbin;
-            AttachmentUri = attachuri;
+        }
+
+        public abstract void WriteCalendar(CalendarWriter writer);
+
+        public abstract void ReadCalendar(CalendarReader reader);
+    }
+
+    [DataContract]
+    [KnownType(typeof(ATTACH_BINARY))]
+    [KnownType(typeof(ATTACH_URI))]
+    public class AUDIO_ALARM : VALARM, IAUDIO_ALARM, IEquatable<AUDIO_ALARM>
+    {
+        [DataMember]
+        [Ignore]
+        public ATTACH Attachment { get; set; }
+
+        public AUDIO_ALARM() : base(ACTION.AUDIO)
+        {
+        }
+
+        public AUDIO_ALARM(TRIGGER trigger, DURATION duration = default(DURATION), int repeat = 0, ATTACH attachment = null)
+            : base(ACTION.AUDIO, trigger, duration, repeat)
+        {
+            Trigger = trigger;
+            Duration = duration;
+            Repeat = repeat;
+            Attachment = attachment;
         }
 
         public bool Equals(AUDIO_ALARM other)
@@ -63,23 +84,6 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return Id.Equals(other.Id);
-        }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("BEGIN:VALARM").AppendLine();
-            sb.AppendFormat("ACTION:{0}", Action).AppendLine();
-            if (Trigger != null) sb.Append(Trigger).AppendLine();
-            if (Duration != default(DURATION))
-            {
-                sb.AppendFormat("DURATION:{0}", Duration).AppendLine();
-                sb.AppendFormat("REPEAT:{0}", Repeat).AppendLine();
-            }
-            if (AttachmentBinary != null) sb.Append(AttachmentBinary).AppendLine();
-            else if (AttachmentUri != null) sb.Append(AttachmentUri).AppendLine();
-            sb.Append("END:VALARM");
-            return sb.ToString();
         }
 
         public override bool Equals(object obj)
@@ -95,55 +99,59 @@ namespace reexjungle.xcal.domain.models
             return Id.GetHashCode();
         }
 
-        public static bool operator ==(AUDIO_ALARM a, AUDIO_ALARM b)
+        public override void WriteCalendar(CalendarWriter writer)
         {
-            if ((object)a == null || (object)b == null) return Equals(a, b);
-            return a.Equals(b);
+            if (Trigger == null) return;
+
+            writer.WriteStartComponent("VALARM");
+            writer.AppendProperty("ACTION", Action.ToString());
+
+            writer.AppendProperty(Trigger);
+
+            if (Duration != default(DURATION))
+            {
+                writer.AppendProperty(Duration);
+                writer.AppendProperty("REPEAT", Repeat.ToString());
+            }
+
+            if (Attachment != null) writer.AppendProperty(Attachment);
+
+            writer.WriteEndComponent("VALARM");
         }
 
-        public static bool operator !=(AUDIO_ALARM a, AUDIO_ALARM b)
+        public override void ReadCalendar(CalendarReader reader)
         {
-            if ((object)a == null || (object)b == null) return !Equals(a, b);
-            return !a.Equals(b);
+            throw new NotImplementedException();
+        }
+
+        public static bool operator ==(AUDIO_ALARM left, AUDIO_ALARM right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(AUDIO_ALARM left, AUDIO_ALARM right)
+        {
+            return !Equals(left, right);
         }
     }
 
     [DataContract]
-    public class DISPLAY_ALARM : IDISPLAY_ALARM, IEquatable<DISPLAY_ALARM>, IContainsKey<Guid>
+    public class DISPLAY_ALARM : VALARM, IDISPLAY_ALARM, IEquatable<DISPLAY_ALARM>
     {
-        [DataMember]
-        public Guid Id { get; set; }
-
-        [DataMember]
-        public ACTION Action { get; set; }
-
-        [DataMember]
-        public TRIGGER Trigger { get; set; }
-
-        [DataMember]
-        public DURATION Duration { get; set; }
-
-        [DataMember]
-        public int Repeat { get; set; }
-
         [DataMember]
         public DESCRIPTION Description { get; set; }
 
-        public DISPLAY_ALARM()
+        public DISPLAY_ALARM() : base(ACTION.DISPLAY)
         {
+        }
+
+        public DISPLAY_ALARM(TRIGGER trigger, DESCRIPTION description, DURATION duration = default(DURATION), int repeat = 0)
+            : base(ACTION.DISPLAY, trigger, duration, repeat)
+        {
+            if (description == null)
+                throw new ArgumentNullException(nameof(description));
+
             Action = ACTION.DISPLAY;
-        }
-
-        public DISPLAY_ALARM(ACTION action, TRIGGER trigger, DESCRIPTION description)
-        {
-            Action = action;
-            Trigger = trigger;
-            Description = description;
-        }
-
-        public DISPLAY_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, DESCRIPTION description = null)
-        {
-            Action = action;
             Trigger = trigger;
             Duration = duration;
             Repeat = repeat;
@@ -155,22 +163,6 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return Id.Equals(other.Id);
-        }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("BEGIN:VALARM").AppendLine();
-            sb.AppendFormat("ACTION:{0}", Action).AppendLine();
-            if (Description != null) sb.AppendFormat("{0}", Description).AppendLine();
-            if (Trigger != null) sb.Append(Trigger).AppendLine();
-            if (Duration != default(DURATION))
-            {
-                sb.AppendFormat("DURATION:{0}", Duration).AppendLine();
-                sb.AppendFormat("REPEAT:{0}", Repeat).AppendLine();
-            }
-            sb.Append("END:VALARM");
-            return sb.ToString();
         }
 
         public override bool Equals(object obj)
@@ -186,37 +178,46 @@ namespace reexjungle.xcal.domain.models
             return Id.GetHashCode();
         }
 
-        public static bool operator ==(DISPLAY_ALARM a, DISPLAY_ALARM b)
+        public override void WriteCalendar(CalendarWriter writer)
         {
-            if ((object)a == null || (object)b == null) return Equals(a, b);
-            return a.Equals(b);
+            if (Trigger == null || Description == null) return;
+
+            writer.WriteStartComponent("VALARM");
+            writer.AppendProperty("ACTION", Action.ToString());
+
+            writer.AppendProperty(Trigger);
+
+            writer.AppendProperty(Description);
+
+            if (Duration != default(DURATION))
+            {
+                writer.AppendProperty(Duration);
+                writer.AppendProperty("REPEAT", Repeat.ToString());
+            }
+            writer.WriteEndComponent("VALARM");
         }
 
-        public static bool operator !=(DISPLAY_ALARM a, DISPLAY_ALARM b)
+        public override void ReadCalendar(CalendarReader reader)
         {
-            if (a == null || b == null) return !Equals(a, b);
-            return !a.Equals(b);
+            throw new NotImplementedException();
+        }
+
+        public static bool operator ==(DISPLAY_ALARM left, DISPLAY_ALARM right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(DISPLAY_ALARM left, DISPLAY_ALARM right)
+        {
+            return !Equals(left, right);
         }
     }
 
     [DataContract]
-    public class EMAIL_ALARM : IEMAIL_ALARM, IEquatable<EMAIL_ALARM>, IContainsKey<Guid>
+    [KnownType(typeof(ATTACH_BINARY))]
+    [KnownType(typeof(ATTACH_URI))]
+    public class EMAIL_ALARM : VALARM, IEMAIL_ALARM, IEquatable<EMAIL_ALARM>, ICalendarSerializable
     {
-        [DataMember]
-        public Guid Id { get; set; }
-
-        [DataMember]
-        public ACTION Action { get; set; }
-
-        [DataMember]
-        public TRIGGER Trigger { get; set; }
-
-        [DataMember]
-        public DURATION Duration { get; set; }
-
-        [DataMember]
-        public int Repeat { get; set; }
-
         [DataMember]
         public DESCRIPTION Description { get; set; }
 
@@ -229,44 +230,35 @@ namespace reexjungle.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public List<ATTACH_BINARY> AttachmentBinaries { get; set; }
+        public List<ATTACH> Attachments { get; set; }
 
-        [DataMember]
-        [Ignore]
-        public List<ATTACH_URI> AttachmentUris { get; set; }
-
-        public EMAIL_ALARM()
+        public EMAIL_ALARM() : base(ACTION.EMAIL)
         {
             Action = ACTION.EMAIL;
             Attendees = new List<ATTENDEE>();
-            AttachmentBinaries = new List<ATTACH_BINARY>();
-            AttachmentUris = new List<ATTACH_URI>();
+            Attachments = new List<ATTACH>();
         }
 
         public EMAIL_ALARM(ACTION action, TRIGGER trigger, DESCRIPTION description, SUMMARY summary,
-            List<ATTENDEE> attendees, List<ATTACH_BINARY> attachbins = null, List<ATTACH_URI> attachuris = null)
+            IEnumerable<ATTENDEE> attendees, DURATION duration = default(DURATION), int repeat = 0, IEnumerable<ATTACH> attachments = null) : base(ACTION.EMAIL, trigger, duration, repeat)
         {
-            Action = action;
-            Trigger = trigger;
-            Description = description;
-            Summary = summary;
-            Attendees = attendees;
-            AttachmentBinaries = attachbins;
-            AttachmentUris = attachuris;
-        }
+            if (description == null)
+                throw new ArgumentNullException(nameof(description));
 
-        public EMAIL_ALARM(ACTION action, TRIGGER trigger, DURATION duration, int repeat, DESCRIPTION description, SUMMARY summary,
-            List<ATTENDEE> attendees, List<ATTACH_BINARY> attachbins = null, List<ATTACH_URI> attachuris = null)
-        {
+            if (summary == null)
+                throw new ArgumentNullException(nameof(summary));
+
+            if (attendees.NullOrEmpty())
+                throw new ArgumentNullException(nameof(attendees));
+
             Action = action;
             Trigger = trigger;
             Duration = duration;
             Repeat = repeat;
             Description = description;
             Summary = summary;
-            Attendees = attendees;
-            AttachmentBinaries = attachbins;
-            AttachmentUris = attachuris;
+            Attendees = new List<ATTENDEE>(attendees);
+            Attachments = new List<ATTACH>(attachments);
         }
 
         public bool Equals(EMAIL_ALARM other)
@@ -274,28 +266,6 @@ namespace reexjungle.xcal.domain.models
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return Id.Equals(other.Id);
-        }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("BEGIN:VALARM").AppendLine();
-            sb.AppendFormat("ACTION:{0}", Action).AppendLine();
-            if (Description != null) sb.AppendFormat("{0}", Description).AppendLine();
-            if (Summary != null) sb.AppendFormat("{0}", Summary).AppendLine();
-            if (Trigger != null) sb.Append(Trigger).AppendLine();
-            if (Duration != default(DURATION) && Repeat != -1)
-            {
-                sb.AppendFormat("DURATION:{0}", Duration).AppendLine();
-                sb.AppendFormat("REPEAT:{0}", Repeat).AppendLine();
-            }
-            foreach (var attendee in Attendees) sb.Append(attendee).AppendLine();
-            if (!AttachmentBinaries.NullOrEmpty())
-                foreach (var attachment in AttachmentBinaries) sb.Append(attachment).AppendLine();
-            else if (!AttachmentUris.NullOrEmpty())
-                foreach (var attachment in AttachmentUris) sb.Append(attachment).AppendLine();
-            sb.Append("END:VALARM");
-            return sb.ToString();
         }
 
         public override bool Equals(object obj)
@@ -311,16 +281,46 @@ namespace reexjungle.xcal.domain.models
             return Id.GetHashCode();
         }
 
-        public static bool operator ==(EMAIL_ALARM a, EMAIL_ALARM b)
+        public override void WriteCalendar(CalendarWriter writer)
         {
-            if ((object)a == null || (object)b == null) return Equals(a, b);
-            return a.Equals(b);
+            if (Trigger == null || Description == null || Summary == null) return;
+
+            writer.WriteStartComponent("VALARM");
+
+            writer.AppendProperty("ACTION", Action.ToString());
+
+            writer.AppendProperty(Trigger);
+
+            writer.AppendProperty(Description);
+
+            writer.AppendProperty(Summary);
+
+            if (Duration != default(DURATION))
+            {
+                writer.AppendProperty(Duration);
+                writer.AppendProperty("REPEAT", Repeat.ToString());
+            }
+
+            if (Attendees.Any()) writer.AppendProperties(Attendees);
+
+            if (Attachments.Any()) writer.AppendProperties(Attachments);
+
+            writer.WriteEndComponent("VALARM");
         }
 
-        public static bool operator !=(EMAIL_ALARM a, EMAIL_ALARM b)
+        public override void ReadCalendar(CalendarReader reader)
         {
-            if (a == null || b == null) return !Equals(a, b);
-            return !a.Equals(b);
+            throw new NotImplementedException();
+        }
+
+        public static bool operator ==(EMAIL_ALARM left, EMAIL_ALARM right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(EMAIL_ALARM left, EMAIL_ALARM right)
+        {
+            return !Equals(left, right);
         }
     }
 }

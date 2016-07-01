@@ -4,14 +4,18 @@ using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
+using reexjungle.xcal.infrastructure.contracts;
+using reexjungle.xcal.infrastructure.extensions;
+using reexjungle.xcal.infrastructure.serialization;
 
 namespace reexjungle.xcal.domain.models
 {
     [DataContract]
-    public class VTODO : ITODO, IEquatable<VTODO>, IContainsKey<Guid>
+    public class VTODO : ITODO, IEquatable<VTODO>, IContainsKey<Guid>, ICalendarSerializable
     {
         private DATE_TIME due;
         private DURATION duration;
@@ -122,7 +126,7 @@ namespace reexjungle.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public List<IATTACH> Attachments { get; set; }
+        public List<ATTACH> Attachments { get; set; }
 
         [DataMember]
         [Ignore]
@@ -162,15 +166,7 @@ namespace reexjungle.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public List<IALARM> Alarms { get; set; }
-
-        [DataMember]
-        [Ignore]
-        public List<IANA_PROPERTY> IANA { get; set; }
-
-        [DataMember]
-        [Ignore]
-        public List<X_PROPERTY> NonStandard { get; set; }
+        public List<VALARM> Alarms { get; set; }
 
         public bool Equals(VTODO other)
         {
@@ -213,108 +209,90 @@ namespace reexjungle.xcal.domain.models
             return !Equals(left, right);
         }
 
-        public override string ToString()
+        private void WriteCalendarPrimitives(CalendarWriter writer)
         {
-            var sb = new StringBuilder();
-            sb.Append("BEGIN:VTODO").AppendLine();
-            sb.AppendFormat("DTSTAMP:{0}", Datestamp).AppendLine();
-            sb.AppendFormat("UID:{0}", Uid).AppendLine();
-            if (Start.TimeZoneId != null)
-                sb.AppendFormat("DTSTART;{0}:{1}", Start.TimeZoneId, Start).AppendLine();
-            else
-                sb.AppendFormat("DTSTART:{0}", Start).AppendLine();
-            if (Classification != CLASS.NONE) sb.AppendFormat("CLASS:{0}", Classification).AppendLine();
-            if (Completed.TimeZoneId != null)
-                sb.AppendFormat("COMPLETED;{0}:{1}", Completed.TimeZoneId, Completed).AppendLine();
-            else
-                sb.AppendFormat("COMPLETED:{0}", Completed).AppendLine();
-            sb.AppendFormat("CREATED:{0}", Created).AppendLine();
-            if (Description != null) sb.Append(Description).AppendLine();
-            if (Position != default(GEO)) sb.Append(Position).AppendLine();
-            sb.AppendFormat("LAST-MODIFIED:{0}", LastModified).AppendLine();
-            if (Location != null) sb.Append(Location).AppendLine();
-            if (Organizer != null) sb.Append(Organizer).AppendLine();
-            sb.AppendFormat("PERCENT-COMPLETED:{0}", Percent).AppendLine();
-            if (Priority != default(PRIORITY)) sb.Append(Priority).AppendLine();
-            sb.AppendFormat("SEQUENCE:{0}", Sequence).AppendLine();
-            if (Status != STATUS.NONE) sb.AppendFormat("STATUS:{0}", Status).AppendLine();
-            if (Summary != null) sb.Append(Summary).AppendLine();
-            if (Url != null) sb.AppendFormat("URL:{0}", Url).AppendLine();
-            if (RecurrenceId != null) sb.Append(RecurrenceId).AppendLine();
-            if (RecurrenceRule != null) sb.AppendFormat("RRULE:{0}", RecurrenceRule).AppendLine();
-            if (Due != default(DATE_TIME))
+            writer.AppendProperty("DTSTAMP", Datestamp);
+            writer.AppendProperty("UID", Uid);
+
+            if (Start != default(DATE_TIME)) writer.AppendProperty("DTSTART", Start);
+
+            if (Duration != default(DURATION)) writer.AppendProperty("DURATION", Duration);
+
+            if (Classification != default(CLASS)) writer.AppendProperty("CLASS", Classification.ToString());
+
+            if (Created != default(DATE_TIME)) writer.AppendProperty("CREATED", Created);
+
+            if (Description != default(DESCRIPTION)) writer.AppendProperty(Description);
+
+
+            if (LastModified != default(DATE_TIME)) writer.AppendProperty("LAST-MODIFIED", Created);
+
+            if (Location != default(LOCATION)) writer.AppendProperty(Location);
+
+            if (Organizer != default(ORGANIZER)) writer.AppendProperty(Organizer);
+
+            if (Priority != default(PRIORITY)) writer.AppendProperty(Priority);
+
+            writer.AppendProperty("SEQUENCE", Sequence.ToString());
+
+            if (Status != default(STATUS)) writer.AppendProperty("STATUS", Status.ToString());
+
+            if (Summary != default(SUMMARY)) writer.AppendProperty(Summary);
+
+
+            if (Url != default(URL)) writer.AppendProperty(Url);
+
+            if (RecurrenceId != default(RECURRENCE_ID)) writer.AppendProperty(RecurrenceId);
+
+            if (RecurrenceRule != default(RECUR)) writer.AppendProperty("RRULE", RecurrenceRule);
+
+            if (Categories != default(CATEGORIES))
             {
-                if (Due.TimeZoneId != null)
-                    sb.AppendFormat("DUE;{0}:{1}", Due.TimeZoneId, Due).AppendLine();
-                else
-                    sb.AppendFormat("DUE:{0}", Due).AppendLine();
+                writer.AppendProperty(Categories);
             }
-            else if (Duration != default(DURATION)) sb.Append(Duration).AppendLine();
+        }
 
-            if (!Attachments.NullOrEmpty())
-            {
-                foreach (var attachment in Attachments) if (attachment != null) sb.Append(attachment).AppendLine();
-            }
+        private void WriteCalendarLists(CalendarWriter writer)
+        {
+            if (Attendees.Any()) writer.AppendProperties(Attendees);
 
-            if (!Attendees.NullOrEmpty())
-            {
-                foreach (var attendee in Attendees) if (attendee != null) sb.Append(attendee).AppendLine();
-            }
+            if (Comments.Any()) writer.AppendProperties(Comments);
 
-            if (Categories != null && !Categories.Values.NullOrEmpty()) sb.Append(Categories).AppendLine();
+            if (Contacts.Any()) writer.AppendProperties(Contacts);
 
-            if (!Comments.NullOrEmpty())
-            {
-                foreach (var comment in Comments) if (comment != null) sb.Append(comment).AppendLine();
-            }
 
-            if (!Contacts.NullOrEmpty())
-            {
-                foreach (var contact in Contacts) if (contact != null) sb.Append(contact).AppendLine();
-            }
+            if (RelatedTos.Any()) writer.AppendProperties(RelatedTos);
 
-            if (!ExceptionDates.NullOrEmpty())
-            {
-                foreach (var exdate in ExceptionDates) if (exdate != null) sb.Append(exdate).AppendLine();
-            }
 
-            if (!RequestStatuses.NullOrEmpty())
-            {
-                foreach (var reqstat in RequestStatuses) if (reqstat != null) sb.Append(reqstat).AppendLine();
-            }
+            if (ExceptionDates.Any()) writer.AppendProperties(ExceptionDates);
 
-            if (!RelatedTos.NullOrEmpty())
-            {
-                foreach (var relatedto in RelatedTos) if (relatedto != null) sb.Append(relatedto).AppendLine();
-            }
+            if (RecurrenceDates.Any()) writer.AppendProperties(RecurrenceDates);
 
-            if (!Resources.NullOrEmpty())
-            {
-                foreach (var resource in Resources) if (resource != null) sb.Append(resource).AppendLine();
-            }
+            if (Resources.Any()) writer.AppendProperties(Resources);
 
-            if (!Resources.NullOrEmpty())
-            {
-                foreach (var resource in Resources) if (resource != null) sb.Append(resource).AppendLine();
-            }
 
-            if (!RecurrenceDates.NullOrEmpty())
-            {
-                foreach (var rdate in RecurrenceDates) if (rdate != null) sb.Append(rdate).AppendLine();
-            }
+            if (RequestStatuses.Any()) writer.AppendProperties(RequestStatuses);
 
-            if (!IANA.NullOrEmpty())
-            {
-                foreach (var iana in IANA) if (iana != null) sb.Append(iana).AppendLine();
-            }
+            if (Alarms.Any()) writer.AppendProperties(Alarms);
 
-            if (!NonStandard.NullOrEmpty())
-            {
-                foreach (var xprop in NonStandard) if (xprop != null) sb.Append(xprop).AppendLine();
-            }
 
-            sb.Append("END:VTODO");
-            return sb.ToString();
+            if (Attachments.Any()) writer.AppendProperties(Attachments);
+        }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            writer.WriteStartComponent("VEVENT");
+
+            WriteCalendarPrimitives(writer);
+
+            WriteCalendarLists(writer);
+
+            writer.WriteEndComponent("VEVENT");
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 }

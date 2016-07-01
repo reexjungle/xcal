@@ -13,7 +13,7 @@ namespace reexjungle.xcal.service.validators.concretes
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
             RuleFor(x => x.Calendar).NotNull();
-            RuleFor(x => x.Calendar).SetValidator(new CalendarValidator()).When(x => x.Calendar != null);
+            //RuleFor(x => x.Calendar).SetValidator(new CalendarValidator()).When(x => x.Calendar != null);
         }
     }
 

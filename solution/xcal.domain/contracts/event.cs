@@ -42,7 +42,7 @@ namespace reexjungle.xcal.domain.contracts
         /// <summary>
         ///
         /// </summary>
-        GEO Position { get; set; }
+        GEO GeoPosition { get; set; }
 
         /// <summary>
         ///
@@ -112,12 +112,7 @@ namespace reexjungle.xcal.domain.contracts
         /// <summary>
         ///
         /// </summary>
-        List<ATTACH_BINARY> AttachmentBinaries { get; set; }
-
-        /// <summary>
-        ///
-        /// </summary>
-        List<ATTACH_URI> AttachmentUris { get; set; }
+        List<ATTACH> Attachments { get; set; }
 
         /// <summary>
         ///
@@ -167,26 +162,6 @@ namespace reexjungle.xcal.domain.contracts
         /// <summary>
         ///
         /// </summary>
-        List<AUDIO_ALARM> AudioAlarms { get; set; }
-
-        /// <summary>
-        ///
-        /// </summary>
-        List<DISPLAY_ALARM> DisplayAlarms { get; set; }
-
-        /// <summary>
-        ///
-        /// </summary>
-        List<EMAIL_ALARM> EmailAlarms { get; set; }
-
-        /// <summary>
-        ///
-        /// </summary>
-        Dictionary<Guid, IANA_PROPERTY> IANAProperties { get; set; }
-
-        /// <summary>
-        ///
-        /// </summary>
-        Dictionary<Guid, X_PROPERTY> XProperties { get; set; }
+        List<VALARM> Alarms { get; set; }
     }
 }

@@ -6,10 +6,6 @@ namespace reexjungle.xcal.tests.contracts.factories
 {
     public interface IValuesFactory
     {
-        BINARY CreateBinary();
-
-        IEnumerable<BINARY> CreateBinaries(int quantity);
-
         DATE CreateDate();
 
         IEnumerable<DATE> CreateDates(int quantity);

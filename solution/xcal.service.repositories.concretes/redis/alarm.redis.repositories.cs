@@ -19,23 +19,14 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
         private readonly IKeyGenerator<Guid> keygenerator;
         private IRedisClient client;
 
-        private IRedisClient redis
-        {
-            get
-            {
-                return client ?? (client = manager.GetClient());
-            }
-        }
+        private IRedisClient redis => client ?? (client = manager.GetClient());
 
-        public IRedisClientsManager RedisClientsManager
-        {
-            get { return manager; }
-        }
+        public IRedisClientsManager RedisClientsManager => manager;
 
         public AudioAlarmRedisRepository(IKeyGenerator<Guid> keygenerator, IRedisClientsManager manager)
         {
-            if (keygenerator == null) throw new ArgumentNullException("keygenerator");
-            if (manager == null) throw new ArgumentNullException("manager");
+            if (keygenerator == null) throw new ArgumentNullException(nameof(keygenerator));
+            if (manager == null) throw new ArgumentNullException(nameof(manager));
 
             this.keygenerator = keygenerator;
             this.manager = manager;
@@ -48,17 +39,16 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
         public IEnumerable<AUDIO_ALARM> FindAll(IEnumerable<Guid> keys, int? skip = null, int? take = null)
         {
-            if (skip == null && take == null) return redis.As<AUDIO_ALARM>().GetByIds(keys);
-            return redis.As<AUDIO_ALARM>().GetByIds(keys).Skip(skip.Value + 1).Take(take.Value);
+            return skip == null || take == null
+                ? redis.As<AUDIO_ALARM>().GetByIds(keys)
+                : redis.As<AUDIO_ALARM>().GetByIds(keys).Skip(skip.Value).Take(take.Value);
         }
 
         public IEnumerable<AUDIO_ALARM> Get(int? skip = null, int? take = null)
         {
-            if (skip == null && take == null) return redis.As<AUDIO_ALARM>().GetAll();
-            var alarms = redis.As<AUDIO_ALARM>().GetAll();
-            return !alarms.NullOrEmpty()
-                ? alarms.Skip(skip.Value).Take(take.Value)
-                : alarms;
+            return skip == null || take == null
+                ? redis.As<AUDIO_ALARM>().GetAll()
+                : redis.As<AUDIO_ALARM>().GetAll().Skip(skip.Value).Take(take.Value);
         }
 
         public bool ContainsKey(Guid key)
@@ -77,42 +67,42 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
         public void Save(AUDIO_ALARM entity)
         {
+            if (entity.Attachment == null) return;
+
             manager.ExecTrans(transaction =>
             {
-                #region save normalized and non-normalized attributes
-
                 var orattachbins = redis.As<REL_AALARMS_ATTACHBINS>().GetAll().Where(x => x.AlarmId == entity.Id);
                 var orattachuris = redis.As<REL_AALARMS_ATTACHURIS>().GetAll().Where(x => x.AlarmId == entity.Id);
-
-                if (entity.AttachmentBinary != null)
+                var attachbin = entity.Attachment as ATTACH_BINARY;
+                if (attachbin != null)
                 {
-                    transaction.QueueCommand(x => x.Store(entity.AttachmentBinary));
+                    transaction.QueueCommand(x => x.Store(attachbin));
                     var rattachbin = new REL_AALARMS_ATTACHBINS
                     {
                         Id = keygenerator.GetNext(),
                         AlarmId = entity.Id,
-                        AttachmentId = entity.AttachmentBinary.Id
+                        AttachmentId = attachbin.Id
                     };
 
                     redis.MergeAll(rattachbin.ToSingleton(), orattachbins, transaction);
                 }
                 else redis.RemoveAll(orattachbins, transaction);
 
-                if (entity.AttachmentUri != null)
+                var attachuri = entity.Attachment as ATTACH_URI;
+                if (attachuri != null)
                 {
-                    transaction.QueueCommand(x => x.Store(entity.AttachmentUri));
+                    transaction.QueueCommand(x => x.Store(attachuri));
                     var rattachuri = new REL_AALARMS_ATTACHURIS
                     {
                         Id = keygenerator.GetNext(),
                         AlarmId = entity.Id,
-                        AttachmentId = entity.AttachmentUri.Id
+                        AttachmentId = attachuri.Id
                     };
 
                     redis.MergeAll(rattachuri.ToSingleton(), orattachuris, transaction);
                 }
                 else redis.RemoveAll(orattachuris, transaction);
 
-                #endregion save normalized and non-normalized attributes
 
                 transaction.QueueCommand(x => x.Store(Dehydrate(entity)));
             });
@@ -134,8 +124,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
             Expression<Func<AUDIO_ALARM, object>> relations = x => new
             {
-                x.AttachmentUri,
-                x.AttachmentBinary
+                x.Attachment,
             };
 
             var sprimitives = primitives.GetMemberNames().Intersect(selection);
@@ -153,39 +142,37 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
                 if (!srelations.NullOrEmpty())
                 {
-                    Expression<Func<EMAIL_ALARM, object>> attachbinsexpr = y => y.AttachmentBinaries;
-                    Expression<Func<EMAIL_ALARM, object>> attachurisexpr = y => y.AttachmentUris;
+                    Expression<Func<EMAIL_ALARM, object>> attachsexpr = y => y.Attachments;
 
                     var orattachbins = redis.As<REL_AALARMS_ATTACHBINS>().GetAll().Where(x => keys.Contains(x.AlarmId));
                     var orattachuris = redis.As<REL_AALARMS_ATTACHURIS>().GetAll().Where(x => keys.Contains(x.AlarmId));
 
-                    if (srelations.Contains(attachbinsexpr.GetMemberName()))
+                    if (srelations.Contains(attachsexpr.GetMemberName()))
                     {
-                        if (source.AttachmentBinary != null)
+                        var attachbin = source.Attachment as ATTACH_BINARY;
+                        if (attachbin != null)
                         {
-                            transaction.QueueCommand(x => redis.As<ATTACH_BINARY>().Store(source.AttachmentBinary));
+                            transaction.QueueCommand(x => redis.As<ATTACH_BINARY>().Store(attachbin));
                             var rattachbins = keys.Select(x => new REL_AALARMS_ATTACHBINS
                             {
                                 Id = keygenerator.GetNext(),
                                 AlarmId = x,
-                                AttachmentId = source.AttachmentBinary.Id
+                                AttachmentId = attachbin.Id
                             });
 
                             redis.MergeAll(rattachbins, orattachbins, transaction);
                         }
                         else redis.RemoveAll(orattachbins, transaction);
-                    }
 
-                    if (srelations.Contains(attachurisexpr.GetMemberName()))
-                    {
-                        if (source.AttachmentUri != null)
+                        var attachuri = source.Attachment as ATTACH_URI;
+                        if (attachuri != null)
                         {
-                            transaction.QueueCommand(x => redis.As<ATTACH_URI>().Store(source.AttachmentUri));
+                            transaction.QueueCommand(x => redis.As<ATTACH_URI>().Store(attachuri));
                             var rattachuris = keys.Select(x => new REL_AALARMS_ATTACHURIS
                             {
                                 Id = keygenerator.GetNext(),
                                 AlarmId = x,
-                                AttachmentId = source.AttachmentUri.Id
+                                AttachmentId = attachuri.Id
                             });
 
                             redis.MergeAll(rattachuris, orattachuris, transaction);
@@ -282,35 +269,35 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             }
         }
 
-        public AUDIO_ALARM Hydrate(AUDIO_ALARM dry)
+        public AUDIO_ALARM Hydrate(AUDIO_ALARM alarm)
         {
-            var match = redis.As<AUDIO_ALARM>().GetValue(dry.Id.ToString());
+            var match = redis.As<AUDIO_ALARM>().GetValue(alarm.Id.ToString());
             if (match != null)
             {
                 var rattachbins = redis.As<REL_AALARMS_ATTACHBINS>().GetAll().Where(x => x.AlarmId == match.Id).ToList();
                 var rattachuris = redis.As<REL_AALARMS_ATTACHURIS>().GetAll().Where(x => x.AlarmId == match.Id).ToList();
 
-                if (!rattachbins.NullOrEmpty())
+                if (rattachbins.Any())
                 {
-                    match.AttachmentBinary = redis.As<ATTACH_BINARY>().GetValues(rattachbins.Select(x => x.AttachmentId.ToString()).ToList()).First();
+                    match.Attachment = redis.As<ATTACH_BINARY>().GetValues(rattachbins.Select(x => x.AttachmentId.ToString()).ToList()).First();
                 }
-                if (!rattachuris.NullOrEmpty())
+                if (rattachuris.Any())
                 {
-                    match.AttachmentUri = redis.As<ATTACH_URI>().GetValues(rattachuris.Select(x => x.AttachmentId.ToString()).ToList()).First();
+                    match.Attachment = redis.As<ATTACH_URI>().GetValues(rattachuris.Select(x => x.AttachmentId.ToString()).ToList()).First();
                 }
             }
-            return match ?? dry;
+            return match ?? alarm;
         }
 
-        public IEnumerable<AUDIO_ALARM> HydrateAll(IEnumerable<AUDIO_ALARM> dry)
+        public IEnumerable<AUDIO_ALARM> HydrateAll(IEnumerable<AUDIO_ALARM> alarms)
         {
             var eclient = redis.As<AUDIO_ALARM>();
-            var audioAlarms = dry as IList<AUDIO_ALARM> ?? dry.ToList();
+            var audioAlarms = alarms as IList<AUDIO_ALARM> ?? alarms.ToList();
             var keys = audioAlarms.Select(x => x.Id).Distinct().ToList();
 
             if (eclient.GetAllKeys().Intersect(keys.Select(x => x.ToString())).Count() != keys.Count()) return audioAlarms;
 
-            dry = eclient.GetValues(keys.Select(x => x.ToString()).ToList());
+            alarms = eclient.GetValues(keys.Select(x => x.ToString()).ToList());
 
             #region 1. retrieve relationships
 
@@ -337,7 +324,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                       join e in audioAlarms on r.EventId equals e.Id
                                       where e.Id == x.Id
                                       select y;
-                    if (!xattachbins.NullOrEmpty()) x.AttachmentBinary = xattachbins.First();
+                    if (!xattachbins.NullOrEmpty()) x.Attachment = xattachbins.First();
                 }
 
                 if (!attachuris.NullOrEmpty())
@@ -347,25 +334,24 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                       join e in audioAlarms on r.EventId equals e.Id
                                       where e.Id == x.Id
                                       select y;
-                    if (!xattachuris.NullOrEmpty()) x.AttachmentUri = xattachuris.First();
+                    if (!xattachuris.NullOrEmpty()) x.Attachment = xattachuris.First();
                 }
             });
 
             #endregion 3. Use Linq to stitch secondary entities to primary entities
 
-            return dry;
+            return alarms;
         }
 
-        public AUDIO_ALARM Dehydrate(AUDIO_ALARM full)
+        public AUDIO_ALARM Dehydrate(AUDIO_ALARM alarm)
         {
-            if (full.AttachmentBinary != null) full.AttachmentBinary = null;
-            if (full.AttachmentUri != null) full.AttachmentUri = null;
-            return full;
+            alarm.Attachment = null;
+            return alarm;
         }
 
-        public IEnumerable<AUDIO_ALARM> DehydrateAll(IEnumerable<AUDIO_ALARM> full)
+        public IEnumerable<AUDIO_ALARM> DehydrateAll(IEnumerable<AUDIO_ALARM> alarms)
         {
-            var pquery = full.AsParallel();
+            var pquery = alarms.AsParallel();
             pquery.ForAll(x => Dehydrate(x));
             return pquery.AsEnumerable();
         }
@@ -376,22 +362,13 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
         private readonly IRedisClientsManager manager;
         private IRedisClient client = null;
 
-        private IRedisClient redis
-        {
-            get
-            {
-                return client ?? (client = manager.GetClient());
-            }
-        }
+        private IRedisClient redis => client ?? (client = manager.GetClient());
 
-        public IRedisClientsManager RedisClientsManager
-        {
-            get { return manager; }
-        }
+        public IRedisClientsManager RedisClientsManager => manager;
 
         public DisplayAlarmRedisRepository(IRedisClientsManager manager)
         {
-            if (manager == null) throw new ArgumentNullException("manager");
+            if (manager == null) throw new ArgumentNullException(nameof(manager));
             this.manager = manager;
         }
 
@@ -402,13 +379,13 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
         public IEnumerable<DISPLAY_ALARM> FindAll(IEnumerable<Guid> keys, int? skip = null, int? take = null)
         {
-            if (skip == null && take == null) return redis.As<DISPLAY_ALARM>().GetByIds(keys);
-            return redis.As<DISPLAY_ALARM>().GetByIds(keys).Skip(skip.Value + 1).Take(take.Value);
+            if (skip == null || take == null) return redis.As<DISPLAY_ALARM>().GetByIds(keys);
+            return redis.As<DISPLAY_ALARM>().GetByIds(keys).Skip(skip.Value).Take(take.Value);
         }
 
         public IEnumerable<DISPLAY_ALARM> Get(int? skip = null, int? take = null)
         {
-            if (skip == null && take == null)
+            if (skip == null || take == null)
                 return redis.As<DISPLAY_ALARM>().GetAll();
 
             var alarms = redis.As<DISPLAY_ALARM>().GetAll();
@@ -531,30 +508,21 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
         private readonly IKeyGenerator<Guid> keygenerator;
         private IRedisClient client = null;
 
-        private IRedisClient redis
-        {
-            get
-            {
-                return client ?? (client = manager.GetClient());
-            }
-        }
+        private IRedisClient redis => client ?? (client = manager.GetClient());
 
-        public IRedisClientsManager RedisClientsManager
-        {
-            get { return manager; }
-        }
+        public IRedisClientsManager RedisClientsManager => manager;
 
         public EmailAlarmRedisRepository(IKeyGenerator<Guid> keygenerator, IRedisClientsManager manager)
         {
-            if (keygenerator == null) throw new ArgumentNullException("keygenerator");
-            if (manager == null) throw new ArgumentNullException("manager");
+            if (keygenerator == null) throw new ArgumentNullException(nameof(keygenerator));
+            if (manager == null) throw new ArgumentNullException(nameof(manager));
             this.keygenerator = keygenerator;
             this.manager = manager;
         }
 
-        public EMAIL_ALARM Hydrate(EMAIL_ALARM dry)
+        public EMAIL_ALARM Hydrate(EMAIL_ALARM alarm)
         {
-            var full = redis.As<EMAIL_ALARM>().GetValue(dry.Id.ToString());
+            var full = redis.As<EMAIL_ALARM>().GetValue(alarm.Id.ToString());
             if (full != null)
             {
                 var rattendees = redis.As<REL_EALARMS_ATTENDEES>().GetAll().Where(x => x.AlarmId == full.Id).ToList();
@@ -563,25 +531,25 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
                 if (!rattachbins.NullOrEmpty())
                 {
-                    full.AttachmentBinaries.MergeRange(redis.As<ATTACH_BINARY>().GetValues(rattachbins.Select(x => x.AttachmentId.ToString()).ToList()));
+                    full.Attachments.MergeRange(redis.As<ATTACH_BINARY>().GetValues(rattachbins.Select(x => x.AttachmentId.ToString()).ToList()));
                 }
                 if (!rattachuris.NullOrEmpty())
                 {
-                    full.AttachmentUris.MergeRange(redis.As<ATTACH_URI>().GetValues(rattachuris.Select(x => x.AttachmentId.ToString()).ToList()));
+                    full.Attachments.MergeRange(redis.As<ATTACH_URI>().GetValues(rattachuris.Select(x => x.AttachmentId.ToString()).ToList()));
                 }
                 if (!rattendees.NullOrEmpty())
                 {
                     full.Attendees.MergeRange(redis.As<ATTENDEE>().GetValues(rattendees.Select(x => x.AttendeeId.ToString()).ToList()));
                 }
             }
-            return full ?? dry;
+            return full ?? alarm;
         }
 
-        public IEnumerable<EMAIL_ALARM> HydrateAll(IEnumerable<EMAIL_ALARM> dry)
+        public IEnumerable<EMAIL_ALARM> HydrateAll(IEnumerable<EMAIL_ALARM> alarms)
         {
-            var full = dry.ToList();
+            var full = alarms.ToList();
             var eclient = redis.As<EMAIL_ALARM>();
-            var keys = dry.Select(x => x.Id.ToString()).Distinct().ToList();
+            var keys = alarms.Select(x => x.Id.ToString()).Distinct().ToList();
             if (eclient.GetAllKeys().Intersect(keys).Count() == keys.Count()) //all keys are found
             {
                 full = eclient.GetValues(keys);
@@ -623,7 +591,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                           join e in full on r.EventId equals e.Id
                                           where e.Id == x.Id
                                           select y;
-                        if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.MergeRange(xattachbins);
+                        if (!xattachbins.NullOrEmpty()) x.Attachments.MergeRange(xattachbins);
                     }
 
                     if (!attachuris.NullOrEmpty())
@@ -633,7 +601,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                                           join e in full on r.EventId equals e.Id
                                           where e.Id == x.Id
                                           select y;
-                        if (!xattachuris.NullOrEmpty()) x.AttachmentUris.MergeRange(xattachuris);
+                        if (!xattachuris.NullOrEmpty()) x.Attachments.MergeRange(xattachuris);
                     }
                 });
 
@@ -645,34 +613,27 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
         public EMAIL_ALARM Find(Guid key)
         {
-            try
-            {
-                var dry = redis.As<EMAIL_ALARM>().GetById(key);
-                return dry != null ? Hydrate(dry) : dry;
-            }
-            catch (ArgumentNullException) { throw; }
-            catch (RedisResponseException) { throw; }
-            catch (RedisException) { throw; }
-            catch (InvalidOperationException) { throw; }
+            var alarm = redis.As<EMAIL_ALARM>().GetById(key);
+            return alarm != null ? Hydrate(alarm) : alarm;
         }
 
         public IEnumerable<EMAIL_ALARM> FindAll(IEnumerable<Guid> keys, int? skip = null, int? take = null)
         {
-            if (skip == null && take == null)
+            if (skip == null || take == null)
             {
                 var dry = redis.As<EMAIL_ALARM>().GetByIds(keys);
                 return !dry.NullOrEmpty() ? HydrateAll(dry) : dry;
             }
             else
             {
-                var dry = redis.As<EMAIL_ALARM>().GetByIds(keys).Skip(skip.Value + 1).Take(take.Value);
+                var dry = redis.As<EMAIL_ALARM>().GetByIds(keys).Skip(skip.Value).Take(take.Value);
                 return !dry.NullOrEmpty() ? HydrateAll(dry) : dry;
             }
         }
 
         public IEnumerable<EMAIL_ALARM> Get(int? skip = null, int? take = null)
         {
-            if (skip == null && take == null)
+            if (skip == null || take == null)
                 return redis.As<EMAIL_ALARM>().GetAll();
 
             var alarms = redis.As<EMAIL_ALARM>().GetAll();
@@ -704,8 +665,8 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 #region retrieve attributes of entity
 
                 var attendees = entity.Attendees;
-                var attachbins = entity.AttachmentBinaries;
-                var attachuris = entity.AttachmentUris;
+                var attachbins = entity.Attachments.OfType<ATTACH_BINARY>();
+                var attachuris = entity.Attachments.OfType<ATTACH_URI>();
 
                 #endregion retrieve attributes of entity
 
@@ -780,8 +741,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
             Expression<Func<EMAIL_ALARM, object>> relations = x => new
             {
-                x.AttachmentBinaries,
-                x.AttachmentUris,
+                x.Attachments,
                 x.Attendees
             };
 
@@ -804,8 +764,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 if (!srelation.NullOrEmpty())
                 {
                     Expression<Func<EMAIL_ALARM, object>> attendsexpr = y => y.Attendees;
-                    Expression<Func<EMAIL_ALARM, object>> attachbinsexpr = y => y.AttachmentBinaries;
-                    Expression<Func<EMAIL_ALARM, object>> attachurisexpr = y => y.AttachmentUris;
+                    Expression<Func<EMAIL_ALARM, object>> attachsexpr = y => y.Attachments;
 
                     var orattendees = redis.As<REL_EALARMS_ATTENDEES>().GetAll().Where(x => x.AlarmId == source.Id);
                     var orattachbins = redis.As<REL_EALARMS_ATTACHBINS>().GetAll().Where(x => keys.Contains(x.AlarmId));
@@ -829,10 +788,10 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         else redis.RemoveAll(orattendees, transaction);
                     }
 
-                    if (selection.Contains(attachbinsexpr.GetMemberName()))
+                    if (selection.Contains(attachsexpr.GetMemberName()))
                     {
-                        var attachbins = source.AttachmentBinaries;
-                        if (!attachbins.NullOrEmpty())
+                        var attachbins = source.Attachments.OfType<ATTACH_BINARY>();
+                        if (attachbins.Any())
                         {
                             transaction.QueueCommand(x => redis.As<ATTACH_BINARY>().StoreAll(attachbins));
                             var rattachbins = keys.SelectMany(x => attachbins.Select(y => new REL_EALARMS_ATTACHBINS
@@ -845,12 +804,9 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                             redis.MergeAll(rattachbins, orattachbins, transaction);
                         }
                         else redis.RemoveAll(orattachbins, transaction);
-                    }
 
-                    if (selection.Contains(attachurisexpr.GetMemberName()))
-                    {
-                        var attachuris = source.AttachmentUris;
-                        if (!attachuris.NullOrEmpty())
+                        var attachuris = source.Attachments.OfType<ATTACH_URI>();
+                        if (attachuris.Any())
                         {
                             transaction.QueueCommand(x => redis.As<ATTACH_URI>().StoreAll(attachuris));
                             var rattachuris = keys.SelectMany(x => attachuris.Select(y => new REL_EALARMS_ATTACHURIS
@@ -863,6 +819,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         }
                         else redis.RemoveAll(orattachuris, transaction);
                     }
+
                 }
 
                 #endregion save (insert or update) relational attributes
@@ -925,9 +882,9 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             #region 1. retrieve attributes of entities
 
             var lentities = entities as IList<EMAIL_ALARM> ?? entities.ToList();
-            var attendees = lentities.Where(x => !x.Attendees.NullOrEmpty()).SelectMany(x => x.Attendees);
-            var attachbins = lentities.Where(x => !x.AttachmentBinaries.NullOrEmpty()).SelectMany(x => x.AttachmentBinaries);
-            var attachuris = lentities.Where(x => !x.AttachmentUris.NullOrEmpty()).SelectMany(x => x.AttachmentUris);
+            var attendees = lentities.SelectMany(x => x.Attendees);
+            var attachbins = lentities.SelectMany(x => x.Attachments.OfType<ATTACH_BINARY>());
+            var attachuris = lentities.SelectMany(x => x.Attachments.OfType<ATTACH_URI>());
 
             #endregion 1. retrieve attributes of entities
 
@@ -959,8 +916,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 if (!attachbins.NullOrEmpty())
                 {
                     transaction.QueueCommand(x => x.StoreAll(attachbins.Distinct()));
-                    var rattachbins = lentities.Where(x => !x.AttachmentBinaries.NullOrEmpty())
-                        .SelectMany(e => e.AttachmentBinaries.Select(x => new REL_EALARMS_ATTACHBINS
+                    var rattachbins = lentities.SelectMany(e => e.Attachments.Select(x => new REL_EALARMS_ATTACHBINS
                         {
                             Id = keygenerator.GetNext(),
                             AlarmId = e.Id,
@@ -974,8 +930,7 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 if (!attachuris.NullOrEmpty())
                 {
                     transaction.QueueCommand(x => x.StoreAll(attachuris.Distinct()));
-                    var rattachuris = lentities.Where(x => !x.AttachmentUris.NullOrEmpty())
-                        .SelectMany(e => e.AttachmentUris.Select(x => new REL_EALARMS_ATTACHURIS
+                    var rattachuris = lentities.SelectMany(e => attachuris.Select(x => new REL_EALARMS_ATTACHURIS
                         {
                             Id = keygenerator.GetNext(),
                             AlarmId = e.Id,
@@ -1025,19 +980,16 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             }
         }
 
-        public EMAIL_ALARM Dehydrate(EMAIL_ALARM full)
+        public EMAIL_ALARM Dehydrate(EMAIL_ALARM alarm)
         {
-            if (!full.Attendees.NullOrEmpty()) full.Attendees.Clear();
-            if (!full.AttachmentBinaries.NullOrEmpty()) full.AttachmentBinaries.Clear();
-            if (!full.AttachmentUris.NullOrEmpty()) full.AttachmentUris.Clear();
-            return full;
+            alarm.Attendees.Clear();
+            alarm.Attachments.Clear();
+            return alarm;
         }
 
-        public IEnumerable<EMAIL_ALARM> DehydrateAll(IEnumerable<EMAIL_ALARM> full)
+        public IEnumerable<EMAIL_ALARM> DehydrateAll(IEnumerable<EMAIL_ALARM> alarms)
         {
-            var pquery = full.AsParallel();
-            pquery.ForAll(x => Dehydrate(x));
-            return pquery.AsEnumerable();
+            return alarms.Select(Dehydrate);
         }
     }
 }

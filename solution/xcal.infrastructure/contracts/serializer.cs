@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,16 +12,17 @@ namespace reexjungle.xcal.infrastructure.contracts
 
     public interface ICalendarSerializer
     {
-        void Serialize(iCalWriter writer, object o);
+        void Serialize(CalendarWriter writer, object o);
 
-        object Deserialize(iCalReader reader);
+        object Deserialize(CalendarReader reader);
     }
 
     public interface ICalendarSerializer<TValue>
     {
-        void Serialize(iCalWriter writer, TValue value);
 
-        TValue Deserialize(iCalReader reader);
+        void Serialize(TValue value, CalendarWriter writer);
+
+        TValue Deserialize(CalendarReader reader);
 
     }
 

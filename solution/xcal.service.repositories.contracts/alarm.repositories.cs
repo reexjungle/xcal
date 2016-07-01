@@ -19,28 +19,28 @@ namespace reexjungle.xcal.service.repositories.contracts
         /// </summary>
         /// <param name="dry">The sparse email alarm entity to be populated</param>
         /// <returns>The populated alarm entity</returns>
-        AUDIO_ALARM Hydrate(AUDIO_ALARM dry);
+        AUDIO_ALARM Hydrate(AUDIO_ALARM alarm);
 
         /// <summary>
         /// Populates email alarm entities with details from respective constituent entities
         /// </summary>
-        /// <param name="dry">The sparse email alarm entities to be populated</param>
+        /// <param name="alarms">The sparse email alarm entities to be populated</param>
         /// <returns>Populated alarm entities</returns>
-        IEnumerable<AUDIO_ALARM> HydrateAll(IEnumerable<AUDIO_ALARM> dry);
+        IEnumerable<AUDIO_ALARM> HydrateAll(IEnumerable<AUDIO_ALARM> alarms);
 
         /// <summary>
         /// Depopulates aggregate entities from email alarm
         /// </summary>
-        /// <param name="full">The email alarm entity to depopulate</param>
+        /// <param name="alarm">The email alarm entity to depopulate</param>
         /// <returns>Depopulated alarm</returns>
-        AUDIO_ALARM Dehydrate(AUDIO_ALARM full);
+        AUDIO_ALARM Dehydrate(AUDIO_ALARM alarm);
 
         /// <summary>
         /// Depopulates aggregate entities from respective alarms
         /// </summary>
         /// <param name="full">The audio alarm entities to depopulate</param>
         /// <returns>Depopulated alarms</returns>
-        IEnumerable<AUDIO_ALARM> DehydrateAll(IEnumerable<AUDIO_ALARM> full);
+        IEnumerable<AUDIO_ALARM> DehydrateAll(IEnumerable<AUDIO_ALARM> alarms);
     }
 
     #endregion audio alarm repository
@@ -68,30 +68,30 @@ namespace reexjungle.xcal.service.repositories.contracts
         /// <summary>
         /// Populates a sparse email alarm entity with details from its consitutent entities
         /// </summary>
-        /// <param name="dry">The sparse email alarm entity to be populated</param>
+        /// <param name="alarm">The sparse email alarm entity to be populated</param>
         /// <returns>The populated alarm entity</returns>
-        EMAIL_ALARM Hydrate(EMAIL_ALARM dry);
+        EMAIL_ALARM Hydrate(EMAIL_ALARM alarm);
 
         /// <summary>
         /// Populates email alarm entities with details from respective constituent entities
         /// </summary>
-        /// <param name="dry">The sparse email alarm entities to be populated</param>
+        /// <param name="alarms">The sparse email alarm entities to be populated</param>
         /// <returns>Populated alarm entities</returns>
-        IEnumerable<EMAIL_ALARM> HydrateAll(IEnumerable<EMAIL_ALARM> dry);
+        IEnumerable<EMAIL_ALARM> HydrateAll(IEnumerable<EMAIL_ALARM> alarms);
 
         /// <summary>
         /// Depopulates aggregate entities from email alarm
         /// </summary>
-        /// <param name="full">The email alarm entity to depopulate</param>
+        /// <param name="alarm">The email alarm entity to depopulate</param>
         /// <returns>Depopulated alarm</returns>
-        EMAIL_ALARM Dehydrate(EMAIL_ALARM full);
+        EMAIL_ALARM Dehydrate(EMAIL_ALARM alarm);
 
         /// <summary>
         /// Depopulates aggregate entities from respective alarms
         /// </summary>
-        /// <param name="full">The audio alarm entities to depopulate</param>
+        /// <param name="alarms">The audio alarm entities to depopulate</param>
         /// <returns>Depopulated alarms</returns>
-        IEnumerable<EMAIL_ALARM> DehydrateAll(IEnumerable<EMAIL_ALARM> full);
+        IEnumerable<EMAIL_ALARM> DehydrateAll(IEnumerable<EMAIL_ALARM> alarms);
     }
 
     #endregion email alarm repository

@@ -18,8 +18,8 @@ namespace reexjungle.xcal.tests.concretes.factories
             IKeyGenerator<Guid> guidKeyGenerator, 
             IKeyGenerator<Fpi> fpiKeyGenerator)
         {
-            if (guidKeyGenerator == null) throw new ArgumentNullException("guidKeyGenerator");
-            if (fpiKeyGenerator == null) throw new ArgumentNullException("fpiKeyGenerator");
+            if (guidKeyGenerator == null) throw new ArgumentNullException(nameof(guidKeyGenerator));
+            if (fpiKeyGenerator == null) throw new ArgumentNullException(nameof(fpiKeyGenerator));
 
             this.guidKeyGenerator = guidKeyGenerator;
             this.fpiKeyGenerator = fpiKeyGenerator;

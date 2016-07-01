@@ -53,10 +53,6 @@ namespace reexjungle.xcal.service.operations.concretes.live
         public List<VJOURNAL> Journals { get; set; }
 
         public List<VTIMEZONE> TimeZones { get; set; }
-
-        public List<IANA_COMPONENT> IanaComponents { get; set; }
-
-        public List<X_COMPONENT> XComponents { get; set; }
     }
 
     [Route("/calendars/batch/patch", "POST")]
@@ -81,10 +77,6 @@ namespace reexjungle.xcal.service.operations.concretes.live
         public List<VJOURNAL> Journals { get; set; }
 
         public List<VTIMEZONE> TimeZones { get; set; }
-
-        public List<IANA_COMPONENT> IanaComponents { get; set; }
-
-        public List<X_COMPONENT> XComponents { get; set; }
     }
 
     [Route("/calendars/{CalendarId}/delete", "DELETE")]

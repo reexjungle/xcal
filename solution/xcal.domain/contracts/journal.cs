@@ -33,7 +33,7 @@ namespace reexjungle.xcal.domain.contracts
 
         RECUR RecurrenceRule { get; set; }
 
-        List<IATTACH> Attachments { get; set; }
+        List<ATTACH> Attachments { get; set; }
 
         List<ATTENDEE> Attendees { get; set; }
 
@@ -53,8 +53,5 @@ namespace reexjungle.xcal.domain.contracts
 
         List<RDATE> RecurrenceDates { get; set; }
 
-        List<IANA_PROPERTY> IANA { get; set; }
-
-        List<X_PROPERTY> NonStandard { get; set; }
     }
 }

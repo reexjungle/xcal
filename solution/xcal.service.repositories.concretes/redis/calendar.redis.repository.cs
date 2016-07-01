@@ -23,21 +23,12 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
         private readonly IKeyGenerator<Guid> keygenerator;
         private IRedisClient client;
 
-        private IRedisClient redis
-        {
-            get
-            {
-                return client ?? (client = manager.GetClient());
-            }
-        }
+        private IRedisClient redis => client ?? (client = manager.GetClient());
 
         /// <summary>
         ///
         /// </summary>
-        public IRedisClientsManager RedisClientsManager
-        {
-            get { return manager; }
-        }
+        public IRedisClientsManager RedisClientsManager => manager;
 
         /// <summary>
         ///
@@ -47,13 +38,13 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
         /// <param name="manager"></param>
         public CalendarRedisRepository(IKeyGenerator<Guid> keygenerator, IEventRepository eventrepository, IRedisClientsManager manager)
         {
-            if (keygenerator == null) throw new ArgumentNullException("keygenerator");
+            if (keygenerator == null) throw new ArgumentNullException(nameof(keygenerator));
             this.keygenerator = keygenerator;
 
-            if (eventrepository == null) throw new ArgumentNullException("eventrepository");
+            if (eventrepository == null) throw new ArgumentNullException(nameof(eventrepository));
             this.eventrepository = eventrepository;
 
-            if (manager == null) throw new ArgumentNullException("manager");
+            if (manager == null) throw new ArgumentNullException(nameof(manager));
             this.manager = manager;
         }
 
@@ -177,8 +168,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 x.FreeBusies,
                 x.Journals,
                 x.TimeZones,
-                x.IanaComponents,
-                x.XComponents
             };
 
             //4. Get list of selected relationals
@@ -259,8 +248,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 var rfreebusies = redis.As<REL_CALENDARS_FREEBUSIES>().GetAll();
                 var rtimezones = redis.As<REL_CALENDARS_TIMEZONES>().GetAll();
                 var rjournals = redis.As<REL_CALENDARS_JOURNALS>().GetAll();
-                var rianacs = redis.As<REL_CALENDARS_IANACS>().GetAll();
-                var rxcomponents = redis.As<REL_CALENDARS_XCS>().GetAll();
 
                 manager.ExecTrans(transaction =>
                 {
@@ -278,12 +265,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
 
                     if (!rjournals.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_JOURNALS>()
                         .DeleteByIds(rjournals.Where(x => x.CalendarId == key)));
-
-                    if (!rianacs.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_IANACS>()
-                        .DeleteByIds(rianacs.Where(x => x.CalendarId == key)));
-
-                    if (!rxcomponents.NullOrEmpty()) transaction.QueueCommand(t => t.As<REL_CALENDARS_XCS>()
-                        .DeleteByIds(rxcomponents.Where(x => x.CalendarId == key)));
 
                     transaction.QueueCommand(t => t.As<VCALENDAR>().DeleteById(key));
                 });
@@ -330,8 +311,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                 var rfreebusies = redis.As<REL_CALENDARS_FREEBUSIES>().GetAll();
                 var rtimezones = redis.As<REL_CALENDARS_TIMEZONES>().GetAll();
                 var rjournals = redis.As<REL_CALENDARS_JOURNALS>().GetAll();
-                var rianacs = redis.As<REL_CALENDARS_IANACS>().GetAll();
-                var rxcomponents = redis.As<REL_CALENDARS_XCS>().GetAll();
 
                 manager.ExecTrans(transaction =>
                 {
@@ -355,14 +334,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                         !rjournals.Where(x => keys.Contains(x.CalendarId)).NullOrEmpty())
                         transaction.QueueCommand(t => t.As<REL_CALENDARS_JOURNALS>().DeleteByIds(revents));
 
-                    if (!rianacs.NullOrEmpty() &&
-                        !rianacs.Where(x => keys.Contains(x.CalendarId)).NullOrEmpty())
-                        transaction.QueueCommand(t => t.As<REL_CALENDARS_IANACS>().DeleteByIds(revents));
-
-                    if (!rxcomponents.NullOrEmpty() &&
-                        !rxcomponents.Where(x => keys.Contains(x.CalendarId)).NullOrEmpty())
-                        transaction.QueueCommand(t => t.As<REL_CALENDARS_XCS>().DeleteByIds(revents));
-
                     transaction.QueueCommand(t => t.As<VCALENDAR>().DeleteByIds(keys));
                 });
             }
@@ -375,8 +346,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
                     transaction.QueueCommand(t => t.As<REL_CALENDARS_FREEBUSIES>().DeleteAll());
                     transaction.QueueCommand(t => t.As<REL_CALENDARS_TIMEZONES>().DeleteAll());
                     transaction.QueueCommand(t => t.As<REL_CALENDARS_JOURNALS>().DeleteAll());
-                    transaction.QueueCommand(t => t.As<REL_CALENDARS_IANACS>().DeleteAll());
-                    transaction.QueueCommand(t => t.As<REL_CALENDARS_XCS>().DeleteAll());
                     transaction.QueueCommand(t => t.As<VCALENDAR>().DeleteAll());
                 });
             }
@@ -405,8 +374,6 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
             if (!dry.FreeBusies.NullOrEmpty()) dry.FreeBusies.Clear();
             if (!dry.Journals.NullOrEmpty()) dry.Journals.Clear();
             if (!dry.TimeZones.NullOrEmpty()) dry.TimeZones.Clear();
-            if (!dry.IanaComponents.NullOrEmpty()) dry.IanaComponents.Clear();
-            if (!dry.XComponents.NullOrEmpty()) dry.XComponents.Clear();
             return dry;
         }
 

@@ -5,31 +5,29 @@ namespace reexjungle.xcal.domain.contracts
 {
     public interface IOBSERVANCE
     {
-        DATE_TIME Start { get; set; }
+        DATE_TIME Start { get; }
 
-        UTC_OFFSET TimeZoneOffsetFrom { get; set; }
+        UTC_OFFSET TimeZoneOffsetFrom { get; }
 
-        UTC_OFFSET TimeZoneOffsetTo { get; set; }
+        UTC_OFFSET TimeZoneOffsetTo { get; }
 
-        RECUR RecurrenceRule { get; set; }
+        RECUR RecurrenceRule { get; }
 
-        List<COMMENT> Comments { get; set; }
+        List<COMMENT> Comments { get; }
 
-        List<RDATE> RecurrenceDates { get; set; }
+        List<RDATE> RecurrenceDates { get; }
 
-        List<TZNAME> TimeZoneNames { get; set; }
+        List<TZNAME> TimeZoneNames { get; }
     }
 
     public interface ITIMEZONE
     {
-        TZID TimeZoneId { get; set; }
+        TZID TimeZoneId { get; }
 
-        URL Url { get; set; }
+        URL Url { get; }
 
-        DATE_TIME LastModified { get; set; }
+        DATE_TIME LastModified { get; }
 
-        List<STANDARD> StandardTimes { get; set; }
-
-        List<DAYLIGHT> DaylightTimes { get; set; }
+        List<OBSERVANCE> Observances { get; }
     }
 }

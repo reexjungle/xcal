@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
@@ -8,7 +9,7 @@ using reexjungle.xcal.infrastructure.contracts;
 
 namespace reexjungle.xcal.infrastructure.serialization
 {
-    public class CalendarSerializer: ICalendarSerializer, ISerializable, IObjectReference
+    public class CalendarSerializer: ICalendarSerializer, ISerializable
     {
         private readonly Type type;
 
@@ -18,7 +19,16 @@ namespace reexjungle.xcal.infrastructure.serialization
             this.type = type;
         }
 
-        protected void SerializePrimitive(iCalWriter writer, object o)
+        protected CalendarSerializer(SerializationInfo info, StreamingContext context)
+        {
+            var otype = Type.GetType("System.Type");
+            if (otype != null)
+            {
+                type = (Type)info.GetValue(nameof(type), otype); 
+            }
+        }
+
+        protected void SerializePrimitive(CalendarWriter writer, object o)
         {
             var otype = o.GetType();
             switch (Type.GetTypeCode(otype))
@@ -66,11 +76,11 @@ namespace reexjungle.xcal.infrastructure.serialization
                     var date = (DateTime)o;
                     if (date.Kind == DateTimeKind.Local || date.Kind == DateTimeKind.Unspecified)
                     {
-                        writer.WriteValue($"{date.Year:D4}{date.Month:D2}{date.Day:D2}T{date.Hour:D2}{date.Minute:D2}{date.Second:D2}");
+                        writer.Write($"{date.Year:D4}{date.Month:D2}{date.Day:D2}T{date.Hour:D2}{date.Minute:D2}{date.Second:D2}");
                     }
                     if (date.Kind == DateTimeKind.Utc)
                     {
-                        writer.WriteValue($"{date.Year:D4}{date.Month:D2}{date.Day:D2}T{date.Hour:D2}{date.Minute:D2}{date.Second:D2}Z");
+                        writer.Write($"{date.Year:D4}{date.Month:D2}{date.Day:D2}T{date.Hour:D2}{date.Minute:D2}{date.Second:D2}Z");
                     }
                     break;
 
@@ -90,6 +100,7 @@ namespace reexjungle.xcal.infrastructure.serialization
                 if (ts.Hours != 0) sb.AppendFormat("{0}H", ts.Hours);
                 if (ts.Minutes != 0) sb.AppendFormat("{0}M", ts.Minutes);
                 if (ts.Seconds != 0) sb.AppendFormat("{0}S", ts.Seconds);
+                writer.Write(sb.ToString());
             }
 
             if (otype == typeof(byte[]))
@@ -103,7 +114,7 @@ namespace reexjungle.xcal.infrastructure.serialization
             }
         }
 
-        public void Serialize(iCalWriter writer, object o)
+        public void Serialize(CalendarWriter writer, object o)
         {
             if (o == null) return;
 
@@ -122,7 +133,7 @@ namespace reexjungle.xcal.infrastructure.serialization
                     return;
                 }
 
-                var serializable = o as IiCalSerializable;
+                var serializable = o as ICalendarSerializable;
                 if (serializable == null)
                     throw new InvalidOperationException("Object of type:" + otype.FullName + " does not support ICalendarSerializable!");
 
@@ -144,22 +155,13 @@ namespace reexjungle.xcal.infrastructure.serialization
         }
 
 
-        protected object DeserializePrimitive(iCalReader reader)
+        protected object DeserializePrimitive(CalendarReader reader)
         {
-            object o;
-            switch (Type.GetTypeCode(type))
-            {
-                case TypeCode.String:
-                    
-                    break;
-            }
-
             throw new NotImplementedException();
         }
-        public object Deserialize(iCalReader reader)
+        public object Deserialize(CalendarReader reader)
         {
             if (type.IsPrimitive
-                || type == typeof(decimal)
                 || type == typeof(string)
                 || type == typeof(DateTime)
                 || type == (typeof(byte[]))
@@ -168,17 +170,14 @@ namespace reexjungle.xcal.infrastructure.serialization
             {
               return  DeserializePrimitive(reader);
             }
+
             throw new NotImplementedException();
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            throw new NotImplementedException();
-        }
-
-        public object GetRealObject(StreamingContext context)
-        {
-            throw new NotImplementedException();
+            if (info == null) throw new ArgumentNullException(nameof(info));
+            info.AddValue(nameof(type), type);
         }
     }
 
@@ -188,48 +187,14 @@ namespace reexjungle.xcal.infrastructure.serialization
         {
         }
 
-        public void Serialize(iCalWriter writer, TValue value)
+        public void Serialize(TValue value, CalendarWriter writer)
         {
-            if (value == null) throw new ArgumentNullException(nameof(value));
-
-            try
-            {
-                var otype = typeof(TValue);
-                if (otype.IsPrimitive
-                    || otype == typeof(decimal)
-                    || otype == typeof(string)
-                    || otype == typeof(DateTime)
-                    || otype == (typeof(byte[]))
-                    || otype == typeof(TimeSpan)
-                    || otype == typeof(Guid))
-                {
-                    SerializePrimitive(writer, value);
-                }
-
-                var serializable = value as IiCalSerializable;
-                if (serializable == null)
-                    throw new InvalidOperationException("Object of type:" + otype.FullName + " does not support ICalendarSerializable!");
-
-                serializable.WriteCalendar(writer);
-            }
-            catch (Exception inner)
-            {
-                if (inner is ThreadAbortException || inner is StackOverflowException || inner is OutOfMemoryException)
-                {
-                    throw;
-                }
-                if (inner is TargetInvocationException)
-                {
-                    inner = inner.InnerException;
-                }
-                throw new InvalidOperationException("Calendar Serialization Error", inner);
-            }
-            writer.Flush();
+            base.Serialize(writer, value);
         }
 
-        public new TValue Deserialize(iCalReader reader)
+        public new TValue Deserialize(CalendarReader reader)
         {
-            throw new NotImplementedException();
+            return (TValue)base.Deserialize(reader);
         }
     }
 }

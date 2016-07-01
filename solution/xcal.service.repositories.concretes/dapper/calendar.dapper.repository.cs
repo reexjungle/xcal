@@ -18,10 +18,7 @@ namespace reexjungle.xcal.service.repositories.concretes.dapper
 
         private IDbConnection db => dbconnection ?? (dbconnection = factory.OpenDbConnection());
 
-        public IDbConnectionFactory DbConnectionFactory
-        {
-            get { return factory; }
-        }
+        public IDbConnectionFactory DbConnectionFactory => factory;
 
         public CalendarDapperRepository(IDbConnectionFactory factory, IKeyGenerator<Guid> keygenerator, IEventRepository eventrepository)
         {

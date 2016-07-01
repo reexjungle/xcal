@@ -11,243 +11,178 @@ namespace reexjungle.xcal.infrastructure.serialization
     /// <summary>
     /// Represents a reader that provides fast, noncached, forward-only access to iCalendar data.
     /// </summary>
-    public class iCalReader : TextReader
+    public abstract class CalendarReader : TextReader
     {
-        static readonly Parser<char> HTabDelimiter = Parse.Char('\u0009');
-        static readonly Parser<char> EmptyCharDelimiter = Parse.Char('\0');
-        static readonly Parser<char> DQuoteDelimiter = Parse.Char('"');
-        static readonly Parser<char> CommaDelimiter = Parse.Char(',');
-        static readonly Parser<char> ColonDelimiter = Parse.Char(':');
-        static readonly Parser<char> SemicolonDelimiter = Parse.Char(';');
 
-        static readonly Parser<char> DQuotedStringDelimiter= Parse.AnyChar
-            .Except(DQuoteDelimiter).Or(DQuoteDelimiter.CalEscaped());
+        //literal Constants
+        protected const char HTAB = '\u0009';
+        protected const char EMPTY = '\0';
+        protected const string DQUOTE = @"""";
+        protected const string COMMA = ",";
+        protected const string COLON = ":";
+        protected const string SEMICOLON = ";";
+        protected const string EscapedDQUOTE = @"\""";
+        protected const string EscapedCOMMA = @"\,";
+        protected const string EscapedCOLON = @"\:";
+        protected const string EscapedSEMICOLON = @"\;";
 
-        static readonly Parser<char> SafeStringDelimiter = Parse.AnyChar
-            .Except(CommaDelimiter).Or(CommaDelimiter.CalEscaped())
-            .Except(ColonDelimiter).Or(ColonDelimiter.CalEscaped())
-            .Except(SemicolonDelimiter).Or(SemicolonDelimiter.CalEscaped());
+        protected CalendarNodeType nodeType;
+
+        public CalendarNodeType NodeType => nodeType;
 
 
-        public CalendarFragmentType FragmentType { get; private set; }
-
-        public iCalReader()
+        public virtual bool IsStartComponent()
         {
-            FragmentType = CalendarFragmentType.UNKNOWN;
+            throw new NotImplementedException();            
+        }
+
+        public virtual bool IsStartComponent(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual bool IsComponent(string name)
+        {
+            throw new NotImplementedException();            
+        }
+
+        public virtual bool IsProperty(string name)
+        {
+            throw new NotImplementedException();              
+        }
+
+        public virtual bool IsParameter(string name)
+        {
+            throw new NotImplementedException();                  
+        }
+
+        public virtual bool IsValue()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public virtual CalendarReader ReadStartComponent(string name)
+        {
+            throw new NotImplementedException();
 
         }
 
-        public iCalReader(Stream stream)
+        public virtual CalendarReader ReadEndComponent(string name)
         {
-            FragmentType = CalendarFragmentType.UNKNOWN;
+            throw new NotImplementedException();
 
         }
 
-        public iCalReader(TextReader reader)
+        public virtual CalendarReader ReadComponent(string name)
         {
-            
+            throw new NotImplementedException();
+
         }
 
-        public iCalReader(string fragment, CalendarFragmentType fragmentType)
+        public virtual CalendarReader ReadProperty(string name)
         {
-            FragmentType = fragmentType;
+            throw new NotImplementedException();
         }
 
-        public iCalReader(Stream fragment, CalendarFragmentType fragmentType)
+        public virtual CalendarReader ReadParameter(string name)
         {
-            FragmentType = fragmentType;
-            if (fragment != null)
+            throw new NotImplementedException();
+        }
+
+        public virtual string ReadValue()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual CalendarReader ReadToFollowing(string name)
+        {
+              throw new NotImplementedException();
+        }
+
+        public virtual CalendarReader ReadToNextSibling(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual string ReadContentAsBoolean()
+        {
+            throw new NotImplementedException();
+        }
+        public virtual string ReadContentAsString()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual float ReadContentAsFloat()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual int ReadContentAsInteger()
+        {
+           throw new NotImplementedException(); 
+        }
+
+        public virtual DateTime ReadContentAsDateTime()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual TimeSpan ReadContentAsTimeSpan()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual object ReadContentAsObject()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual TContent ReadContent<TContent>(Func<TContent> ctor)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public new bool Read()
+        {
+            return base.Read() != -1;
+        }
+
+        public abstract bool MoveToFirstValue();
+
+        public abstract bool MoveToNextValue();
+
+        public abstract bool MoveToParameter();
+
+        public abstract bool MoveToProperty();
+
+        public abstract bool MoveToComponent();
+
+        public virtual CalendarNodeType MoveToContent()
+        {
+            do
             {
-                using (var sr = new StreamReader(fragment))
+                switch (nodeType)
                 {
-                    //this.fragment = sr.ReadToEnd();
+                    case CalendarNodeType.VALUE:
+                        MoveToParameter();
+                        goto case CalendarNodeType.PARAMETER;
+                    case CalendarNodeType.PARAMETER:
+                        MoveToProperty();
+                        goto case CalendarNodeType.PROPERTY;
+                    case CalendarNodeType.PROPERTY:
+                        MoveToComponent();
+                        goto case CalendarNodeType.COMPONENT;
+                    case CalendarNodeType.COMPONENT:
+                        return nodeType;
                 }
-            }
+
+            } while (Read());
+
+            return nodeType;
         }
 
-
-        public static iCalReader Create(Stream stream)
-        {
-            return Create(new StreamReader(stream));
-        }
-
-        public static iCalReader Create(string @string)
-        {
-            return Create(new StringReader(@string));
-        }
-
-        public static iCalReader Create(TextReader reader)
-        {
-            return new iCalReader(reader);
-        }
-
-        public static iCalReader Create(iCalReader reader)
-        {
-            return new iCalReader(reader);
-        }
-
-        protected virtual CalendarFragmentType MoveToValue(CalendarFragmentType type)
-        {
-            //TODO: 
-            return CalendarFragmentType.VALUE;
-
-        }
-
-        protected virtual CalendarFragmentType MoveToParameter(CalendarFragmentType type)
-        {
-            //TODO: 
-            return CalendarFragmentType.PARAMETER;
-
-        }
-
-        protected virtual CalendarFragmentType MoveToProperty(CalendarFragmentType type)
-        {
-            //TODO: 
-            return CalendarFragmentType.PROPERTY;
-        }
-
-        protected virtual CalendarFragmentType MoveToComponent(CalendarFragmentType type)
-        {
-            //TODO: 
-            return CalendarFragmentType.COMPONENT;
-        }
-
-        public virtual CalendarFragmentType MoveToContent()
-        {
-            if (FragmentType == CalendarFragmentType.VALUE)
-            {
-                FragmentType = MoveToParameter(FragmentType);
-            }
-            if (FragmentType == CalendarFragmentType.PARAMETER)
-            {
-                FragmentType = MoveToProperty(FragmentType);
-            }
-
-            if (FragmentType == CalendarFragmentType.PROPERTY)
-            {
-                FragmentType = MoveToComponent(FragmentType);
-            }
-            return FragmentType;
-        }
-
-
-        public static bool IsValidIANAToken(string token)
-        {
-            var pattern = @"^(\w-?)+$";
-            var options = RegexOptions.IgnoreCase
-                          | RegexOptions.ExplicitCapture
-                          | RegexOptions.IgnorePatternWhitespace
-                          | RegexOptions.CultureInvariant
-                          | RegexOptions.Compiled;
-
-            return new Regex(pattern, options).IsMatch(token);
-        }
-
-        public static bool IsValidXName(string xname)
-        {
-            var pattern = @"^X-(\w{3}-)*(\w-?)+$";
-            var options = RegexOptions.IgnoreCase
-                          | RegexOptions.ExplicitCapture
-                          | RegexOptions.IgnorePatternWhitespace
-                          | RegexOptions.CultureInvariant
-                          | RegexOptions.Compiled;
-
-            return new Regex(pattern, options).IsMatch(xname);
-        }
-
-        public static bool IsValidName(string name)
-        {
-            return IsValidIANAToken(name) || IsValidXName(name);
-        }
-
-        public static bool IsValidVendorId(string id)
-        {
-            return !string.IsNullOrEmpty(id) && !string.IsNullOrWhiteSpace(id) && id.Length == 3;
-        }
-
-        public static bool IsValidQuotedString(string value)
-        {
-            var pattern = @"^""((\w-*(\\"")*)+)""$";
-            var options = RegexOptions.IgnoreCase
-                          | RegexOptions.ExplicitCapture
-                          | RegexOptions.IgnorePatternWhitespace
-                          | RegexOptions.CultureInvariant
-                          | RegexOptions.Compiled;
-
-            return new Regex(pattern, options).IsMatch(value);
-        }
-
-        public static bool IsValidQSAFE_STRING(string value)
-        {
-            var pattern = @"^(\w-*(\\"")*)+$";
-            var options = RegexOptions.IgnoreCase
-                          | RegexOptions.ExplicitCapture
-                          | RegexOptions.IgnorePatternWhitespace
-                          | RegexOptions.CultureInvariant
-                          | RegexOptions.Compiled;
-
-            return new Regex(pattern, options).IsMatch(value);
-        }
-
-        public static bool IsValidSAFE_STRING(string value)
-        {
-            var pattern = @"^(\w*-*(\\,)*(\\;)*(\\:)*)+$";
-            var options = RegexOptions.IgnoreCase
-                          | RegexOptions.ExplicitCapture
-                          | RegexOptions.IgnorePatternWhitespace
-                          | RegexOptions.CultureInvariant
-                          | RegexOptions.Compiled;
-
-            return new Regex(pattern, options).IsMatch(value);            
-        }
-
-        public static bool IsValidVALUE_STRING(string value)
-        {
-            return value != null;         
-        }
-
-        public static bool IsValidParameterValue(string value)
-        {
-            return IsValidSAFE_STRING(value) || IsValidQuotedString(value);
-        }
-
-        public static bool AreValidParameterValues(params string[] values)
-        {
-            return IsValidParameterValue(string.Join(",", values));
-        }
-
-        public static bool IsValidParameter(string name, params string[] values)
-        {
-            return IsValidName(name) && AreValidParameterValues(values);
-        }
-
-        public static bool IsValidParameter(string value)
-        {
-            var pattern = @"^((?<iana>(\w-?)+)|(?<xname>X-(\w{3}-)*(\w-?)+))=((?<safe>(\w(\\"")*-*)+)|(?<quoted>""((\w(\\"")*-*)+)""))$";
-            var options = RegexOptions.IgnoreCase
-                          | RegexOptions.ExplicitCapture
-                          | RegexOptions.IgnorePatternWhitespace
-                          | RegexOptions.CultureInvariant
-                          | RegexOptions.Compiled;
-
-            return new Regex(pattern, options).IsMatch(value);
-        }
-
-        public static bool IsValidProperty(string name, string value, params string[] parameters)
-        {
-            return IsValidName(name) && IsValidParameter(string.Join(";", parameters)) && IsValidVALUE_STRING(value);
-        }
-
-
-        public override int Peek()
-        {
-            return base.Peek();
-        }
-
-
-        public override int Read()
-        {
-            return base.Read();
-        }
     }
 }

@@ -56,15 +56,5 @@ namespace reexjungle.xcal.domain.models
         /// Gets or sets the timezones of the iCalendar core object
         /// </summary>
         List<VTIMEZONE> TimeZones { get; set; }
-
-        /// <summary>
-        /// Gets or sets the timezones of the iCalendar core object
-        /// </summary>
-        List<IANA_COMPONENT> IanaComponents { get; set; }
-
-        /// <summary>
-        /// Gets or sets the X-components of the iCalendar core object
-        /// </summary>
-        List<X_COMPONENT> XComponents { get; set; }
     }
 }

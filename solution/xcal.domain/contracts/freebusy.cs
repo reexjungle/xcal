@@ -17,18 +17,14 @@ namespace reexjungle.xcal.domain.contracts
 
         DATE_TIME End { get; set; }
 
-        List<IATTACH> Attachments { get; set; }
+        List<ATTACH> Attachments { get; set; }
 
         List<ATTENDEE> Attendees { get; set; }
 
         List<COMMENT> Comments { get; set; }
 
-        List<FREEBUSY> FreeBusyProperties { get; set; }
+        List<FREEBUSY> FreeBusyIntervals { get; set; }
 
         List<REQUEST_STATUS> RequestStatuses { get; set; }
-
-        List<IANA_PROPERTY> IANA { get; set; }
-
-        List<X_PROPERTY> NonStandard { get; set; }
     }
 }

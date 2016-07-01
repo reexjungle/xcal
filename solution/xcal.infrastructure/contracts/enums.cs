@@ -9,31 +9,41 @@ namespace reexjungle.xcal.infrastructure.contracts
     /// <summary>
     /// Specifies the type of icalendar fragments.
     /// </summary>
-    public enum CalendarFragmentType
+    public enum CalendarNodeType
     {
-        /// <summary>
-        /// Represents an iCalendar VALUE fragment e.g. a DATE-TIME fragment
-        /// </summary>
-        VALUE,
-
-        /// <summary>
-        /// Represents an iCalendar PARAMETER fragment e.g. a Time Zone ID fragment
-        /// </summary>
-        PARAMETER,
-
-        /// <summary>
-        /// Represents an icalendar PROPERTY e.g. an Attendee fragment
-        /// </summary>
-        PROPERTY,
-
-        /// <summary>
-        /// Represents an icalendar COMPONENT e.g. an Event fragment
-        /// </summary>
-        COMPONENT,
 
         /// <summary>
         /// Represents an unknown component
         /// </summary>
-        UNKNOWN
+        UNKNOWN,
+
+        /// <summary>
+        /// Represents an iCalendar VALUE node e.g. a DATE-TIME node
+        /// </summary>
+        VALUE,
+
+        /// <summary>
+        /// Represents an iCalendar PARAMETER node e.g. a Time Zone ID node
+        /// </summary>
+        PARAMETER,
+
+        /// <summary>
+        /// Represents an icalendar PROPERTY e.g. an Attendee node
+        /// </summary>
+        PROPERTY,
+
+        /// <summary>
+        /// Represents an icalendar COMPONENT e.g. an Event node
+        /// </summary>
+        COMPONENT
+    }
+
+    public enum ReadState
+    {
+        IDLE,
+        READING,
+        ERROR,
+        EOF,
+        CLOSED
     }
 }

@@ -78,9 +78,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
 
         public DURATION Duration { get; set; }
 
-        public List<ATTACH_BINARY> AttachmentBinaries { get; set; }
-
-        public List<ATTACH_URI> AttachmentUris { get; set; }
+        public List<ATTACH> Attachments { get; set; }
 
         public List<ATTENDEE> Attendees { get; set; }
 
@@ -100,15 +98,8 @@ namespace reexjungle.xcal.service.operations.concretes.live
 
         public List<RDATE> RecurrenceDates { get; set; }
 
-        public List<AUDIO_ALARM> AudioAlarms { get; set; }
+        public List<VALARM> Alarms { get; set; }
 
-        public List<DISPLAY_ALARM> DisplayAlarms { get; set; }
-
-        public List<EMAIL_ALARM> EmailAlarms { get; set; }
-
-        public Dictionary<Guid, IANA_PROPERTY> IANAProperties { get; set; }
-
-        public Dictionary<Guid, X_PROPERTY> XProperties { get; set; }
     }
 
     [Route("/calendars/events/batch/patch", "POST")]
@@ -152,9 +143,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
 
         public DURATION Duration { get; set; }
 
-        public List<ATTACH_BINARY> AttachmentBinaries { get; set; }
-
-        public List<ATTACH_URI> AttachmentUris { get; set; }
+        public List<ATTACH> Attachments { get; set; }
 
         public List<ATTENDEE> Attendees { get; set; }
 
@@ -174,15 +163,7 @@ namespace reexjungle.xcal.service.operations.concretes.live
 
         public List<RDATE> RecurrenceDates { get; set; }
 
-        public List<AUDIO_ALARM> AudioAlarms { get; set; }
-
-        public List<DISPLAY_ALARM> DisplayAlarms { get; set; }
-
-        public List<EMAIL_ALARM> EmailAlarms { get; set; }
-
-        public Dictionary<Guid, IANA_PROPERTY> IANAProperties { get; set; }
-
-        public Dictionary<Guid, X_PROPERTY> XProperties { get; set; }
+        public List<VALARM> Alarms { get; set; }
     }
 
     [Route("/calendars/events/{EventId}/delete", "DELETE")]

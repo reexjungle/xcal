@@ -15,20 +15,12 @@ namespace reexjungle.xcal.domain.contracts
         /// <summary>
         /// Gets or sets the format type of the resource being attached.
         /// </summary>
-        FMTTYPE FormatType { get; set; }
-    }
+        FMTTYPE FormatType { get; }
 
-    /// <summary>
-    /// Attachment Property
-    /// Specifies a contract for associating a document object with an iCalendar object.
-    /// </summary>
-    /// <typeparam name="TContent">The type parameter for the document content</typeparam>
-    public interface IATTACH<TContent>: IATTACH
-    {        
         /// <summary>
         /// Gets or sets the inline attached content
         /// </summary>
-        TContent Content { get; set; }
+        string Content { get; }
     }
 
     /// <summary>
@@ -188,15 +180,6 @@ namespace reexjungle.xcal.domain.contracts
 
     #region Miscellaneous Component Properties
 
-    public interface IMISC_PROPERTY
-    { 
-
-        string Name { get; set; }
-        List<object> Parameters { get; set; }
-        object Value { get; set; }   
-        VALUE ValueType {get; set; }
-    }
-
     /// <summary>
     /// Specifies an interface for a return status code
     /// </summary>
@@ -216,48 +199,6 @@ namespace reexjungle.xcal.domain.contracts
         /// Third level of granularity
         /// </summary>
         uint? L3 { get; set; }
-    }
-
-    /// <summary>
-    /// Specifies an interface for an IANA-registered property.
-    /// </summary>
-    public interface IIANA_PROPERTY
-    {
-        /// <summary>
-        /// An IANA-registered property name.
-        /// </summary>
-        string Token { get; set; }
-
-        /// <summary>
-        /// A list of registered iCalendar parameters. Any iCalendar parameter can be specified in the list.
-        /// </summary>
-        List<object> Parameters { get; set; }
-
-
-        /// <summary>
-        /// A value for the IANA-registered property. The default value type is TEXT (string) although any value type can be set.
-        /// </summary>
-        object Value { get; set; }
-    }
-
-
-    public interface IX_PROPERTY
-    {
-        /// <summary>
-        /// An custom property name. The name must have an &quot;X-&quot; prefix.
-        /// </summary>
-        string Name { get; set; }
-
-        /// <summary>
-        /// A list of registered iCalendar parameters. Any iCalendar parameter can be specified in the list.
-        /// </summary>
-        List<object> Parameters { get; set; }
-
-
-        /// <summary>
-        /// A value for the custom property. The default value type is TEXT (string) although any value type can be set.
-        /// </summary>
-        object Value { get; set; }
     }
 
     public interface IREQUEST_STATUS

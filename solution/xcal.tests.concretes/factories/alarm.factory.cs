@@ -18,8 +18,8 @@ namespace reexjungle.xcal.tests.concretes.factories
 
         public AlarmFactory(IKeyGenerator<Guid> keyGenerator, IPropertiesFactory propertiesFactory, IValuesFactory valuesFactory)
         {
-            if (keyGenerator == null) throw new ArgumentNullException("keyGenerator");
-            if (propertiesFactory == null) throw new ArgumentNullException("propertiesFactory");
+            if (keyGenerator == null) throw new ArgumentNullException(nameof(keyGenerator));
+            if (propertiesFactory == null) throw new ArgumentNullException(nameof(propertiesFactory));
 
             this.keyGenerator = keyGenerator;
             this.rndGenerator = new RandomGenerator();
@@ -52,8 +52,7 @@ namespace reexjungle.xcal.tests.concretes.factories
                 .And(x => x.Duration = valuesFactory.CreateDuration())
                 .And(x => x.Trigger = propertiesFactory.CreateTrigger())
                 .And(x => x.Repeat = rndGenerator.Next(0, 10))
-                .And(x => x.AttachmentBinary = propertiesFactory.CreateAttachBinary())
-                .And(x => x.AttachmentUri = propertiesFactory.CreateAttachtUri())
+                .And(x => x.Attachment = propertiesFactory.CreateAttachBinary())
                 .Build();
         }
 
@@ -80,8 +79,6 @@ namespace reexjungle.xcal.tests.concretes.factories
                 .And(x => x.Trigger = propertiesFactory.CreateTrigger())
                 .And(x => x.Repeat = rndGenerator.Next(0, 10))
                 .And(x => x.Description = propertiesFactory.CreateDescription())
-                .And(x => x.AttachmentBinaries = propertiesFactory.CreateAttachBinaries(rndGenerator.Next(1, quantity)).ToList())
-                .And(x => x.AttachmentUris = propertiesFactory.CreateAttachUris(rndGenerator.Next(1, quantity)).ToList())
                 .Build();
         }
     }

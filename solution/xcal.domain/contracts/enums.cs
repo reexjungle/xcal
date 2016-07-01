@@ -240,7 +240,7 @@
     /// <summary>
     /// Represents the action to be invoked when an alarm is triggered
     /// </summary>
-    public enum ACTION { NONE, AUDIO, DISPLAY, EMAIL }
+    public enum ACTION { AUDIO, DISPLAY, EMAIL }
 
     /// <summary>
     /// Represents explicitly  the value type format for a property value
@@ -531,5 +531,10 @@
     /// <summary>
     /// Represents the type of scale used to define the relative priority for a calendar component
     /// </summary>
-    public enum PriorityType { Integral, Level, Schema }
+    public enum PriorityType
+    {
+        Integral,
+        Level,
+        Schema
+    }
 }

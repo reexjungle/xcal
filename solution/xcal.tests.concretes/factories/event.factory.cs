@@ -20,9 +20,9 @@ namespace reexjungle.xcal.tests.concretes.factories
 
         public EventFactory(IKeyGenerator<Guid> keyGenerator, IAlarmFactory alarmFactory, IPropertiesFactory propertiesFactory, IValuesFactory valuesFactory)
         {
-            if (keyGenerator == null) throw new ArgumentNullException("keyGenerator");
-            if (propertiesFactory == null) throw new ArgumentNullException("propertiesFactory");
-            if (valuesFactory == null) throw new ArgumentNullException("valuesFactory");
+            if (keyGenerator == null) throw new ArgumentNullException(nameof(keyGenerator));
+            if (propertiesFactory == null) throw new ArgumentNullException(nameof(propertiesFactory));
+            if (valuesFactory == null) throw new ArgumentNullException(nameof(valuesFactory));
 
             this.keyGenerator = keyGenerator;
             this.propertiesFactory = propertiesFactory;
@@ -43,8 +43,6 @@ namespace reexjungle.xcal.tests.concretes.factories
                 .All()
                     .With(x => x.Id = keyGenerator.GetNext())
                     .And(x => x.Attendees = propertiesFactory.CreateAttendees(rndGenerator.Next(1, quantity)).ToList())
-                    .And(x => x.AttachmentBinaries = propertiesFactory.CreateAttachBinaries(rndGenerator.Next(1, quantity)).ToList())
-                    .And(x => x.AttachmentUris = propertiesFactory.CreateAttachUris(rndGenerator.Next(1, quantity)).ToList())
                     .And(x => x.RecurrenceRule = valuesFactory.CreateRecurrence())
                     .And(x => x.Classification = Pick<CLASS>.RandomItemFrom(new []
                     {
@@ -79,9 +77,6 @@ namespace reexjungle.xcal.tests.concretes.factories
                     }))
                     .And(x => x.ExceptionDates = propertiesFactory.CreateExceptionDates(rndGenerator.Next(1, quantity)).ToList())
                     .And(x => x.RecurrenceDates = propertiesFactory.CreateRecurrenceDates(rndGenerator.Next(1, quantity)).ToList())
-                    .And(x => x.AudioAlarms = alarmFactory.CreateAudioAlarms(rndGenerator.Next(1, quantity)).ToList())
-                    .And(x => x.DisplayAlarms = alarmFactory.CreateDisplayAlarms(rndGenerator.Next(1, quantity)).ToList())
-                    .And(x => x.EmailAlarms = alarmFactory.CreateEmailAlarms(rndGenerator.Next(1, quantity)).ToList())
                 .Build();
         }
     }

@@ -14,7 +14,7 @@ namespace reexjungle.xcal.tests.concretes.factories
 
         public ParametersFactory(IValuesFactory valuesFactory)
         {
-            if (valuesFactory == null) throw new ArgumentNullException("valuesFactory");
+            if (valuesFactory == null) throw new ArgumentNullException(nameof(valuesFactory));
             this.valuesFactory = valuesFactory;
             rndGenerator = new RandomGenerator();
         }

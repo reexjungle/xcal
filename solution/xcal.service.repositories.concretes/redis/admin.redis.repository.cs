@@ -9,22 +9,13 @@ namespace reexjungle.xcal.service.repositories.concretes.redis
         private readonly IRedisClientsManager manager;
         private IRedisClient client;
 
-        private IRedisClient redis
-        {
-            get
-            {
-                return client ?? (client = manager.GetClient());
-            }
-        }
+        private IRedisClient redis => client ?? (client = manager.GetClient());
 
-        public IRedisClientsManager RedisClientsManager
-        {
-            get { return manager; }
-        }
+        public IRedisClientsManager RedisClientsManager => manager;
 
         public AdminRedisRepository(IRedisClientsManager manager)
         {
-            if (manager == null) throw new ArgumentNullException("manager");
+            if (manager == null) throw new ArgumentNullException(nameof(manager));
             this.manager = manager;
         }
 

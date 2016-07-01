@@ -7,14 +7,6 @@ using ServiceStack.FluentValidation;
 
 namespace reexjungle.xcal.service.validators.concretes
 {
-    public class BinaryValidator : AbstractValidator<BINARY>
-    {
-        public BinaryValidator(CascadeMode mode = CascadeMode.StopOnFirstFailure)
-        {
-            CascadeMode = mode;
-            RuleFor(x => x.Value).Must((x, value) => !string.IsNullOrEmpty(value));
-        }
-    }
 
     public class DateValidator : AbstractValidator<DATE>
     {

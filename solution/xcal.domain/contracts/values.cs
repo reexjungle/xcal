@@ -13,7 +13,7 @@ namespace reexjungle.xcal.domain.contracts
         /// <summary>
         /// Gets or sets the Base64 value of this type.
         /// </summary>
-        string Value { get; set; }
+        string Value { get; }
     }
 
     /// <summary>

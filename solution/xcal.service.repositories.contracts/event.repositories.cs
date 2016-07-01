@@ -30,9 +30,9 @@ namespace reexjungle.xcal.service.repositories.contracts
         /// <summary>
         /// Depopulates aggregate entities from event
         /// </summary>
-        /// <param name="full">The event to depopulate</param>
+        /// <param name="event">The event to depopulate</param>
         /// <returns>Depopulated event</returns>
-        VEVENT Dehydrate(VEVENT full);
+        VEVENT Dehydrate(VEVENT @event);
 
         /// <summary>
         /// Depopulates aggregate entities from respective events

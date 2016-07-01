@@ -1,26 +1,44 @@
-﻿using reexjungle.xcal.domain.contracts;
-using reexjungle.xmisc.foundation.concretes;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using reexjungle.xcal.domain.contracts;
+using reexjungle.xcal.infrastructure.contracts;
+using reexjungle.xcal.infrastructure.extensions;
+using reexjungle.xcal.infrastructure.serialization;
 using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
-using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Text;
 
 namespace reexjungle.xcal.domain.models
 {
     [DataContract]
-    public class VJOURNAL : IJOURNAL, IEquatable<VJOURNAL>, IContainsKey<Guid>
+    public class VJOURNAL : IJOURNAL, IEquatable<VJOURNAL>, IContainsKey<Guid>, ICalendarSerializable
     {
+
         /// <summary>
-        /// Gets or sets the unique identifier of the journal.
+        ///     Gets or sets the unique identifier of the journal.
         /// </summary>
         [DataMember]
         [Index(Unique = true)]
         public Guid Id { get; set; }
 
+        public bool Equals(VJOURNAL other)
+        {
+            var equals = Id.Equals(other.Id);
+
+            if (equals && RecurrenceId != null && other.RecurrenceId != null)
+                equals = RecurrenceId == other.RecurrenceId;
+
+            if (equals) equals = Sequence == other.Sequence;
+
+            if (equals)
+                equals = Datestamp == other.Datestamp;
+
+            return equals;
+        }
+
         /// <summary>
-        /// Gets or sets the unique identifier of a non-recurrent journal.
+        ///     Gets or sets the unique identifier of a non-recurrent journal.
         /// </summary>
         [DataMember]
         public string Uid
@@ -79,7 +97,7 @@ namespace reexjungle.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public List<IATTACH> Attachments { get; set; }
+        public List<ATTACH> Attachments { get; set; }
 
         [DataMember]
         [Ignore]
@@ -116,35 +134,89 @@ namespace reexjungle.xcal.domain.models
         [Ignore]
         public List<RDATE> RecurrenceDates { get; set; }
 
-        [DataMember]
-        [Ignore]
-        public List<IANA_PROPERTY> IANA { get; set; }
 
-        [DataMember]
-        [Ignore]
-        public List<X_PROPERTY> NonStandard { get; set; }
-
-        public bool Equals(VJOURNAL other)
+        private void WriteCalendarPrimitives(CalendarWriter writer)
         {
-            var equals = Id.Equals(other.Id);
+            writer.AppendProperty("DTSTAMP", Datestamp);
+            writer.AppendProperty("UID", Uid);
 
-            if (equals && RecurrenceId != null && other.RecurrenceId != null)
-                equals = RecurrenceId == other.RecurrenceId;
+            if (Start != default(DATE_TIME)) writer.AppendProperty("DTSTART", Start);
 
-            if (equals) equals = Sequence == other.Sequence;
+            if (Classification != default(CLASS)) writer.AppendProperty("CLASS", Classification.ToString());
 
-            if (equals)
-                equals = Datestamp == other.Datestamp;
+            if (Created != default(DATE_TIME)) writer.AppendProperty("CREATED", Created);
 
-            return equals;
+            if (Description != default(DESCRIPTION)) writer.AppendProperty(Description);
+
+            if (LastModified != default(DATE_TIME)) writer.AppendProperty("LAST-MODIFIED", Created);
+
+            if (Organizer != default(ORGANIZER)) writer.AppendProperty(Organizer);
+
+            writer.AppendProperty("SEQUENCE", Sequence.ToString());
+
+            if (Status != default(STATUS)) writer.AppendProperty("STATUS", Status.ToString());
+
+            if (Summary != default(SUMMARY)) writer.AppendProperty(Summary);
+
+
+            if (Url != default(URL)) writer.AppendProperty(Url);
+
+            if (RecurrenceId != default(RECURRENCE_ID)) writer.AppendProperty(RecurrenceId);
+
+            if (RecurrenceRule != default(RECUR)) writer.AppendProperty("RRULE", RecurrenceRule);
+
+            if (Categories != default(CATEGORIES))
+            {
+                writer.AppendProperty(Categories);
+            }
+        }
+
+        private void WriteCalendarLists(CalendarWriter writer)
+        {
+            if (Attendees.Any()) writer.AppendProperties(Attendees);
+
+            if (Comments.Any()) writer.AppendProperties(Comments);
+
+            if (Contacts.Any()) writer.AppendProperties(Contacts);
+
+
+            if (RelatedTos.Any()) writer.AppendProperties(RelatedTos);
+
+
+            if (ExceptionDates.Any()) writer.AppendProperties(ExceptionDates);
+
+            if (RecurrenceDates.Any()) writer.AppendProperties(RecurrenceDates);
+
+            if (Resources.Any()) writer.AppendProperties(Resources);
+
+
+            if (RequestStatuses.Any()) writer.AppendProperties(RequestStatuses);
+
+
+            if (Attachments.Any()) writer.AppendProperties(Attachments);
+        }
+
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            writer.WriteStartComponent("VJOURNAL");
+
+            WriteCalendarPrimitives(writer);
+
+            WriteCalendarLists(writer);
+
+            writer.WriteEndComponent("VJOURNAL");
+        }
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((VJOURNAL)obj);
+            if (obj.GetType() != GetType()) return false;
+            return Equals((VJOURNAL) obj);
         }
 
         public override int GetHashCode()
@@ -163,94 +235,6 @@ namespace reexjungle.xcal.domain.models
         public static bool operator !=(VJOURNAL left, VJOURNAL right)
         {
             return !Equals(left, right);
-        }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("BEGIN:VJOURNAL").AppendLine();
-            sb.AppendFormat("DTSTAMP:{0}", Datestamp).AppendLine();
-            sb.AppendFormat("UID:{0}", Uid).AppendLine();
-            if (Start.TimeZoneId != null)
-                sb.AppendFormat("DTSTART;{0}:{1}", Start.TimeZoneId, Start).AppendLine();
-            else
-                sb.AppendFormat("DTSTART:{0}", Start).AppendLine();
-            if (Classification != CLASS.NONE) sb.AppendFormat("CLASS:{0}", Classification).AppendLine();
-            sb.AppendFormat("CREATED:{0}", Created).AppendLine();
-            if (Description != null) sb.Append(Description).AppendLine();
-            sb.AppendFormat("LAST-MODIFIED:{0}", LastModified).AppendLine();
-            if (Organizer != null) sb.Append(Organizer).AppendLine();
-            sb.AppendFormat("SEQUENCE:{0}", Sequence).AppendLine();
-            if (Status != STATUS.NONE) sb.AppendFormat("STATUS:{0}", Status).AppendLine();
-            if (Summary != null) sb.Append(Summary).AppendLine();
-            if (Url != null) sb.AppendFormat("URL:{0}", Url).AppendLine();
-            if (RecurrenceId != null) sb.Append(RecurrenceId).AppendLine();
-            if (RecurrenceRule != null) sb.AppendFormat("RRULE:{0}", RecurrenceRule).AppendLine();
-
-            if (!Attachments.NullOrEmpty())
-            {
-                foreach (var attachment in Attachments) if (attachment != null) sb.Append(attachment).AppendLine();
-            }
-
-            if (!Attendees.NullOrEmpty())
-            {
-                foreach (var attendee in Attendees) if (attendee != null) sb.Append(attendee).AppendLine();
-            }
-
-            if (Categories != null && !Categories.Values.NullOrEmpty()) sb.Append(Categories).AppendLine();
-
-            if (!Comments.NullOrEmpty())
-            {
-                foreach (var comment in Comments) if (comment != null) sb.Append(comment).AppendLine();
-            }
-
-            if (!Contacts.NullOrEmpty())
-            {
-                foreach (var contact in Contacts) if (contact != null) sb.Append(contact).AppendLine();
-            }
-
-            if (!ExceptionDates.NullOrEmpty())
-            {
-                foreach (var exdate in ExceptionDates) if (exdate != null) sb.Append(exdate).AppendLine();
-            }
-
-            if (!RequestStatuses.NullOrEmpty())
-            {
-                foreach (var reqstat in RequestStatuses) if (reqstat != null) sb.Append(reqstat).AppendLine();
-            }
-
-            if (!RelatedTos.NullOrEmpty())
-            {
-                foreach (var relatedto in RelatedTos) if (relatedto != null) sb.Append(relatedto).AppendLine();
-            }
-
-            if (!Resources.NullOrEmpty())
-            {
-                foreach (var resource in Resources) if (resource != null) sb.Append(resource).AppendLine();
-            }
-
-            if (!Resources.NullOrEmpty())
-            {
-                foreach (var resource in Resources) if (resource != null) sb.Append(resource).AppendLine();
-            }
-
-            if (!RecurrenceDates.NullOrEmpty())
-            {
-                foreach (var rdate in RecurrenceDates) if (rdate != null) sb.Append(rdate).AppendLine();
-            }
-
-            if (!IANA.NullOrEmpty())
-            {
-                foreach (var iana in IANA) if (iana != null) sb.Append(iana).AppendLine();
-            }
-
-            if (!NonStandard.NullOrEmpty())
-            {
-                foreach (var xprop in NonStandard) if (xprop != null) sb.Append(xprop).AppendLine();
-            }
-
-            sb.Append("END:VJOURNAL");
-            return sb.ToString();
         }
     }
 }

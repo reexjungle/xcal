@@ -14,7 +14,7 @@ namespace reexjungle.xcal.domain.contracts
         /// <value>
         /// The invoked action for the alarm.
         /// </value>
-        ACTION Action { get; set; }
+        ACTION Action { get;  }
 
         /// <summary>
         /// Gets or sets when the alarm will trigger.
@@ -24,7 +24,7 @@ namespace reexjungle.xcal.domain.contracts
         /// The value type can be set to a DATE-TIME value type,
         /// in which case the value MUST specify a UTC-formatted DATE-TIME value.
         /// </value>
-        TRIGGER Trigger { get; set; }
+        TRIGGER Trigger { get; }
 
         /// <summary>
         /// Gets or sets the duration of the alarm.
@@ -32,7 +32,7 @@ namespace reexjungle.xcal.domain.contracts
         /// <value>
         /// The specified duration for the alarm.
         /// </value>
-        DURATION Duration { get; set; }
+        DURATION Duration { get; }
 
         /// <summary>
         /// Gets or sets the number of times the alarm should be repeated after the trigger.
@@ -40,35 +40,22 @@ namespace reexjungle.xcal.domain.contracts
         /// <value>
         /// The count to repeat the alarm after the trigger.
         /// </value>
-        int Repeat { get; set; }
+        int Repeat { get; }
     }
 
     /// <summary>
     /// Specifies a contract for audio alarm objects associated to an iCalendar object.
     /// </summary>
-    public interface IAUDIO_ALARM : IALARM
+    public interface IAUDIO_ALARM 
     {
-        /// <summary>
-        /// Gets or sets the sound resource of the alarm that is rendered when the alarm is triggered.
-        /// </summary>
-        /// <value>
-        /// The sound resource of the alarm.
-        /// </value>
-        ATTACH_BINARY AttachmentBinary { get; set; }
 
-        /// <summary>
-        /// Gets or sets the URI link to a sound resource that is rendered when the alarm is triggered.
-        /// </summary>
-        /// <value>
-        /// The URI to the sound resource.
-        /// </value>
-        ATTACH_URI AttachmentUri { get; set; }
+        ATTACH Attachment { get; set; }
     }
 
     /// <summary>
     /// Specifies a contract for display alarm objects associated to an iCalendar object.
     /// </summary>
-    public interface IDISPLAY_ALARM : IALARM
+    public interface IDISPLAY_ALARM
     {
         /// <summary>
         /// Gets or sets the description, which contains the text to be displayed when the alarm is triggered.
@@ -82,7 +69,7 @@ namespace reexjungle.xcal.domain.contracts
     /// <summary>
     /// Specifies an email contract for alarm objects associated to an iCalendar object.
     /// </summary>
-    public interface IEMAIL_ALARM : IALARM
+    public interface IEMAIL_ALARM
     {
         /// <summary>
         /// Gets or sets the description, which contains the text to be used as the message body of the email alarm.
@@ -114,14 +101,7 @@ namespace reexjungle.xcal.domain.contracts
         /// <value>
         /// The email attachments.
         /// </value>
-        List<ATTACH_BINARY> AttachmentBinaries { get; set; }
+        List<ATTACH> Attachments { get; set; }
 
-        /// <summary>
-        /// Gets or sets the URI links of email attachments, when the email message is sent.
-        /// </summary>
-        /// <value>
-        /// The email attachments.
-        /// </value>
-        List<ATTACH_URI> AttachmentUris { get; set; }
     }
 }

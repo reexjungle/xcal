@@ -7,11 +7,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using reexjungle.xcal.infrastructure.contracts;
+using reexjungle.xcal.infrastructure.serialization;
+using reexjungle.xcal.infrastructure.extensions;
+
 
 namespace reexjungle.xcal.domain.models
 {
     [DataContract]
-    public class VFREEBUSY : IFREEBUSY, IEquatable<VFREEBUSY>, IContainsKey<Guid>
+    public class VFREEBUSY : IFREEBUSY, IEquatable<VFREEBUSY>, IContainsKey<Guid>, ICalendarSerializable
     {
         /// <summary>
         /// Gets or sets the unique identifier of the free/busy time.
@@ -56,7 +60,7 @@ namespace reexjungle.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public List<IATTACH> Attachments { get; set; }
+        public List<ATTACH> Attachments { get; set; }
 
         [DataMember]
         [Ignore]
@@ -68,19 +72,11 @@ namespace reexjungle.xcal.domain.models
 
         [DataMember]
         [Ignore]
-        public List<FREEBUSY> FreeBusyProperties { get; set; }
+        public List<FREEBUSY> FreeBusyIntervals { get; set; }
 
         [DataMember]
         [Ignore]
         public List<REQUEST_STATUS> RequestStatuses { get; set; }
-
-        [DataMember]
-        [Ignore]
-        public List<IANA_PROPERTY> IANA { get; set; }
-
-        [DataMember]
-        [Ignore]
-        public List<X_PROPERTY> NonStandard { get; set; }
 
         public bool Equals(VFREEBUSY other)
         {
@@ -117,62 +113,45 @@ namespace reexjungle.xcal.domain.models
             return !Equals(left, right);
         }
 
-        public override string ToString()
+        private void WriteCalendarPrimitives(CalendarWriter writer)
         {
-            var sb = new StringBuilder();
+            writer.AppendProperty("DTSTAMP", Datestamp);
+            writer.AppendProperty("UID", Uid);
 
-            sb.Append("BEGIN:VFREEBUSY").AppendLine();
+            if (Start != default(DATE_TIME)) writer.AppendProperty("DTSTART", Start);
 
-            sb.AppendFormat("DTSTAMP:{0}", Datestamp.ToString()).AppendLine();
+            if (End != default(DATE_TIME)) writer.AppendProperty("DTEND", End);
 
-            sb.AppendFormat("UID:{0}", Uid.ToString()).AppendLine();
+            if (Url != default(URL)) writer.AppendProperty(Url);
 
-            if (Start.TimeZoneId != null)
-                sb.AppendFormat("DTSTART;{0}:{1}", Start.TimeZoneId.ToString(), Start.ToString()).AppendLine();
-            else
-                sb.AppendFormat("DTSTART:{0}", Start.ToString()).AppendLine();
 
-            if (Organizer != null) sb.Append(Organizer.ToString()).AppendLine();
+        }
 
-            if (Url != null) sb.AppendFormat("URL:{0}", Url.ToString()).AppendLine();
+        private void WriteCalendarLists(CalendarWriter writer)
+        {
+            if (Attendees.Any()) writer.AppendProperties(Attendees.ToArray());
 
-            if (End.TimeZoneId != null)
-                sb.AppendFormat("DTEND;{0}:{1}", End.TimeZoneId.ToString(), End.ToString()).AppendLine();
-            else
-                sb.AppendFormat("DTEND:{0}", End.ToString()).AppendLine();
+            if (Comments.Any()) writer.AppendProperties(Comments.ToArray());
 
-            if (!Attachments.NullOrEmpty())
-            {
-                foreach (var attachment in Attachments.Where(attachment => attachment != null))
-                    sb.Append(attachment.ToString()).AppendLine();
-            }
+            if (RequestStatuses.Any()) writer.AppendProperties(RequestStatuses.ToArray());
 
-            if (!Attendees.NullOrEmpty())
-            {
-                foreach (var attendee in Attendees.Where(attendee => attendee != null))
-                    sb.Append(attendee.ToString()).AppendLine();
-            }
+            if (Attachments.Any()) writer.AppendProperties(Attachments.ToArray());
+        }
 
-            if (!RequestStatuses.NullOrEmpty())
-            {
-                foreach (var reqstat in RequestStatuses.Where(reqstat => reqstat != null))
-                    sb.Append(reqstat.ToString()).AppendLine();
-            }
+        public void WriteCalendar(CalendarWriter writer)
+        {
+            writer.WriteStartComponent("VFREEBUSY");
 
-            if (!IANA.NullOrEmpty())
-            {
-                foreach (var iana in IANA.Where(iana => iana != null))
-                    sb.Append(iana.ToString()).AppendLine();
-            }
+            WriteCalendarPrimitives(writer);
 
-            if (!NonStandard.NullOrEmpty())
-            {
-                foreach (var xprop in NonStandard.Where(xprop => xprop != null))
-                    sb.Append(xprop.ToString()).AppendLine();
-            }
+            WriteCalendarLists(writer);
 
-            sb.Append("END:VFREEBUSY");
-            return sb.ToString();
+            writer.WriteEndComponent("VFREEBUSY");
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 }

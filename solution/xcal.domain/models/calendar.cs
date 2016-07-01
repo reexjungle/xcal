@@ -4,8 +4,12 @@ using reexjungle.xmisc.foundation.contracts;
 using ServiceStack.DataAnnotations;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using reexjungle.xcal.infrastructure.contracts;
+using reexjungle.xcal.infrastructure.serialization;
+using reexjungle.xcal.infrastructure.extensions;
 
 namespace reexjungle.xcal.domain.models
 {
@@ -13,7 +17,7 @@ namespace reexjungle.xcal.domain.models
     /// Represents a core Calendar type
     /// </summary>
     [DataContract]
-    public class VCALENDAR : ICALENDAR, IEquatable<VCALENDAR>, IContainsKey<Guid>
+    public class VCALENDAR : ICALENDAR, IEquatable<VCALENDAR>, IContainsKey<Guid>, ICalendarSerializable
     {
         public static readonly VCALENDAR Empty = new VCALENDAR();
 
@@ -87,19 +91,6 @@ namespace reexjungle.xcal.domain.models
         [Ignore]
         public List<VTIMEZONE> TimeZones { get; set; }
 
-        /// <summary>
-        /// Gets or sets the timezones of the iCalendar core object
-        /// </summary>
-        [DataMember]
-        [Ignore]
-        public List<IANA_COMPONENT> IanaComponents { get; set; }
-
-        /// <summary>
-        /// Gets or sets the X-components of the iCalendar core object
-        /// </summary>
-        [DataMember]
-        [Ignore]
-        public List<X_COMPONENT> XComponents { get; set; }
 
         /// <summary>
         /// Default Constructor of the iCalendar core object
@@ -113,8 +104,6 @@ namespace reexjungle.xcal.domain.models
             ToDos = new List<VTODO>();
             Journals = new List<VJOURNAL>();
             FreeBusies = new List<VFREEBUSY>();
-            IanaComponents = new List<IANA_COMPONENT>();
-            XComponents = new List<X_COMPONENT>();
         }
 
         public bool Equals(VCALENDAR other)
@@ -147,23 +136,32 @@ namespace reexjungle.xcal.domain.models
             return !Equals(left, right);
         }
 
-        public override string ToString()
+        public void WriteCalendar(CalendarWriter writer)
         {
-            var sb = new StringBuilder();
-            sb.Append("BEGIN:VCALENDAR").AppendLine();
-            sb.AppendFormat("VERSION:{0}", Version).AppendLine();
-            sb.AppendFormat("PRODID:{0}", ProdId).AppendLine();
-            if (Calscale != default(CALSCALE)) sb.AppendFormat("CALSCALE:{0}", Calscale).AppendLine();
-            if (Method != default(METHOD)) sb.AppendFormat("METHOD:{0}", Method).AppendLine();
-            if (!Events.NullOrEmpty()) Events.ForEach(x => sb.Append(x.ToString()).AppendLine());
-            if (!ToDos.NullOrEmpty()) ToDos.ForEach(x => sb.Append(x.ToString()).AppendLine());
-            if (!FreeBusies.NullOrEmpty()) FreeBusies.ForEach(x => sb.Append(x.ToString()).AppendLine());
-            if (!Journals.NullOrEmpty()) Journals.ForEach(x => sb.Append(x.ToString()).AppendLine());
-            if (!TimeZones.NullOrEmpty()) TimeZones.ForEach(x => sb.Append(x.ToString()).AppendLine());
-            if (!IanaComponents.NullOrEmpty()) IanaComponents.ForEach(x => sb.Append(x.ToString()).AppendLine());
-            if (!XComponents.NullOrEmpty()) XComponents.ForEach(x => sb.Append(x.ToString()).AppendLine());
-            sb.Append("END:VCALENDAR");
-            return sb.ToString().FoldLines(75);
+            writer.WriteStartComponent("VCALENDAR");
+            writer.AppendProperty("VERSION", Version);
+            writer.AppendProperty("PRODID", ProdId);
+
+            if (Calscale != default(CALSCALE))writer.AppendProperty("CALSCALE", Calscale.ToString());
+
+            if (Method != default(METHOD))writer.AppendProperty("METHOD", Method.ToString());
+
+            if (Events.Any()) writer.AppendProperties(Events);
+
+            if (ToDos.Any())writer.AppendProperties(ToDos);
+
+            if (FreeBusies.Any())writer.AppendProperties(FreeBusies);
+
+            if (Journals.Any()) writer.AppendProperties(Journals);
+
+            if (TimeZones.Any()) writer.AppendProperties(Journals);
+
+            writer.AppendEndComponent("VCALENDAR");
+        }
+
+        public void ReadCalendar(CalendarReader reader)
+        {
+            throw new NotImplementedException();
         }
     }
 }

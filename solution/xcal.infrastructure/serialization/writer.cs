@@ -1,17 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Linq;
+using System.Text;
 
 namespace reexjungle.xcal.infrastructure.serialization
 {
     /// <summary>
-    /// Represents a writer that provides a fast, non-cached, forward-only way to generate streams or files that contain iCalendar data.
+    /// Represents a writer that provides a fast, non-cached, forward-only way to generate streams or
+    /// files that contain iCalendar data.
     /// </summary>
-    public class iCalWriter : TextWriter
+    public abstract class CalendarWriter : TextWriter
     {
         //literal Constants
         private const char HTAB = '\u0009';
+
         private const char EMPTY = '\0';
         private const string DQUOTE = @"""";
         private const string COMMA = ",";
@@ -23,53 +27,98 @@ namespace reexjungle.xcal.infrastructure.serialization
         private const string EscapedCOLON = @"\:";
         private const string EscapedSEMICOLON = @"\;";
 
-        public iCalWriter(Encoding encoding = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CalendarWriter"/> class.
+        /// </summary>
+        protected CalendarWriter()
         {
-            Encoding = encoding ?? Encoding.UTF8;
         }
 
-        public iCalWriter(IFormatProvider provider, Encoding encoding = null): base(provider)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CalendarWriter"/> class with the specified
+        /// format provider.
+        /// </summary>
+        /// <param name="formatProvider">A <see cref="IFormatProvider"/> object that controls formatting.</param>
+        protected CalendarWriter(IFormatProvider formatProvider) : base(formatProvider)
         {
-            Encoding = encoding ?? Encoding.UTF8;
         }
 
-        public static iCalWriter Create(Stream stream)
+        /// <summary>
+        /// Gives the encoding used by this writer.
+        /// </summary>
+        public override Encoding Encoding => Encoding.UTF8;
+
+        /// <summary>
+        /// Writes the start tag of an iCalendar object or component with its specified name.
+        /// </summary>
+        /// <param name="name">The name of the iCalendar object or component.</param>
+        /// <example>
+        /// This example shows how to use the <see cref="WriteStartComponent(string)"/> method for a
+        /// VCALENDAR component.
+        /// <code>
+        /// WriteStartComponent("VCALENDAR");
+        /// </code>
+        /// Produces the following result:
+        /// <para/>
+        /// BEGIN:VCALENDAR
+        /// </example>
+        public CalendarWriter WriteStartComponent(string name)
         {
-            return Create(new StreamWriter(stream));
+            Write("BEGIN:"+ name);
+            return this;
         }
 
-        public static iCalWriter Create(StringBuilder builder)
+        /// <summary>
+        /// Writes the end tag of an iCalendar object or component with its specified name.
+        /// </summary>
+        /// <param name="name">The name of the iCalendar object or component.</param>
+        /// <example>
+        /// This example shows how to use the <see cref="WriteEndComponent(string)"/> method for a
+        /// VCALENDAR component.
+        /// <code>
+        /// WriteEndComponent("VCALENDAR");
+        /// </code>
+        /// Produces the following result:
+        /// <para/>
+        /// END:VCALENDAR
+        /// </example>
+        public CalendarWriter WriteEndComponent(string name)
         {
-            return Create(new StringWriter(builder));
+            Write("END:"+name);
+            return this;
         }
 
-        public static iCalWriter Create(TextWriter writer)
+        public CalendarWriter AppendEndComponent(string name)
         {
-            return new iCalWriter(writer.FormatProvider, writer.Encoding);
+            WriteLine();
+            return WriteEndComponent(name);
         }
 
-        public static iCalWriter Create(iCalWriter writer)
-        {
-            return new iCalWriter(writer.FormatProvider, writer.Encoding);
-        }
-
-        public void WriteStartComponent(string name)
-        {
-            WriteLine("BEGIN:{0}", name);
-        }
-
-        public void WriteEndComponent(string name)
-        {
-            WriteLine("END:{0}", name);
-        }
-
-        private string ToQuotedString(string value)
+        /// <summary>
+        /// Encloses a string value with double quotes ("...") and escapes any pre-existing quote (")
+        /// within the string with a (\").
+        /// </summary>
+        /// <param name="value">The value to be enclosed in double quotes.</param>
+        /// <returns>The value enclosed by double quotes.</returns>
+        public string ConvertToQuotedString(string value)
         {
             return DQUOTE + value.Replace(DQUOTE, EscapedDQUOTE) + DQUOTE;
         }
 
-
-        private string ToSAFE_STRING(string value)
+        /// <summary>
+        /// Escapes the following characters in the specified string value:
+        /// <para/>
+        /// ':' with '\:'
+        /// <para/>
+        /// ';' with '\;'
+        /// <para/>
+        /// ',' with '\,'
+        /// </summary>
+        /// <param name="value">The provided string value.</param>
+        /// <returns>
+        /// The string value where the colon, semicolon or comma characters have been escaped.
+        /// </returns>
+        public string ConvertToSAFE_STRING(string value)
         {
             return value
                 .Replace(COLON, EscapedCOLON)
@@ -77,65 +126,589 @@ namespace reexjungle.xcal.infrastructure.serialization
                 .Replace(COMMA, EscapedCOMMA);
         }
 
-        public string ToQSAFE_STRING(string value)
+        /// <summary>
+        /// Escapes the following characters in the specified string value:
+        /// <para/>
+        /// '\t' with '\0'
+        /// <para/>
+        /// '"' with '\";'
+        /// </summary>
+        /// <param name="value">The provided string value.</param>
+        /// <returns>
+        /// The string value where the horizontal tab or double quote characters have been escaped.
+        /// </returns>
+        public string ConvertToQSAFE_STRING(string value)
         {
             return value
                 .Replace(HTAB, EMPTY)
                 .Replace(DQUOTE, EscapedDQUOTE);
         }
 
-        public void WriteXName(string name)
+        /// <summary>
+        /// Writes the string value, in which the following characters have been escaped:
+        /// <para/>
+        /// ':' with '\:'
+        /// <para/>
+        /// ';' with '\;'
+        /// <para/>
+        /// ',' with '\,'
+        /// </summary>
+        /// <param name="value"></param>
+        public CalendarWriter WriteSafeStringValue(string value)
         {
-            Write("X-" + name);
+            base.Write(ConvertToSAFE_STRING(value));
+            return this;
         }
 
-        public void WriteValue(string value)
+        /// <summary>
+        /// Writes the value, enclosed by double quotes (")
+        /// </summary>
+        /// <param name="value">The string value to be enclosed by double quotes.</param>
+        public CalendarWriter WriteQuotedStringValue(string value)
         {
-            Write(value);
+            base.Write(ConvertToQuotedString(value));
+            return this;
         }
 
-        public void WriteSafeValue(string value)
+        public CalendarWriter WriteDQuote()
         {
-            Write(ToSAFE_STRING(value));
+            base.Write(DQUOTE);
+            return this;
         }
 
-        public void WriteQuotedValue(string value)
+        /// <summary>
+        /// Writes a comma character to the text string or stream.
+        /// </summary>
+        /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
+        public CalendarWriter WriteComma()
         {
-            Write(ToQuotedString(value));
+            base.Write(COMMA);
+            return this;
         }
 
-        public void WriteParameter(string parameterName, params string[] parameterValues)
+        /// <summary>
+        /// Writes a semicolon character to the text string or stream.
+        /// </summary>
+        /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
+        public CalendarWriter WriteSemicolon()
         {
-            Write("{0}={1}",parameterName, string.Join(",", parameterValues));
+            base.Write(SEMICOLON);
+            return this;
         }
 
-        public void WriteProperty(string propertyName, params string[] parameters)
+        /// <summary>
+        /// Writes a colon character to the text string or stream.
+        /// </summary>
+        /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
+        public CalendarWriter WriteColon()
         {
-            Write("{0};{1}", propertyName, string.Join(";", parameters));
+            base.Write(COLON);
+            return this;
         }
 
-        public void WriteProperty(string property)
+        /// <summary>
+        /// Writes the equality character to the text string or stream.
+        /// </summary>
+        /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
+        public CalendarWriter WriteEquals()
         {
-            WriteLine(property);
+            Write('=');
+            return this;
         }
 
-        public void WriteProperties(params string[] properties)
+        /// <summary>
+        /// Writes iCalendar VALUEs concatenated by a comma character to the text string or stream.
+        /// </summary>
+        /// <param name="values">The VALUEs to be written to the text string or stream.</param>
+        /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
+        public CalendarWriter Write(IEnumerable<string> values)
         {
-            for (var i = 0; i < properties.Length; i++)
+            base.Write(string.Join(COMMA, values));
+            return this;
+        }
+
+        /// <summary>
+        /// Writes iCalendar PARAMETERs to the text string or stream.
+        /// <para/>
+        /// It is assumed each PARAMETER is correctly formatted in the iCalendar format.
+        /// </summary>
+        /// <param name="parameters">The PARAMETERs to be written to the text string or stream.</param>
+        /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
+        public CalendarWriter WriteParameters(IEnumerable<string> parameters)
+        {
+            base.Write(string.Join(SEMICOLON, parameters));
+            return this;
+        }
+
+        public CalendarWriter WriteParameter(string name, string value)
+        {
+            base.Write("{0}={1}", name, value);
+            return this;
+        }
+
+        /// <summary>
+        /// Writes an iCalendar PARAMETER to the text string or stream.
+        /// </summary>
+        /// <param name="name">The name of the PARAMETER.</param>
+        /// <param name="values">The VALUEs of the PARAMETER.</param>
+        /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
+        public CalendarWriter WriteParameter(string name, IEnumerable<string> values)
+        {
+            base.Write("{0}={1}", name, string.Join(COMMA, values));
+            return this;
+        }
+
+        /// <summary>
+        /// Writes the non-standard experimental parameter by prefixing the parameter name with an 'X-'.
+        /// </summary>
+        /// <param name="name">The name of the non-standard experimental parameter.</param>
+        /// <param name="values">
+        /// The values of the expermimental parameter.
+        /// <para/>
+        /// Note: It is assumed each VALUE is correctly written in the iCalendar format.
+        /// </param>
+        /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
+        public CalendarWriter WriteXParameter(string name, IEnumerable<string> values)
+        {
+            return WriteParameter("X-" + name, values);
+        }
+
+        public CalendarWriter AppendParameter(string name, string value)
+        {
+            return WriteSemicolon().WriteParameter(name, value);
+        }
+
+        public CalendarWriter AppendParameter(string name, IEnumerable<string> values)
+        {
+            return WriteSemicolon().WriteParameter(name, values);
+        }
+
+        public CalendarWriter Append(string value)
+        {
+            WriteComma().Write(value);
+            return this;
+        }
+
+        public CalendarWriter AppendSpecial(string value)
+        {
+            WriteSemicolon().Write(value);
+            return this;
+        }
+
+        public CalendarWriter Append(IEnumerable<string> values)
+        {
+            return WriteComma().Write(values);
+        }
+
+        public CalendarWriter AppendSpecial(IEnumerable<string> values)
+        {
+            return WriteSemicolon().Write(values);
+        }
+
+        /// <summary>
+        /// Writes a property string with for a property that contains at least one parameter.
+        /// </summary>
+        /// <param name="name">The name of the property</param>
+        /// <param name="value"></param>
+        /// <param name="parameters">The parameters of the property</param>
+        /// <remarks>This method assumes each parameter of the property has been correctly formatted.</remarks>
+        /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
+        public CalendarWriter WriteProperty(string name, string value, IEnumerable<string> parameters = null)
+        {
+            if (parameters != null && parameters.Count() != 0)
             {
-                var property = properties[i];
-                WriteLine(@property);
+                base.Write("{0};{1}:{2}", name, string.Join(";", parameters), value);
+            }
+            else
+            {
+                base.Write("{0}:{1}", name, value);
+            }
+            return this;
+        }
+
+        public CalendarWriter AppendParameter(string parameter)
+        {
+            WriteSemicolon().Write(parameter);
+            return this;
+        }
+
+        public CalendarWriter AppendParameters(IEnumerable<string> parameters)
+        {
+            return WriteSemicolon().WriteParameters(parameters);
+        }
+
+        public CalendarWriter AppendPropertyValue(string value)
+        {
+            WriteColon();
+            base.Write(value);
+            return this;
+        }
+
+        public CalendarWriter AppendPropertyValues(IEnumerable<string> values)
+        {
+           return WriteColon().Write(values);
+        }
+
+        public CalendarWriter AppendProperty(string name, string value, IEnumerable<string> parameters = null)
+        {
+            WriteLine();
+            return WriteProperty(name, value, parameters);
+        }
+
+        /// <summary>
+        /// Writes properties, where each written property is followed by the line terminator.
+        /// </summary>
+        /// <param name="properties"></param>
+        /// <remarks>This method assumes each property has been correctly formatted.</remarks>
+        /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
+        public CalendarWriter WriteProperties(IEnumerable<string> properties)
+        {
+            foreach (var property in properties.Where(x => !string.IsNullOrWhiteSpace(x) && !string.IsNullOrEmpty(x)))
+            {
+                WriteLine();
+                base.Write(property);
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Writes an iCalendar COMPONENT with the specifed component name and properties of the
+        /// component to the text string or stream.
+        /// </summary>
+        /// <param name="name">The name of the component to be written.</param>
+        /// <param name="properties">
+        /// The properties of the component.
+        /// <para/>
+        /// Note: It is assumed each property is correctly written in the iCalendar format.
+        /// </param>
+        /// <remarks>This method assumes the parameters of the property have been correctly formatted.</remarks>
+        /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
+        public CalendarWriter WriteComponent(string name, IEnumerable<string> properties)
+        {
+            return WriteStartComponent(name)
+                .WriteProperties(properties)
+                .WriteEndComponent(name);
+        }
+
+        /// <summary>
+        /// Writes iCalendar COMPONENTs to the text string or stream.
+        /// </summary>
+        /// <param name="components"></param>
+        /// <returns>Writes iCalendar parameters to the text string or stream.</returns>
+        public CalendarWriter AppendComponents(IEnumerable<string> components)
+        {
+            foreach (var component in components.Where(x => !string.IsNullOrWhiteSpace(x) && !string.IsNullOrEmpty(x)))
+            {
+                WriteLine();
+                base.Write(component);
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Splits long iCalendar content lines into multiple lines.
+        /// <para>
+        /// That is, a long line can be split between any two characters by inserting a CRL
+        /// immediately followed by a single linear white-space character(i.e., SPACE or horizontal tab).
+        /// </para>
+        /// <para>
+        /// Any sequence of CRLF followed immediately by a single linear white-space character is
+        /// ignored(i.e., removed) when processing the content type.
+        /// </para>
+        /// <para/>
+        /// Note: Each split line is not longer than 75 octets excluding line breaks.
+        /// </summary>
+        /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
+        public abstract CalendarWriter FoldContentlines();
+
+        /// <summary>
+        /// Joins
+        /// </summary>
+        /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
+        public abstract CalendarWriter UnfoldContentlines();
+    }
+
+    public class CalendarTextWriter : CalendarWriter
+    {
+        private StringBuilder builder;
+        private bool opened;
+        private static readonly string CRLF = Environment.NewLine;
+        private const int MAX = 75;
+
+        public CalendarTextWriter() : this(new StringBuilder())
+        {
+        }
+
+        public CalendarTextWriter(StringBuilder builder) : this(builder, CultureInfo.CurrentCulture)
+        {
+        }
+
+        public CalendarTextWriter(StringBuilder builder, IFormatProvider provider) : base(provider)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+
+            this.builder = builder;
+            opened = true;
+        }
+
+        public CalendarTextWriter(IFormatProvider provider) : base(provider)
+        {
+            builder = new StringBuilder();
+            opened = true;
+        }
+
+        public StringBuilder Datasource => builder;
+
+        public override void Write(char value)
+        {
+            if (!opened) throw new ObjectDisposedException("CalendarTextWriter", "Writer closed");
+            builder.Append(value);
+        }
+
+        public override void Write(char[] buffer, int index, int count)
+        {
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+            if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+
+            if (!opened) throw new ObjectDisposedException("CalendarTextWriter", "Writer closed");
+
+            builder.Append(buffer, index, count);
+        }
+
+        public override void Write(string value)
+        {
+            if (!opened) throw new ObjectDisposedException("CalendarTextWriter", "Writer closed");
+            if (value != null) builder.Append(value);
+        }
+
+        public override void Close()
+        {
+            Dispose(true);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            opened = false;
+            base.Dispose(disposing);
+        }
+
+        public override string ToString()
+        {
+            return builder.ToString();
+        }
+
+        public static CalendarWriter Create(StringBuilder builder, IFormatProvider provider)
+        {
+            return new CalendarTextWriter(builder, provider);
+        }
+
+        public static CalendarWriter Create(IFormatProvider provider)
+        {
+            return new CalendarTextWriter(provider);
+        }
+
+        private static string Fold(string value, string newline, int max, Encoding encoding)
+        {
+            var lines = value.Split(new[] { newline }, StringSplitOptions.RemoveEmptyEntries);
+
+            using (var ms = new MemoryStream(value.Length))
+            {
+                var crlf = encoding.GetBytes(newline); //CRLF
+                var crlfs = encoding.GetBytes(newline + " "); //CRLF and SPACE
+                foreach (var line in lines)
+                {
+                    var bytes = encoding.GetBytes(line);
+                    var size = bytes.Length;
+                    if (size <= max)
+                    {
+                        ms.Write(bytes, 0, size);
+                        ms.Write(crlf, 0, crlf.Length);
+                    }
+                    else
+                    {
+                        var blocksize = size / max; //calculate block length
+                        var remainder = size % max; //calculate remaining length
+                        var b = 0;
+                        while (b < blocksize)
+                        {
+                            ms.Write(bytes, (b++) * max, max);
+                            ms.Write(crlfs, 0, crlfs.Length);
+                        }
+                        if (remainder > 0)
+                        {
+                            ms.Write(bytes, blocksize * max, remainder);
+                            ms.Write(crlf, 0, crlf.Length);
+                        }
+                    }
+                }
+
+                return encoding.GetString(ms.ToArray());
             }
         }
 
-        public void WriteComponent(string componentName, params string[] properties)
+        /// <summary>
+        /// Splits long iCalendar content lines into multiple lines.
+        /// <para>
+        /// That is, a long line can be split between any two characters by inserting a CRL
+        /// immediately followed by a single linear white-space character(i.e., SPACE or horizontal tab).
+        /// </para>
+        /// <para>
+        /// Any sequence of CRLF followed immediately by a single linear white-space character is
+        /// ignored(i.e., removed) when processing the content type.
+        /// </para>
+        /// <para/>
+        /// Note: Each split line is not longer than 75 octets excluding line breaks.
+        /// </summary>
+        /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
+        public override CalendarWriter FoldContentlines()
         {
-            WriteStartComponent(componentName);
-            WriteProperties(properties);
-            WriteEndComponent(componentName);
+            var unfolded = builder.ToString();
+            if (!string.IsNullOrEmpty(unfolded) && !string.IsNullOrWhiteSpace(unfolded))
+            {
+                var folded = Fold(unfolded, CRLF, MAX, Encoding);
+                builder = new StringBuilder(folded, folded.Length);
+            }
+            return this;
         }
 
-        public override Encoding Encoding { get; }
+        public override CalendarWriter UnfoldContentlines()
+        {
+            var folded = builder.ToString();
+            if (!string.IsNullOrEmpty(folded) && !string.IsNullOrWhiteSpace(folded))
+            {
+                var unfolded = folded.Replace(CRLF + " ", string.Empty);
+                builder = new StringBuilder(unfolded, unfolded.Length);
+            }
+            return this;
+        }
     }
 
+    public class CalendarStreamWriter : CalendarWriter
+    {
+        private Stream stream;
+        private static readonly string CRLF = Environment.NewLine;
+        private const int MAX = 75;
+        private const int BUFSIZE = 16 * 1024; //friendly to most CPU L1 caches
+
+        public Stream Datasource => stream;
+
+        public CalendarStreamWriter() : this(CultureInfo.CurrentCulture)
+        {
+        }
+
+        public CalendarStreamWriter(IFormatProvider formatProvider) : base(formatProvider)
+        {
+            stream = new MemoryStream();
+        }
+
+        public CalendarStreamWriter(Stream stream, IFormatProvider formatProvider) : base(formatProvider)
+        {
+            this.stream = new MemoryStream();
+            CopyStream(stream, this.stream, BUFSIZE);
+        }
+
+        public CalendarStreamWriter(Stream stream) : base(CultureInfo.CurrentCulture)
+        {
+            this.stream = new MemoryStream();
+            CopyStream(stream, this.stream, BUFSIZE);
+        }
+
+        public static CalendarStreamWriter Create(Stream stream, IFormatProvider formatProvider)
+        {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            return new CalendarStreamWriter(stream, formatProvider);
+        }
+
+        private static void CopyStream(Stream input, Stream output, int bufferSize)
+        {
+            var buffer = new byte[bufferSize];
+            int read;
+            while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                output.Write(buffer, 0, read);
+            }
+        }
+
+        private static Stream Fold(Stream stream, int bufferSize, string newline, int max, Encoding encoding)
+        {
+            var ms = CopyStream(stream, bufferSize);
+            var crlf = encoding.GetBytes(newline); //CRLF
+            var crlfs = encoding.GetBytes(newline + " "); //CRLF and SPACE
+            string line;
+
+            var reader = new StreamReader(stream);
+            while ((line = reader.ReadLine()) != null)
+            {
+                var bytes = encoding.GetBytes(line);
+                var size = bytes.Length;
+                if (size <= max)
+                {
+                    ms.Write(bytes, 0, size);
+                    ms.Write(crlf, 0, crlf.Length);
+                }
+                else
+                {
+                    var blocksize = size / max; //calculate block length
+                    var remainder = size % max; //calculate remaining length
+                    var b = 0;
+                    while (b < blocksize)
+                    {
+                        ms.Write(bytes, (b++) * max, max);
+                        ms.Write(crlfs, 0, crlfs.Length);
+                    }
+                    if (remainder > 0)
+                    {
+                        ms.Write(bytes, blocksize * max, remainder);
+                        ms.Write(crlf, 0, crlf.Length);
+                    }
+                }
+            }
+
+            return ms;
+        }
+
+        private static void ReinitializeStream(ref Stream stream)
+        {
+            stream.Dispose();
+            stream = new MemoryStream();
+        }
+
+        private static void ReinitializeStream(ref Stream stream, byte[] bytes)
+        {
+            stream.Dispose();
+            stream = new MemoryStream(bytes, 0, bytes.Length);
+        }
+
+        private static Stream CopyStream(Stream stream, int bufferSize)
+        {
+            var copy = new MemoryStream();
+            CopyStream(stream, copy, bufferSize);
+            return copy;
+        }
+
+        public override CalendarWriter FoldContentlines()
+        {
+            if (stream.Length != 0L)
+            {
+                var folded = Fold(stream, BUFSIZE, CRLF, MAX, Encoding);
+                ReinitializeStream(ref stream);
+                CopyStream(folded, stream, BUFSIZE);
+            }
+            return this;
+        }
+
+        public override CalendarWriter UnfoldContentlines()
+        {
+            if (stream.Length != 0L)
+            {
+                var reader = new StreamReader(stream);
+                var folded = reader.ReadToEnd();
+                var unfolded = folded.Replace(CRLF + " ", string.Empty);
+                var bytes = Encoding.GetBytes(unfolded);
+                ReinitializeStream(ref stream, bytes);
+            }
+            return this;
+        }
+    }
 }

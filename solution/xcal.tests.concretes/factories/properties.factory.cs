@@ -85,9 +85,9 @@ namespace reexjungle.xcal.tests.concretes.factories
 
         public PropertiesFactory(IKeyGenerator<Guid> keyGenerator, IValuesFactory valuesFactory, IParametersFactory parametersFactory)
         {
-            if (keyGenerator == null) throw new ArgumentNullException("keyGenerator");
-            if (valuesFactory == null) throw new ArgumentNullException("valuesFactory");
-            if (parametersFactory == null) throw new ArgumentNullException("parametersFactory");
+            if (keyGenerator == null) throw new ArgumentNullException(nameof(keyGenerator));
+            if (valuesFactory == null) throw new ArgumentNullException(nameof(valuesFactory));
+            if (parametersFactory == null) throw new ArgumentNullException(nameof(parametersFactory));
 
             this.keyGenerator = keyGenerator;
             this.valuesFactory = valuesFactory;
@@ -106,7 +106,7 @@ namespace reexjungle.xcal.tests.concretes.factories
             return Builder<ATTACH_BINARY>.CreateListOfSize(quantity)
                 .All()
                 .With(x => x.Id = keyGenerator.GetNext())
-                .And(x => x.Content = valuesFactory.CreateBinary())
+                .And(x => x.Content = "")
                 .And(x => x.FormatType = parametersFactory.CreateFormatType())
                 .Build();
         }
@@ -121,7 +121,7 @@ namespace reexjungle.xcal.tests.concretes.factories
             return Builder<ATTACH_URI>.CreateListOfSize(quantity)
                 .All()
                 .With(x => x.Id = keyGenerator.GetNext())
-                .And(x => x.Content = valuesFactory.CreateUri())
+                .And(x => x.Content = valuesFactory.CreateUri().ToString())
                 .And(x => x.FormatType = parametersFactory.CreateFormatType())
                 .Build();
         }

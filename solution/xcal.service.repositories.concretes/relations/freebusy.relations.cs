@@ -23,7 +23,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         /// <summary>
         /// Gets or sets the unique identifier of the related attendee identifier entity
         /// </summary>
-        [ForeignKey(typeof(ATTACH_BINARY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
+        [ForeignKey(typeof(ATTACH), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public Guid AttachmentId { get; set; }
 
         public bool Equals(REL_FREEBUSIES_ATTACHBINS other)
@@ -222,7 +222,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         }
     }
 
-    public class REL_FREEBUSIES_INFOS : IEquatable<REL_FREEBUSIES_INFOS>, IContainsKey<Guid>
+    public class REL_FREEBUSIES_VFREEBUSIES : IEquatable<REL_FREEBUSIES_VFREEBUSIES>, IContainsKey<Guid>
     {
         /// <summary>
         /// Gets or sets the unique identifier of the event-contact relation
@@ -242,7 +242,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
         [ForeignKey(typeof(FREEBUSY), OnDelete = "CASCADE", OnUpdate = "CASCADE")]
         public Guid InfoId { get; set; }
 
-        public bool Equals(REL_FREEBUSIES_INFOS other)
+        public bool Equals(REL_FREEBUSIES_VFREEBUSIES other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -254,7 +254,7 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((REL_FREEBUSIES_INFOS)obj);
+            return Equals((REL_FREEBUSIES_VFREEBUSIES)obj);
         }
 
         public override int GetHashCode()
@@ -265,12 +265,12 @@ namespace reexjungle.xcal.service.repositories.concretes.relations
             }
         }
 
-        public static bool operator ==(REL_FREEBUSIES_INFOS left, REL_FREEBUSIES_INFOS right)
+        public static bool operator ==(REL_FREEBUSIES_VFREEBUSIES left, REL_FREEBUSIES_VFREEBUSIES right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(REL_FREEBUSIES_INFOS left, REL_FREEBUSIES_INFOS right)
+        public static bool operator !=(REL_FREEBUSIES_VFREEBUSIES left, REL_FREEBUSIES_VFREEBUSIES right)
         {
             return !Equals(left, right);
         }

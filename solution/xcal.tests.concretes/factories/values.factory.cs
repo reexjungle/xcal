@@ -55,7 +55,7 @@ namespace reexjungle.xcal.tests.concretes.factories
 
         public ValuesFactory(IKeyGenerator<Guid> keyGenerator)
         {
-            if (keyGenerator == null) throw new ArgumentNullException("keyGenerator");
+            if (keyGenerator == null) throw new ArgumentNullException(nameof(keyGenerator));
             this.keyGenerator = keyGenerator;
 
             rndGenerator = new RandomGenerator();
@@ -133,19 +133,6 @@ namespace reexjungle.xcal.tests.concretes.factories
                 WEEKDAY.SA,
                 WEEKDAY.SU,
             });
-        }
-
-        public BINARY CreateBinary()
-        {
-            return CreateBinaries(1).First();
-        }
-
-        public IEnumerable<BINARY> CreateBinaries(int quantity)
-        {
-            return Builder<BINARY>.CreateListOfSize(quantity)
-                .All()
-                .With(x => x.Value = Pick<string>.RandomItemFrom(new[] { rndGenerator.Phrase(rndGenerator.Next(1, 100)) }))
-                .Build();
         }
 
         public DATE CreateDate()

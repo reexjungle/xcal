@@ -81,12 +81,11 @@ namespace reexjungle.xcal.service.validators.concretes
         }
     }
 
-    public class AttachmentBinaryValidator : AttachmentBaseValidator<ATTACH_BINARY>
+    public class AttachmentBinaryValidator : AttachmentBaseValidator<ATTACH>
     {
         public AttachmentBinaryValidator()
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
-            RuleFor(x => x.Content).NotNull().SetValidator(new BinaryValidator());
         }
     }
 

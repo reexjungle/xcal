@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
+using reexjungle.xcal.infrastructure.serialization;
 
 namespace reexjungle.xcal.service.repositories.concretes.ormlite
 {
@@ -29,10 +30,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
         /// <summary>
         /// Gets the connection factory of this repository.
         /// </summary>
-        public IDbConnectionFactory DbConnectionFactory
-        {
-            get { return factory; }
-        }
+        public IDbConnectionFactory DbConnectionFactory => factory;
 
         /// <summary>
         /// Constructor
@@ -49,11 +47,11 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
             IEmailAlarmRepository ealarmrepository,
             IDbConnectionFactory factory)
         {
-            if (keygenerator == null) throw new ArgumentNullException("keygenerator");
-            if (aalarmrepository == null) throw new ArgumentNullException("aalarmrepository");
-            if (dalarmrepository == null) throw new ArgumentNullException("dalarmrepository");
-            if (ealarmrepository == null) throw new ArgumentNullException("ealarmrepository");
-            if (factory == null) throw new ArgumentNullException("factory");
+            if (keygenerator == null) throw new ArgumentNullException(nameof(keygenerator));
+            if (aalarmrepository == null) throw new ArgumentNullException(nameof(aalarmrepository));
+            if (dalarmrepository == null) throw new ArgumentNullException(nameof(dalarmrepository));
+            if (ealarmrepository == null) throw new ArgumentNullException(nameof(ealarmrepository));
+            if (factory == null) throw new ArgumentNullException(nameof(factory));
 
             this.keygenerator = keygenerator;
             this.aalarmrepository = aalarmrepository;
@@ -96,8 +94,8 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
             var organizer = entity.Organizer;
             var recur = entity.RecurrenceRule;
             var attendees = entity.Attendees;
-            var attachbins = entity.AttachmentBinaries;
-            var attachuris = entity.AttachmentUris;
+            var attachbins = entity.Attachments.OfType<ATTACH_BINARY>().ToList();
+            var attachuris = entity.Attachments.OfType<ATTACH_URI>().ToList();
             var contacts = entity.Contacts;
             var comments = entity.Comments;
             var rdates = entity.RecurrenceDates;
@@ -105,9 +103,9 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
             var relateds = entity.RelatedTos;
             var resources = entity.Resources;
             var reqstats = entity.RequestStatuses;
-            var aalarms = entity.AudioAlarms;
-            var dalarms = entity.DisplayAlarms;
-            var ealarms = entity.EmailAlarms;
+            var aalarms = entity.Alarms.OfType<AUDIO_ALARM>().ToList();
+            var dalarms = entity.Alarms.OfType<DISPLAY_ALARM>().ToList();
+            var ealarms = entity.Alarms.OfType<EMAIL_ALARM>().ToList();
 
             #endregion retrieve attributes of entity
 
@@ -346,7 +344,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 x.Created,
                 x.Description,
                 x.Classification,
-                x.Position,
+                Position = x.GeoPosition,
                 x.LastModified,
                 x.Location,
                 x.Priority,
@@ -364,8 +362,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
             Expression<Func<VEVENT, object>> relations = x => new
             {
                 x.Attendees,
-                x.AttachmentBinaries,
-                x.AttachmentUris,
+                x.Attachments,
                 x.Contacts,
                 x.Comments,
                 x.RecurrenceDates,
@@ -373,9 +370,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 x.RelatedTos,
                 x.Resources,
                 x.RequestStatuses,
-                x.AudioAlarms,
-                x.DisplayAlarms,
-                x.EmailAlarms,
+                x.Alarms,
                 x.Organizer,
                 x.RecurrenceId,
             };
@@ -400,8 +395,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                     Expression<Func<VEVENT, object>> orgexpr = y => y.Organizer;
                     Expression<Func<VEVENT, object>> recurexpr = y => y.RecurrenceRule;
                     Expression<Func<VEVENT, object>> attendsexpr = y => y.Attendees;
-                    Expression<Func<VEVENT, object>> attachbinsexpr = y => y.AttachmentBinaries;
-                    Expression<Func<VEVENT, object>> attachurisexpr = y => y.AttachmentUris;
+                    Expression<Func<VEVENT, object>> attachsexpr = y => y.Attachments;
                     Expression<Func<VEVENT, object>> contactsexpr = y => y.Contacts;
                     Expression<Func<VEVENT, object>> commentsexpr = y => y.Comments;
                     Expression<Func<VEVENT, object>> rdatesexpr = y => y.RecurrenceDates;
@@ -409,9 +403,8 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                     Expression<Func<VEVENT, object>> relatedtosexpr = y => y.RelatedTos;
                     Expression<Func<VEVENT, object>> resourcesexpr = y => y.Resources;
                     Expression<Func<VEVENT, object>> reqstatsexpr = y => y.RequestStatuses;
-                    Expression<Func<VEVENT, object>> aalarmexpr = y => y.AudioAlarms;
-                    Expression<Func<VEVENT, object>> dalarmexpr = y => y.DisplayAlarms;
-                    Expression<Func<VEVENT, object>> ealarmexpr = y => y.EmailAlarms;
+                    Expression<Func<VEVENT, object>> alarmsexpr = y => y.Alarms;
+
 
                     #region save relational attributes of entities
 
@@ -469,13 +462,16 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                         db.RemoveAll(orattendees);
                     }
 
-                    if (selection.Contains(attachbinsexpr.GetMemberName()))
+                    if (selection.Contains(attachsexpr.GetMemberName()))
                     {
+                        var attachbins = source.Attachments.OfType<ATTACH_BINARY>();
+                        var attachuris = source.Attachments.OfType<ATTACH_URI>();
+
                         var orattachbins = db.Select<REL_EVENTS_ATTACHBINS>(q => Sql.In(q.EventId, okeys));
-                        if (!source.AttachmentUris.NullOrEmpty())
+                        if (attachbins.Any())
                         {
-                            db.SaveAll(source.AttachmentUris.Distinct());
-                            var rattachbins = okeys.SelectMany(x => source.AttachmentUris.Select(y => new REL_EVENTS_ATTACHBINS
+                            db.SaveAll(attachbins);
+                            var rattachbins = okeys.SelectMany(x => attachbins.Select(y => new REL_EVENTS_ATTACHBINS
                             {
                                 Id = keygenerator.GetNext(),
                                 EventId = x,
@@ -486,14 +482,12 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                             db.SaveAll(rattachbins);
                         }
                         else db.RemoveAll(orattachbins);
-                    }
-                    if (selection.Contains(attachurisexpr.GetMemberName()))
-                    {
+
                         var orattachuris = db.Select<REL_EVENTS_ATTACHURIS>(q => Sql.In(q.EventId, okeys));
-                        if (!source.AttachmentUris.NullOrEmpty())
+                        if (attachuris.Any())
                         {
-                            db.SaveAll(source.AttachmentUris.Distinct());
-                            var rattachuris = okeys.SelectMany(x => source.AttachmentUris.Select(y => new REL_EVENTS_ATTACHURIS
+                            db.SaveAll(attachuris);
+                            var rattachuris = okeys.SelectMany(x => attachuris.Select(y => new REL_EVENTS_ATTACHURIS
                             {
                                 Id = keygenerator.GetNext(),
                                 EventId = x,
@@ -504,6 +498,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                         }
                         else db.RemoveAll(orattachuris);
                     }
+
 
                     if (selection.Contains(contactsexpr.GetMemberName()))
                     {
@@ -632,13 +627,17 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                         else db.RemoveAll(orreqstats);
                     }
 
-                    if (selection.Contains(aalarmexpr.GetMemberName()))
+                    if (selection.Contains(alarmsexpr.GetMemberName()))
                     {
+                        var aalarms = source.Alarms.OfType<AUDIO_ALARM>();
+                        var ealarms = source.Alarms.OfType<EMAIL_ALARM>();
+                        var dalarms = source.Alarms.OfType<DISPLAY_ALARM>();
+
                         var oraalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => Sql.In(q.EventId, okeys));
-                        if (!source.AudioAlarms.NullOrEmpty())
+                        if (aalarms.Any())
                         {
-                            aalarmrepository.SaveAll(source.AudioAlarms.Distinct());
-                            var raalarms = okeys.SelectMany(x => source.AudioAlarms.Select(y => new REL_EVENTS_AUDIO_ALARMS
+                            aalarmrepository.SaveAll(aalarms);
+                            var raalarms = okeys.SelectMany(x => source.Alarms.Select(y => new REL_EVENTS_AUDIO_ALARMS
                             {
                                 Id = keygenerator.GetNext(),
                                 EventId = x,
@@ -648,15 +647,12 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                             db.SaveAll(raalarms);
                         }
                         else db.RemoveAll(oraalarms);
-                    }
 
-                    if (selection.Contains(dalarmexpr.GetMemberName()))
-                    {
                         var ordalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => Sql.In(q.EventId, okeys));
-                        if (!source.DisplayAlarms.NullOrEmpty())
+                        if (dalarms.Any())
                         {
-                            dalarmrepository.SaveAll(source.DisplayAlarms.Distinct());
-                            var rdalarms = okeys.SelectMany(x => source.DisplayAlarms.Select(y => new REL_EVENTS_DISPLAY_ALARMS
+                            dalarmrepository.SaveAll(dalarms);
+                            var rdalarms = okeys.SelectMany(x => dalarms.Select(y => new REL_EVENTS_DISPLAY_ALARMS
                             {
                                 Id = keygenerator.GetNext(),
                                 EventId = x,
@@ -666,15 +662,12 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                             db.SaveAll(rdalarms);
                         }
                         else db.RemoveAll(ordalarms);
-                    }
 
-                    if (selection.Contains(ealarmexpr.GetMemberName()))
-                    {
                         var orealarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => Sql.In(q.EventId, okeys));
-                        if (!source.EmailAlarms.NullOrEmpty())
+                        if (ealarms.Any())
                         {
-                            ealarmrepository.SaveAll(source.EmailAlarms.Distinct());
-                            var realarms = okeys.SelectMany(x => source.EmailAlarms.Select(y => new REL_EVENTS_EMAIL_ALARMS
+                            ealarmrepository.SaveAll(ealarms);
+                            var realarms = okeys.SelectMany(x => ealarms.Select(y => new REL_EVENTS_EMAIL_ALARMS
                             {
                                 Id = keygenerator.GetNext(),
                                 EventId = x,
@@ -693,11 +686,12 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 var sprimitivelist = sprimitives as IList<string> ?? sprimitives.ToList();
                 if (!sprimitivelist.NullOrEmpty())
                 {
-                    var patchstr = string.Format("f => new {{ {0} }}", string.Join(", ", sprimitivelist.Select(x => string.Format("f.{0}", x))));
+                    var patchstr = $"f => new {{ {string.Join(", ", sprimitivelist.Select(x => $"f.{x}"))} }}";
 
                     var patchexpr = patchstr.CompileToExpressionFunc<VEVENT, object>(
                         CodeDomLanguage.csharp,
                         "System.dll", "System.Core.dll",
+                        typeof(CalendarWriter).Assembly.Location,
                         typeof(VEVENT).Assembly.Location,
                         typeof(IContainsKey<Guid>).Assembly.Location);
 
@@ -719,21 +713,23 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
         {
             #region 1. retrieve attributes of entities
 
-            var organizers = entities.Where(x => x.Organizer != null).Select(x => x.Organizer).ToList();
-            var recurs = entities.Where(x => x.RecurrenceRule != null).Select(x => x.RecurrenceRule).ToList();
-            var attendees = entities.Where(x => !x.Attendees.NullOrEmpty()).SelectMany(x => x.Attendees).ToList();
-            var attachbins = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty()).SelectMany(x => x.AttachmentBinaries).ToList();
-            var attachuris = entities.Where(x => !x.AttachmentUris.NullOrEmpty()).SelectMany(x => x.AttachmentUris).ToList();
-            var contacts = entities.Where(x => !x.Contacts.NullOrEmpty()).SelectMany(x => x.Contacts).ToList();
-            var comments = entities.Where(x => !x.Comments.NullOrEmpty()).SelectMany(x => x.Comments).ToList();
-            var rdates = entities.Where(x => !x.RecurrenceDates.NullOrEmpty()).SelectMany(x => x.RecurrenceDates).ToList();
-            var exdates = entities.Where(x => !x.ExceptionDates.NullOrEmpty()).SelectMany(x => x.ExceptionDates).ToList();
-            var relateds = entities.Where(x => !x.RelatedTos.NullOrEmpty()).SelectMany(x => x.RelatedTos).ToList();
-            var resources = entities.Where(x => !x.Resources.NullOrEmpty()).SelectMany(x => x.Resources).ToList();
-            var reqstats = entities.Where(x => !x.Resources.NullOrEmpty()).SelectMany(x => x.RequestStatuses).ToList();
-            var aalarms = entities.Where(x => !x.AudioAlarms.NullOrEmpty()).SelectMany(x => x.AudioAlarms).ToList();
-            var dalarms = entities.Where(x => !x.DisplayAlarms.NullOrEmpty()).SelectMany(x => x.DisplayAlarms).ToList();
-            var ealarms = entities.Where(x => !x.EmailAlarms.NullOrEmpty()).SelectMany(x => x.EmailAlarms).ToList();
+            var organizers = entities.Select(x => x.Organizer).ToList();
+            var recurs = entities.Select(x => x.RecurrenceRule).ToList();
+            var attendees = entities.SelectMany(x => x.Attendees).ToList();
+            var attachments = entities.SelectMany(x => x.Attachments).ToList();
+            var attachbins = attachments.OfType<ATTACH_BINARY>().ToList();
+            var attachuris = attachments.OfType<ATTACH_URI>().ToList();
+            var contacts = entities.SelectMany(x => x.Contacts).ToList();
+            var comments = entities.SelectMany(x => x.Comments).ToList();
+            var rdates = entities.SelectMany(x => x.RecurrenceDates).ToList();
+            var exdates = entities.SelectMany(x => x.ExceptionDates).ToList();
+            var relateds = entities.SelectMany(x => x.RelatedTos).ToList();
+            var resources = entities.SelectMany(x => x.Resources).ToList();
+            var reqstats = entities.SelectMany(x => x.RequestStatuses).ToList();
+            var alarms = entities.SelectMany(x => x.Alarms).ToList();
+            var aalarms = alarms.OfType<AUDIO_ALARM>().ToList();
+            var dalarms = alarms.OfType<DISPLAY_ALARM>().ToList();
+            var ealarms = alarms.OfType<EMAIL_ALARM>().ToList();
 
             #endregion 1. retrieve attributes of entities
 
@@ -806,12 +802,11 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 }
                 else db.RemoveAll(orattendees);
 
-                if (!attachbins.NullOrEmpty())
+                if (attachbins.Any())
                 {
                     db.SaveAll(attachbins.Distinct());
 
-                    var rattachbins = entities.Where(x => !x.AttachmentBinaries.NullOrEmpty())
-                        .SelectMany(e => e.AttachmentBinaries
+                    var rattachbins = entities.SelectMany(e => attachbins
                             .Select(x => new REL_EVENTS_ATTACHBINS
                             {
                                 Id = keygenerator.GetNext(),
@@ -823,11 +818,10 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 }
                 else db.RemoveAll(orattachbins);
 
-                if (!attachuris.NullOrEmpty())
+                if (attachuris.Any())
                 {
                     db.SaveAll(attachuris.Distinct());
-                    var rattachuris = entities.Where(x => !x.AttachmentBinaries.OfType<ATTACH_URI>().NullOrEmpty())
-                        .SelectMany(e => e.AttachmentBinaries.OfType<ATTACH_URI>()
+                    var rattachuris = entities.SelectMany(e => attachuris
                             .Select(x => new REL_EVENTS_ATTACHURIS
                             {
                                 Id = keygenerator.GetNext(),
@@ -936,11 +930,10 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 }
                 else db.RemoveAll(orreqstats);
 
-                if (!aalarms.NullOrEmpty())
+                if (aalarms.Any())
                 {
                     aalarmrepository.SaveAll(aalarms.Distinct());
-                    var raalarms = entities.Where(x => !x.AudioAlarms.NullOrEmpty())
-                        .SelectMany(e => e.AudioAlarms.Select(x => new REL_EVENTS_AUDIO_ALARMS
+                    var raalarms = entities.SelectMany(e => aalarms.Select(x => new REL_EVENTS_AUDIO_ALARMS
                         {
                             Id = keygenerator.GetNext(),
                             EventId = e.Id,
@@ -950,11 +943,10 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 }
                 else db.RemoveAll(oraalarms);
 
-                if (!dalarms.NullOrEmpty())
+                if (dalarms.Any())
                 {
                     dalarmrepository.SaveAll(dalarms.Distinct());
-                    var rdalarms = entities.Where(x => !x.DisplayAlarms.NullOrEmpty())
-                        .SelectMany(e => e.DisplayAlarms.Select(x => new REL_EVENTS_DISPLAY_ALARMS
+                    var rdalarms = entities.SelectMany(e => dalarms.Select(x => new REL_EVENTS_DISPLAY_ALARMS
                     {
                         Id = keygenerator.GetNext(),
                         EventId = e.Id,
@@ -965,11 +957,10 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 }
                 else db.RemoveAll(ordalarms);
 
-                if (!ealarms.NullOrEmpty())
+                if (ealarms.Any())
                 {
                     ealarmrepository.SaveAll(ealarms.Distinct());
-                    var realarms = entities.Where(x => !x.EmailAlarms.NullOrEmpty())
-                        .SelectMany(e => e.EmailAlarms.Select(x => new REL_EVENTS_EMAIL_ALARMS
+                    var realarms = entities.SelectMany(e => ealarms.Select(x => new REL_EVENTS_EMAIL_ALARMS
                         {
                             Id = keygenerator.GetNext(),
                             EventId = e.Id,
@@ -1013,13 +1004,13 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                     r => r.AttachmentId,
                     r => r.EventId,
                     e => e.Id == dry.Id);
-                if (!attachbins.NullOrEmpty()) dry.AttachmentBinaries.MergeRange(attachbins);
+                if (!attachbins.NullOrEmpty()) dry.Attachments.MergeRange(attachbins);
 
                 var attachuris = db.Select<ATTACH_URI, VEVENT, REL_EVENTS_ATTACHURIS>(
                     r => r.AttachmentId,
                     r => r.EventId,
                     e => e.Id == dry.Id);
-                if (!attachuris.NullOrEmpty()) dry.AttachmentUris.MergeRange(attachuris);
+                if (!attachuris.NullOrEmpty()) dry.Attachments.MergeRange(attachuris);
 
                 var attendees = db.Select<ATTENDEE, VEVENT, REL_EVENTS_ATTENDEES>(
                     r => r.AttendeeId,
@@ -1072,19 +1063,19 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                 var raalarms = db.Select<REL_EVENTS_AUDIO_ALARMS>(q => q.EventId == dry.Id);
                 if (!raalarms.NullOrEmpty())
                 {
-                    dry.AudioAlarms.MergeRange(aalarmrepository.FindAll(raalarms.Select(x => x.AlarmId).ToList()));
+                    dry.Alarms.MergeRange(aalarmrepository.FindAll(raalarms.Select(x => x.AlarmId).ToList()));
                 }
 
                 var rdalarms = db.Select<REL_EVENTS_DISPLAY_ALARMS>(q => q.EventId == dry.Id);
                 if (!rdalarms.NullOrEmpty())
                 {
-                    dry.DisplayAlarms.MergeRange(dalarmrepository.FindAll(rdalarms.Select(x => x.AlarmId).ToList()));
+                    dry.Alarms.MergeRange(dalarmrepository.FindAll(rdalarms.Select(x => x.AlarmId).ToList()));
                 }
 
                 var realarms = db.Select<REL_EVENTS_EMAIL_ALARMS>(q => q.EventId == dry.Id);
                 if (!realarms.NullOrEmpty())
                 {
-                    dry.EmailAlarms.MergeRange(ealarmrepository.FindAll(realarms.Select(x => x.AlarmId).ToList()));
+                    dry.Alarms.MergeRange(ealarmrepository.FindAll(realarms.Select(x => x.AlarmId).ToList()));
                 } 
             }
 
@@ -1191,7 +1182,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                               join e in events on r.EventId equals e.Id
                                               where e.Id == x.Id
                                               select y;
-                            if (!xattachbins.NullOrEmpty()) x.AttachmentBinaries.MergeRange(xattachbins);
+                            if (!xattachbins.NullOrEmpty()) x.Attachments.MergeRange(xattachbins);
                         }
 
                         if (!attachuris.NullOrEmpty())
@@ -1201,7 +1192,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                               join e in events on r.EventId equals e.Id
                                               where e.Id == x.Id
                                               select y;
-                            if (!xattachuris.NullOrEmpty()) x.AttachmentUris.MergeRange(xattachuris);
+                            if (!xattachuris.NullOrEmpty()) x.Attachments.MergeRange(xattachuris);
                         }
 
                         if (!contacts.NullOrEmpty())
@@ -1272,7 +1263,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                             join e in events on r.EventId equals e.Id
                                             where e.Id == x.Id
                                             select y;
-                            if (!xraalarms.NullOrEmpty()) x.AudioAlarms.MergeRange(xraalarms);
+                            if (!xraalarms.NullOrEmpty()) x.Alarms.MergeRange(xraalarms);
                         }
 
                         if (!dalarms.NullOrEmpty())
@@ -1282,7 +1273,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                             join e in events on r.EventId equals e.Id
                                             where e.Id == x.Id
                                             select y;
-                            if (!xrdalarms.NullOrEmpty()) x.DisplayAlarms.MergeRange(xrdalarms);
+                            if (!xrdalarms.NullOrEmpty()) x.Alarms.MergeRange(xrdalarms);
                         }
 
                         if (!ealarms.NullOrEmpty())
@@ -1292,7 +1283,7 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
                                             join e in events on r.EventId equals e.Id
                                             where e.Id == x.Id
                                             select y;
-                            if (!xrealarms.NullOrEmpty()) x.EmailAlarms.MergeRange(xrealarms);
+                            if (!xrealarms.NullOrEmpty()) x.Alarms.MergeRange(xrealarms);
                         }
                     });
 
@@ -1342,25 +1333,21 @@ namespace reexjungle.xcal.service.repositories.concretes.ormlite
             return events;
         }
 
-        public VEVENT Dehydrate(VEVENT full)
+        public VEVENT Dehydrate(VEVENT @event)
         {
-            var dry = full;
-            if (dry.Organizer != null) dry.Organizer = null;
-            if (dry.RecurrenceRule != null) dry.RecurrenceRule = null;
-            if (!dry.Attendees.NullOrEmpty()) dry.Attendees.Clear();
-            if (!dry.AttachmentBinaries.NullOrEmpty()) dry.AttachmentBinaries.Clear();
-            if (!dry.AttachmentUris.NullOrEmpty()) dry.AttachmentUris.Clear();
-            if (!dry.Contacts.NullOrEmpty()) dry.Contacts.Clear();
-            if (!dry.Comments.NullOrEmpty()) dry.Comments.Clear();
-            if (!dry.RecurrenceDates.NullOrEmpty()) dry.RecurrenceDates.Clear();
-            if (!dry.ExceptionDates.NullOrEmpty()) dry.ExceptionDates.Clear();
-            if (!dry.RelatedTos.NullOrEmpty()) dry.RelatedTos.Clear();
-            if (!dry.RequestStatuses.NullOrEmpty()) dry.RequestStatuses.Clear();
-            if (!dry.Resources.NullOrEmpty()) dry.Resources.Clear();
-            if (!dry.AudioAlarms.NullOrEmpty()) dry.AudioAlarms.Clear();
-            if (!dry.DisplayAlarms.NullOrEmpty()) dry.DisplayAlarms.Clear();
-            if (!dry.EmailAlarms.NullOrEmpty()) dry.EmailAlarms.Clear();
-            return dry;
+            if (@event.Organizer != null) @event.Organizer = null;
+            if (@event.RecurrenceRule != null) @event.RecurrenceRule = null;
+            if (@event.Attendees.Any()) @event.Attendees.Clear();
+            if (@event.Attachments.Any()) @event.Attachments.Clear();
+            if (@event.Contacts.Any()) @event.Contacts.Clear();
+            if (@event.Comments.Any()) @event.Comments.Clear();
+            if (@event.RecurrenceDates.Any()) @event.RecurrenceDates.Clear();
+            if (@event.ExceptionDates.Any()) @event.ExceptionDates.Clear();
+            if (@event.RelatedTos.Any()) @event.RelatedTos.Clear();
+            if (@event.RequestStatuses.Any()) @event.RequestStatuses.Clear();
+            if (@event.Resources.Any()) @event.Resources.Clear();
+            if (@event.Alarms.Any()) @event.Alarms.Clear();
+            return @event;
         }
     }
 }

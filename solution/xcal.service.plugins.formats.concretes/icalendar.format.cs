@@ -1,15 +1,15 @@
-﻿using reexjungle.xcal.domain.models;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using reexjungle.xcal.domain.models;
+using reexjungle.xcal.infrastructure.serialization;
 using ServiceStack.Common.Web;
 using ServiceStack.ServiceHost;
 using ServiceStack.WebHost.Endpoints;
-using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace reexjungle.xcal.service.plugins.formats.concretes
 {
     /// <summary>
-    ///
     /// </summary>
     public class iCalendarFormat : IPlugin
     {
@@ -27,73 +27,85 @@ namespace reexjungle.xcal.service.plugins.formats.concretes
                 });
         }
 
+        private static void Serialize<T>(T instance, CalendarWriter writer)
+        {
+            var serializer = new CalendarSerializer<T>();
+            serializer.Serialize(instance, writer.FoldContentlines());
+        }
+
+        private static void Serialize<T>(IEnumerable<T> instances, CalendarWriter writer)
+        {
+            var serializer = new CalendarSerializer<T>();
+            foreach (var instance in instances)
+            {
+                serializer.Serialize(instance, writer.FoldContentlines());
+            }
+        }
+
         /// <summary>
-        /// Serializes to stream.
+        /// Serializes the data transfer object to stream.
         /// </summary>
         /// <param name="context">The context.</param>
-        /// <param name="dto">The dto.</param>
+        /// <param name="o">The dto.</param>
         /// <param name="stream">The stream.</param>
-        public static void SerializeToStream(IRequestContext context, object dto, Stream stream)
+        public static void SerializeToStream(IRequestContext context, object o, Stream stream)
         {
-            using (var sw = new StreamWriter(stream))
+            using (var writer = new CalendarStreamWriter(stream))
             {
-                if (dto != null)
+                if (o == null) return;
+
+                //Serialize VCALENDAR
+                var calendar = o as VCALENDAR;
+                if (calendar != null) Serialize(calendar, writer);
+                else
                 {
-                    //calendars
-                    if (dto is VCALENDAR) sw.WriteLine(dto as VCALENDAR);
-                    if (dto is List<VCALENDAR>)
-                    {
-                        var cals = dto as List<VCALENDAR>;
-                        cals.ForEach(x => sw.WriteLine(x));
-                    }
+                    var calendars = o as IEnumerable<VCALENDAR>;
+                    if (calendars != null) Serialize(calendars, writer);
+                }
 
-                    //events
-                    if (dto is VEVENT) sw.WriteLine(dto as VEVENT);
-                    if (dto is List<VEVENT>)
-                    {
-                        var events = dto as List<VEVENT>;
-                        events.ForEach(x => sw.WriteLine(x));
-                    }
+                //Serialize VEVENT
+                var @event = o as VEVENT;
+                if (@event != null) Serialize(@event, writer);
+                else
+                {
+                    var events = o as IEnumerable<VEVENT>;
+                    if (events != null) Serialize(events, writer);
+                }
 
-                    //todos
-                    if (dto is VTODO) sw.WriteLine(dto as VTODO);
-                    if (dto is List<VTODO>)
-                    {
-                        var todos = dto as List<VTODO>;
-                        todos.ForEach(x => sw.WriteLine(x));
-                    }
+                //Serialize VTODO
+                var todo = o as VTODO;
+                if (todo != null) Serialize(todo, writer);
+                else
+                {
+                    var todos = o as IEnumerable<VTODO>;
+                    if (todos != null) Serialize(todos, writer);
+                }
 
-                    //journals
-                    if (dto is VJOURNAL) sw.WriteLine(dto as VJOURNAL);
-                    if (dto is List<VJOURNAL>)
-                    {
-                        var journals = dto as List<VJOURNAL>;
-                        journals.ForEach(x => sw.WriteLine(x));
-                    }
+                //Serialize VJOURNAL
+                var journal = o as VJOURNAL;
+                if (journal != null) Serialize(journal, writer);
+                else
+                {
+                    var journals = o as IEnumerable<VJOURNAL>;
+                    if (journals != null) Serialize(journals, writer);
+                }
 
-                    //timezones
-                    if (dto is VTIMEZONE) sw.WriteLine(dto as VTIMEZONE);
-                    if (dto is List<VTIMEZONE>)
-                    {
-                        var journals = dto as List<VTIMEZONE>;
-                        journals.ForEach(x => sw.WriteLine(x));
-                    }
+                //Serialize VFREEBUSY
+                var freebusy = o as VFREEBUSY;
+                if (freebusy != null) Serialize(freebusy, writer);
+                else
+                {
+                    var freebusies = o as IEnumerable<VFREEBUSY>;
+                    if (freebusies != null) Serialize(freebusies, writer);
+                }
 
-                    //IANA Components
-                    if (dto is IANA_COMPONENT) sw.WriteLine(dto as IANA_COMPONENT);
-                    if (dto is List<IANA_COMPONENT>)
-                    {
-                        var ianac = dto as List<IANA_COMPONENT>;
-                        ianac.ForEach(x => sw.WriteLine(x));
-                    }
-
-                    //X Components
-                    if (dto is X_COMPONENT) sw.WriteLine(dto as X_COMPONENT);
-                    if (dto is List<X_COMPONENT>)
-                    {
-                        var xc = dto as List<X_COMPONENT>;
-                        xc.ForEach(x => sw.WriteLine(x));
-                    }
+                //Serialize VTIMEZONE
+                var timezone = o as VTIMEZONE;
+                if (timezone != null) Serialize(timezone, writer);
+                else
+                {
+                    var timezones = o as IEnumerable<VTIMEZONE>;
+                    if (timezones != null) Serialize(timezones, writer);
                 }
             }
         }

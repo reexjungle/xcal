@@ -70,17 +70,14 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
             catch (InvalidOperationException ex)
             {
                 logger.Error(ex.ToString());
-                throw;
             }
             catch (ApplicationException ex)
             {
                 logger.Error(ex.ToString());
-                throw;
             }
             catch (Exception ex)
             {
                 logger.Error(ex.ToString());
-                throw;
             }
         }
 
@@ -204,8 +201,6 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                     FreeBusies = request.FreeBusies,
                     Journals = request.Journals,
                     TimeZones = request.TimeZones,
-                    IanaComponents = request.IanaComponents,
-                    XComponents = request.XComponents
                 };
 
                 var fields = new List<string>();
@@ -218,9 +213,6 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 if (!source.FreeBusies.NullOrEmpty()) fields.Add("FreeBusies");
                 if (!source.Journals.NullOrEmpty()) fields.Add("Journals");
                 if (!source.TimeZones.NullOrEmpty()) fields.Add("TimeZones");
-                if (!source.IanaComponents.NullOrEmpty()) fields.Add("IanaComponents");
-                if (!source.XComponents.NullOrEmpty()) fields.Add("XComponents");
-
 
                 repository.Patch(source, fields, request.CalendarId.ToSingleton());
 
@@ -265,8 +257,6 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                     FreeBusies = request.FreeBusies,
                     Journals = request.Journals,
                     TimeZones = request.TimeZones,
-                    IanaComponents = request.IanaComponents,
-                    XComponents = request.XComponents
                 };
 
                 var fields = new List<string>();
@@ -279,8 +269,6 @@ namespace reexjungle.xcal.service.interfaces.concretes.live
                 if (!source.FreeBusies.NullOrEmpty()) fields.Add("FreeBusies");
                 if (!source.Journals.NullOrEmpty()) fields.Add("Journals");
                 if (!source.TimeZones.NullOrEmpty()) fields.Add("TimeZones");
-                if (!source.IanaComponents.NullOrEmpty()) fields.Add("IanaComponents");
-                if (!source.XComponents.NullOrEmpty()) fields.Add("XComponents");
 
                 var calendarIds = !request.CalendarIds.NullOrEmpty()
                     ? request.CalendarIds.Distinct()
