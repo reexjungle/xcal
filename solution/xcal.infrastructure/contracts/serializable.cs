@@ -5,6 +5,12 @@ namespace reexjungle.xcal.infrastructure.contracts
     public interface ICalendarSerializable
     {
         /// <summary>
+        /// Can the object be converted to its ICalendar representation?
+        /// </summary>
+        /// <returns>True if the object can be serialized to its iCalendar representation, otherwise false</returns>
+        bool CanSerialize();
+
+        /// <summary>
         /// Converts an object into its iCalendar representation.
         /// </summary>
         /// <param name="writer">The iCalendar writer used to serialize the object.</param>

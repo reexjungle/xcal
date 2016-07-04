@@ -69,7 +69,7 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((VTIMEZONE)obj);
         }
 
@@ -91,15 +91,11 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (TimeZoneId == null || Observances.Empty()) return;
             writer.WriteStartComponent("VTIMEZONE");
             writer.AppendProperty(TimeZoneId);
             writer.AppendProperties(Observances);
-
-            if (LastModified != default(DATE_TIME)) writer.AppendProperty("LAST-MODIFIED", LastModified.ToString());
-
-            if (Url != null) writer.AppendProperty(Url);
-
+            if (LastModified != default(DATE_TIME)) writer.WriteProperty("LAST-MODIFIED", LastModified.ToString());
+            if (Url != null && Url.CanSerialize()) writer.AppendProperty(Url);
             writer.WriteEndComponent("VTIMEZONE");
         }
 
@@ -107,6 +103,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => TimeZoneId != null && TimeZoneId.CanSerialize() && Observances.Any();
     }
 
     [DataContract]
@@ -187,6 +185,8 @@ namespace reexjungle.xcal.domain.models
 
         public abstract void ReadCalendar(CalendarReader reader);
 
+        public bool CanSerialize() => Start != default(DATE_TIME)  && TimeZoneOffsetFrom != default(UTC_OFFSET) && TimeZoneOffsetTo != default(UTC_OFFSET);
+
         public static bool operator ==(OBSERVANCE a, OBSERVANCE b)
         {
             if ((object)a == null || (object)b == null) return Equals(a, b);
@@ -223,17 +223,12 @@ namespace reexjungle.xcal.domain.models
 
         public override void WriteCalendar(CalendarWriter writer)
         {
-            if (Start == default(DATE_TIME)
-                || TimeZoneOffsetFrom == default(UTC_OFFSET)
-                || TimeZoneOffsetTo == default(UTC_OFFSET))
-                return;
-
             writer.WriteStartComponent("STANDARD");
             writer.AppendProperty("DTSTART", TimeZoneOffsetFrom);
             writer.AppendProperty("TZOFFSETFROM", TimeZoneOffsetFrom);
             writer.AppendProperty("TZOFFSETTO", TimeZoneOffsetTo);
 
-            if (RecurrenceRule != null) writer.WriteProperty("RRULE", RecurrenceRule);
+            if (RecurrenceRule != null) writer.AppendProperty("RRULE", RecurrenceRule);
 
             if (RecurrenceDates.Any())writer.AppendProperties(RecurrenceDates);
 
@@ -268,17 +263,13 @@ namespace reexjungle.xcal.domain.models
 
         public override void WriteCalendar(CalendarWriter writer)
         {
-            if (Start == default(DATE_TIME)
-                || TimeZoneOffsetFrom == default(UTC_OFFSET)
-                || TimeZoneOffsetTo == default(UTC_OFFSET))
-                return;
 
             writer.WriteStartComponent("DAYLIGHT");
             writer.AppendProperty("DTSTART", TimeZoneOffsetFrom);
             writer.AppendProperty("TZOFFSETFROM", TimeZoneOffsetFrom);
             writer.AppendProperty("TZOFFSETTO", TimeZoneOffsetTo);
 
-            if (RecurrenceRule != null) writer.WriteProperty("RRULE", RecurrenceRule);
+            if (RecurrenceRule != null) writer.AppendProperty("RRULE", RecurrenceRule);
 
             if (RecurrenceDates.Any()) writer.AppendProperties(RecurrenceDates);
 

@@ -154,8 +154,6 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (string.IsNullOrEmpty(Suffix) || string.IsNullOrWhiteSpace(Suffix)) return;
-
             writer.WriteParameter("TZID", GloballyUnique ? $"/{Suffix}" : $"{Prefix}/{Suffix}");
         }
 
@@ -163,6 +161,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => !string.IsNullOrEmpty(Suffix) && !string.IsNullOrWhiteSpace(Suffix);
     }
 
     [DataContract]
@@ -251,7 +251,6 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (string.IsNullOrEmpty(TypeName) || string.IsNullOrWhiteSpace(TypeName)) return;
             writer.WriteParameter("FMTTYPE", $"{TypeName}/{SubTypeName}");
         }
 
@@ -259,6 +258,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => !string.IsNullOrEmpty(TypeName) && !string.IsNullOrWhiteSpace(TypeName);
     }
 
     [DataContract]
@@ -342,9 +343,8 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (string.IsNullOrEmpty(Tag) || string.IsNullOrWhiteSpace(Tag)) return;
-
-            writer.WriteParameter("LANGUAGE", !string.IsNullOrEmpty(SubTag) && !string.IsNullOrWhiteSpace(SubTag)
+            writer.WriteParameter("LANGUAGE", 
+                !string.IsNullOrEmpty(SubTag) && !string.IsNullOrWhiteSpace(SubTag)
                 ? $"{Tag}-{SubTag}"
                 : $"{Tag}");
         }
@@ -353,6 +353,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => !string.IsNullOrEmpty(Tag) && !string.IsNullOrWhiteSpace(Tag);
     }
 
     [DataContract]
@@ -389,9 +391,9 @@ namespace reexjungle.xcal.domain.models
         {
             if (@delegate != null)
             {
-                Addresses = @delegate.Addresses.NullOrEmpty()
-            ? new List<CAL_ADDRESS>()
-            : new List<CAL_ADDRESS>(@delegate.Addresses);
+                Addresses = @delegate.Addresses.NullOrEmpty() 
+                    ? new List<CAL_ADDRESS>() 
+                    : new List<CAL_ADDRESS>(@delegate.Addresses);
             }
         }
 
@@ -428,6 +430,8 @@ namespace reexjungle.xcal.domain.models
         public abstract void WriteCalendar(CalendarWriter writer);
 
         public abstract void ReadCalendar(CalendarReader reader);
+
+        public bool CanSerialize() => Addresses.Any();
     }
 
     [DataContract]
@@ -466,8 +470,7 @@ namespace reexjungle.xcal.domain.models
 
         public override void WriteCalendar(CalendarWriter writer)
         {
-            if (Addresses.NullOrEmpty()) return;
-            writer.WriteParameterWithDQuotedValues("DELEGATED-FROM", Addresses.ToArray());
+            writer.WriteParameterWithDQuotedValues("DELEGATED-FROM", Addresses);
         }
 
         public override void ReadCalendar(CalendarReader reader)
@@ -512,9 +515,7 @@ namespace reexjungle.xcal.domain.models
 
         public override void WriteCalendar(CalendarWriter writer)
         {
-            if (Addresses.NullOrEmpty()) return;
-            writer.WriteParameterWithDQuotedValues("DELEGATED-TO", Addresses.ToArray());
-
+            writer.WriteParameterWithDQuotedValues("DELEGATED-TO", Addresses);
         }
 
         public override void ReadCalendar(CalendarReader reader)
@@ -618,8 +619,7 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (Addresses.NullOrEmpty()) return;
-            writer.WriteParameterWithDQuotedValues("MEMBER", Addresses.ToArray());
+            writer.WriteParameterWithDQuotedValues("MEMBER", Addresses);
 
         }
 
@@ -627,6 +627,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Addresses.Any();
     }
 
     [DataContract]
@@ -708,7 +710,6 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (Uri == null) return;
             writer.WriteParameter("ALTREP", writer.ConvertToQuotedString(Uri.ToString()));
         }
 
@@ -716,6 +717,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Uri != null;
     }
 
     [DataContract]
@@ -798,7 +801,6 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (Uri == null) return;
             writer.WriteParameter("DIR", writer.ConvertToQuotedString(Uri.ToString()));
         }
 
@@ -806,6 +808,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Uri != null;
     }
 
     [DataContract]
@@ -881,8 +885,7 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (Address == null) return;
-            writer.WriteParameterWithDQuotedvalue("SENT-BY", Address);
+            writer.WriteParameterWithDQuotedValue("SENT-BY", Address);
 
         }
 
@@ -890,5 +893,7 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Address != null;
     }
 }

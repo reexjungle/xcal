@@ -132,6 +132,7 @@ namespace reexjungle.xcal.domain.models
         /// </summary>
         public uint MDAY { get; }
 
+
         public DATE AddDays(double value)
         {
             return new DateTime((int) FULLYEAR, (int) MONTH, (int) MDAY).AddDays(value).ToDATE();
@@ -343,6 +344,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => true;
     }
 
     /// <summary>
@@ -709,6 +712,11 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
+        public bool CanSerialize()
+        {
+            return true;
+        }
+
         #region overloaded operators
 
         /// <summary>
@@ -1034,6 +1042,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => true;
     }
 
     /// <summary>
@@ -1276,6 +1286,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => true;
     }
 
     /// <summary>
@@ -1410,18 +1422,19 @@ namespace reexjungle.xcal.domain.models
         {
             if (NthOccurrence != 0)
             {
-                writer.Write((NthOccurrence < 0)
-                    ? $"-{(uint)NthOccurrence} {Weekday}"
+                writer.Write((NthOccurrence < 0) 
+                    ? $"-{(uint)NthOccurrence} {Weekday}" 
                     : $"+{(uint)NthOccurrence} {Weekday}");
             }
-           else
-                writer.Write($"{Weekday}");
+           else  writer.Write($"{Weekday}");
         }
 
         public void ReadCalendar(CalendarReader reader)
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => true;
     }
 
     /// <summary>
@@ -1592,6 +1605,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => true;
     }
 
     /// <summary>
@@ -1801,6 +1816,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => true;
     }
 
     /// <summary>
@@ -2130,63 +2147,21 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
+            writer.WriteParameter(nameof(FREQ), FREQ.ToString());
 
-            writer.WriteParameter("FREQ", FREQ.ToString());
-
-            if (UNTIL != default(DATE_TIME)) writer.AppendParameter("UNTIL", UNTIL);
-            else if (COUNT != 0) writer.AppendParameter("COUNT", COUNT.ToString());
-
-            writer.AppendParameter("INTERVAL", INTERVAL.ToString());
-
-            if (BYSECOND.Any())
-            {
-                writer.AppendParameter("BYSECOND", BYSECOND.Select(x => x.ToString()));
-            }
-
-            if (BYMINUTE.Any())
-            {
-                writer.AppendParameter("BYMINUTE", BYMINUTE.Select(x => x.ToString()));
-            }
-
-            if (BYHOUR.Any())
-            {
-                writer.AppendParameter("BYHOUR", BYHOUR.Select(x => x.ToString()));
-
-            }
-
-            if (BYDAY.Any())
-            {
-                writer.AppendParameter<WEEKDAYNUM>("BYDAY", BYDAY);
-
-            }
-
-            if (BYMONTHDAY.Any())
-            {
-                writer.AppendParameter("BYMONTHDAY", BYMONTHDAY.Select(x => x.ToString()));
-            }
-
-            if (BYYEARDAY.Any())
-            {
-                writer.AppendParameter("BYYEARDAY", BYYEARDAY.Select(x => x.ToString()));
-            }
-
-            if (BYWEEKNO.Any())
-            {
-                writer.AppendParameter("BYWEEKNO", BYWEEKNO.Select(x => x.ToString()));
-            }
-
-            if (BYMONTH.Any())
-            {
-                writer.AppendParameter("BYMONTH", BYMONTH.Select(x => x.ToString()));
-            }
-
-            if (BYSETPOS.Any())
-            {
-
-                writer.AppendParameter("BYSETPOS", BYSETPOS.Select(x => x > 0 ? "+" + x.ToString() : x.ToString()));
-            }
-
-            writer.AppendParameter("WKST", WKST.ToString());
+            if (UNTIL != default(DATE_TIME)) writer.AppendParameter(nameof(UNTIL), UNTIL);
+            else if (COUNT != 0) writer.AppendParameter(nameof(COUNT), COUNT.ToString());
+            writer.AppendParameter(nameof(INTERVAL), INTERVAL.ToString());
+            if (BYSECOND.Any()) writer.AppendParameter(nameof(BYSECOND), BYSECOND.Select(x => x.ToString()));
+            if (BYMINUTE.Any()) writer.AppendParameter(nameof(BYMINUTE), BYMINUTE.Select(x => x.ToString()));
+            if (BYHOUR.Any()) writer.AppendParameter(nameof(BYHOUR), BYHOUR.Select(x => x.ToString()));
+            if (BYDAY.Any())writer.AppendParameter<WEEKDAYNUM>(nameof(BYDAY), BYDAY);
+            if (BYMONTHDAY.Any())writer.AppendParameter(nameof(BYMONTHDAY), BYMONTHDAY.Select(x => x.ToString()));
+            if (BYYEARDAY.Any())writer.AppendParameter(nameof(BYYEARDAY), BYYEARDAY.Select(x => x.ToString()));
+            if (BYWEEKNO.Any()) writer.AppendParameter(nameof(BYWEEKNO), BYWEEKNO.Select(x => x.ToString()));
+            if (BYMONTH.Any())writer.AppendParameter(nameof(BYMONTH), BYMONTH.Select(x => x.ToString()));
+            if (BYSETPOS.Any()) writer.AppendParameter(nameof(BYSETPOS), BYSETPOS.Select(x => x > 0 ? "+" + x.ToString() : x.ToString()));
+            writer.AppendParameter(nameof(WKST), WKST.ToString());
 
         }
 
@@ -2194,6 +2169,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => true;
     }
 
     [DataContract]
@@ -2280,5 +2257,7 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => true;
     }
 }

@@ -41,10 +41,10 @@ namespace reexjungle.xcal.domain.models
                 throw new ArgumentNullException(nameof(trigger));
 
             if (duration != default(DURATION) && repeat == default(int))
-                throw new ArgumentException($"{nameof(duration)} and {nameof(repeat)} MUST be valid and occur together");
+                throw new ArgumentException($"{nameof(duration)} and {nameof(repeat)} MUST be valid and occur together.");
 
             if (repeat != default(int) && duration == default(DURATION))
-                throw new ArgumentException($"{nameof(duration)} and {nameof(repeat)} MUST be valid and occur together");
+                throw new ArgumentException($"{nameof(duration)} and {nameof(repeat)} MUST be valid and occur together.");
 
             Action = action;
             Trigger = trigger;
@@ -52,9 +52,20 @@ namespace reexjungle.xcal.domain.models
             Repeat = repeat;
         }
 
-        public abstract void WriteCalendar(CalendarWriter writer);
+        public virtual void WriteCalendar(CalendarWriter writer)
+        {
+            writer.AppendProperty("ACTION", Action.ToString());
+            writer.AppendProperty(Trigger);
+            if (Duration != default(DURATION))
+            {
+                writer.AppendProperty(Duration);
+                writer.WriteProperty("REPEAT", Repeat.ToString());
+            }
+        }
 
         public abstract void ReadCalendar(CalendarReader reader);
+
+        public virtual bool CanSerialize() => Trigger != null && Trigger.CanSerialize();
     }
 
     [DataContract]
@@ -90,7 +101,7 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((AUDIO_ALARM)obj);
         }
 
@@ -101,21 +112,10 @@ namespace reexjungle.xcal.domain.models
 
         public override void WriteCalendar(CalendarWriter writer)
         {
-            if (Trigger == null) return;
-
             writer.WriteStartComponent("VALARM");
-            writer.AppendProperty("ACTION", Action.ToString());
-
-            writer.AppendProperty(Trigger);
-
-            if (Duration != default(DURATION))
-            {
-                writer.AppendProperty(Duration);
-                writer.AppendProperty("REPEAT", Repeat.ToString());
-            }
-
+            base.WriteCalendar(writer);
             if (Attachment != null) writer.AppendProperty(Attachment);
-
+            writer.WriteLine();
             writer.WriteEndComponent("VALARM");
         }
 
@@ -169,7 +169,7 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((DISPLAY_ALARM)obj);
         }
 
@@ -180,20 +180,10 @@ namespace reexjungle.xcal.domain.models
 
         public override void WriteCalendar(CalendarWriter writer)
         {
-            if (Trigger == null || Description == null) return;
-
             writer.WriteStartComponent("VALARM");
-            writer.AppendProperty("ACTION", Action.ToString());
-
-            writer.AppendProperty(Trigger);
-
+            base.WriteCalendar(writer);
             writer.AppendProperty(Description);
-
-            if (Duration != default(DURATION))
-            {
-                writer.AppendProperty(Duration);
-                writer.AppendProperty("REPEAT", Repeat.ToString());
-            }
+            writer.WriteLine();
             writer.WriteEndComponent("VALARM");
         }
 
@@ -272,7 +262,7 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((EMAIL_ALARM)obj);
         }
 
@@ -287,19 +277,11 @@ namespace reexjungle.xcal.domain.models
 
             writer.WriteStartComponent("VALARM");
 
-            writer.AppendProperty("ACTION", Action.ToString());
-
-            writer.AppendProperty(Trigger);
+            base.WriteCalendar(writer);
 
             writer.AppendProperty(Description);
 
             writer.AppendProperty(Summary);
-
-            if (Duration != default(DURATION))
-            {
-                writer.AppendProperty(Duration);
-                writer.AppendProperty("REPEAT", Repeat.ToString());
-            }
 
             if (Attendees.Any()) writer.AppendProperties(Attendees);
 
@@ -312,6 +294,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public override bool CanSerialize() => base.CanSerialize() && Summary != null && Summary.CanSerialize();
 
         public static bool operator ==(EMAIL_ALARM left, EMAIL_ALARM right)
         {

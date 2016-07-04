@@ -138,6 +138,7 @@ namespace reexjungle.xcal.domain.models
         private void WriteCalendarPrimitives(CalendarWriter writer)
         {
             writer.AppendProperty("DTSTAMP", Datestamp);
+
             writer.AppendProperty("UID", Uid);
 
             if (Start != default(DATE_TIME)) writer.AppendProperty("DTSTART", Start);
@@ -158,20 +159,17 @@ namespace reexjungle.xcal.domain.models
 
             if (Summary != default(SUMMARY)) writer.AppendProperty(Summary);
 
-
             if (Url != default(URL)) writer.AppendProperty(Url);
 
             if (RecurrenceId != default(RECURRENCE_ID)) writer.AppendProperty(RecurrenceId);
 
             if (RecurrenceRule != default(RECUR)) writer.AppendProperty("RRULE", RecurrenceRule);
 
-            if (Categories != default(CATEGORIES))
-            {
-                writer.AppendProperty(Categories);
-            }
+            if (Categories != default(CATEGORIES)) writer.AppendProperty(Categories);
+
         }
 
-        private void WriteCalendarLists(CalendarWriter writer)
+        private void WriteCalendarEnumerables(CalendarWriter writer)
         {
             if (Attendees.Any()) writer.AppendProperties(Attendees);
 
@@ -179,9 +177,7 @@ namespace reexjungle.xcal.domain.models
 
             if (Contacts.Any()) writer.AppendProperties(Contacts);
 
-
             if (RelatedTos.Any()) writer.AppendProperties(RelatedTos);
-
 
             if (ExceptionDates.Any()) writer.AppendProperties(ExceptionDates);
 
@@ -189,27 +185,26 @@ namespace reexjungle.xcal.domain.models
 
             if (Resources.Any()) writer.AppendProperties(Resources);
 
-
             if (RequestStatuses.Any()) writer.AppendProperties(RequestStatuses);
-
 
             if (Attachments.Any()) writer.AppendProperties(Attachments);
         }
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            writer.WriteStartComponent("VJOURNAL");
-
+            writer.WriteStartComponent(nameof(VJOURNAL));
             WriteCalendarPrimitives(writer);
-
-            WriteCalendarLists(writer);
-
-            writer.WriteEndComponent("VJOURNAL");
+            WriteCalendarEnumerables(writer);
+            writer.WriteLine();
+            writer.WriteEndComponent(nameof(VJOURNAL));
         }
+
         public void ReadCalendar(CalendarReader reader)
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Datestamp != default(DATE_TIME) && !string.IsNullOrEmpty(Uid) && !string.IsNullOrWhiteSpace(Uid);
 
         public override bool Equals(object obj)
         {

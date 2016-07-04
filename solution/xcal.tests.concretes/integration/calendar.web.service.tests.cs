@@ -252,7 +252,7 @@ namespace reexjungle.xcal.tests.concretes.integration
             var writer = new CalendarTextWriter();
             serializer.Serialize(cal, writer);
 
-            var serialized = writer.ToString();
+            var serialized = writer.FoldContentlines().ToString();
 
             var client = ServiceClientFactory.GetClient<JsonServiceClient>();
             client.Post(new AddCalendar { Calendar = cal });

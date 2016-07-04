@@ -22,7 +22,7 @@ namespace reexjungle.xcal.domain.models
     /// Specifies a contract for attaching an inline binary encooded content information.
     /// </summary>
     [DataContract]
-    public abstract class ATTACH : IATTACH, IEquatable<ATTACH>, IContainsKey<Guid>, ICalendarSerializable
+    public abstract class ATTACH : IATTACH, IContainsKey<Guid>, ICalendarSerializable
     {
         /// <summary>
         /// ID of an AttachmentBinary for a particular Calendar component
@@ -84,42 +84,14 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public bool Equals(ATTACH other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Id.Equals(other.Id);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((ATTACH)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
-
-        public static bool operator ==(ATTACH left, ATTACH right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(ATTACH left, ATTACH right)
-        {
-            return !Equals(left, right);
-        }
-
         public abstract void WriteCalendar(CalendarWriter writer);
 
         public abstract void ReadCalendar(CalendarReader reader);
+
+        public bool CanSerialize() => !string.IsNullOrEmpty(Content) && !string.IsNullOrWhiteSpace(Content);
     }
 
-    public class ATTACH_BINARY : ATTACH
+    public sealed class ATTACH_BINARY : ATTACH, IEquatable<ATTACH_BINARY>
     {
         public ATTACH_BINARY()
         {
@@ -135,8 +107,6 @@ namespace reexjungle.xcal.domain.models
 
         public override void WriteCalendar(CalendarWriter writer)
         {
-            if (string.IsNullOrEmpty(Content) || string.IsNullOrWhiteSpace(Content)) return;
-
             writer.Write("ATTACH");
             if (FormatType != null) writer.AppendParameter(FormatType);
             writer.AppendParameter("ENCODING", ENCODING.BASE64.ToString());
@@ -147,9 +117,56 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public bool Equals(ATTACH_BINARY other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Id.Equals(other.Id);
+        }
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <returns>
+        /// true if the specified object is equal to the current object; otherwise, false.
+        /// </returns>
+        /// <param name="obj">The object to compare with the current object.</param>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return obj is ATTACH_BINARY && Equals((ATTACH_BINARY)obj);
+        }
+
+        /// <summary>
+        /// Serves as the default hash function.
+        /// </summary>
+        /// <returns>A hash code for the current object.</returns>
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
+        public static bool operator ==(ATTACH_BINARY left, ATTACH_BINARY right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(ATTACH_BINARY left, ATTACH_BINARY right)
+        {
+            return !Equals(left, right);
+        }
     }
 
-    public class ATTACH_URI : ATTACH
+    public sealed class ATTACH_URI : ATTACH, IEquatable<ATTACH_URI>
     {
         public ATTACH_URI()
         {
@@ -163,14 +180,58 @@ namespace reexjungle.xcal.domain.models
         {
         }
 
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public bool Equals(ATTACH_URI other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Id.Equals(other.Id);
+        }
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <returns>
+        /// true if the specified object is equal to the current object; otherwise, false.
+        /// </returns>
+        /// <param name="obj">The object to compare with the current object.</param>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ATTACH_URI)obj);
+        }
+
+        /// <summary>
+        /// Serves as the default hash function.
+        /// </summary>
+        /// <returns>A hash code for the current object.</returns>
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
+        public static bool operator ==(ATTACH_URI left, ATTACH_URI right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(ATTACH_URI left, ATTACH_URI right)
+        {
+            return !Equals(left, right);
+        }
+
         public override void WriteCalendar(CalendarWriter writer)
         {
-            if (string.IsNullOrEmpty(Content) || string.IsNullOrWhiteSpace(Content)) return;
-
             writer.Write("ATTACH");
-
             if (FormatType != null) writer.AppendParameter(FormatType);
-
             writer.AppendPropertyValue(Content);
         }
 
@@ -286,17 +347,17 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (Values.NullOrEmpty()) return;
-
             writer.Write("CATEGORIES");
             if (Language != null) writer.AppendParameter(Language);
-            writer.Append(Values);
+            writer.AppendByComma(Values);
         }
 
         public void ReadCalendar(CalendarReader reader)
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Values.Any();
     }
 
     /// <summary>
@@ -405,13 +466,20 @@ namespace reexjungle.xcal.domain.models
             return a.CompareTo(b) > 0;
         }
 
-        public abstract void WriteCalendar(CalendarWriter writer);
+        public virtual void WriteCalendar(CalendarWriter writer)
+        {
+            if (AlternativeText != null) writer.AppendParameter(AlternativeText);
+            if (Language != null) writer.AppendParameter(Language);
+            writer.AppendPropertyValue(writer.ConvertToSAFE_STRING(Text));
+        }
 
         public abstract void ReadCalendar(CalendarReader reader);
+
+        public bool CanSerialize() => string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text);
     }
 
     [DataContract]
-    public class DESCRIPTION : TEXTUAL
+    public sealed class DESCRIPTION : TEXTUAL
     {
         public DESCRIPTION()
         {
@@ -468,12 +536,8 @@ namespace reexjungle.xcal.domain.models
 
         public override void WriteCalendar(CalendarWriter writer)
         {
-            if (string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text)) return;
-
             writer.Write("DESCRIPTION");
-            if (AlternativeText != null) writer.AppendParameter(AlternativeText);
-            if (Language != null) writer.AppendParameter(Language);
-            writer.AppendPropertyValue(Text);
+            base.WriteCalendar(writer);
         }
 
         public override void ReadCalendar(CalendarReader reader)
@@ -483,7 +547,7 @@ namespace reexjungle.xcal.domain.models
     }
 
     [DataContract]
-    public class COMMENT : TEXTUAL
+    public sealed class COMMENT : TEXTUAL
     {
         public COMMENT()
         {
@@ -550,12 +614,8 @@ namespace reexjungle.xcal.domain.models
 
         public override void WriteCalendar(CalendarWriter writer)
         {
-            if (string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text)) return;
-
             writer.Write("COMMENT");
-            if (AlternativeText != null) writer.AppendParameter(AlternativeText);
-            if (Language != null) writer.AppendParameter(Language);
-            writer.AppendPropertyValue(Text);
+            base.WriteCalendar(writer);
         }
 
         public override void ReadCalendar(CalendarReader reader)
@@ -565,7 +625,7 @@ namespace reexjungle.xcal.domain.models
     }
 
     [DataContract]
-    public class CONTACT : TEXTUAL
+    public sealed class CONTACT : TEXTUAL
     {
         public CONTACT()
         {
@@ -623,20 +683,8 @@ namespace reexjungle.xcal.domain.models
 
         public override void WriteCalendar(CalendarWriter writer)
         {
-            if (string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text)) return;
-
             writer.Write("CONTACT");
-            if (AlternativeText != null)
-            {
-                writer.WriteSemicolon();
-                AlternativeText.WriteCalendar(writer);
-            }
-            if (Language != null)
-            {
-                writer.WriteSemicolon();
-                Language.WriteCalendar(writer);
-            }
-            writer.WriteColon().WriteSafeStringValue(Text);
+            base.WriteCalendar(writer);
         }
 
         public override void ReadCalendar(CalendarReader reader)
@@ -646,7 +694,7 @@ namespace reexjungle.xcal.domain.models
     }
 
     [DataContract]
-    public class SUMMARY : TEXTUAL
+    public sealed class SUMMARY : TEXTUAL
     {
         public SUMMARY()
         {
@@ -704,12 +752,8 @@ namespace reexjungle.xcal.domain.models
 
         public override void WriteCalendar(CalendarWriter writer)
         {
-            if (string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text)) return;
-
             writer.Write("SUMMARY");
-            if (AlternativeText != null) writer.AppendParameter(AlternativeText);
-            if (Language != null) writer.AppendParameter(Language);
-            writer.AppendPropertyValue(Text);
+            base.WriteCalendar(writer);
         }
 
         public override void ReadCalendar(CalendarReader reader)
@@ -777,12 +821,8 @@ namespace reexjungle.xcal.domain.models
 
         public override void WriteCalendar(CalendarWriter writer)
         {
-            if (string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text)) return;
-
             writer.Write("LOCATION");
-            if (AlternativeText != null) writer.AppendParameter(AlternativeText);
-            if (Language != null) writer.AppendParameter(Language);
-            writer.AppendPropertyValue(Text);
+            base.WriteCalendar(writer);
         }
 
         public override void ReadCalendar(CalendarReader reader)
@@ -908,6 +948,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => true;
     }
 
     /// <summary>
@@ -947,14 +989,10 @@ namespace reexjungle.xcal.domain.models
 
         public RESOURCES(IRESOURCES resources)
         {
-            if (resources != null)
-            {
-                AlternativeText = resources.AlternativeText;
-                Language = resources.Language;
-                Values = resources.Values.NullOrEmpty()
-                    ? new List<string>()
-                    : new List<string>(resources.Values);
-            }
+            if (resources == null) throw new ArgumentNullException(nameof(resources));
+            AlternativeText = resources.AlternativeText;
+            Language = resources.Language;
+            Values = new List<string>(resources.Values);
         }
 
         /// <summary>
@@ -1041,8 +1079,6 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (Values.NullOrEmpty()) return;
-
             writer.Write("RESOURCES");
             if (AlternativeText != null) writer.AppendParameter(AlternativeText);
             if (Language != null) writer.AppendParameter(Language);
@@ -1053,6 +1089,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Values.Any();
     }
 
     [DataContract]
@@ -1065,7 +1103,7 @@ namespace reexjungle.xcal.domain.models
 
         private int LevelToValue(PRIORITYLEVEL level)
         {
-            var val = 0;
+            var val = -1;
             switch (level)
             {
                 case PRIORITYLEVEL.NONE:
@@ -1090,8 +1128,8 @@ namespace reexjungle.xcal.domain.models
         private PRIORITYLEVEL ValueToLevel(int value)
         {
             if (value >= 1 && this.value <= 4) return PRIORITYLEVEL.HIGH;
-            else if (value == 5) return PRIORITYLEVEL.MEDIUM;
-            else if (value >= 6 && value <= 9) return PRIORITYLEVEL.LOW;
+            if (value == 5) return PRIORITYLEVEL.MEDIUM;
+            if (value >= 6 && value <= 9) return PRIORITYLEVEL.LOW;
             return PRIORITYLEVEL.NONE;
         }
 
@@ -1261,10 +1299,7 @@ namespace reexjungle.xcal.domain.models
             return value;
         }
 
-        public PriorityType Format
-        {
-            get { return format; }
-        }
+        public PriorityType Format => format;
 
         public int Value
         {
@@ -1390,26 +1425,17 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (Format == PriorityType.Integral)
-            {
-                writer.WriteProperty("PRIORITY", value.ToString());
-            }
-
-            if (Format == PriorityType.Level)
-            {
-                writer.WriteProperty("PRIORITY", LevelToValue(level).ToString());
-            }
-
-            if (Format == PriorityType.Schema)
-            {
-                writer.WriteProperty("PRIORITY", SchemaToValue(schema).ToString());
-            }
+            if (Format == PriorityType.Integral) writer.WriteProperty("PRIORITY", value.ToString());
+            if (Format == PriorityType.Level) writer.WriteProperty("PRIORITY", LevelToValue(level).ToString());
+            if (Format == PriorityType.Schema) writer.WriteProperty("PRIORITY", SchemaToValue(schema).ToString());
         }
 
         public void ReadCalendar(CalendarReader reader)
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => value >= 0 && value <= 9;
     }
 
     #endregion Descriptive Properties
@@ -1455,9 +1481,7 @@ namespace reexjungle.xcal.domain.models
         public FREEBUSY(IEnumerable<PERIOD> periods, FBTYPE type = FBTYPE.FREE)
         {
             Type = type;
-            Periods = periods.NullOrEmpty()
-                ? new List<PERIOD>()
-                : new List<PERIOD>(periods);
+            Periods = periods.NullOrEmpty() ? new List<PERIOD>() : new List<PERIOD>(periods);
         }
 
         public FREEBUSY(IFREEBUSY_PROPERTY other)
@@ -1534,15 +1558,16 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (Periods.NullOrEmpty()) return;
             if (Type != default(FBTYPE)) writer.WriteSemicolon().WriteParameter("FBTYPE", Type.ToString());
-            if (Periods.Any()) writer.AppendPropertyValues(Periods);
+            writer.AppendPropertyValues(Periods);
         }
 
         public void ReadCalendar(CalendarReader reader)
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Periods.Any();
     }
 
     #endregion Date and Time Component Properties
@@ -1580,8 +1605,8 @@ namespace reexjungle.xcal.domain.models
         /// <param name="text"></param>
         public TZNAME(string text, LANGUAGE language = null)
         {
-            this.Text = text;
-            this.Language = language;
+            Text = text;
+            Language = language;
         }
 
         public TZNAME(ITZNAME tzname)
@@ -1666,8 +1691,6 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (string.IsNullOrEmpty(Text) || string.IsNullOrWhiteSpace(Text)) return;
-
             writer.Write("TZNAME");
             if (Language != null) writer.AppendParameter(Language);
             writer.AppendPropertyValue(writer.ConvertToSAFE_STRING(Text));
@@ -1677,6 +1700,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => !string.IsNullOrEmpty(Text) && !string.IsNullOrWhiteSpace(Text);
     }
 
     #endregion Time-zone Properties
@@ -1926,30 +1951,17 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (Address == null) return;
-
             writer.Write("ATTENDEE");
-
             if (CalendarUserType != default(CUTYPE)) writer.AppendParameter("CUTYPE", CalendarUserType.ToString());
-
             if (Member != null) writer.AppendParameter(Member);
-
             if (Role != default(ROLE)) writer.AppendParameter("ROLE", Role.ToString());
-
             if (Participation != default(PARTSTAT)) writer.AppendParameter("PARTSTAT", Participation.ToString());
-
             if (Rsvp != BOOLEAN.TRUE) writer.AppendParameter("RSVP", Rsvp.ToString());
-
             if (Delegatee != null) writer.AppendParameter(Delegatee);
-
             if (Delegator != null) writer.AppendParameter(Delegator);
-
             if (SentBy != null) writer.AppendParameter(SentBy);
-
             if (!string.IsNullOrEmpty(CN) && !string.IsNullOrWhiteSpace(CN)) writer.AppendParameter("CN", CN);
-
-            if (Directory != null) writer.AppendParameter(Directory);
-
+            if (Directory != null ) writer.AppendParameter(Directory);
             if (Language != null) writer.AppendParameter(Language);
 
             writer.AppendPropertyValue(Address);
@@ -1959,6 +1971,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Address != null;
     }
 
     /// <summary>
@@ -2123,18 +2137,11 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (Address == null) return;
-
             writer.Write("ORGANIZER");
-
             if (SentBy != null) writer.AppendParameter(SentBy);
-
             if (!string.IsNullOrEmpty(CN) && !string.IsNullOrWhiteSpace(CN)) writer.AppendParameter("CN", CN);
-
             if (Directory != null) writer.AppendParameter(Directory);
-
             if (Language != null) writer.AppendParameter(Language);
-
             writer.AppendPropertyValue(Address);
         }
 
@@ -2142,6 +2149,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Address != null;
 
         public static bool operator ==(ORGANIZER left, ORGANIZER right)
         {
@@ -2292,10 +2301,7 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (Value == default(DATE_TIME)) return;
-
             writer.Write("RECURRENCE-ID");
-
             if (TimeZoneId != null)
             {
                 writer.AppendParameter(TimeZoneId);
@@ -2308,6 +2314,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Value != default(DATE_TIME);
 
         public static bool operator ==(RECURRENCE_ID left, RECURRENCE_ID right)
         {
@@ -2417,8 +2425,6 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (string.IsNullOrEmpty(Reference) || string.IsNullOrWhiteSpace(Reference)) return;
-
             writer.Write("RELATED-TO");
             if (RelationshipType != default(RELTYPE)) writer.AppendParameter("RELTYPE", RelationshipType.ToString());
             writer.AppendPropertyValue(Reference);
@@ -2428,6 +2434,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => !string.IsNullOrEmpty(Reference) && !string.IsNullOrWhiteSpace(Reference);
 
         public static bool operator ==(RELATEDTO left, RELATEDTO right)
         {
@@ -2516,7 +2524,6 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (Uri == null) return;
             writer.WriteProperty("URL", Uri.ToString());
         }
 
@@ -2524,6 +2531,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Uri != null;
     }
 
     #endregion Relationship Component Properties
@@ -2650,7 +2659,6 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (DateTimes.NullOrEmpty()) return;
             writer.Write("EXDATE");
             if (TimeZoneId != null) writer.AppendParameter(TimeZoneId);
             writer.AppendPropertyValues(DateTimes);
@@ -2660,6 +2668,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => DateTimes.Any();
 
         public static bool operator ==(EXDATE left, EXDATE right)
         {
@@ -2725,9 +2735,9 @@ namespace reexjungle.xcal.domain.models
         /// List of DATE-TIME values for recurring events, to-dos, journal entries or time-zone definitions
         /// </param>
         /// <param name="tzid">ID of the current Time Zone</param>
-        public RDATE(List<DATE_TIME> values, TZID tzid = null, VALUE value_type = VALUE.NONE)
+        public RDATE(IEnumerable<DATE_TIME> values, TZID tzid = null, VALUE value_type = VALUE.NONE)
         {
-            DateTimes = values;
+            DateTimes = values.NullOrEmpty() ? new List<DATE_TIME>() : new List<DATE_TIME>(values);
             TimeZoneId = tzid;
             Periods = new List<PERIOD>();
             ValueType = value_type;
@@ -2740,10 +2750,10 @@ namespace reexjungle.xcal.domain.models
         /// List of Periods between recurring events, to-dos, journal entries or time-zone definitions
         /// </param>
         /// <param name="tzid">ID of the current Time Zone</param>
-        public RDATE(List<PERIOD> periods, TZID tzid = null, VALUE value_type = VALUE.NONE)
+        public RDATE(IEnumerable<PERIOD> periods, TZID tzid = null, VALUE value_type = VALUE.NONE)
         {
             DateTimes = new List<DATE_TIME>();
-            Periods = periods;
+            Periods = periods.NullOrEmpty() ? new List<PERIOD>() : new List<PERIOD>(periods);
             TimeZoneId = tzid;
             ValueType = value_type;
         }
@@ -2835,8 +2845,6 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (DateTimes.NullOrEmpty() || Periods.NullOrEmpty()) return;
-
             writer.Write("RDATE");
             if (ValueType != default(VALUE)) writer.AppendParameter("VALUE", ValueType.ToString());
 
@@ -2848,6 +2856,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => DateTimes.Any() || Periods.Any();
 
         public static bool operator ==(RDATE left, RDATE right)
         {
@@ -2996,8 +3006,6 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (ValueType == VALUE.DURATION && Duration == default(DURATION) || ValueType == VALUE.DATE_TIME && DateTime == default(DATE_TIME)) return;
-
             writer.Write("TRIGGER");
             if (type == TriggerType.Related)
             {
@@ -3016,6 +3024,10 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() =>
+            (ValueType == VALUE.DURATION && Duration != default(DURATION))
+            || (ValueType == VALUE.DATE_TIME && DateTime != default(DATE_TIME));
 
         public static bool operator ==(TRIGGER left, TRIGGER right)
         {
@@ -3159,6 +3171,8 @@ namespace reexjungle.xcal.domain.models
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => true;
     }
 
     /// <summary>
@@ -3297,18 +3311,18 @@ namespace reexjungle.xcal.domain.models
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            if (Code == default(STATCODE) || string.IsNullOrEmpty(Description) || string.IsNullOrWhiteSpace(Description)) return;
-
             writer.Write("REQUEST-STATUS");
             if (Language != null) writer.AppendParameter(Language);
-            writer.AppendPropertyValue(Code).AppendSpecial(writer.ConvertToSAFE_STRING(Description));
-            if (!string.IsNullOrEmpty(ExceptionData) && !string.IsNullOrWhiteSpace(ExceptionData)) writer.AppendSpecial(ExceptionData);
+            writer.AppendPropertyValue(Code).AppendBySemicolon(writer.ConvertToSAFE_STRING(Description));
+            if (!string.IsNullOrEmpty(ExceptionData) && !string.IsNullOrWhiteSpace(ExceptionData)) writer.AppendBySemicolon(ExceptionData);
         }
 
         public void ReadCalendar(CalendarReader reader)
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Code != default(STATCODE) && !string.IsNullOrEmpty(Description) && !string.IsNullOrWhiteSpace(Description);
 
         public static bool operator ==(REQUEST_STATUS left, REQUEST_STATUS right)
         {

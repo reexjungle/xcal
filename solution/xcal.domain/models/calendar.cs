@@ -117,7 +117,7 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((VCALENDAR)obj);
         }
 
@@ -141,27 +141,22 @@ namespace reexjungle.xcal.domain.models
             writer.WriteStartComponent("VCALENDAR");
             writer.AppendProperty("VERSION", Version);
             writer.AppendProperty("PRODID", ProdId);
-
             if (Calscale != default(CALSCALE))writer.AppendProperty("CALSCALE", Calscale.ToString());
-
             if (Method != default(METHOD))writer.AppendProperty("METHOD", Method.ToString());
-
             if (Events.Any()) writer.AppendProperties(Events);
-
-            if (ToDos.Any())writer.AppendProperties(ToDos);
-
-            if (FreeBusies.Any())writer.AppendProperties(FreeBusies);
-
+            if (ToDos.Any()) writer.AppendProperties(ToDos);
+            if (FreeBusies.Any()) writer.AppendProperties(FreeBusies);
             if (Journals.Any()) writer.AppendProperties(Journals);
-
-            if (TimeZones.Any()) writer.AppendProperties(Journals);
-
-            writer.AppendEndComponent("VCALENDAR");
+            if (TimeZones.Any()) writer.AppendProperties(TimeZones);
+            writer.WriteLine();
+            writer.WriteEndComponent("VCALENDAR");
         }
 
         public void ReadCalendar(CalendarReader reader)
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Events.Any() || ToDos.Any() || FreeBusies.Any() || Journals.Any() || TimeZones.Any();
     }
 }

@@ -1,16 +1,13 @@
-﻿using reexjungle.xcal.domain.contracts;
-using reexjungle.xmisc.foundation.concretes;
-using reexjungle.xmisc.foundation.contracts;
-using ServiceStack.DataAnnotations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using System.Text;
+using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.infrastructure.contracts;
 using reexjungle.xcal.infrastructure.extensions;
 using reexjungle.xcal.infrastructure.serialization;
+using reexjungle.xmisc.foundation.contracts;
+using ServiceStack.DataAnnotations;
 
 namespace reexjungle.xcal.domain.models
 {
@@ -21,14 +18,32 @@ namespace reexjungle.xcal.domain.models
         private DURATION duration;
 
         /// <summary>
-        /// Gets or sets the unique identifier of the To-Do.
+        ///     Gets or sets the unique identifier of the To-Do.
         /// </summary>
         [DataMember]
         [Index(Unique = true)]
         public Guid Id { get; set; }
 
+        public bool Equals(VTODO other)
+        {
+            //primary reference
+            var equals = Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase);
+
+            if (equals && RecurrenceId != null && other.RecurrenceId != null)
+                equals = RecurrenceId == other.RecurrenceId;
+
+            //secondary reference if both todos are equal by Uid/Recurrence Id
+            if (equals) equals = Sequence == other.Sequence;
+
+            //tie-breaker
+            if (equals)
+                equals = Datestamp == other.Datestamp;
+
+            return equals;
+        }
+
         /// <summary>
-        /// Gets or sets the unique identifier of a non-recurrent To-Do.
+        ///     Gets or sets the unique identifier of a non-recurrent To-Do.
         /// </summary>
         [DataMember]
         public string Uid
@@ -168,30 +183,12 @@ namespace reexjungle.xcal.domain.models
         [Ignore]
         public List<VALARM> Alarms { get; set; }
 
-        public bool Equals(VTODO other)
-        {
-            //primary reference
-            var equals = Uid.Equals(other.Uid, StringComparison.OrdinalIgnoreCase);
-
-            if (equals && RecurrenceId != null && other.RecurrenceId != null)
-                equals = RecurrenceId == other.RecurrenceId;
-
-            //secondary reference if both todos are equal by Uid/Recurrence Id
-            if (equals) equals = Sequence == other.Sequence;
-
-            //tie-breaker
-            if (equals)
-                equals = Datestamp == other.Datestamp;
-
-            return equals;
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((VTODO)obj);
+            if (obj.GetType() != GetType()) return false;
+            return Equals((VTODO) obj);
         }
 
         public override int GetHashCode()
@@ -212,6 +209,7 @@ namespace reexjungle.xcal.domain.models
         private void WriteCalendarPrimitives(CalendarWriter writer)
         {
             writer.AppendProperty("DTSTAMP", Datestamp);
+
             writer.AppendProperty("UID", Uid);
 
             if (Start != default(DATE_TIME)) writer.AppendProperty("DTSTART", Start);
@@ -223,7 +221,6 @@ namespace reexjungle.xcal.domain.models
             if (Created != default(DATE_TIME)) writer.AppendProperty("CREATED", Created);
 
             if (Description != default(DESCRIPTION)) writer.AppendProperty(Description);
-
 
             if (LastModified != default(DATE_TIME)) writer.AppendProperty("LAST-MODIFIED", Created);
 
@@ -239,20 +236,17 @@ namespace reexjungle.xcal.domain.models
 
             if (Summary != default(SUMMARY)) writer.AppendProperty(Summary);
 
-
             if (Url != default(URL)) writer.AppendProperty(Url);
 
             if (RecurrenceId != default(RECURRENCE_ID)) writer.AppendProperty(RecurrenceId);
 
             if (RecurrenceRule != default(RECUR)) writer.AppendProperty("RRULE", RecurrenceRule);
 
-            if (Categories != default(CATEGORIES))
-            {
-                writer.AppendProperty(Categories);
-            }
+            if (Categories != default(CATEGORIES)) writer.AppendProperty(Categories);
+
         }
 
-        private void WriteCalendarLists(CalendarWriter writer)
+        private void WriteCalendarEnumerables(CalendarWriter writer)
         {
             if (Attendees.Any()) writer.AppendProperties(Attendees);
 
@@ -260,9 +254,7 @@ namespace reexjungle.xcal.domain.models
 
             if (Contacts.Any()) writer.AppendProperties(Contacts);
 
-
             if (RelatedTos.Any()) writer.AppendProperties(RelatedTos);
-
 
             if (ExceptionDates.Any()) writer.AppendProperties(ExceptionDates);
 
@@ -270,29 +262,27 @@ namespace reexjungle.xcal.domain.models
 
             if (Resources.Any()) writer.AppendProperties(Resources);
 
-
             if (RequestStatuses.Any()) writer.AppendProperties(RequestStatuses);
 
             if (Alarms.Any()) writer.AppendProperties(Alarms);
-
 
             if (Attachments.Any()) writer.AppendProperties(Attachments);
         }
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            writer.WriteStartComponent("VEVENT");
-
+            writer.WriteStartComponent(nameof(VTODO));
             WriteCalendarPrimitives(writer);
-
-            WriteCalendarLists(writer);
-
-            writer.WriteEndComponent("VEVENT");
+            WriteCalendarEnumerables(writer);
+            writer.WriteLine();
+            writer.WriteEndComponent(nameof(VTODO));
         }
 
         public void ReadCalendar(CalendarReader reader)
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Datestamp != default(DATE_TIME) && !string.IsNullOrEmpty(Uid) && !string.IsNullOrWhiteSpace(Uid);
     }
 }

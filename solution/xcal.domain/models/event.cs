@@ -22,7 +22,7 @@ namespace reexjungle.xcal.domain.models
     [KnownType(typeof(AUDIO_ALARM))]
     [KnownType(typeof(DISPLAY_ALARM))]
     [KnownType(typeof(EMAIL_ALARM))]
-    public class VEVENT : IEVENT, IEquatable<VEVENT>, IComparable<VEVENT>, IContainsKey<Guid>, ICalendarSerializable
+    public sealed class VEVENT : IEVENT, IEquatable<VEVENT>, IComparable<VEVENT>, IContainsKey<Guid>, ICalendarSerializable
     {
         /// <summary>
         /// </summary>
@@ -390,6 +390,7 @@ namespace reexjungle.xcal.domain.models
         private void WriteCalendarPrimitives(CalendarWriter writer)
         {
             writer.AppendProperty("DTSTAMP", Datestamp);
+
             writer.AppendProperty("UID", Uid);
 
             if (Start != default(DATE_TIME)) writer.AppendProperty("DTSTART", Start);
@@ -406,7 +407,6 @@ namespace reexjungle.xcal.domain.models
 
             if (GeoPosition != default(GEO)) writer.AppendProperty(GeoPosition);
 
-
             if (LastModified != default(DATE_TIME)) writer.AppendProperty("LAST-MODIFIED", Created);
 
             if (Location != default(LOCATION)) writer.AppendProperty(Location);
@@ -421,7 +421,6 @@ namespace reexjungle.xcal.domain.models
 
             if (Summary != default(SUMMARY)) writer.AppendProperty(Summary);
 
-
             if (Transparency != default(TRANSP)) writer.AppendProperty("TRANSP", Transparency.ToString());
 
             if (Url != default(URL)) writer.AppendProperty(Url);
@@ -430,53 +429,47 @@ namespace reexjungle.xcal.domain.models
 
             if (RecurrenceRule != default(RECUR)) writer.AppendProperty("RRULE", RecurrenceRule);
 
-            if (Categories != default(CATEGORIES))
-            {
-                writer.AppendProperty(Categories);
-            }
+            if (Categories != default(CATEGORIES)) writer.AppendProperty(Categories);
+
         }
 
-        private void WriteCalendarLists(CalendarWriter writer)
+        private void WriteCalendarEnumerables(CalendarWriter writer)
         {
             if (Attendees.Any()) writer.AppendProperties(Attendees);
 
-            if (Comments.Any())writer.AppendProperties(Comments);
+            if (Comments.Any()) writer.AppendProperties(Comments);
 
-            if (Contacts.Any())writer.AppendProperties(Contacts);
-
+            if (Contacts.Any()) writer.AppendProperties(Contacts);
 
             if (RelatedTos.Any()) writer.AppendProperties(RelatedTos);
 
-
             if (ExceptionDates.Any()) writer.AppendProperties(ExceptionDates);
 
-            if (RecurrenceDates.Any())writer.AppendProperties(RecurrenceDates);
+            if (RecurrenceDates.Any()) writer.AppendProperties(RecurrenceDates);
 
-            if (Resources.Any())writer.AppendProperties(Resources);
+            if (Resources.Any()) writer.AppendProperties(Resources);
 
+            if (RequestStatuses.Any()) writer.AppendProperties(RequestStatuses);
 
-            if (RequestStatuses.Any())writer.AppendProperties(RequestStatuses);
-
-            if (Alarms.Any())writer.AppendProperties(Alarms);
-
+            if (Alarms.Any()) writer.AppendProperties(Alarms);
 
             if (Attachments.Any()) writer.AppendProperties(Attachments);
         }
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            writer.WriteStartComponent("VEVENT");
-
+            writer.WriteStartComponent(nameof(VEVENT));
             WriteCalendarPrimitives(writer);
-
-            WriteCalendarLists(writer);
-
-            writer.WriteEndComponent("VEVENT");
+            WriteCalendarEnumerables(writer);
+            writer.WriteLine();
+            writer.WriteEndComponent(nameof(VEVENT));
         }
 
         public void ReadCalendar(CalendarReader reader)
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Datestamp != default(DATE_TIME) && !string.IsNullOrEmpty(Uid) && !string.IsNullOrWhiteSpace(Uid);
     }
 }

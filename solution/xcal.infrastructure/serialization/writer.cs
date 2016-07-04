@@ -15,7 +15,6 @@ namespace reexjungle.xcal.infrastructure.serialization
     {
         //literal Constants
         private const char HTAB = '\u0009';
-
         private const char EMPTY = '\0';
         private const string DQUOTE = @"""";
         private const string COMMA = ",";
@@ -66,6 +65,12 @@ namespace reexjungle.xcal.infrastructure.serialization
         {
             Write("BEGIN:"+ name);
             return this;
+        }
+
+        public CalendarWriter AppendStartComponent(string name)
+        {
+            WriteLine();
+            return WriteStartComponent(name);
         }
 
         /// <summary>
@@ -156,7 +161,7 @@ namespace reexjungle.xcal.infrastructure.serialization
         /// <param name="value"></param>
         public CalendarWriter WriteSafeStringValue(string value)
         {
-            base.Write(ConvertToSAFE_STRING(value));
+            Write(ConvertToSAFE_STRING(value));
             return this;
         }
 
@@ -166,13 +171,13 @@ namespace reexjungle.xcal.infrastructure.serialization
         /// <param name="value">The string value to be enclosed by double quotes.</param>
         public CalendarWriter WriteQuotedStringValue(string value)
         {
-            base.Write(ConvertToQuotedString(value));
+            Write(ConvertToQuotedString(value));
             return this;
         }
 
         public CalendarWriter WriteDQuote()
         {
-            base.Write(DQUOTE);
+            Write(DQUOTE);
             return this;
         }
 
@@ -182,7 +187,7 @@ namespace reexjungle.xcal.infrastructure.serialization
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
         public CalendarWriter WriteComma()
         {
-            base.Write(COMMA);
+            Write(COMMA);
             return this;
         }
 
@@ -192,7 +197,7 @@ namespace reexjungle.xcal.infrastructure.serialization
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
         public CalendarWriter WriteSemicolon()
         {
-            base.Write(SEMICOLON);
+            Write(SEMICOLON);
             return this;
         }
 
@@ -202,7 +207,7 @@ namespace reexjungle.xcal.infrastructure.serialization
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
         public CalendarWriter WriteColon()
         {
-            base.Write(COLON);
+            Write(COLON);
             return this;
         }
 
@@ -221,9 +226,9 @@ namespace reexjungle.xcal.infrastructure.serialization
         /// </summary>
         /// <param name="values">The VALUEs to be written to the text string or stream.</param>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public CalendarWriter Write(IEnumerable<string> values)
+        public CalendarWriter WriteValues(IEnumerable<string> values)
         {
-            base.Write(string.Join(COMMA, values));
+            Write(string.Join(COMMA, values));
             return this;
         }
 
@@ -236,13 +241,13 @@ namespace reexjungle.xcal.infrastructure.serialization
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
         public CalendarWriter WriteParameters(IEnumerable<string> parameters)
         {
-            base.Write(string.Join(SEMICOLON, parameters));
+            Write(string.Join(SEMICOLON, parameters));
             return this;
         }
 
         public CalendarWriter WriteParameter(string name, string value)
         {
-            base.Write("{0}={1}", name, value);
+            Write("{0}={1}", name, value);
             return this;
         }
 
@@ -254,7 +259,7 @@ namespace reexjungle.xcal.infrastructure.serialization
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
         public CalendarWriter WriteParameter(string name, IEnumerable<string> values)
         {
-            base.Write("{0}={1}", name, string.Join(COMMA, values));
+            Write("{0}={1}", name, string.Join(COMMA, values));
             return this;
         }
 
@@ -283,26 +288,26 @@ namespace reexjungle.xcal.infrastructure.serialization
             return WriteSemicolon().WriteParameter(name, values);
         }
 
-        public CalendarWriter Append(string value)
+        public CalendarWriter AppendByComma(string value)
         {
             WriteComma().Write(value);
             return this;
         }
 
-        public CalendarWriter AppendSpecial(string value)
+        public CalendarWriter AppendBySemicolon(string value)
         {
             WriteSemicolon().Write(value);
             return this;
         }
 
-        public CalendarWriter Append(IEnumerable<string> values)
+        public CalendarWriter AppendByComma(IEnumerable<string> values)
         {
-            return WriteComma().Write(values);
+            return WriteComma().WriteValues(values);
         }
 
-        public CalendarWriter AppendSpecial(IEnumerable<string> values)
+        public CalendarWriter AppendBySemicolon(IEnumerable<string> values)
         {
-            return WriteSemicolon().Write(values);
+            return WriteSemicolon().WriteValues(values);
         }
 
         /// <summary>
@@ -313,18 +318,6 @@ namespace reexjungle.xcal.infrastructure.serialization
         /// <param name="parameters">The parameters of the property</param>
         /// <remarks>This method assumes each parameter of the property has been correctly formatted.</remarks>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public CalendarWriter WriteProperty(string name, string value, IEnumerable<string> parameters = null)
-        {
-            if (parameters != null && parameters.Count() != 0)
-            {
-                base.Write("{0};{1}:{2}", name, string.Join(";", parameters), value);
-            }
-            else
-            {
-                base.Write("{0}:{1}", name, value);
-            }
-            return this;
-        }
 
         public CalendarWriter AppendParameter(string parameter)
         {
@@ -340,13 +333,26 @@ namespace reexjungle.xcal.infrastructure.serialization
         public CalendarWriter AppendPropertyValue(string value)
         {
             WriteColon();
-            base.Write(value);
+            Write(value);
             return this;
         }
 
         public CalendarWriter AppendPropertyValues(IEnumerable<string> values)
         {
-           return WriteColon().Write(values);
+           return WriteColon().WriteValues(values);
+        }
+
+        public CalendarWriter WriteProperty(string name, string value, IEnumerable<string> parameters = null)
+        {
+            if (parameters != null && parameters.Count() != 0)
+            {
+                Write("{0};{1}:{2}", name, string.Join(";", parameters), value);
+            }
+            else
+            {
+                Write("{0}:{1}", name, value);
+            }
+            return this;
         }
 
         public CalendarWriter AppendProperty(string name, string value, IEnumerable<string> parameters = null)
@@ -354,6 +360,7 @@ namespace reexjungle.xcal.infrastructure.serialization
             WriteLine();
             return WriteProperty(name, value, parameters);
         }
+
 
         /// <summary>
         /// Writes properties, where each written property is followed by the line terminator.
@@ -365,8 +372,7 @@ namespace reexjungle.xcal.infrastructure.serialization
         {
             foreach (var property in properties.Where(x => !string.IsNullOrWhiteSpace(x) && !string.IsNullOrEmpty(x)))
             {
-                WriteLine();
-                base.Write(property);
+                Write(property);
             }
             return this;
         }
@@ -395,12 +401,11 @@ namespace reexjungle.xcal.infrastructure.serialization
         /// </summary>
         /// <param name="components"></param>
         /// <returns>Writes iCalendar parameters to the text string or stream.</returns>
-        public CalendarWriter AppendComponents(IEnumerable<string> components)
+        public CalendarWriter WriteComponents(IEnumerable<string> components)
         {
             foreach (var component in components.Where(x => !string.IsNullOrWhiteSpace(x) && !string.IsNullOrEmpty(x)))
             {
-                WriteLine();
-                base.Write(component);
+                Write(component);
             }
             return this;
         }
@@ -434,6 +439,7 @@ namespace reexjungle.xcal.infrastructure.serialization
         private bool opened;
         private static readonly string CRLF = Environment.NewLine;
         private const int MAX = 75;
+        private const char SPACE = '\u0020';
 
         public CalendarTextWriter() : this(new StringBuilder())
         {
@@ -515,7 +521,7 @@ namespace reexjungle.xcal.infrastructure.serialization
             using (var ms = new MemoryStream(value.Length))
             {
                 var crlf = encoding.GetBytes(newline); //CRLF
-                var crlfs = encoding.GetBytes(newline + " "); //CRLF and SPACE
+                var crlfs = encoding.GetBytes(newline + new string(SPACE, 1)); //CRLF and SPACE
                 foreach (var line in lines)
                 {
                     var bytes = encoding.GetBytes(line);
@@ -590,6 +596,7 @@ namespace reexjungle.xcal.infrastructure.serialization
         private static readonly string CRLF = Environment.NewLine;
         private const int MAX = 75;
         private const int BUFSIZE = 16 * 1024; //friendly to most CPU L1 caches
+        private const char SPACE = '\u0020';
 
         public Stream Datasource => stream;
 
@@ -634,7 +641,7 @@ namespace reexjungle.xcal.infrastructure.serialization
         {
             var ms = CopyStream(stream, bufferSize);
             var crlf = encoding.GetBytes(newline); //CRLF
-            var crlfs = encoding.GetBytes(newline + " "); //CRLF and SPACE
+            var crlfs = encoding.GetBytes(newline + new string(SPACE, 1)); //CRLF and SPACE
             string line;
 
             var reader = new StreamReader(stream);

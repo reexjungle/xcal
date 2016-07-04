@@ -94,7 +94,7 @@ namespace reexjungle.xcal.domain.models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((VFREEBUSY)obj);
         }
 
@@ -116,42 +116,44 @@ namespace reexjungle.xcal.domain.models
         private void WriteCalendarPrimitives(CalendarWriter writer)
         {
             writer.AppendProperty("DTSTAMP", Datestamp);
+
             writer.AppendProperty("UID", Uid);
 
             if (Start != default(DATE_TIME)) writer.AppendProperty("DTSTART", Start);
 
             if (End != default(DATE_TIME)) writer.AppendProperty("DTEND", End);
 
-            if (Url != default(URL)) writer.AppendProperty(Url);
+            if (Organizer != default(ORGANIZER)) writer.AppendProperty(Organizer);
 
+            if (Url != default(URL)) writer.AppendProperty(Url);
 
         }
 
-        private void WriteCalendarLists(CalendarWriter writer)
+        private void WriteCalendarEnumerables(CalendarWriter writer)
         {
-            if (Attendees.Any()) writer.AppendProperties(Attendees.ToArray());
+            if (Attendees.Any()) writer.AppendProperties(Attendees);
 
-            if (Comments.Any()) writer.AppendProperties(Comments.ToArray());
+            if (Comments.Any()) writer.AppendProperties(Comments);
 
-            if (RequestStatuses.Any()) writer.AppendProperties(RequestStatuses.ToArray());
+            if (RequestStatuses.Any()) writer.AppendProperties(RequestStatuses);
 
-            if (Attachments.Any()) writer.AppendProperties(Attachments.ToArray());
+            if (Attachments.Any()) writer.AppendProperties(Attachments);
         }
 
         public void WriteCalendar(CalendarWriter writer)
         {
-            writer.WriteStartComponent("VFREEBUSY");
-
+            writer.WriteStartComponent(nameof(VFREEBUSY));
             WriteCalendarPrimitives(writer);
-
-            WriteCalendarLists(writer);
-
-            writer.WriteEndComponent("VFREEBUSY");
+            WriteCalendarEnumerables(writer);
+            writer.WriteLine();
+            writer.WriteEndComponent(nameof(VFREEBUSY));
         }
 
         public void ReadCalendar(CalendarReader reader)
         {
             throw new NotImplementedException();
         }
+
+        public bool CanSerialize() => Datestamp != default(DATE_TIME) && !string.IsNullOrEmpty(Uid) && !string.IsNullOrWhiteSpace(Uid);
     }
 }
