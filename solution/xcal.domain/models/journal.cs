@@ -222,14 +222,8 @@ namespace reexjungle.xcal.domain.models
             return hash;
         }
 
-        public static bool operator ==(VJOURNAL left, VJOURNAL right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(VJOURNAL left, VJOURNAL right) => Equals(left, right);
 
-        public static bool operator !=(VJOURNAL left, VJOURNAL right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(VJOURNAL left, VJOURNAL right) => !Equals(left, right);
     }
 }

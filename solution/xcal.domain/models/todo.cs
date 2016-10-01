@@ -191,20 +191,11 @@ namespace reexjungle.xcal.domain.models
             return Equals((VTODO) obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
-        public static bool operator ==(VTODO left, VTODO right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(VTODO left, VTODO right) => Equals(left, right);
 
-        public static bool operator !=(VTODO left, VTODO right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(VTODO left, VTODO right) => !Equals(left, right);
 
         private void WriteCalendarPrimitives(CalendarWriter writer)
         {

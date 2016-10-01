@@ -150,20 +150,11 @@ namespace reexjungle.xcal.domain.models
         /// Serves as the default hash function.
         /// </summary>
         /// <returns>A hash code for the current object.</returns>
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
-        public static bool operator ==(ATTACH_BINARY left, ATTACH_BINARY right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(ATTACH_BINARY left, ATTACH_BINARY right) => Equals(left, right);
 
-        public static bool operator !=(ATTACH_BINARY left, ATTACH_BINARY right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(ATTACH_BINARY left, ATTACH_BINARY right) => !Equals(left, right);
     }
 
     public sealed class ATTACH_URI : ATTACH, IEquatable<ATTACH_URI>
@@ -213,20 +204,11 @@ namespace reexjungle.xcal.domain.models
         /// Serves as the default hash function.
         /// </summary>
         /// <returns>A hash code for the current object.</returns>
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
-        public static bool operator ==(ATTACH_URI left, ATTACH_URI right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(ATTACH_URI left, ATTACH_URI right) => Equals(left, right);
 
-        public static bool operator !=(ATTACH_URI left, ATTACH_URI right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(ATTACH_URI left, ATTACH_URI right) => !Equals(left, right);
 
         public override void WriteCalendar(CalendarWriter writer)
         {
@@ -330,20 +312,11 @@ namespace reexjungle.xcal.domain.models
             return Equals((CATEGORIES)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
-        public static bool operator ==(CATEGORIES left, CATEGORIES right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(CATEGORIES left, CATEGORIES right) => Equals(left, right);
 
-        public static bool operator !=(CATEGORIES left, CATEGORIES right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(CATEGORIES left, CATEGORIES right) => !Equals(left, right);
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -436,35 +409,17 @@ namespace reexjungle.xcal.domain.models
             return Equals((TEXTUAL)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
-        public static bool operator ==(TEXTUAL left, TEXTUAL right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(TEXTUAL left, TEXTUAL right) => Equals(left, right);
 
-        public static bool operator !=(TEXTUAL left, TEXTUAL right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(TEXTUAL left, TEXTUAL right) => !Equals(left, right);
 
-        public int CompareTo(TEXTUAL other)
-        {
-            return Text.CompareTo(other.Text);
-        }
+        public int CompareTo(TEXTUAL other) => Text.CompareTo(other.Text);
 
-        public static bool operator <(TEXTUAL a, TEXTUAL b)
-        {
-            return a.CompareTo(b) < 0;
-        }
+        public static bool operator <(TEXTUAL a, TEXTUAL b) => a.CompareTo(b) < 0;
 
-        public static bool operator >(TEXTUAL a, TEXTUAL b)
-        {
-            return a.CompareTo(b) > 0;
-        }
+        public static bool operator >(TEXTUAL a, TEXTUAL b) => a.CompareTo(b) > 0;
 
         public virtual void WriteCalendar(CalendarWriter writer)
         {
@@ -908,11 +863,8 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public bool Equals(GEO other)
-        {
-            return longitude.Equals(other.longitude) &&
-                   latitude.Equals(other.latitude);
-        }
+        public bool Equals(GEO other) => longitude.Equals(other.longitude) &&
+       latitude.Equals(other.latitude);
 
         public override bool Equals(object obj)
         {
@@ -929,15 +881,9 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public static bool operator ==(GEO left, GEO right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(GEO left, GEO right) => left.Equals(right);
 
-        public static bool operator !=(GEO left, GEO right)
-        {
-            return !left.Equals(right);
-        }
+        public static bool operator !=(GEO left, GEO right) => !left.Equals(right);
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -1062,20 +1008,11 @@ namespace reexjungle.xcal.domain.models
             return Equals((RESOURCES)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
-        public static bool operator ==(RESOURCES left, RESOURCES right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(RESOURCES left, RESOURCES right) => Equals(left, right);
 
-        public static bool operator !=(RESOURCES left, RESOURCES right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(RESOURCES left, RESOURCES right) => !Equals(left, right);
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -1301,20 +1238,11 @@ namespace reexjungle.xcal.domain.models
 
         public PriorityType Format => format;
 
-        public int Value
-        {
-            get { return value; }
-        }
+        public int Value => value;
 
-        public PRIORITYLEVEL Level
-        {
-            get { return level; }
-        }
+        public PRIORITYLEVEL Level => level;
 
-        public PRIORITYSCHEMA Schema
-        {
-            get { return schema; }
-        }
+        public PRIORITYSCHEMA Schema => schema;
 
         public PRIORITY(IPRIORITY priority)
         {
@@ -1382,10 +1310,7 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public bool Equals(PRIORITY other)
-        {
-            return value == other.value;
-        }
+        public bool Equals(PRIORITY other) => value == other.value;
 
         public override bool Equals(object obj)
         {
@@ -1393,35 +1318,17 @@ namespace reexjungle.xcal.domain.models
             return obj is PRIORITY && Equals((PRIORITY)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return value;
-        }
+        public override int GetHashCode() => value;
 
-        public static bool operator ==(PRIORITY left, PRIORITY right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(PRIORITY left, PRIORITY right) => left.Equals(right);
 
-        public static bool operator !=(PRIORITY left, PRIORITY right)
-        {
-            return !left.Equals(right);
-        }
+        public static bool operator !=(PRIORITY left, PRIORITY right) => !left.Equals(right);
 
-        public int CompareTo(PRIORITY other)
-        {
-            return Value.CompareTo(other.Value);
-        }
+        public int CompareTo(PRIORITY other) => Value.CompareTo(other.Value);
 
-        public static bool operator <(PRIORITY a, PRIORITY b)
-        {
-            return a.CompareTo(b) < 0;
-        }
+        public static bool operator <(PRIORITY a, PRIORITY b) => a.CompareTo(b) < 0;
 
-        public static bool operator >(PRIORITY a, PRIORITY b)
-        {
-            return a.CompareTo(b) > 0;
-        }
+        public static bool operator >(PRIORITY a, PRIORITY b) => a.CompareTo(b) > 0;
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -1541,20 +1448,11 @@ namespace reexjungle.xcal.domain.models
             return Equals((FREEBUSY)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
-        public static bool operator ==(FREEBUSY left, FREEBUSY right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(FREEBUSY left, FREEBUSY right) => Equals(left, right);
 
-        public static bool operator !=(FREEBUSY left, FREEBUSY right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(FREEBUSY left, FREEBUSY right) => !Equals(left, right);
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -1657,25 +1555,13 @@ namespace reexjungle.xcal.domain.models
             return Equals((TZNAME)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
-        public static bool operator ==(TZNAME left, TZNAME right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(TZNAME left, TZNAME right) => Equals(left, right);
 
-        public static bool operator !=(TZNAME left, TZNAME right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(TZNAME left, TZNAME right) => !Equals(left, right);
 
-        public int CompareTo(TZNAME other)
-        {
-            return Text.CompareTo(other.Text);
-        }
+        public int CompareTo(TZNAME other) => Text.CompareTo(other.Text);
 
         public static bool operator <(TZNAME a, TZNAME b)
         {
@@ -1934,20 +1820,11 @@ namespace reexjungle.xcal.domain.models
             return Equals((ATTENDEE)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
-        public static bool operator ==(ATTENDEE left, ATTENDEE right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(ATTENDEE left, ATTENDEE right) => Equals(left, right);
 
-        public static bool operator !=(ATTENDEE left, ATTENDEE right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(ATTENDEE left, ATTENDEE right) => !Equals(left, right);
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -2130,10 +2007,7 @@ namespace reexjungle.xcal.domain.models
             return Equals((ORGANIZER)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -2152,15 +2026,9 @@ namespace reexjungle.xcal.domain.models
 
         public bool CanSerialize() => Address != null;
 
-        public static bool operator ==(ORGANIZER left, ORGANIZER right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(ORGANIZER left, ORGANIZER right) => Equals(left, right);
 
-        public static bool operator !=(ORGANIZER left, ORGANIZER right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(ORGANIZER left, ORGANIZER right) => !Equals(left, right);
     }
 
     /// <summary>
@@ -2294,10 +2162,7 @@ namespace reexjungle.xcal.domain.models
             return Equals((RECURRENCE_ID)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -2317,15 +2182,9 @@ namespace reexjungle.xcal.domain.models
 
         public bool CanSerialize() => Value != default(DATE_TIME);
 
-        public static bool operator ==(RECURRENCE_ID left, RECURRENCE_ID right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(RECURRENCE_ID left, RECURRENCE_ID right) => Equals(left, right);
 
-        public static bool operator !=(RECURRENCE_ID left, RECURRENCE_ID right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(RECURRENCE_ID left, RECURRENCE_ID right) => !Equals(left, right);
     }
 
     /// <summary>
@@ -2418,10 +2277,7 @@ namespace reexjungle.xcal.domain.models
             return Equals((RELATEDTO)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -2437,15 +2293,9 @@ namespace reexjungle.xcal.domain.models
 
         public bool CanSerialize() => !string.IsNullOrEmpty(Reference) && !string.IsNullOrWhiteSpace(Reference);
 
-        public static bool operator ==(RELATEDTO left, RELATEDTO right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(RELATEDTO left, RELATEDTO right) => Equals(left, right);
 
-        public static bool operator !=(RELATEDTO left, RELATEDTO right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(RELATEDTO left, RELATEDTO right) => !Equals(left, right);
     }
 
     [DataContract]
@@ -2512,15 +2362,9 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public static bool operator ==(URL left, URL right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(URL left, URL right) => Equals(left, right);
 
-        public static bool operator !=(URL left, URL right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(URL left, URL right) => !Equals(left, right);
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -2652,10 +2496,7 @@ namespace reexjungle.xcal.domain.models
             return Equals((EXDATE)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -2671,15 +2512,9 @@ namespace reexjungle.xcal.domain.models
 
         public bool CanSerialize() => DateTimes.Any();
 
-        public static bool operator ==(EXDATE left, EXDATE right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(EXDATE left, EXDATE right) => Equals(left, right);
 
-        public static bool operator !=(EXDATE left, EXDATE right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(EXDATE left, EXDATE right) => !Equals(left, right);
     }
 
     /// <summary>
@@ -2838,10 +2673,7 @@ namespace reexjungle.xcal.domain.models
             return Equals((RDATE)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -2859,15 +2691,9 @@ namespace reexjungle.xcal.domain.models
 
         public bool CanSerialize() => DateTimes.Any() || Periods.Any();
 
-        public static bool operator ==(RDATE left, RDATE right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(RDATE left, RDATE right) => Equals(left, right);
 
-        public static bool operator !=(RDATE left, RDATE right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(RDATE left, RDATE right) => !Equals(left, right);
     }
 
     #endregion Recurrence Component properties
@@ -2999,10 +2825,7 @@ namespace reexjungle.xcal.domain.models
             return Equals((TRIGGER)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -3029,15 +2852,9 @@ namespace reexjungle.xcal.domain.models
             (ValueType == VALUE.DURATION && Duration != default(DURATION))
             || (ValueType == VALUE.DATE_TIME && DateTime != default(DATE_TIME));
 
-        public static bool operator ==(TRIGGER left, TRIGGER right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(TRIGGER left, TRIGGER right) => Equals(left, right);
 
-        public static bool operator !=(TRIGGER left, TRIGGER right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(TRIGGER left, TRIGGER right) => !Equals(left, right);
     }
 
     #endregion Alarm Component Properties
@@ -3130,10 +2947,7 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public bool Equals(STATCODE other)
-        {
-            return l1 == other.l1 && l2 == other.l2 && l3 == other.l3;
-        }
+        public bool Equals(STATCODE other) => l1 == other.l1 && l2 == other.l2 && l3 == other.l3;
 
         public override bool Equals(object obj)
         {
@@ -3152,15 +2966,9 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public static bool operator ==(STATCODE left, STATCODE right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(STATCODE left, STATCODE right) => left.Equals(right);
 
-        public static bool operator !=(STATCODE left, STATCODE right)
-        {
-            return !left.Equals(right);
-        }
+        public static bool operator !=(STATCODE left, STATCODE right) => !left.Equals(right);
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -3304,10 +3112,7 @@ namespace reexjungle.xcal.domain.models
             return Equals((REQUEST_STATUS)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -3324,15 +3129,9 @@ namespace reexjungle.xcal.domain.models
 
         public bool CanSerialize() => Code != default(STATCODE) && !string.IsNullOrEmpty(Description) && !string.IsNullOrWhiteSpace(Description);
 
-        public static bool operator ==(REQUEST_STATUS left, REQUEST_STATUS right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(REQUEST_STATUS left, REQUEST_STATUS right) => Equals(left, right);
 
-        public static bool operator !=(REQUEST_STATUS left, REQUEST_STATUS right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(REQUEST_STATUS left, REQUEST_STATUS right) => !Equals(left, right);
     }
 
     #endregion Miscellaneous Properties

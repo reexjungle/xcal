@@ -125,20 +125,11 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public static bool operator ==(TZID left, TZID right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(TZID left, TZID right) => Equals(left, right);
 
-        public static bool operator !=(TZID left, TZID right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(TZID left, TZID right) => !Equals(left, right);
 
-        public int CompareTo(TZID other)
-        {
-            return string.Compare(Suffix, other.Suffix, StringComparison.OrdinalIgnoreCase);
-        }
+        public int CompareTo(TZID other) => string.Compare(Suffix, other.Suffix, StringComparison.OrdinalIgnoreCase);
 
         public static bool operator <(TZID a, TZID b)
         {
@@ -239,15 +230,9 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public static bool operator ==(FMTTYPE left, FMTTYPE right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(FMTTYPE left, FMTTYPE right) => Equals(left, right);
 
-        public static bool operator !=(FMTTYPE left, FMTTYPE right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(FMTTYPE left, FMTTYPE right) => !Equals(left, right);
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -331,15 +316,9 @@ namespace reexjungle.xcal.domain.models
             }
         }
 
-        public static bool operator ==(LANGUAGE left, LANGUAGE right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(LANGUAGE left, LANGUAGE right) => Equals(left, right);
 
-        public static bool operator !=(LANGUAGE left, LANGUAGE right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(LANGUAGE left, LANGUAGE right) => !Equals(left, right);
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -412,20 +391,11 @@ namespace reexjungle.xcal.domain.models
             return Equals((DELEGATE)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return (Addresses != null ? Addresses.GetHashCode() : 0);
-        }
+        public override int GetHashCode() => (Addresses != null ? Addresses.GetHashCode() : 0);
 
-        public static bool operator ==(DELEGATE left, DELEGATE right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(DELEGATE left, DELEGATE right) => Equals(left, right);
 
-        public static bool operator !=(DELEGATE left, DELEGATE right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(DELEGATE left, DELEGATE right) => !Equals(left, right);
 
         public abstract void WriteCalendar(CalendarWriter writer);
 
@@ -602,20 +572,11 @@ namespace reexjungle.xcal.domain.models
             return Equals((MEMBER)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return (Addresses != null ? Addresses.GetHashCode() : 0);
-        }
+        public override int GetHashCode() => (Addresses != null ? Addresses.GetHashCode() : 0);
 
-        public static bool operator ==(MEMBER left, MEMBER right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(MEMBER left, MEMBER right) => Equals(left, right);
 
-        public static bool operator !=(MEMBER left, MEMBER right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(MEMBER left, MEMBER right) => !Equals(left, right);
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -693,20 +654,11 @@ namespace reexjungle.xcal.domain.models
             return Equals((ALTREP)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return (Uri != null ? Uri.GetHashCode() : 0);
-        }
+        public override int GetHashCode() => (Uri != null ? Uri.GetHashCode() : 0);
 
-        public static bool operator ==(ALTREP left, ALTREP right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(ALTREP left, ALTREP right) => Equals(left, right);
 
-        public static bool operator !=(ALTREP left, ALTREP right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(ALTREP left, ALTREP right) => !Equals(left, right);
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -784,20 +736,11 @@ namespace reexjungle.xcal.domain.models
             return Equals((DIR)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return (Uri != null ? Uri.GetHashCode() : 0);
-        }
+        public override int GetHashCode() => (Uri != null ? Uri.GetHashCode() : 0);
 
-        public static bool operator ==(DIR left, DIR right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(DIR left, DIR right) => Equals(left, right);
 
-        public static bool operator !=(DIR left, DIR right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(DIR left, DIR right) => !Equals(left, right);
 
         public void WriteCalendar(CalendarWriter writer)
         {
@@ -868,20 +811,11 @@ namespace reexjungle.xcal.domain.models
             return Equals((SENT_BY)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return (Address != null ? Address.GetHashCode() : 0);
-        }
+        public override int GetHashCode() => (Address != null ? Address.GetHashCode() : 0);
 
-        public static bool operator ==(SENT_BY left, SENT_BY right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(SENT_BY left, SENT_BY right) => Equals(left, right);
 
-        public static bool operator !=(SENT_BY left, SENT_BY right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(SENT_BY left, SENT_BY right) => !Equals(left, right);
 
         public void WriteCalendar(CalendarWriter writer)
         {

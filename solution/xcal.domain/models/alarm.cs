@@ -105,10 +105,7 @@ namespace reexjungle.xcal.domain.models
             return Equals((AUDIO_ALARM)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         public override void WriteCalendar(CalendarWriter writer)
         {
@@ -124,15 +121,9 @@ namespace reexjungle.xcal.domain.models
             throw new NotImplementedException();
         }
 
-        public static bool operator ==(AUDIO_ALARM left, AUDIO_ALARM right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(AUDIO_ALARM left, AUDIO_ALARM right) => Equals(left, right);
 
-        public static bool operator !=(AUDIO_ALARM left, AUDIO_ALARM right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(AUDIO_ALARM left, AUDIO_ALARM right) => !Equals(left, right);
     }
 
     [DataContract]
@@ -173,10 +164,7 @@ namespace reexjungle.xcal.domain.models
             return Equals((DISPLAY_ALARM)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         public override void WriteCalendar(CalendarWriter writer)
         {
@@ -192,15 +180,9 @@ namespace reexjungle.xcal.domain.models
             throw new NotImplementedException();
         }
 
-        public static bool operator ==(DISPLAY_ALARM left, DISPLAY_ALARM right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(DISPLAY_ALARM left, DISPLAY_ALARM right) => Equals(left, right);
 
-        public static bool operator !=(DISPLAY_ALARM left, DISPLAY_ALARM right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(DISPLAY_ALARM left, DISPLAY_ALARM right) => !Equals(left, right);
     }
 
     [DataContract]
@@ -266,10 +248,7 @@ namespace reexjungle.xcal.domain.models
             return Equals((EMAIL_ALARM)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         public override void WriteCalendar(CalendarWriter writer)
         {
@@ -297,14 +276,8 @@ namespace reexjungle.xcal.domain.models
 
         public override bool CanSerialize() => base.CanSerialize() && Summary != null && Summary.CanSerialize();
 
-        public static bool operator ==(EMAIL_ALARM left, EMAIL_ALARM right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(EMAIL_ALARM left, EMAIL_ALARM right) => Equals(left, right);
 
-        public static bool operator !=(EMAIL_ALARM left, EMAIL_ALARM right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(EMAIL_ALARM left, EMAIL_ALARM right) => !Equals(left, right);
     }
 }

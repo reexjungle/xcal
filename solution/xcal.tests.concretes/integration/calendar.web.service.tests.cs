@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using FizzWare.NBuilder;
+﻿using FizzWare.NBuilder;
 using reexjungle.xcal.domain.contracts;
 using reexjungle.xcal.domain.models;
 using reexjungle.xcal.infrastructure.serialization;
@@ -15,6 +12,9 @@ using reexjungle.xcal.tests.contracts.services;
 using reexjungle.xmisc.foundation.contracts;
 using reexjungle.xmisc.infrastructure.concretes.operations;
 using ServiceStack.ServiceClient.Web;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace reexjungle.xcal.tests.concretes.integration
@@ -28,15 +28,15 @@ namespace reexjungle.xcal.tests.concretes.integration
 
         protected CalendarWebServicesTests(string baseUri)
         {
-           if (string.IsNullOrWhiteSpace(baseUri)) throw new ArgumentNullException(nameof(baseUri));
-           if (!Uri.IsWellFormedUriString(baseUri, UriKind.RelativeOrAbsolute)) throw new FormatException("baseUri");
+            if (string.IsNullOrWhiteSpace(baseUri)) throw new ArgumentNullException(nameof(baseUri));
+            if (!Uri.IsWellFormedUriString(baseUri, UriKind.RelativeOrAbsolute)) throw new FormatException("baseUri");
 
             var rndGenerator = new RandomGenerator();
             var guidKeyGenerator = new SequentialGuidKeyGenerator();
             var fpiKeyGenerator = new FpiKeyGenerator(
                 new ContentGenerator<ApprovalStatus>(() => Pick<ApprovalStatus>.RandomItemFrom(new[]
                 {
-                    ApprovalStatus.Informal, 
+                    ApprovalStatus.Informal,
                     ApprovalStatus.None
                 })),
                 new ContentGenerator<string>(() => Pick<string>.RandomItemFrom(new[]
@@ -47,7 +47,7 @@ namespace reexjungle.xcal.tests.concretes.integration
                     "YHOO"
                 })),
 
-                new ContentGenerator<string>(() => Pick<string>.RandomItemFrom(new []
+                new ContentGenerator<string>(() => Pick<string>.RandomItemFrom(new[]
                 {
                     "DTD",
                     "XSL",
@@ -67,25 +67,25 @@ namespace reexjungle.xcal.tests.concretes.integration
                 })));
 
             var valuesFactory = new ValuesFactory(guidKeyGenerator);
-            var parametersFactory =new ParametersFactory(valuesFactory);
+            var parametersFactory = new ParametersFactory(valuesFactory);
             var propertiesFactory = new PropertiesFactory(guidKeyGenerator, valuesFactory, parametersFactory);
-            var alarmFactory =new AlarmFactory(guidKeyGenerator, propertiesFactory, valuesFactory);
-            
-            EventFactory =new EventFactory(guidKeyGenerator, alarmFactory, propertiesFactory, valuesFactory);
+            var alarmFactory = new AlarmFactory(guidKeyGenerator, propertiesFactory, valuesFactory);
+
+            EventFactory = new EventFactory(guidKeyGenerator, alarmFactory, propertiesFactory, valuesFactory);
             CalendarFactory = new CalendarFactory(guidKeyGenerator, fpiKeyGenerator);
-            
+
             ServiceClientFactory = new ServiceClientFactory();
             ServiceClientFactory.Register(() => new JsonServiceClient(baseUri));
             ServiceClientFactory.Register(() => new JsvServiceClient(baseUri));
-            ServiceClientFactory.Register(() => new XmlServiceClient(baseUri));    
-  
+            ServiceClientFactory.Register(() => new XmlServiceClient(baseUri));
+
             TestService = new CalendarTestService();
-  
+
         }
 
         public void TearDown()
         {
-           var client = ServiceClientFactory.GetClient<JsvServiceClient>();
+            var client = ServiceClientFactory.GetClient<JsvServiceClient>();
             client.Post(new FlushDatabase
             {
                 Force = false
@@ -122,9 +122,9 @@ namespace reexjungle.xcal.tests.concretes.integration
             var p1 = client.Get(new FindCalendar { CalendarId = c1.Id });
             Assert.Equal(p1.Calscale, CALSCALE.JULIAN);
 
-            client.Delete(new DeleteCalendar { CalendarId = c1.Id });
-            var d1 = client.Get(new FindCalendar { CalendarId = c1.Id });
-            Assert.Equal(d1, null);
+            //client.Delete(new DeleteCalendar { CalendarId = c1.Id });
+            //var d1 = client.Get(new FindCalendar { CalendarId = c1.Id });
+            //Assert.Equal(d1, null);
         }
 
         [Fact]
@@ -135,7 +135,7 @@ namespace reexjungle.xcal.tests.concretes.integration
             var c1 = CalendarFactory.Create();
             var client = ServiceClientFactory.GetClient<JsonServiceClient>();
             client.Post(new AddCalendar { Calendar = c1 });
-            
+
             var f1 = client.Get(new FindCalendarCached { CalendarId = c1.Id });
             Assert.Equal(f1.Calscale, c1.Calscale);
             Assert.Equal(f1.ProdId, c1.ProdId);
@@ -232,7 +232,7 @@ namespace reexjungle.xcal.tests.concretes.integration
             rcals = client.Get(new GetCalendars { Page = 3, Size = 50 });
             Assert.Equal(rcals.Count(), 0);
 
-            client.Post(new DeleteCalendars() );
+            client.Post(new DeleteCalendars());
             var deleted = client.Get(new GetCalendars { Page = 1, Size = int.MaxValue });
             Assert.Equal(deleted.Count, 0);
         }
@@ -244,7 +244,7 @@ namespace reexjungle.xcal.tests.concretes.integration
 
             var cal = CalendarFactory.Create();
             cal.Calscale = CALSCALE.GREGORIAN;
-            var events = EventFactory.Create(5) as IList<VEVENT>?? EventFactory.Create(5).ToList();
+            var events = EventFactory.Create(5) as IList<VEVENT> ?? EventFactory.Create(5).ToList();
 
             cal.Events.AddRange(events);
 
@@ -252,7 +252,7 @@ namespace reexjungle.xcal.tests.concretes.integration
             var writer = new CalendarTextWriter();
             serializer.Serialize(cal, writer);
 
-            var serialized = writer.FoldContentlines().ToString();
+            var serialized = writer.InsertLineBreaks().ToString();
 
             var client = ServiceClientFactory.GetClient<JsonServiceClient>();
             client.Post(new AddCalendar { Calendar = cal });

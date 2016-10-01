@@ -30,7 +30,7 @@ namespace reexjungle.xcal.service.plugins.formats.concretes
         private static void Serialize<T>(T instance, CalendarWriter writer)
         {
             var serializer = new CalendarSerializer<T>();
-            serializer.Serialize(instance, writer.FoldContentlines());
+            serializer.Serialize(instance, writer.InsertLineBreaks());
         }
 
         private static void Serialize<T>(IEnumerable<T> instances, CalendarWriter writer)
@@ -38,7 +38,7 @@ namespace reexjungle.xcal.service.plugins.formats.concretes
             var serializer = new CalendarSerializer<T>();
             foreach (var instance in instances)
             {
-                serializer.Serialize(instance, writer.FoldContentlines());
+                serializer.Serialize(instance, writer.InsertLineBreaks());
             }
         }
 

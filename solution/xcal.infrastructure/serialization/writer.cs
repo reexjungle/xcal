@@ -411,10 +411,9 @@ namespace reexjungle.xcal.infrastructure.serialization
         }
 
         /// <summary>
-        /// Splits long iCalendar content lines into multiple lines.
+        /// Inserts line breaks after every 75 characters in the string representation.
         /// <para>
-        /// That is, a long line can be split between any two characters by inserting a CRL
-        /// immediately followed by a single linear white-space character(i.e., SPACE or horizontal tab).
+        /// That is for eack line, a carriage return line feed (CRLF) followed by a single linear white-space character(i.e., SPACE or horizontal tab) is inserted after every 76 characters in the string representation.
         /// </para>
         /// <para>
         /// Any sequence of CRLF followed immediately by a single linear white-space character is
@@ -424,13 +423,13 @@ namespace reexjungle.xcal.infrastructure.serialization
         /// Note: Each split line is not longer than 75 octets excluding line breaks.
         /// </summary>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public abstract CalendarWriter FoldContentlines();
+        public abstract CalendarWriter InsertLineBreaks();
 
         /// <summary>
-        /// Joins
+        /// Removes line breaks after every 75 characters in the string representation.
         /// </summary>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public abstract CalendarWriter UnfoldContentlines();
+        public abstract CalendarWriter RemoveLineBreaks();
     }
 
     public class CalendarTextWriter : CalendarWriter
@@ -554,10 +553,9 @@ namespace reexjungle.xcal.infrastructure.serialization
         }
 
         /// <summary>
-        /// Splits long iCalendar content lines into multiple lines.
+        /// Inserts line breaks after every 75 characters in the string representation.
         /// <para>
-        /// That is, a long line can be split between any two characters by inserting a CRL
-        /// immediately followed by a single linear white-space character(i.e., SPACE or horizontal tab).
+        /// That is for eack line, a carriage return line feed (CRLF) followed by a single linear white-space character(i.e., SPACE or horizontal tab) is inserted after every 76 characters in the string representation.
         /// </para>
         /// <para>
         /// Any sequence of CRLF followed immediately by a single linear white-space character is
@@ -567,7 +565,7 @@ namespace reexjungle.xcal.infrastructure.serialization
         /// Note: Each split line is not longer than 75 octets excluding line breaks.
         /// </summary>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public override CalendarWriter FoldContentlines()
+        public override CalendarWriter InsertLineBreaks()
         {
             var unfolded = builder.ToString();
             if (!string.IsNullOrEmpty(unfolded) && !string.IsNullOrWhiteSpace(unfolded))
@@ -578,7 +576,7 @@ namespace reexjungle.xcal.infrastructure.serialization
             return this;
         }
 
-        public override CalendarWriter UnfoldContentlines()
+        public override CalendarWriter RemoveLineBreaks()
         {
             var folded = builder.ToString();
             if (!string.IsNullOrEmpty(folded) && !string.IsNullOrWhiteSpace(folded))
@@ -694,7 +692,20 @@ namespace reexjungle.xcal.infrastructure.serialization
             return copy;
         }
 
-        public override CalendarWriter FoldContentlines()
+        /// <summary>
+        /// Inserts line breaks after every 75 characters in the string representation.
+        /// <para>
+        /// That is for eack line, a carriage return line feed (CRLF) followed by a single linear white-space character(i.e., SPACE or horizontal tab) is inserted after every 76 characters in the string representation.
+        /// </para>
+        /// <para>
+        /// Any sequence of CRLF followed immediately by a single linear white-space character is
+        /// ignored(i.e., removed) when processing the content type.
+        /// </para>
+        /// <para/>
+        /// Note: Each split line is not longer than 75 octets excluding line breaks.
+        /// </summary>
+        /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
+        public override CalendarWriter InsertLineBreaks()
         {
             if (stream.Length != 0L)
             {
@@ -705,7 +716,7 @@ namespace reexjungle.xcal.infrastructure.serialization
             return this;
         }
 
-        public override CalendarWriter UnfoldContentlines()
+        public override CalendarWriter RemoveLineBreaks()
         {
             if (stream.Length != 0L)
             {

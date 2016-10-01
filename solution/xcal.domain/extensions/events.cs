@@ -58,7 +58,7 @@ namespace reexjungle.xcal.domain.extensions
 
             foreach (var date in dates.Except(vevent.Start.ToSingleton()))
             {
-                var now = DateTime.UtcNow.ToDATE_TIME();
+                var now = DateTime.UtcNow.AsDATE_TIME();
                 var instance = new VEVENT(vevent)
                 {
                     Id = keyGenerator.GetNext(),

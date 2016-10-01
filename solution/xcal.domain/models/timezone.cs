@@ -73,20 +73,11 @@ namespace reexjungle.xcal.domain.models
             return Equals((VTIMEZONE)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
-        public static bool operator ==(VTIMEZONE left, VTIMEZONE right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(VTIMEZONE left, VTIMEZONE right) => Equals(left, right);
 
-        public static bool operator !=(VTIMEZONE left, VTIMEZONE right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(VTIMEZONE left, VTIMEZONE right) => !Equals(left, right);
 
 
         public void WriteCalendar(CalendarWriter writer)
@@ -174,12 +165,9 @@ namespace reexjungle.xcal.domain.models
             return Equals(obj as OBSERVANCE);
         }
 
-        public override int GetHashCode()
-        {
-            return Start.GetHashCode() ^
-                TimeZoneOffsetFrom.GetHashCode() ^
-                TimeZoneOffsetTo.GetHashCode();
-        }
+        public override int GetHashCode() => Start.GetHashCode() ^
+    TimeZoneOffsetFrom.GetHashCode() ^
+    TimeZoneOffsetTo.GetHashCode();
 
         public abstract void WriteCalendar(CalendarWriter writer);
 

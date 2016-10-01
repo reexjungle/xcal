@@ -121,20 +121,11 @@ namespace reexjungle.xcal.domain.models
             return Equals((VCALENDAR)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
-        public static bool operator ==(VCALENDAR left, VCALENDAR right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(VCALENDAR left, VCALENDAR right) => Equals(left, right);
 
-        public static bool operator !=(VCALENDAR left, VCALENDAR right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(VCALENDAR left, VCALENDAR right) => !Equals(left, right);
 
         public void WriteCalendar(CalendarWriter writer)
         {

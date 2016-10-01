@@ -150,7 +150,7 @@ namespace reexjungle.xcal.tests.concretes.factories
             {
                 dates.Add(dateTimeGenerator.Generate());
             }
-            return dates.ToDATEs();
+            return dates.AsDATEs();
         }
 
         public DATE_TIME CreateDateTime()
@@ -168,7 +168,7 @@ namespace reexjungle.xcal.tests.concretes.factories
             {
                 datetimes.Add(dateTimeGenerator.Generate());
             }
-            return datetimes.ToDATE_TIMEs();
+            return datetimes.AsDATE_TIMEs();
         }
 
         public TIME CreateTime()
@@ -186,7 +186,7 @@ namespace reexjungle.xcal.tests.concretes.factories
             {
                 times.Add(dateTimeGenerator.Generate());
             }
-            return times.ToTIMEs();
+            return times.AsTIMEs();
         }
 
         public DURATION CreateDuration()

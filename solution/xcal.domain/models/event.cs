@@ -210,7 +210,7 @@ namespace reexjungle.xcal.domain.models
             {
                 start = value;
                 end = start + duration;
-                LastModified = DateTime.UtcNow.ToDATE_TIME();
+                LastModified = DateTime.UtcNow.AsDATE_TIME();
             }
         }
 
@@ -337,30 +337,21 @@ namespace reexjungle.xcal.domain.models
             return Equals((VEVENT) obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         /// <summary>
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public static bool operator ==(VEVENT left, VEVENT right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(VEVENT left, VEVENT right) => Equals(left, right);
 
         /// <summary>
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public static bool operator !=(VEVENT left, VEVENT right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(VEVENT left, VEVENT right) => !Equals(left, right);
 
         /// <summary>
         /// </summary>

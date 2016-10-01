@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace reexjungle.xcal.infrastructure.contracts
+﻿namespace reexjungle.xcal.infrastructure.contracts
 {
     /// <summary>
     /// Specifies the type of icalendar fragments.
@@ -13,29 +7,45 @@ namespace reexjungle.xcal.infrastructure.contracts
     {
 
         /// <summary>
-        /// Represents an unknown component
+        /// Represents an unknown calendar node type
         /// </summary>
-        UNKNOWN,
+        NONE,
 
         /// <summary>
-        /// Represents an iCalendar VALUE node e.g. a DATE-TIME node
+        /// Represents the end of a <see cref="COMPONENT"/> or <see cref="CALENDAR"/>.
         /// </summary>
-        VALUE,
+        BEGIN,
 
         /// <summary>
-        /// Represents an iCalendar PARAMETER node e.g. a Time Zone ID node
+        /// Represents the end of a <see cref="COMPONENT"/> or <see cref="CALENDAR"/>.
         /// </summary>
-        PARAMETER,
+        END,
 
         /// <summary>
-        /// Represents an icalendar PROPERTY e.g. an Attendee node
+        /// Represents a calendar object e.g. VCALENDAR
+        /// </summary>
+        CALENDAR,
+
+        /// <summary>
+        /// Represents an iCalendar component e.g. VEVENT
+        /// </summary>
+        COMPONENT,
+
+        /// <summary>
+        /// Represents an icalendar PROPERTY e.g. ATTENDEE.
         /// </summary>
         PROPERTY,
 
         /// <summary>
-        /// Represents an icalendar COMPONENT e.g. an Event node
+        /// Represents an iCalendar PARAMETER e.g. TZID.
         /// </summary>
-        COMPONENT
+        PARAMETER,
+
+        /// <summary>
+        /// Represents an iCalendar VALUE e.g. DATE-TIME.
+        /// </summary>
+        VALUE,
+
     }
 
     public enum ReadState

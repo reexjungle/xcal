@@ -98,20 +98,11 @@ namespace reexjungle.xcal.domain.models
             return Equals((VFREEBUSY)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode() ^ Datestamp.GetHashCode();
-        }
+        public override int GetHashCode() => Id.GetHashCode() ^ Datestamp.GetHashCode();
 
-        public static bool operator ==(VFREEBUSY left, VFREEBUSY right)
-        {
-            return Equals(left, right);
-        }
+        public static bool operator ==(VFREEBUSY left, VFREEBUSY right) => Equals(left, right);
 
-        public static bool operator !=(VFREEBUSY left, VFREEBUSY right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator !=(VFREEBUSY left, VFREEBUSY right) => !Equals(left, right);
 
         private void WriteCalendarPrimitives(CalendarWriter writer)
         {
