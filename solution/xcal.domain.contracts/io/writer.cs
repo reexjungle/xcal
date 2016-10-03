@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace xcal.domain.contracts.serialization
+namespace xcal.domain.contracts.io
 {
     /// <summary>
     /// Represents a writer that provides a fast, non-cached, forward-only way to generate streams or
@@ -63,7 +63,7 @@ namespace xcal.domain.contracts.serialization
         /// </example>
         public CalendarWriter WriteStartComponent(string name)
         {
-            Write("BEGIN:"+ name);
+            Write("BEGIN:" + name);
             return this;
         }
 
@@ -89,7 +89,7 @@ namespace xcal.domain.contracts.serialization
         /// </example>
         public CalendarWriter WriteEndComponent(string name)
         {
-            Write("END:"+name);
+            Write("END:" + name);
             return this;
         }
 
@@ -339,7 +339,7 @@ namespace xcal.domain.contracts.serialization
 
         public CalendarWriter AppendPropertyValues(IEnumerable<string> values)
         {
-           return WriteColon().WriteValues(values);
+            return WriteColon().WriteValues(values);
         }
 
         public CalendarWriter WriteProperty(string name, string value, IEnumerable<string> parameters = null)

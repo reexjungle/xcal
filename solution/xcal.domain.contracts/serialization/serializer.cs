@@ -1,4 +1,6 @@
-﻿namespace xcal.domain.contracts.serialization
+﻿using xcal.domain.contracts.io;
+
+namespace xcal.domain.contracts.serialization
 {
 
     public interface ICalendarSerializer

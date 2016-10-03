@@ -40,10 +40,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="core\calendar.cs" />
+    <Compile Include="core\components\alarm.cs" />
+    <Compile Include="core\components\event.cs" />
+    <Compile Include="core\components\freebusy.cs" />
+    <Compile Include="core\components\journal.cs" />
+    <Compile Include="core\components\timezone.cs" />
+    <Compile Include="core\components\todo.cs" />
     <Compile Include="core\enums.cs" />
-    <Compile Include="core\parameters\altrep.cs" />
     <Compile Include="core\parameters\delegates.cs" />
-    <Compile Include="core\parameters\dir.cs" />
+    <Compile Include="core\parameters\uri.cs" />
     <Compile Include="core\parameters\fmtypes.cs" />
     <Compile Include="core\parameters\language.cs" />
     <Compile Include="core\parameters\member.cs" />
@@ -56,20 +62,24 @@
     <Compile Include="core\properties\geo.cs" />
     <Compile Include="core\properties\organizer.cs" />
     <Compile Include="core\properties\priority.cs" />
+    <Compile Include="core\properties\rdate.cs" />
     <Compile Include="core\properties\recurrence_id.cs" />
-    <Compile Include="core\properties\relatedto.cs" />
+    <Compile Include="core\properties\related_to.cs" />
+    <Compile Include="core\properties\request_status.cs" />
     <Compile Include="core\properties\resources.cs" />
+    <Compile Include="core\properties\statcode.cs" />
     <Compile Include="core\properties\textual.cs" />
+    <Compile Include="core\properties\trigger.cs" />
     <Compile Include="core\properties\tzname.cs" />
     <Compile Include="serialization\enums.cs" />
     <Compile Include="core\parameters\tzid.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="serialization\fragment.cs" />
     <Compile Include="serialization\nodes.cs" />
-    <Compile Include="serialization\reader.cs" />
+    <Compile Include="io\reader.cs" />
     <Compile Include="serialization\serializable.cs" />
     <Compile Include="serialization\serializer.cs" />
-    <Compile Include="serialization\writer.cs" />
+    <Compile Include="io\writer.cs" />
     <Compile Include="core\values\binary.cs" />
     <Compile Include="core\values\cal_address.cs" />
     <Compile Include="core\values\date.cs" />
@@ -80,9 +90,7 @@
     <Compile Include="core\values\time.cs" />
     <Compile Include="core\values\utc_offset.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="core\components\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

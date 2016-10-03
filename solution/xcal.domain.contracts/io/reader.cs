@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using xcal.domain.contracts.serialization;
 
-namespace xcal.domain.contracts.serialization
+namespace xcal.domain.contracts.io
 {
 
     /// <summary>
@@ -33,8 +34,8 @@ namespace xcal.domain.contracts.serialization
 
         public BeginCalendarNode BeginNode { get; protected set; }
 
-        public EndCalendarNode EndNode{ get; protected set; }
-                     
+        public EndCalendarNode EndNode { get; protected set; }
+
         public List<ValueCalendarNode> ValueNodes { get; protected set; }
 
         public List<ParameterCalendarNode> ParameterNodes { get; protected set; }
@@ -137,7 +138,7 @@ namespace xcal.domain.contracts.serialization
 
         private static BeginCalendarNode ExtractBeginCalendarNode(string text)
         {
-            var tokens = text.Split(new[] {EscapedCOLON}, StringSplitOptions.RemoveEmptyEntries);
+            var tokens = text.Split(new[] { EscapedCOLON }, StringSplitOptions.RemoveEmptyEntries);
             return tokens.Length == 2 && tokens[0].Equals("BEGIN", StringComparison.OrdinalIgnoreCase)
                 ? new BeginCalendarNode(Unescape(tokens[1]))
                 : BeginCalendarNode.Empty;
@@ -145,7 +146,7 @@ namespace xcal.domain.contracts.serialization
 
         private static EndCalendarNode ExtractEndCalendarNode(string text)
         {
-            var tokens = text.Split(new[] {EscapedCOLON}, StringSplitOptions.RemoveEmptyEntries);
+            var tokens = text.Split(new[] { EscapedCOLON }, StringSplitOptions.RemoveEmptyEntries);
             return tokens.Length == 2 && tokens[0].Equals("END", StringComparison.OrdinalIgnoreCase)
                 ? new EndCalendarNode(Unescape(tokens[1]))
                 : EndCalendarNode.Empty;
@@ -153,7 +154,7 @@ namespace xcal.domain.contracts.serialization
 
         private static IEnumerable<ValueCalendarNode> ExtractValueCalendarNodes(string separator, string text)
         {
-            var tokens = text.Split(new[] {separator}, StringSplitOptions.RemoveEmptyEntries);
+            var tokens = text.Split(new[] { separator }, StringSplitOptions.RemoveEmptyEntries);
             return tokens.Length > 0
                 ? tokens.Select(x => new ValueCalendarNode(Unescape(x)))
                 : Enumerable.Empty<ValueCalendarNode>();
@@ -161,7 +162,7 @@ namespace xcal.domain.contracts.serialization
 
         private static ParameterCalendarNode ExtractParameterCalendarNode(string value)
         {
-            var tokens = value.Split(new[] {EscapedEQUALS}, StringSplitOptions.RemoveEmptyEntries);
+            var tokens = value.Split(new[] { EscapedEQUALS }, StringSplitOptions.RemoveEmptyEntries);
             if (tokens.Length == 2)
             {
                 var valueNodes = ExtractValueCalendarNodes(tokens[1], EscapedCOMMA);
@@ -179,14 +180,14 @@ namespace xcal.domain.contracts.serialization
             //delimited by semicolons and colon
             if (text.Contains(EscapedCOLON))
             {
-                var tokens = text.Split(new[] {EscapedCOLON}, StringSplitOptions.RemoveEmptyEntries);
+                var tokens = text.Split(new[] { EscapedCOLON }, StringSplitOptions.RemoveEmptyEntries);
                 if (tokens.Length == 2)
                 {
                     var nodes = ExtractValueCalendarNodes(tokens[1], EscapedCOMMA);
                     if (nodes.Any()) values.AddRange(nodes);
                 }
 
-                var parts = tokens[0].Split(new[] {EscapedSEMICOLON}, StringSplitOptions.RemoveEmptyEntries);
+                var parts = tokens[0].Split(new[] { EscapedSEMICOLON }, StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length > 0)
                 {
                     name = parts[0];
@@ -206,7 +207,7 @@ namespace xcal.domain.contracts.serialization
             //Delimited by semicolons only
             if (text.Contains(EscapedSEMICOLON) && !text.Contains(EscapedCOLON))
             {
-                var tokens = text.Split(new[] {EscapedSEMICOLON}, StringSplitOptions.RemoveEmptyEntries);
+                var tokens = text.Split(new[] { EscapedSEMICOLON }, StringSplitOptions.RemoveEmptyEntries);
                 if (tokens.Length > 0)
                 {
                     name = tokens[0];
@@ -222,7 +223,7 @@ namespace xcal.domain.contracts.serialization
 
     }
 
-    public class CalendarTextReader: CalendarReader
+    public class CalendarTextReader : CalendarReader
     {
         private const char CR = '\r';
         private const char LF = '\n';
@@ -278,8 +279,8 @@ namespace xcal.domain.contracts.serialization
         public override int Read(char[] buffer, int index, int count)
         {
             if (buffer == null) throw new ArgumentNullException(nameof(buffer));
-            if (index < 0)  throw new ArgumentOutOfRangeException(nameof(index));
-            if (count < 0)  throw new ArgumentOutOfRangeException(nameof(count));
+            if (index < 0) throw new ArgumentOutOfRangeException(nameof(index));
+            if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
             if (buffer.Length - index < count) throw new ArgumentException("Invalid Offset Length");
             if (source == null) throw new InvalidOperationException("Reader has been closed");
 
@@ -362,8 +363,8 @@ namespace xcal.domain.contracts.serialization
             if (source == null)
                 throw new InvalidOperationException("Reader has been closed");
 
-            var fragment = position == 0 
-                ? source 
+            var fragment = position == 0
+                ? source
                 : source.Substring(position, source.Length - position);
 
             position = source.Length;

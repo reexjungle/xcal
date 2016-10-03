@@ -13,4 +13,29 @@ namespace xcal.domain.contracts.core.properties
         /// </summary>
         string Text { get; set; }
     }
+
+    public interface IDESCRIPTION : ITEXTUAL
+    {
+
+    }
+
+    public interface ISUMMARY : ITEXTUAL
+    {
+
+    }
+
+    public interface ILOCATION : ITEXTUAL
+    {
+
+    }
+
+    public interface ICONTACT : ITEXTUAL
+    {
+
+    }
+
+    public interface ICOMMENT : ITEXTUAL
+    {
+
+    }
 }

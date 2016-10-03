@@ -1,4 +1,6 @@
-﻿namespace xcal.domain.contracts.serialization
+﻿using xcal.domain.contracts.io;
+
+namespace xcal.domain.contracts.serialization
 {
     public interface ICalendarSerializable
     {
@@ -8,13 +10,11 @@
         /// <returns>True if the object can be serialized to its iCalendar representation, otherwise false.</returns>
         bool CanSerialize();
 
-        ///// <summary>
-        ///// Can the object be generated from its iCalendar representation?
-        ///// </summary>
-        ///// <returns>True if the object can be deserialized from its iCalendar representation, otherwise false.</returns>
-        //bool CanDeserialize();
-
-
+        /// <summary>
+        /// Can the object be generated from its iCalendar representation?
+        /// </summary>
+        /// <returns>True if the object can be deserialized from its iCalendar representation, otherwise false.</returns>
+        bool CanDeserialize();
 
         /// <summary>
         /// Converts an object into its iCalendar representation.
@@ -28,7 +28,6 @@
         /// <param name="reader">The iCalendar reader used to deserialize data into the iCalendar object.</param>
         /// <returns>True if the deserialization operation was successful; otherwise false.</returns>
         void ReadCalendar(CalendarReader reader);
-
 
     }
 

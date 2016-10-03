@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using xcal.domain.contracts.core.values;
 
 namespace xcal.domain.contracts.core.parameters
@@ -16,6 +12,17 @@ namespace xcal.domain.contracts.core.parameters
         /// <summary>
         /// Gets or sets the calendar addresses of the participation delegators
         /// </summary>
-        List<ICAL_ADDRESS> Addresses { get; set; }
+        List<ICAL_ADDRESS> Addresses { get; }
     }
+
+    public interface IDELEGATE_FROM : IDELEGATE
+    {
+
+    }
+
+    public interface IDELEGATE_TO : IDELEGATE
+    {
+
+    }
+
 }
