@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace xcal.domain.contracts.serialization
+namespace reexjungle.xcal.crosscut.contracts.serialization
 {
     public class CalendarFragment
     {
         public BeginCalendarNode Begin { get; }
 
-        public EndCalendarNode End { get;  }
+        public EndCalendarNode End { get; }
 
         public List<ValueCalendarNode> Values { get; }
 
@@ -16,10 +16,10 @@ namespace xcal.domain.contracts.serialization
 
 
         public CalendarFragment(
-            BeginCalendarNode begin, 
-            PropertyCalendarNode properties, 
-            IEnumerable<ParameterCalendarNode> parameters, 
-            IEnumerable<ValueCalendarNode> values, 
+            BeginCalendarNode begin,
+            PropertyCalendarNode properties,
+            IEnumerable<ParameterCalendarNode> parameters,
+            IEnumerable<ValueCalendarNode> values,
             EndCalendarNode end)
         {
             //Begin = begin;

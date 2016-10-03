@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,7 +41,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="core\values\cal_address.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\xcal.crosscut.contracts\xcal.crosscut.contracts.csproj">
+      <Project>{4117dc99-ea03-4b8f-a808-368feaa3c5f2}</Project>
+      <Name>xcal.crosscut.contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xcal.domain.contracts\xcal.domain.contracts.csproj">
+      <Project>{14f5db14-0ba1-47d9-b5d0-e3b022750a80}</Project>
+      <Name>xcal.domain.contracts</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="core\components\" />
+    <Folder Include="core\parameters\" />
+    <Folder Include="core\properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

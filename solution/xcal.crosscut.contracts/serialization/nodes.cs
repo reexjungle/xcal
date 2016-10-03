@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace xcal.domain.contracts.serialization
+namespace reexjungle.xcal.crosscut.contracts.serialization
 {
     public abstract class CalendarNode : IEquatable<CalendarNode>
     {

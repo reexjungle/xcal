@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace xcal.domain.contracts.io
+namespace reexjungle.xcal.crosscut.contracts.io
 {
     /// <summary>
     /// Represents a writer that provides a fast, non-cached, forward-only way to generate streams or

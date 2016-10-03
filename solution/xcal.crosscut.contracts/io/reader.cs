@@ -1,10 +1,10 @@
-﻿using System;
+﻿using reexjungle.xcal.crosscut.contracts.serialization;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using xcal.domain.contracts.serialization;
 
-namespace xcal.domain.contracts.io
+namespace reexjungle.xcal.crosscut.contracts.io
 {
 
     /// <summary>

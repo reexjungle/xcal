@@ -1,4 +1,4 @@
-﻿namespace reexjungle.crosscut.operations.contracts
+﻿namespace reexjungle.xcal.crosscut.contracts
 {
     public interface ILogTable
     {

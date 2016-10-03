@@ -1,6 +1,6 @@
-﻿using xcal.domain.contracts.io;
+﻿using reexjungle.xcal.crosscut.contracts.io;
 
-namespace xcal.domain.contracts.serialization
+namespace reexjungle.xcal.crosscut.contracts.serialization
 {
     public interface ICalendarSerializable
     {

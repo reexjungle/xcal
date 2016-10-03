@@ -1,4 +1,4 @@
-﻿using reexjungle.crosscut.operations.contracts;
+﻿using reexjungle.xcal.crosscut.contracts;
 using ServiceStack.DataAnnotations;
 using System.ComponentModel.DataAnnotations;
 

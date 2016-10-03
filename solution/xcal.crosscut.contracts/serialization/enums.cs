@@ -1,4 +1,4 @@
-﻿namespace xcal.domain.contracts.serialization
+﻿namespace reexjungle.xcal.crosscut.contracts.serialization
 {
     /// <summary>
     /// Specifies the type of icalendar fragments.
