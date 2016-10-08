@@ -4,10 +4,10 @@ namespace xcal.domain.contracts.core.properties
 {
     public interface IREQUEST_STATUS
     {
-        ISTATCODE Code { get; set; }
-        string Description { get; set; }
-        string ExceptionData { get; set; }
-        ILANGUAGE Language { get; set; }
+        ISTATCODE Code { get; }
+        string Description { get; }
+        string ExceptionData { get; }
+        ILANGUAGE Language { get; }
 
     }
 }

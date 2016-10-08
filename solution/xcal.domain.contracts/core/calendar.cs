@@ -12,49 +12,49 @@ namespace xcal.domain.contracts.core
         /// Gets or sets the identifier for the product that created the iCalendar object.
         /// This property is REQUIRED. This identifier should be guaranteed to be a globally unique identifier (GUID)
         /// </summary>
-        string ProdId { get; set; }
+        string ProdId { get; }
 
         /// <summary>
         /// Gets or sets the identifier corresponding to the highest version number or the minimum and maximum range of the iCalendar
         /// specification that is required in order to interpret the iCalendar object.
         /// This property is REQUIRED.
         /// </summary>
-        string Version { get; set; }
+        string Version { get; }
 
         /// <summary>
         /// Gets or sets the calendar scale used for the calendar information specified in the iCalendar object.
         /// This property is OPTIONAL. Its default value is &quot;GREGORIAN&quot;
         /// </summary>
-        CALSCALE Calscale { get; set; }
+        CALSCALE Calscale { get; }
 
         /// <summary>
         /// Gets or sets the calendar method used for the calendar information specified in the iCalendar object.
         /// </summary>
-        METHOD Method { get; set; }
+        METHOD Method { get; }
 
         /// <summary>
         /// Gets or sets the events of the iCalendar core object
         /// </summary>
-        List<IEVENT> Events { get; set; }
+        List<IVEVENT> Events { get; }
 
         /// <summary>
         /// Gets or sets the to-dos of the iCalendar core object
         /// </summary>
-        List<ITODO> ToDos { get; set; }
+        List<IVTODO> ToDos { get; }
 
         /// <summary>
         /// Gets or sets the free or busy time information groups of the iCalendar core object
         /// </summary>
-        List<IFREEBUSY> FreeBusies { get; set; }
+        List<IVFREEBUSY> FreeBusies { get; }
 
         /// <summary>
         /// Gets or sets the journals of the iCalendar core object
         /// </summary>
-        List<IJOURNAL> Journals { get; set; }
+        List<IVJOURNAL> Journals { get; }
 
         /// <summary>
         /// Gets or sets the timezones of the iCalendar core object
         /// </summary>
-        List<ITIMEZONE> TimeZones { get; set; }
+        List<IVTIMEZONE> TimeZones { get; }
     }
 }

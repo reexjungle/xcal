@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using xcal.domain.contracts.core.values;
 
 namespace xcal.domain.contracts.core.parameters
@@ -14,8 +10,8 @@ namespace xcal.domain.contracts.core.parameters
     public interface IMEMBER
     {
         /// <summary>
-        /// Gets or sets the calendar addresses of the group members
+        /// Gets the calendar addresses of the group members
         /// </summary>
-        List<ICAL_ADDRESS> Addresses { get; set; }
+        List<ICAL_ADDRESS> Addresses { get; }
     }
 }

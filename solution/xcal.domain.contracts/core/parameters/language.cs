@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace xcal.domain.contracts.core.parameters
+﻿namespace xcal.domain.contracts.core.parameters
 {
     public interface ILANGUAGE
     {
-        string Tag { get; set; }
+        string Tag { get; }
 
-        string SubTag { get; set; }
+        string SubTag { get; }
     }
 }

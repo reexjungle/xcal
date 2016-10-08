@@ -5,17 +5,17 @@ namespace xcal.domain.contracts.core.properties
 {
     public interface IATTENDEE
     {
-        ICAL_ADDRESS Address { get; set; }
-        CUTYPE CalendarUserType { get; set; }
-        IMEMBER Member { get; set; }
-        ROLE Role { get; set; }
-        PARTSTAT Participation { get; set; }
-        BOOLEAN Rsvp { get; set; }
-        IDELEGATE_TO Delegatee { get; set; }
-        IDELEGATE_FROM Delegator { get; set; }
-        ISENT_BY SentBy { get; set; }
-        string CN { get; set; }
-        IURI Directory { get; set; }
-        ILANGUAGE Language { get; set; }
+        ICAL_ADDRESS Address { get; }
+        CUTYPE CalendarUserType { get; }
+        IMEMBER Member { get; }
+        ROLE Role { get; }
+        PARTSTAT Participation { get; }
+        BOOLEAN Rsvp { get; }
+        IDELEGATE_TO Delegatee { get; }
+        IDELEGATE_FROM Delegator { get; }
+        ISENT_BY SentBy { get; }
+        string CN { get; }
+        IURI Directory { get; }
+        ILANGUAGE Language { get; }
     }
 }

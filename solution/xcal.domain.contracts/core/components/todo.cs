@@ -5,71 +5,71 @@ using xcal.domain.contracts.core.values;
 
 namespace xcal.domain.contracts.core.components
 {
-    public interface ITODO
+    public interface IVTODO
     {
-        string Uid { get; set; }
+        string Uid { get; }
 
-        IDATE_TIME Datestamp { get; set; }
+        IDATE_TIME Datestamp { get; }
 
-        IDATE_TIME Start { get; set; }
+        IDATE_TIME Start { get; }
 
-        CLASS Classification { get; set; }
+        CLASS Classification { get; }
 
-        IDATE_TIME Completed { get; set; }
+        IDATE_TIME Completed { get; }
 
-        IDATE_TIME Created { get; set; }
+        IDATE_TIME Created { get; }
 
-        IDESCRIPTION Description { get; set; }
+        IDESCRIPTION Description { get; }
 
-        IGEO Position { get; set; }
+        IGEO Position { get; }
 
-        IDATE_TIME LastModified { get; set; }
+        IDATE_TIME LastModified { get; }
 
-        ILOCATION Location { get; set; }
+        ILOCATION Location { get; }
 
-        IORGANIZER Organizer { get; set; }
+        IORGANIZER Organizer { get; }
 
-        int Percent { get; set; }
+        int Percent { get; }
 
-        IPRIORITY Priority { get; set; }
+        IPRIORITY Priority { get; }
 
-        int Sequence { get; set; }
+        int Sequence { get; }
 
-        STATUS Status { get; set; }
+        STATUS Status { get; }
 
-        ISUMMARY Summary { get; set; }
+        ISUMMARY Summary { get; }
 
-        IURL Url { get; set; }
+        IURL Url { get; }
 
-        IRECURRENCE_ID RecurrenceId { get; set; }
+        IRECURRENCE_ID RecurrenceId { get; }
 
-        IRECUR RecurrenceRule { get; set; }
+        IRECUR RecurrenceRule { get; }
 
-        IDATE_TIME Due { get; set; }
+        IDATE_TIME Due { get; }
 
-        IDURATION Duration { get; set; }
+        IDURATION Duration { get; }
 
-        List<IATTACH> Attachments { get; set; }
+        List<IATTACH> Attachments { get; }
 
-        List<IATTENDEE> Attendees { get; set; }
+        List<IATTENDEE> Attendees { get; }
 
-        ICATEGORIES Categories { get; set; }
+        ICATEGORIES Categories { get; }
 
-        List<ICOMMENT> Comments { get; set; }
+        List<ICOMMENT> Comments { get; }
 
-        List<ICONTACT> Contacts { get; set; }
+        List<ICONTACT> Contacts { get; }
 
-        List<IEXDATE> ExceptionDates { get; set; }
+        List<IEXDATE> ExceptionDates { get; }
 
-        List<IREQUEST_STATUS> RequestStatuses { get; set; }
+        List<IREQUEST_STATUS> RequestStatuses { get; }
 
-        List<IRESOURCES> Resources { get; set; }
+        List<IRESOURCES> Resources { get; }
 
-        List<IRELATED_TO> RelatedTos { get; set; }
+        List<IRELATED_TO> RelatedTos { get; }
 
-        List<IRDATE> RecurrenceDates { get; set; }
+        List<IRDATE> RecurrenceDates { get; }
 
-        List<IALARM> Alarms { get; set; }
+        List<IVALARM> Alarms { get; }
     }
 
 }

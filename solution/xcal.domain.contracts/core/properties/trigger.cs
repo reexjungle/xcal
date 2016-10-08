@@ -4,16 +4,18 @@ namespace xcal.domain.contracts.core.properties
 {
     public interface ITRIGGER
     {
-        //trigrel
-        IDURATION Duration { get; set; }
+        VALUE ValueType { get; }
+    }
 
-        RELATED Related { get; set; }
+    public interface ITRIGGER_RELATED : ITRIGGER
+    {
+        RELATED Related { get; }
 
-        //trigabs
-        IDATE_TIME DateTime { get; set; }
+        IDURATION Value { get; }
+    }
 
-        //Selector
-        VALUE ValueType { get; set; }
-
+    public interface ITRIGGER_ABSOLUTE : ITRIGGER
+    {
+        IDATE_TIME Value { get; }
     }
 }

@@ -7,7 +7,7 @@ namespace xcal.domain.contracts.core.components
     /// <summary>
     /// Specifies a contract for alarm objects associated to an iCalendar object.
     /// </summary>
-    public interface IALARM
+    public interface IVALARM
     {
         /// <summary>
         /// Gets or sets the action invoked for the alarm, when the alarm is triggered.
@@ -47,16 +47,16 @@ namespace xcal.domain.contracts.core.components
     /// <summary>
     /// Specifies a contract for audio alarm objects associated to an iCalendar object.
     /// </summary>
-    public interface IAUDIO_ALARM
+    public interface IAUDIO_VALARM
     {
 
-        IATTACH Attachment { get; set; }
+        IATTACH Attachment { get; }
     }
 
     /// <summary>
     /// Specifies a contract for display alarm objects associated to an iCalendar object.
     /// </summary>
-    public interface IDISPLAY_ALARM
+    public interface IDISPLAY_VALARM
     {
         /// <summary>
         /// Gets or sets the description, which contains the text to be displayed when the alarm is triggered.
@@ -64,13 +64,13 @@ namespace xcal.domain.contracts.core.components
         /// <value>
         /// The description containing the text.
         /// </value>
-        IDESCRIPTION Description { get; set; }
+        IDESCRIPTION Description { get; }
     }
 
     /// <summary>
     /// Specifies an email contract for alarm objects associated to an iCalendar object.
     /// </summary>
-    public interface IEMAIL_ALARM
+    public interface IEMAIL_VALARM
     {
         /// <summary>
         /// Gets or sets the description, which contains the text to be used as the message body of the email alarm.
@@ -78,7 +78,7 @@ namespace xcal.domain.contracts.core.components
         /// <value>
         /// The description containing the message body text.
         /// </value>
-        IDESCRIPTION Description { get; set; }
+        IDESCRIPTION Description { get; }
 
         /// <summary>
         /// Gets or sets the summary, which contains text to be used as the subject of the email alarm.
@@ -86,7 +86,7 @@ namespace xcal.domain.contracts.core.components
         /// <value>
         /// The summary containing the subject text.
         /// </value>
-        ISUMMARY Summary { get; set; }
+        ISUMMARY Summary { get; }
 
         /// <summary>
         /// Gets or sets the attendees, whose email addresses are used to receive the email message.
@@ -94,7 +94,7 @@ namespace xcal.domain.contracts.core.components
         /// <value>
         /// The attendees, whose email addresses are used.
         /// </value>
-        List<IATTENDEE> Attendees { get; set; }
+        List<IATTENDEE> Attendees { get; }
 
         /// <summary>
         /// Gets or sets the email attachments to be sent when the alarm email message is sent.
@@ -102,7 +102,7 @@ namespace xcal.domain.contracts.core.components
         /// <value>
         /// The email attachments.
         /// </value>
-        List<IATTACH> Attachments { get; set; }
+        List<IATTACH> Attachments { get; }
 
     }
 }

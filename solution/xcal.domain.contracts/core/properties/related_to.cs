@@ -2,8 +2,9 @@
 {
     public interface IRELATED_TO
     {
-        string Reference { get; set; }
-        RELTYPE RelationshipType { get; set; }
+        string Reference { get; }
+
+        RELTYPE RelationshipType { get; }
     }
 
 }

@@ -12,11 +12,11 @@ namespace xcal.domain.contracts.core.properties
         /// <summary>
         /// Gets or sets the value of the categories
         /// </summary>
-        List<string> Values { get; set; }
+        List<string> Values { get; }
 
         /// <summary>
         /// Gets or sets the language used for the categories 
         /// </summary>
-        ILANGUAGE Language { get; set; }
+        ILANGUAGE Language { get; }
     }
 }

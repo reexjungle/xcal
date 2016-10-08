@@ -60,7 +60,7 @@
     <Compile Include="core\properties\attendee.cs" />
     <Compile Include="core\properties\categories.cs" />
     <Compile Include="core\properties\exdate.cs" />
-    <Compile Include="core\properties\free_busy.cs" />
+    <Compile Include="core\properties\freebusy.cs" />
     <Compile Include="core\properties\geo.cs" />
     <Compile Include="core\properties\organizer.cs" />
     <Compile Include="core\properties\priority.cs" />

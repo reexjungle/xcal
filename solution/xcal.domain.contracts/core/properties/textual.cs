@@ -4,14 +4,14 @@ namespace xcal.domain.contracts.core.properties
 {
     public interface ITEXTUAL
     {
-        IALTREP AlternativeText { get; set; }
+        IALTREP AlternativeText { get; }
 
-        ILANGUAGE Language { get; set; }
+        ILANGUAGE Language { get; }
 
         /// <summary>
         /// Gets or sets the text of the description
         /// </summary>
-        string Text { get; set; }
+        string Text { get; }
     }
 
     public interface IDESCRIPTION : ITEXTUAL

@@ -22,7 +22,7 @@ namespace xcal.domain.contracts.core.components
         List<ITZNAME> TimeZoneNames { get; }
     }
 
-    public interface ITIMEZONE
+    public interface IVTIMEZONE
     {
         ITZID TimeZoneId { get; }
 

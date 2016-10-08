@@ -5,10 +5,10 @@ namespace xcal.domain.contracts.core.properties
 {
     public interface IRESOURCES
     {
-        IALTREP AlternativeText { get; set; }
+        IALTREP AlternativeText { get; }
 
-        ILANGUAGE Language { get; set; }
+        ILANGUAGE Language { get; }
 
-        List<string> Values { get; set; }
+        List<string> Values { get; }
     }
 }

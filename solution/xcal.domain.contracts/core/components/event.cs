@@ -8,161 +8,161 @@ namespace xcal.domain.contracts.core.components
     /// <summary>
     /// Specifes a contract for the VEVENT component of the iCalendar Core Object
     /// </summary>
-    public interface IEVENT
+    public interface IVEVENT
     {
         /// <summary>
         ///
         /// </summary>
-        string Uid { get; set; }
+        string Uid { get; }
 
         /// <summary>
         ///
         /// </summary>
-        IDATE_TIME Datestamp { get; set; }
+        IDATE_TIME Datestamp { get; }
 
         /// <summary>
         ///
         /// </summary>
-        IDATE_TIME Start { get; set; }
+        IDATE_TIME Start { get; }
 
         /// <summary>
         ///
         /// </summary>
-        CLASS Classification { get; set; }
+        CLASS Classification { get; }
 
         /// <summary>
         ///
         /// </summary>
-        IDATE_TIME Created { get; set; }
+        IDATE_TIME Created { get; }
 
         /// <summary>
         ///
         /// </summary>
-        IDESCRIPTION Description { get; set; }
+        IDESCRIPTION Description { get; }
 
         /// <summary>
         ///
         /// </summary>
-        IGEO GeoPosition { get; set; }
+        IGEO GeoPosition { get; }
 
         /// <summary>
         ///
         /// </summary>
-        IDATE_TIME LastModified { get; set; }
+        IDATE_TIME LastModified { get; }
 
         /// <summary>
         ///
         /// </summary>
-        ILOCATION Location { get; set; }
+        ILOCATION Location { get; }
 
         /// <summary>
         ///
         /// </summary>
-        IORGANIZER Organizer { get; set; }
+        IORGANIZER Organizer { get; }
 
         /// <summary>
         ///
         /// </summary>
-        IPRIORITY Priority { get; set; }
+        IPRIORITY Priority { get; }
 
         /// <summary>
         ///
         /// </summary>
-        int Sequence { get; set; }
+        int Sequence { get; }
 
         /// <summary>
         ///
         /// </summary>
-        STATUS Status { get; set; }
+        STATUS Status { get; }
 
         /// <summary>
         ///
         /// </summary>
-        ISUMMARY Summary { get; set; }
+        ISUMMARY Summary { get; }
 
         /// <summary>
         ///
         /// </summary>
-        TRANSP Transparency { get; set; }
+        TRANSP Transparency { get; }
 
         /// <summary>
         ///
         /// </summary>
-        IURL Url { get; set; }
+        IURL Url { get; }
 
         /// <summary>
         ///
         /// </summary>
-        IRECURRENCE_ID RecurrenceId { get; set; }
+        IRECURRENCE_ID RecurrenceId { get; }
 
         /// <summary>
         ///
         /// </summary>
-        IRECUR RecurrenceRule { get; set; }
+        IRECUR RecurrenceRule { get; }
 
         /// <summary>
         ///
         /// </summary>
-        IDATE_TIME End { get; set; }
+        IDATE_TIME End { get; }
 
         /// <summary>
         ///
         /// </summary>
-        IDURATION Duration { get; set; }
+        IDURATION Duration { get; }
 
         /// <summary>
         ///
         /// </summary>
-        List<IATTACH> Attachments { get; set; }
+        List<IATTACH> Attachments { get; }
 
         /// <summary>
         ///
         /// </summary>
-        List<IATTENDEE> Attendees { get; set; }
+        List<IATTENDEE> Attendees { get; }
 
         /// <summary>
         ///
         /// </summary>
-        ICATEGORIES Categories { get; set; }
+        ICATEGORIES Categories { get; }
 
         /// <summary>
         ///
         /// </summary>
-        List<ICOMMENT> Comments { get; set; }
+        List<ICOMMENT> Comments { get; }
 
         /// <summary>
         ///
         /// </summary>
-        List<ICONTACT> Contacts { get; set; }
+        List<ICONTACT> Contacts { get; }
 
         /// <summary>
         ///
         /// </summary>
-        List<IEXDATE> ExceptionDates { get; set; }
+        List<IEXDATE> ExceptionDates { get; }
 
         /// <summary>
         ///
         /// </summary>
-        List<IREQUEST_STATUS> RequestStatuses { get; set; }
+        List<IREQUEST_STATUS> RequestStatuses { get; }
 
         /// <summary>
         ///
         /// </summary>
-        List<IRESOURCES> Resources { get; set; }
+        List<IRESOURCES> Resources { get; }
 
         /// <summary>
         ///
         /// </summary>
-        List<IRELATED_TO> RelatedTos { get; set; }
+        List<IRELATED_TO> RelatedTos { get; }
 
         /// <summary>
         ///
         /// </summary>
-        List<IRDATE> RecurrenceDates { get; set; }
+        List<IRDATE> RecurrenceDates { get; }
 
         /// <summary>
         ///
         /// </summary>
-        List<IALARM> Alarms { get; set; }
+        List<IVALARM> Alarms { get; }
     }
 }

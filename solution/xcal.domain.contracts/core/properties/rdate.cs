@@ -6,10 +6,10 @@ namespace xcal.domain.contracts.core.properties
 {
     public interface IRDATE
     {
-        List<IDATE_TIME> DateTimes { get; set; }
-        List<IPERIOD> Periods { get; set; }
-        ITZID TimeZoneId { get; set; }
-        VALUE ValueType { get; set; }
+        List<IDATE_TIME> DateTimes { get; }
+        List<IPERIOD> Periods { get; }
+        ITZID TimeZoneId { get; }
+        VALUE ValueType { get; }
     }
 
 }

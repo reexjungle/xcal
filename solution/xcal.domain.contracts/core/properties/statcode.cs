@@ -8,16 +8,16 @@
         /// <summary>
         /// First level of granularity
         /// </summary>
-        uint L1 { get; set; }
+        uint L1 { get; }
 
         /// <summary>
         /// Second level of granularity
         /// </summary>
-        uint L2 { get; set; }
+        uint L2 { get; }
 
         /// <summary>
         /// Third level of granularity
         /// </summary>
-        uint? L3 { get; set; }
+        uint? L3 { get; }
     }
 }

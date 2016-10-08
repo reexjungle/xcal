@@ -5,29 +5,29 @@ using xcal.domain.contracts.core.values;
 
 namespace xcal.domain.contracts.core.components
 {
-    public interface IFREEBUSY
+    public interface IVFREEBUSY
     {
-        string Uid { get; set; }
+        string Uid { get; }
 
-        IDATE_TIME Datestamp { get; set; }
+        IDATE_TIME Datestamp { get; }
 
-        IDATE_TIME Start { get; set; }
+        IDATE_TIME Start { get; }
 
-        IORGANIZER Organizer { get; set; }
+        IORGANIZER Organizer { get; }
 
-        IURL Url { get; set; }
+        IURL Url { get; }
 
-        IDATE_TIME End { get; set; }
+        IDATE_TIME End { get; }
 
-        List<IATTACH> Attachments { get; set; }
+        List<IATTACH> Attachments { get; }
 
-        List<IATTENDEE> Attendees { get; set; }
+        List<IATTENDEE> Attendees { get; }
 
-        List<ICOMMENT> Comments { get; set; }
+        List<ICOMMENT> Comments { get; }
 
-        List<IFREEBUSY> FreeBusyIntervals { get; set; }
+        List<IVFREEBUSY> FreeBusies { get; }
 
-        List<IREQUEST_STATUS> RequestStatuses { get; set; }
+        List<IREQUEST_STATUS> RequestStatuses { get; }
     }
 
 }
