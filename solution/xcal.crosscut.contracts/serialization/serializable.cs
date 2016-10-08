@@ -2,6 +2,7 @@
 
 namespace reexjungle.xcal.crosscut.contracts.serialization
 {
+ 
     public interface ICalendarSerializable
     {
         /// <summary>

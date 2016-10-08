@@ -39,10 +39,19 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="xmisc.foundation.concretes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\xmisc.foundation.concretes.1.0.81-rc-f858a00\lib\net45\xmisc.foundation.concretes.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xmisc.foundation.contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\xmisc.foundation.contracts.1.0.81-rc-f858a00\lib\net45\xmisc.foundation.contracts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="core\values\cal_address.cs" />
     <Compile Include="core\values\date.cs" />
+    <Compile Include="extensions\datetime.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -59,6 +68,9 @@
     <Folder Include="core\components\" />
     <Folder Include="core\parameters\" />
     <Folder Include="core\properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

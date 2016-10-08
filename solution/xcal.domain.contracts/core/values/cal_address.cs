@@ -11,5 +11,12 @@ namespace xcal.domain.contracts.core.values
         /// Gets the value of the calendar user address.
         /// </summary>
         Uri Value { get; }
+
+        /// <summary>
+        /// Converts this calendar address into an equivalent <see cref="Uri"/> instance.
+        /// </summary>
+        /// <returns>The equivalent <see cref="Uri"/> respresentation of this calendar address instance.</returns>
+        Uri AsUri();
     }
+
 }
