@@ -1,4 +1,5 @@
-﻿using System;
+﻿using reexjungle.xcal.core.domain.contracts.io.writers;
+using System;
 using System.IO;
 using System.Text;
 
@@ -112,7 +113,7 @@ namespace xcal.infrastructure.io.concretes.writers
         /// Note: Each split line is not longer than 75 octets excluding line breaks.
         /// </summary>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public override CalendarWriter InsertLineBreaks()
+        public override ICalendarWriter InsertLineBreaks()
         {
             using (var stream = CreateStream(ToString()))
             {
@@ -127,7 +128,7 @@ namespace xcal.infrastructure.io.concretes.writers
             return this;
         }
 
-        public override CalendarWriter RemoveLineBreaks()
+        public override ICalendarWriter RemoveLineBreaks()
         {
             using (var stream = CreateStream(ToString()))
             {

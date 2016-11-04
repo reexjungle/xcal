@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 namespace reexjungle.xcal.core.domain.contracts.io.writers
 {
@@ -7,6 +8,10 @@ namespace reexjungle.xcal.core.domain.contracts.io.writers
     /// </summary>
     public interface ICalendarWriter
     {
+        /// <summary>
+        /// The character encoding in which the output is written. 
+        /// </summary>
+        Encoding Encoding { get; }
 
         /// <summary>
         /// Writes the start tag of an iCalendar object or component with its specified name to the underlying text string or stream.
@@ -141,14 +146,83 @@ namespace reexjungle.xcal.core.domain.contracts.io.writers
         /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
         ICalendarWriter WriteEquals();
 
+        /// <summary>
+        /// Writes a line terminator to the unserlying text string or stream.
+        /// </summary>
+        /// <returns></returns>
         ICalendarWriter WriteLine();
 
         /// <summary>
-        /// Writes an iCalendar value to the underlying text string or stream.
+        /// Writes a string value to the underlying text string or stream.
         /// </summary>
-        /// <param name="value">The value to be written to the underlying text string or stream.</param>
+        /// <param name="value">The string value to be written to the underlying text string or stream.</param>
         /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
         ICalendarWriter WriteValue(string value);
+
+        /// <summary>
+        /// Writes a character value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">The character value to be written to the underlying text string or stream.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        ICalendarWriter WriteValue(char value);
+
+        /// <summary>
+        /// Writes a boolean value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">The boolean value to be written to the underlying text string or stream.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        ICalendarWriter WriteValue(bool value);
+
+        /// <summary>
+        /// Writes an unsigned integer value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">The unsigned integer value to be written to the underlying text string or stream.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        ICalendarWriter WriteValue(uint value);
+
+        /// <summary>
+        /// Writes an integer value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">The integer value to be written to the underlying text string or stream.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        ICalendarWriter WriteValue(int value);
+
+        /// <summary>
+        /// Writes a long integer value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">The integer value to be written to the underlying text string or stream.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        ICalendarWriter WriteValue(long value);
+
+        /// <summary>
+        /// Writes an unsigned long integer value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">The unsigned long integer value to be written to the underlying text string or stream.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        ICalendarWriter WriteValue(ulong value);
+
+        /// <summary>
+        /// Writes a floating value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">The floating value to be written to the underlying text string or stream.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        ICalendarWriter WriteValue(float value);
+
+        /// <summary>
+        /// Writes a double precision value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">The double precision value to be written to the underlying text string or stream.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        ICalendarWriter WriteValue(double value);
+
+        /// <summary>
+        /// Writes a subarray of characters to the underlying text string or stream.
+        /// </summary>
+        /// <param name="buffer">The subarray of characters to be written to the underlying text string or stream.</param>
+        /// <param name="index">The character position in the buffer at which to start retrieving data.</param>
+        /// <param name="count">The number of characters to write.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        ICalendarWriter WriteValue(char[] buffer, int index, int count);
 
         /// <summary>
         /// Writes a sequence of iCalendar values concatenated by a comma character to the underlying text string or stream.
@@ -231,7 +305,6 @@ namespace reexjungle.xcal.core.domain.contracts.io.writers
         /// <param name="values">The sequence of iCalendar values to appended.</param>
         /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
         ICalendarWriter AppendBySemicolon(IEnumerable<string> values);
-
 
         /// <summary>
         /// Appends a specified formatted iCalendar paraneter to the underlying text string or stream.

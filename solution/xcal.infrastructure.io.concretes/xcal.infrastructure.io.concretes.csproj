@@ -40,7 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="extensions\writer.cs" />
     <Compile Include="writers\streamwriter.cs" />
     <Compile Include="writers\stringwriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

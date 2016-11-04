@@ -2,6 +2,6 @@
 {
     public interface ICalendarReader
     {
-        CalendarFragment ReadFragment();
+        ICalendarFragment ReadFragment();
     }
 }

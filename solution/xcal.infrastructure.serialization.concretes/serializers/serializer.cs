@@ -2,18 +2,17 @@
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
-using reexjungle.xcal.infrastructure.contracts;
 
-namespace reexjungle.xcal.infrastructure.serialization
+namespace xcal.infrastructure.serialization.concretes.serializers
 {
-    public class CalendarSerializer: ICalendarSerializer, ISerializable
+    public class CalendarSerializer : ICalendarSerializer, ISerializable
     {
         private readonly Type type;
         private readonly CultureInfo culture;
         private readonly NumberStyles integerStyles;
         private readonly NumberStyles decimalStyles;
 
-        public CalendarSerializer(Type type): this(type, CultureInfo.InvariantCulture)
+        public CalendarSerializer(Type type) : this(type, CultureInfo.InvariantCulture)
         {
 
         }
@@ -25,19 +24,19 @@ namespace reexjungle.xcal.infrastructure.serialization
             this.type = type;
             this.culture = culture;
 
-            integerStyles = NumberStyles.AllowLeadingSign 
-                | NumberStyles.AllowLeadingWhite 
+            integerStyles = NumberStyles.AllowLeadingSign
+                | NumberStyles.AllowLeadingWhite
                 | NumberStyles.AllowTrailingWhite;
 
-            decimalStyles = NumberStyles.AllowLeadingSign 
-                | NumberStyles.AllowDecimalPoint 
+            decimalStyles = NumberStyles.AllowLeadingSign
+                | NumberStyles.AllowDecimalPoint
                 | NumberStyles.AllowExponent;
         }
 
         protected CalendarSerializer(SerializationInfo info, StreamingContext context)
         {
             var otype = Type.GetType("System.Type");
-            if (otype != null)type = (Type)info.GetValue(nameof(type), otype); 
+            if (otype != null) type = (Type)info.GetValue(nameof(type), otype);
 
 
         }
@@ -54,7 +53,7 @@ namespace reexjungle.xcal.infrastructure.serialization
                     writer.Write((char)o);
                     break;
                 case TypeCode.SByte:
-                    writer.Write((sbyte) o);
+                    writer.Write((sbyte)o);
                     break;
                 case TypeCode.Byte:
                     writer.Write((byte)o);
@@ -107,9 +106,9 @@ namespace reexjungle.xcal.infrastructure.serialization
             {
                 var otype = o.GetType();
                 if (otype.IsPrimitive
-                    || otype == typeof (string)
-                    || otype == (typeof (byte[]))
-                    || otype == typeof (Guid))
+                    || otype == typeof(string)
+                    || otype == (typeof(byte[]))
+                    || otype == typeof(Guid))
                 {
                     SerializePrimitive(writer, o);
                     return;
@@ -130,13 +129,13 @@ namespace reexjungle.xcal.infrastructure.serialization
             {
                 writer.Flush();
             }
-            
+
         }
 
         protected virtual object DeserializePrimitive(CalendarReader reader)
         {
             object o = null;
-            switch(Type.GetTypeCode(type))
+            switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Boolean:
                     o = reader.Value.Equals("TRUE", StringComparison.OrdinalIgnoreCase) ? true : false;
@@ -145,7 +144,7 @@ namespace reexjungle.xcal.infrastructure.serialization
                     o = char.Parse(reader.Value);
                     break;
                 case TypeCode.SByte:
-                    o = sbyte.Parse(reader.Value,  integerStyles, culture);
+                    o = sbyte.Parse(reader.Value, integerStyles, culture);
                     break;
                 case TypeCode.Byte:
                     o = byte.Parse(reader.Value, integerStyles, culture);
@@ -181,7 +180,7 @@ namespace reexjungle.xcal.infrastructure.serialization
                     o = reader.Value;
                     break;
                 default:
-                    if(type == typeof(byte[]))  o = Convert.FromBase64String(reader.Value);
+                    if (type == typeof(byte[])) o = Convert.FromBase64String(reader.Value);
                     if (type == typeof(Guid)) o = new Guid(reader.Value);
                     break;
             }
@@ -197,7 +196,7 @@ namespace reexjungle.xcal.infrastructure.serialization
                 return DeserializePrimitive(reader);
 
             object o = null;
-            if(typeof(ICalendarSerializable).IsAssignableFrom(type))
+            if (typeof(ICalendarSerializable).IsAssignableFrom(type))
             {
                 o = Activator.CreateInstance(type, true);
                 var serializable = o as ICalendarSerializable;
@@ -213,7 +212,7 @@ namespace reexjungle.xcal.infrastructure.serialization
         }
     }
 
-    public class CalendarSerializer<TValue>: CalendarSerializer,  ICalendarSerializer<TValue>
+    public class CalendarSerializer<TValue> : CalendarSerializer, ICalendarSerializer<TValue>
     {
         public CalendarSerializer() : base(typeof(TValue))
         {

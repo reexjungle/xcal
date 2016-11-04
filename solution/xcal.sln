@@ -53,9 +53,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03 - services", "03 - servi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02-01 - infrastructure", "02-01 - infrastructure", "{C51439BE-723D-43F8-9DF8-D2D186300A28}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02-04 - applications", "02-04 - applications", "{35147CF8-4F9F-462A-8B3B-CBD29A1D87C8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02-03 - applications", "02-03 - applications", "{35147CF8-4F9F-462A-8B3B-CBD29A1D87C8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02-05 - tests", "02-05 - tests", "{32DBBA27-3EB5-462E-A530-8A05BAD8596C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02-04 - tests", "02-04 - tests", "{32DBBA27-3EB5-462E-A530-8A05BAD8596C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "obsolete", "obsolete", "{0997DD55-032E-4251-A7BC-580CE692849F}"
 EndProject
@@ -67,7 +67,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.core.repositories.cont
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.core.services.contracts", "xcal.services.contracts\xcal.core.services.contracts.csproj", "{A54F76E2-E6FE-40D0-A674-6B4E515864F9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02-03 - services", "02-03 - services", "{B70F161E-EDF6-4C36-9BA2-9D5D3C56027C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02-02 - services", "02-02 - services", "{B70F161E-EDF6-4C36-9BA2-9D5D3C56027C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 - core", "01 - core", "{7A94DC9F-7B62-4169-98FB-3ADFAC523852}"
 EndProject

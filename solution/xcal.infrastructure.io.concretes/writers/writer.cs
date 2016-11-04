@@ -1,4 +1,7 @@
-﻿using System;
+﻿using reexjungle.xcal.core.domain.contracts.io.writers;
+using reexjungle.xcal.core.domain.contracts.io.writers.specialized;
+using reexjungle.xcal.core.domain.contracts.serialization;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,15 +9,17 @@ using System.Text;
 
 namespace xcal.infrastructure.io.concretes.writers
 {
-
     /// <summary>
-    /// Represents a writer that provides a fast, non-cached, forward-only way to generate streams or
-    /// files that contain iCalendar data.
+    /// Represents an abstract writer that encapsulates a <see cref="TextWriter"/> for writing
+    /// iCalendar information to a string or stream.
     /// </summary>
-    public abstract class CalendarWriter
+    public abstract class CalendarWriter : ICalendarWriter, IGenericCalendarWriter
     {
+        #region ICalendarWriter
+
         //literal Constants
         private const char HTAB = '\u0009';
+
         private const char EMPTY = '\0';
         private const string DQUOTE = @"""";
         private const string COMMA = ",";
@@ -29,7 +34,7 @@ namespace xcal.infrastructure.io.concretes.writers
         protected readonly TextWriter writer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CalendarWriter"/> class.
+        /// Initializes a new instance of the <see cref="CalendarWriter"/> class that encapsulates the given <see cref="TextWriter"/>.
         /// </summary>
         protected CalendarWriter(TextWriter writer)
         {
@@ -56,13 +61,18 @@ namespace xcal.infrastructure.io.concretes.writers
         /// <para/>
         /// BEGIN:VCALENDAR
         /// </example>
-        public CalendarWriter WriteStartComponent(string name)
+        public ICalendarWriter WriteStartComponent(string name)
         {
             writer.Write("BEGIN:" + name);
             return this;
         }
 
-        public CalendarWriter AppendStartComponent(string name)
+        /// <summary>
+        /// Appends the start tag of an iCalendar object or component with its specified name to the underlying text string or stream.
+        /// </summary>
+        /// <param name="name">The name of the iCalendar object or component.</param>
+        /// <returns>The current <see cref="ICalendarWriter"/> instance.</returns>
+        public ICalendarWriter AppendStartComponent(string name)
         {
             writer.WriteLine();
             return WriteStartComponent(name);
@@ -82,13 +92,19 @@ namespace xcal.infrastructure.io.concretes.writers
         /// <para/>
         /// END:VCALENDAR
         /// </example>
-        public CalendarWriter WriteEndComponent(string name)
+        public ICalendarWriter WriteEndComponent(string name)
         {
             writer.Write("END:" + name);
             return this;
         }
 
-        public CalendarWriter AppendEndComponent(string name)
+        /// <summary>
+        /// Appends the end tag of an iCalendar object or component with its specified name 
+        /// to the underlying text string or stream.
+        /// </summary>
+        /// <param name="name">The name of the iCalendar object or component.</param>
+        /// <returns>The current <see cref="ICalendarWriter"/> instance.</returns>
+        public ICalendarWriter AppendEndComponent(string name)
         {
             writer.WriteLine();
             return WriteEndComponent(name);
@@ -148,7 +164,7 @@ namespace xcal.infrastructure.io.concretes.writers
         /// ',' with '\,'
         /// </summary>
         /// <param name="value"></param>
-        public CalendarWriter WriteSafeStringValue(string value)
+        public ICalendarWriter WriteSafeStringValue(string value)
         {
             writer.Write(ConvertToSAFE_STRING(value));
             return this;
@@ -158,13 +174,13 @@ namespace xcal.infrastructure.io.concretes.writers
         /// Writes the value, enclosed by double quotes (")
         /// </summary>
         /// <param name="value">The string value to be enclosed by double quotes.</param>
-        public CalendarWriter WriteQuotedStringValue(string value)
+        public ICalendarWriter WriteQuotedStringValue(string value)
         {
             writer.Write(ConvertToQuotedString(value));
             return this;
         }
 
-        public CalendarWriter WriteDQuote()
+        public ICalendarWriter WriteDQuote()
         {
             writer.Write(DQUOTE);
             return this;
@@ -174,7 +190,7 @@ namespace xcal.infrastructure.io.concretes.writers
         /// Writes a comma character to the text string or stream.
         /// </summary>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public CalendarWriter WriteComma()
+        public ICalendarWriter WriteComma()
         {
             writer.Write(COMMA);
             return this;
@@ -184,7 +200,7 @@ namespace xcal.infrastructure.io.concretes.writers
         /// Writes a semicolon character to the text string or stream.
         /// </summary>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public CalendarWriter WriteSemicolon()
+        public ICalendarWriter WriteSemicolon()
         {
             writer.Write(SEMICOLON);
             return this;
@@ -194,7 +210,7 @@ namespace xcal.infrastructure.io.concretes.writers
         /// Writes a colon character to the text string or stream.
         /// </summary>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public CalendarWriter WriteColon()
+        public ICalendarWriter WriteColon()
         {
             writer.Write(COLON);
             return this;
@@ -204,71 +220,154 @@ namespace xcal.infrastructure.io.concretes.writers
         /// Writes the equality character to the text string or stream.
         /// </summary>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public CalendarWriter WriteEquals()
+        public ICalendarWriter WriteEquals()
         {
             writer.Write('=');
             return this;
         }
 
-        public CalendarWriter WriteValue(string value)
+        /// <summary>
+        /// Writes a line terminator to the unserlying text string or stream.
+        /// </summary>
+        /// <returns></returns>
+        public ICalendarWriter WriteLine()
+        {
+            writer.WriteLine();
+            return this;
+        }
+
+        /// <summary>
+        /// Writes a string value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">
+        /// The string value to be written to the underlying text string or stream.
+        /// </param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter WriteValue(string value)
         {
             writer.Write(value);
             return this;
         }
 
-        public CalendarWriter WriteValue(char value)
+        /// <summary>
+        /// Writes a character value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">
+        /// The character value to be written to the underlying text string or stream.
+        /// </param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter WriteValue(char value)
         {
             writer.Write(value);
             return this;
         }
 
-        public CalendarWriter WriteValue(bool value)
+        /// <summary>
+        /// Writes a boolean value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">
+        /// The boolean value to be written to the underlying text string or stream.
+        /// </param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter WriteValue(bool value)
         {
             writer.Write(value);
             return this;
         }
 
-        public CalendarWriter WriteValue(uint value)
+        /// <summary>
+        /// Writes an unsigned integer value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">
+        /// The unsigned integer value to be written to the underlying text string or stream.
+        /// </param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter WriteValue(uint value)
         {
             writer.Write(value);
             return this;
         }
 
-        public CalendarWriter WriteValue(int value)
+        /// <summary>
+        /// Writes an integer value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">
+        /// The integer value to be written to the underlying text string or stream.
+        /// </param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter WriteValue(int value)
         {
             writer.Write(value);
             return this;
         }
 
-        public CalendarWriter WriteValue(long value)
+        /// <summary>
+        /// Writes a long integer value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">
+        /// The integer value to be written to the underlying text string or stream.
+        /// </param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter WriteValue(long value)
         {
             writer.Write(value);
             return this;
         }
 
-        public CalendarWriter WriteValue(ulong value)
+        /// <summary>
+        /// Writes an unsigned long integer value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">
+        /// The unsigned long integer value to be written to the underlying text string or stream.
+        /// </param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter WriteValue(ulong value)
         {
             writer.Write(value);
             return this;
         }
 
-        public CalendarWriter WriteValue(float value)
+        /// <summary>
+        /// Writes a floating value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">
+        /// The floating value to be written to the underlying text string or stream.
+        /// </param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter WriteValue(float value)
         {
             writer.Write(value);
             return this;
         }
 
-        public CalendarWriter WriteValue(double value)
+        /// <summary>
+        /// Writes a double precision value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">
+        /// The double precision value to be written to the underlying text string or stream.
+        /// </param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter WriteValue(double value)
         {
             writer.Write(value);
             return this;
         }
 
-        public CalendarWriter WriteValue(char[] buffer, int index, int count)
+        /// <summary>
+        /// Writes a subarray of characters to the underlying text string or stream.
+        /// </summary>
+        /// <param name="buffer">
+        /// The subarray of characters to be written to the underlying text string or stream.
+        /// </param>
+        /// <param name="index">
+        /// The character position in the buffer at which to start retrieving data.
+        /// </param>
+        /// <param name="count">The number of characters to write.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter WriteValue(char[] buffer, int index, int count)
         {
             writer.Write(buffer, index, count);
             return this;
-
         }
 
         /// <summary>
@@ -276,7 +375,7 @@ namespace xcal.infrastructure.io.concretes.writers
         /// </summary>
         /// <param name="values">The VALUEs to be written to the text string or stream.</param>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public CalendarWriter WriteValues(IEnumerable<string> values)
+        public ICalendarWriter WriteValues(IEnumerable<string> values)
         {
             writer.Write(string.Join(COMMA, values));
             return this;
@@ -289,13 +388,13 @@ namespace xcal.infrastructure.io.concretes.writers
         /// </summary>
         /// <param name="parameters">The PARAMETERs to be written to the text string or stream.</param>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public CalendarWriter WriteParameters(IEnumerable<string> parameters)
+        public ICalendarWriter WriteParameters(IEnumerable<string> parameters)
         {
             writer.Write(string.Join(SEMICOLON, parameters));
             return this;
         }
 
-        public CalendarWriter WriteParameter(string name, string value)
+        public ICalendarWriter WriteParameter(string name, string value)
         {
             writer.Write("{0}={1}", name, value);
             return this;
@@ -307,7 +406,7 @@ namespace xcal.infrastructure.io.concretes.writers
         /// <param name="name">The name of the PARAMETER.</param>
         /// <param name="values">The VALUEs of the PARAMETER.</param>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public CalendarWriter WriteParameter(string name, IEnumerable<string> values)
+        public ICalendarWriter WriteParameter(string name, IEnumerable<string> values)
         {
             writer.Write("{0}={1}", name, string.Join(COMMA, values));
             return this;
@@ -323,35 +422,97 @@ namespace xcal.infrastructure.io.concretes.writers
         /// Note: It is assumed each VALUE is correctly written in the iCalendar format.
         /// </param>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public CalendarWriter WriteXParameter(string name, IEnumerable<string> values) => WriteParameter("X-" + name, values);
+        public ICalendarWriter WriteXParameter(string name, IEnumerable<string> values) => WriteParameter("X-" + name, values);
 
-        public CalendarWriter AppendParameter(string name, string value) => WriteSemicolon().WriteParameter(name, value);
+        /// <summary>
+        /// Appends an iCalendar parameter with its value to the underyling text string or stream.
+        /// </summary>
+        /// <param name="name">The name of the parameter.</param>
+        /// <param name="value">The value of the parameter.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter AppendParameter(string name, string value) => WriteSemicolon().WriteParameter(name, value);
 
-        public CalendarWriter AppendParameter(string name, IEnumerable<string> values) => WriteSemicolon().WriteParameter(name, values);
+        /// <summary>
+        /// Appends an iCalendar parameter with its values to the underlying text string or stream.
+        /// </summary>
+        /// <param name="name">The name of the parameter.</param>
+        /// <param name="values">The sequence of values of the parameter.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter AppendParameter(string name, IEnumerable<string> values) => WriteSemicolon().WriteParameter(name, values);
 
-        public CalendarWriter AppendByComma(string value) => WriteComma().WriteValue(value);
+        /// <summary>
+        /// Appends a comma (",") and the specified value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">The value that is to be appended.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter AppendByComma(string value) => WriteComma().WriteValue(value);
 
-        public CalendarWriter AppendBySemicolon(string value) => WriteSemicolon().WriteValue(value);
+        /// <summary>
+        /// Appends a semicolon (";") and the specified value to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">The value that is to be appended.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter AppendBySemicolon(string value) => WriteSemicolon().WriteValue(value);
 
-        public CalendarWriter AppendByComma(IEnumerable<string> values)
+        /// <summary>
+        /// Appends a comma (",") and the specified sequence of iCalendar values, where each value is
+        /// delimited by a comma (",").
+        /// </summary>
+        /// <param name="values">The sequence of iCalendar values to appended.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter AppendByComma(IEnumerable<string> values)
         {
             return WriteComma().WriteValues(values);
         }
 
-        public CalendarWriter AppendBySemicolon(IEnumerable<string> values)
+        /// <summary>
+        /// Appends a semicolon (";") and the specified sequence of iCalendar values, where each
+        /// value is delimited by a comma (";").
+        /// </summary>
+        /// <param name="values">The sequence of iCalendar values to appended.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter AppendBySemicolon(IEnumerable<string> values)
         {
             return WriteSemicolon().WriteValues(values);
         }
 
-        public CalendarWriter AppendParameter(string parameter) => WriteSemicolon().WriteValue(parameter);
+        /// <summary>
+        /// Appends a specified formatted iCalendar paraneter to the underlying text string or stream.
+        /// </summary>
+        /// <param name="parameter">The parameter to be appended.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter AppendParameter(string parameter) => WriteSemicolon().WriteValue(parameter);
 
-        public CalendarWriter AppendParameters(IEnumerable<string> parameters) => WriteSemicolon().WriteParameters(parameters);
+        /// <summary>
+        /// Appends a specified sequence of parameters to the underlying text string or stream.
+        /// </summary>
+        /// <param name="parameters">The sequence of parameters to be appended.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter AppendParameters(IEnumerable<string> parameters) => WriteSemicolon().WriteParameters(parameters);
 
-        public CalendarWriter AppendPropertyValue(string value) => WriteColon().WriteValue(value);
+        /// <summary>
+        /// Appends the value of an iCalendar property to the underlying text string or stream.
+        /// </summary>
+        /// <param name="value">The value that is to be appended.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter AppendPropertyValue(string value) => WriteColon().WriteValue(value);
 
-        public CalendarWriter AppendPropertyValues(IEnumerable<string> values) => WriteColon().WriteValues(values);
+        /// <summary>
+        /// Appends the sequence of values of an iCalendar property to the underlying text string or stream.
+        /// </summary>
+        /// <param name="values">The sequence of values to be appended.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter AppendPropertyValues(IEnumerable<string> values) => WriteColon().WriteValues(values);
 
-        public CalendarWriter WriteProperty(string name, string value, IEnumerable<string> parameters = null)
+        /// <summary>
+        /// Writes an iCalendar property by its name, value and parameters to the underlying text
+        /// string or stream.
+        /// </summary>
+        /// <param name="name">The name of the iCalendar property.</param>
+        /// <param name="value">The value of the iCalendar property.</param>
+        /// <param name="parameters">The sequence of parameter strings of the iCalendar property.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter WriteProperty(string name, string value, IEnumerable<string> parameters = null)
         {
             if (parameters != null && parameters.Count() != 0)
                 writer.Write("{0};{1}:{2}", name, string.Join(";", parameters), value);
@@ -360,12 +521,19 @@ namespace xcal.infrastructure.io.concretes.writers
             return this;
         }
 
-        public CalendarWriter AppendProperty(string name, string value, IEnumerable<string> parameters = null)
+        /// <summary>
+        /// Appends an iCalendar property by its name, value and parameters to the underlying text
+        /// string or stream.
+        /// </summary>
+        /// <param name="name">The name of the iCalendar property.</param>
+        /// <param name="value">The value of the iCalendar property.</param>
+        /// <param name="parameters">The sequence of parameter strings of the iCalendar property.</param>
+        /// <returns>This instance of the <see cref="ICalendarWriter"/> class.</returns>
+        public ICalendarWriter AppendProperty(string name, string value, IEnumerable<string> parameters = null)
         {
             writer.WriteLine();
             return WriteProperty(name, value, parameters);
         }
-
 
         /// <summary>
         /// Writes properties, where each written property is followed by the line terminator.
@@ -373,7 +541,7 @@ namespace xcal.infrastructure.io.concretes.writers
         /// <param name="properties"></param>
         /// <remarks>This method assumes each property has been correctly formatted.</remarks>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public CalendarWriter WriteProperties(IEnumerable<string> properties)
+        public ICalendarWriter WriteProperties(IEnumerable<string> properties)
         {
             foreach (var property in properties.Where(x => !string.IsNullOrWhiteSpace(x) && !string.IsNullOrEmpty(x)))
             {
@@ -394,7 +562,7 @@ namespace xcal.infrastructure.io.concretes.writers
         /// </param>
         /// <remarks>This method assumes the parameters of the property have been correctly formatted.</remarks>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public CalendarWriter WriteComponent(string name, IEnumerable<string> properties)
+        public ICalendarWriter WriteComponent(string name, IEnumerable<string> properties)
             => WriteStartComponent(name)
             .WriteProperties(properties)
             .WriteEndComponent(name);
@@ -404,7 +572,7 @@ namespace xcal.infrastructure.io.concretes.writers
         /// </summary>
         /// <param name="components"></param>
         /// <returns>Writes iCalendar parameters to the text string or stream.</returns>
-        public CalendarWriter WriteComponents(IEnumerable<string> components)
+        public ICalendarWriter WriteComponents(IEnumerable<string> components)
         {
             foreach (var component in components.Where(x => !string.IsNullOrWhiteSpace(x) && !string.IsNullOrEmpty(x)))
             {
@@ -416,7 +584,9 @@ namespace xcal.infrastructure.io.concretes.writers
         /// <summary>
         /// Inserts line breaks after every 75 characters in the string representation.
         /// <para>
-        /// That is for eack line, a carriage return line feed (CRLF) followed by a single linear white-space character(i.e., SPACE or horizontal tab) is inserted after every 76 characters in the string representation.
+        /// That is for eack line, a carriage return line feed (CRLF) followed by a single linear
+        /// white-space character(i.e., SPACE or horizontal tab) is inserted after every 76
+        /// characters in the string representation.
         /// </para>
         /// <para>
         /// Any sequence of CRLF followed immediately by a single linear white-space character is
@@ -426,19 +596,279 @@ namespace xcal.infrastructure.io.concretes.writers
         /// Note: Each split line is not longer than 75 octets excluding line breaks.
         /// </summary>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public abstract CalendarWriter InsertLineBreaks();
+        public abstract ICalendarWriter InsertLineBreaks();
 
         /// <summary>
         /// Removes line breaks after every 75 characters in the string representation.
         /// </summary>
         /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
-        public abstract CalendarWriter RemoveLineBreaks();
+        public abstract ICalendarWriter RemoveLineBreaks();
 
-
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
+        /// <filterpriority>2</filterpriority>
         public override string ToString() => writer.ToString();
+
+        #endregion ICalendarWriter
+
+        #region IGenericCalendarWriter
+
+        public ICalendarWriter WriteValue<T>(T value) where T : ICalendarSerializable
+        {
+            if (value.CanSerialize()) value.WriteCalendar(this);
+            return this;
+        }
+
+        public ICalendarWriter WriteParameters<T>(IEnumerable<T> parameters) where T : ICalendarSerializable
+        {
+            var first = parameters.FirstOrDefault();
+            foreach (var parameter in parameters.Where(x => x.CanSerialize()))
+            {
+                if (first != null && !first.Equals(parameter)) WriteSemicolon();
+                parameter.WriteCalendar(this);
+            }
+            return this;
+        }
+
+        public ICalendarWriter WriteParameter<T>(string name, T value) where T : ICalendarSerializable
+        {
+            if (value.CanSerialize())
+            {
+                WriteValue(name).WriteEquals();
+                value.WriteCalendar(this);
+            }
+            return this;
+        }
+
+        public ICalendarWriter WriteParameter<T>(string name, IEnumerable<T> values) where T : ICalendarSerializable
+        {
+            if (values.Any(x => x.CanSerialize()))
+            {
+                WriteValue(name).WriteEquals();
+                WriteParameterValues(values);
+            }
+            return this;
+        }
+
+        public ICalendarWriter WriteParameterWithDQuotedValue<T>(string name, T value) where T : ICalendarSerializable
+        {
+            if (value.CanSerialize())
+            {
+                WriteValue(name).WriteEquals();
+                WriteDQuotedParameterValue(value);
+            }
+            return this;
+        }
+
+        public ICalendarWriter WriteParameterWithDQuotedValues<T>(string name, IEnumerable<T> values) where T : ICalendarSerializable
+        {
+            if (values.Any(x => x.CanSerialize()))
+            {
+                WriteValue(name).WriteEquals();
+                WriteDQuotedParameterValues(values);
+            }
+            return this;
+        }
+
+        public ICalendarWriter WriteParameterValues<T>(IEnumerable<T> values) where T : ICalendarSerializable
+        {
+            var first = values.FirstOrDefault();
+            foreach (var value in values.Where(x => x.CanSerialize()))
+            {
+                if (first != null && !first.Equals(value)) WriteComma();
+                value.WriteCalendar(this);
+            }
+            return this;
+        }
+
+        public ICalendarWriter WriteDQuotedParameterValue<T>(T value) where T : ICalendarSerializable
+        {
+            if (value.CanSerialize())
+            {
+                WriteDQuote();
+                WriteValue(value);
+                WriteDQuote();
+            }
+            return this;
+        }
+
+        public ICalendarWriter WriteDQuotedParameterValues<T>(IEnumerable<T> values) where T : ICalendarSerializable
+        {
+            var first = values.FirstOrDefault();
+            foreach (var value in values)
+            {
+                if (first != null && !first.Equals(value)) WriteComma();
+                WriteDQuotedParameterValue(value);
+            }
+            return this;
+        }
+
+        public ICalendarWriter AppendParameterValue<T>(T value) where T : ICalendarSerializable
+        {
+            if (value.CanSerialize())
+            {
+                WriteComma();
+                value.WriteCalendar(this);
+            }
+            return this;
+        }
+
+        public ICalendarWriter AppendParameterValues<T>(IEnumerable<T> values) where T : ICalendarSerializable
+        {
+            if (values.Any(x => x.CanSerialize()))
+            {
+                WriteComma();
+                WriteParameterValues(values);
+            }
+            return this;
+        }
+
+        public ICalendarWriter AppendParameter<T>(T parameter) where T : ICalendarSerializable
+        {
+            if (parameter.CanSerialize())
+            {
+                WriteSemicolon();
+                WriteValue(parameter);
+            }
+            return this;
+        }
+
+        public ICalendarWriter AppendParameter<T>(string name, T value) where T : ICalendarSerializable
+        {
+            if (value.CanSerialize())
+            {
+                WriteSemicolon();
+                WriteParameter(name, value);
+            }
+            return this;
+        }
+
+        public ICalendarWriter AppendParameter<T>(string name, IEnumerable<T> values) where T : ICalendarSerializable
+        {
+            if (values.Any(x => x.CanSerialize()))
+            {
+                WriteSemicolon().WriteValue(name).WriteEquals();
+                WriteParameterValues(values);
+            }
+            return this;
+        }
+
+        public ICalendarWriter AppendParameters<T>(IEnumerable<T> parameters) where T : ICalendarSerializable
+        {
+            foreach (var parameter in parameters.Where(x => x.CanSerialize()))
+            {
+                WriteSemicolon();
+                parameter.WriteCalendar(this);
+            }
+            return this;
+        }
+
+        public ICalendarWriter WriteProperty<T>(string name, T value) where T : ICalendarSerializable
+        {
+            if (value.CanSerialize())
+            {
+                WriteValue(name).WriteColon();
+                WriteValue(value);
+            }
+
+            return this;
+        }
+
+        public ICalendarWriter WriteProperty<T>(string name, IEnumerable<T> values) where T : ICalendarSerializable
+        {
+            if (values.Any(x => x.CanSerialize()))
+            {
+                WriteValue(name).WriteColon();
+                WritePropertyValues(values);
+            }
+            return this;
+        }
+
+        public ICalendarWriter WriteProperties<T>(IEnumerable<T> properties) where T : ICalendarSerializable
+        {
+            var first = properties.FirstOrDefault();
+            foreach (var property in properties.Where(x => x.CanSerialize()))
+            {
+                if (first != null && !first.Equals(property)) writer.WriteLine();
+                property.WriteCalendar(this);
+            }
+            return this;
+        }
+
+        public ICalendarWriter AppendProperty<T>(T property) where T : ICalendarSerializable
+        {
+            if (property.CanSerialize())
+            {
+                writer.WriteLine();
+                property.WriteCalendar(this);
+            }
+            return this;
+        }
+
+        public ICalendarWriter AppendProperties<T>(IEnumerable<T> properties) where T : ICalendarSerializable
+        {
+            foreach (var property in properties.Where(x => x.CanSerialize()))
+            {
+                writer.WriteLine();
+                property.WriteCalendar(this);
+            }
+            return this;
+        }
+
+        public ICalendarWriter AppendPropertyValues<T>(IEnumerable<T> values) where T : ICalendarSerializable
+        {
+            if (values.Any(x => x.CanSerialize()))
+            {
+                WriteSemicolon();
+                WritePropertyValues(values);
+            }
+            return this;
+        }
+
+        public ICalendarWriter AppendProperty<T>(string name, T value) where T : ICalendarSerializable
+        {
+            if (value.CanSerialize())
+            {
+                WriteLine().WriteValue(name).WriteColon();
+                WriteValue(value);
+            }
+
+            return this;
+        }
+
+        public ICalendarWriter AppendProperty<T>(string name, IEnumerable<T> values) where T : ICalendarSerializable
+        {
+            if (values.Any(x => x.CanSerialize()))
+            {
+                WriteLine().WriteValue(name).WriteColon();
+                WriteParameterValues(values);
+            }
+            return this;
+        }
+
+        public ICalendarWriter WritePropertyValues<T>(IEnumerable<T> values) where T : ICalendarSerializable
+        {
+            var first = values.FirstOrDefault();
+            foreach (var value in values.Where(x => x.CanSerialize()))
+            {
+                if (first != null && !first.Equals(value)) WriteSemicolon();
+                value.WriteCalendar(this);
+            }
+            return this;
+        }
+
+        public ICalendarWriter AppendPropertyValue<T>(T value) where T : ICalendarSerializable
+        {
+            if (value.CanSerialize())
+            {
+                WriteSemicolon();
+                value.WriteCalendar(this);
+            }
+            return this;
+        }
+
+        #endregion IGenericCalendarWriter
     }
-
-
-
-
 }
