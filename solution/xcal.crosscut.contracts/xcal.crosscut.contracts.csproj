@@ -48,13 +48,13 @@
   <ItemGroup>
     <Compile Include="io\reader.cs" />
     <Compile Include="io\writer.cs" />
-    <Compile Include="logging.cs" />
+    <Compile Include="logging\tables.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="serialization\enums.cs" />
-    <Compile Include="serialization\fragment.cs" />
-    <Compile Include="serialization\nodes.cs" />
     <Compile Include="serialization\serializable.cs" />
     <Compile Include="serialization\serializer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="validation\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

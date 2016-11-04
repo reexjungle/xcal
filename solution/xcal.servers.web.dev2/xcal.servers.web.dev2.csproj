@@ -191,14 +191,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\xcal.crosscut.concretes\xcal.crosscut.concretes.csproj">
-      <Project>{f21cb427-5dd9-41b2-a993-17cd8085535a}</Project>
-      <Name>xcal.crosscut.concretes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\xcal.crosscut.contracts\xcal.crosscut.contracts.csproj">
-      <Project>{4117dc99-ea03-4b8f-a808-368feaa3c5f2}</Project>
-      <Name>xcal.crosscut.contracts</Name>
-    </ProjectReference>
     <ProjectReference Include="..\xcal.domain\xcal.domain.csproj">
       <Project>{5b708e08-1f69-4fde-9d99-afa3784a49d7}</Project>
       <Name>xcal.domain</Name>

@@ -1,21 +1,21 @@
-﻿using reexjungle.xcal.crosscut.contracts.io;
+﻿using reexjungle.xcal.core.domain.models.contracts.io;
 
-namespace reexjungle.xcal.crosscut.contracts.serialization
+namespace reexjungle.xcal.core.domain.models.contracts.serialization
 {
 
     public interface ICalendarSerializer
     {
-        void Serialize(CalendarWriter writer, object o);
+        void Serialize(ICalendarWriter writer, object o);
 
-        object Deserialize(CalendarReader reader);
+        object Deserialize(ICalendarReader reader);
     }
 
     public interface ICalendarSerializer<TValue>
     {
 
-        void Serialize(TValue value, CalendarWriter writer);
+        void Serialize(TValue value, ICalendarWriter writer);
 
-        TValue Deserialize(CalendarReader reader);
+        TValue Deserialize(ICalendarReader reader);
 
     }
 

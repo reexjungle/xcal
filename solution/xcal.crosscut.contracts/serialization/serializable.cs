@@ -1,8 +1,10 @@
-﻿using reexjungle.xcal.crosscut.contracts.io;
+﻿using reexjungle.xcal.core.domain.models.contracts.io;
 
-namespace reexjungle.xcal.crosscut.contracts.serialization
+namespace reexjungle.xcal.core.domain.models.contracts.serialization
 {
- 
+    /// <summary>
+    /// Specifies custom formatting for iCalendar serialization and deserialization.
+    /// </summary>
     public interface ICalendarSerializable
     {
         /// <summary>
@@ -21,14 +23,14 @@ namespace reexjungle.xcal.crosscut.contracts.serialization
         /// Converts an object into its iCalendar representation.
         /// </summary>
         /// <param name="writer">The iCalendar writer used to serialize the object.</param>
-        void WriteCalendar(CalendarWriter writer);
+        void WriteCalendar(ICalendarWriter writer);
 
         /// <summary>
         /// Generates an object from its iCalendar representation.
         /// </summary>
         /// <param name="reader">The iCalendar reader used to deserialize data into the iCalendar object.</param>
         /// <returns>True if the deserialization operation was successful; otherwise false.</returns>
-        void ReadCalendar(CalendarReader reader);
+        void ReadCalendar(ICalendarReader reader);
 
     }
 

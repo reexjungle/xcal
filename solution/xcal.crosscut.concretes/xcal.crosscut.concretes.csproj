@@ -77,23 +77,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="security\access.cs" />
-    <Compile Include="security\auth.cs" />
-    <Compile Include="operations\logging.cs" />
-    <Compile Include="security\policies.cs" />
+    <Compile Include="authentication\access.cs" />
+    <Compile Include="authentication\auth.cs" />
+    <Compile Include="io\reader.cs" />
+    <Compile Include="io\writer.cs" />
+    <Compile Include="logging\tables.cs" />
+    <Compile Include="authentication\policies.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="operations\validators.cs" />
+    <Compile Include="serialization\enums.cs" />
+    <Compile Include="serialization\fragment.cs" />
+    <Compile Include="serialization\nodes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\xcal.crosscut.contracts\xcal.crosscut.contracts.csproj">
-      <Project>{4117dc99-ea03-4b8f-a808-368feaa3c5f2}</Project>
-      <Name>xcal.crosscut.contracts</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
