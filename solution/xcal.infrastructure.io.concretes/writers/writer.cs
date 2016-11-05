@@ -13,10 +13,8 @@ namespace xcal.infrastructure.io.concretes.writers
     /// Represents an abstract writer that encapsulates a <see cref="TextWriter"/> for writing
     /// iCalendar information to a string or stream.
     /// </summary>
-    public abstract class CalendarWriter : ICalendarWriter, IGenericCalendarWriter
+    public abstract class CalendarWriter : ICalendarWriter
     {
-        #region ICalendarWriter
-
         //literal Constants
         private const char HTAB = '\u0009';
 
@@ -34,6 +32,12 @@ namespace xcal.infrastructure.io.concretes.writers
         protected readonly TextWriter writer;
 
         /// <summary>
+        /// Gives the encoding used by this writer.
+        /// </summary>
+        public Encoding Encoding => writer.Encoding;
+
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="CalendarWriter"/> class that encapsulates the given <see cref="TextWriter"/>.
         /// </summary>
         protected CalendarWriter(TextWriter writer)
@@ -42,10 +46,6 @@ namespace xcal.infrastructure.io.concretes.writers
             this.writer = writer;
         }
 
-        /// <summary>
-        /// Gives the encoding used by this writer.
-        /// </summary>
-        public Encoding Encoding => writer.Encoding;
 
         /// <summary>
         /// Writes the start tag of an iCalendar object or component with its specified name.
@@ -394,6 +394,12 @@ namespace xcal.infrastructure.io.concretes.writers
             return this;
         }
 
+        /// <summary>
+        /// Writes an iCalendar PARAMTER to the underlying text string or stream.
+        /// </summary>
+        /// <param name="name">The name of the iCalendar PARAMETER.</param>
+        /// <param name="value">The value of the iCalendar PARAMETER.</param>
+        /// <returns>The actual instance of the <see cref="CalendarWriter"/> class.</returns>
         public ICalendarWriter WriteParameter(string name, string value)
         {
             writer.Write("{0}={1}", name, value);
@@ -611,264 +617,5 @@ namespace xcal.infrastructure.io.concretes.writers
         /// <filterpriority>2</filterpriority>
         public override string ToString() => writer.ToString();
 
-        #endregion ICalendarWriter
-
-        #region IGenericCalendarWriter
-
-        public ICalendarWriter WriteValue<T>(T value) where T : ICalendarSerializable
-        {
-            if (value.CanSerialize()) value.WriteCalendar(this);
-            return this;
-        }
-
-        public ICalendarWriter WriteParameters<T>(IEnumerable<T> parameters) where T : ICalendarSerializable
-        {
-            var first = parameters.FirstOrDefault();
-            foreach (var parameter in parameters.Where(x => x.CanSerialize()))
-            {
-                if (first != null && !first.Equals(parameter)) WriteSemicolon();
-                parameter.WriteCalendar(this);
-            }
-            return this;
-        }
-
-        public ICalendarWriter WriteParameter<T>(string name, T value) where T : ICalendarSerializable
-        {
-            if (value.CanSerialize())
-            {
-                WriteValue(name).WriteEquals();
-                value.WriteCalendar(this);
-            }
-            return this;
-        }
-
-        public ICalendarWriter WriteParameter<T>(string name, IEnumerable<T> values) where T : ICalendarSerializable
-        {
-            if (values.Any(x => x.CanSerialize()))
-            {
-                WriteValue(name).WriteEquals();
-                WriteParameterValues(values);
-            }
-            return this;
-        }
-
-        public ICalendarWriter WriteParameterWithDQuotedValue<T>(string name, T value) where T : ICalendarSerializable
-        {
-            if (value.CanSerialize())
-            {
-                WriteValue(name).WriteEquals();
-                WriteDQuotedParameterValue(value);
-            }
-            return this;
-        }
-
-        public ICalendarWriter WriteParameterWithDQuotedValues<T>(string name, IEnumerable<T> values) where T : ICalendarSerializable
-        {
-            if (values.Any(x => x.CanSerialize()))
-            {
-                WriteValue(name).WriteEquals();
-                WriteDQuotedParameterValues(values);
-            }
-            return this;
-        }
-
-        public ICalendarWriter WriteParameterValues<T>(IEnumerable<T> values) where T : ICalendarSerializable
-        {
-            var first = values.FirstOrDefault();
-            foreach (var value in values.Where(x => x.CanSerialize()))
-            {
-                if (first != null && !first.Equals(value)) WriteComma();
-                value.WriteCalendar(this);
-            }
-            return this;
-        }
-
-        public ICalendarWriter WriteDQuotedParameterValue<T>(T value) where T : ICalendarSerializable
-        {
-            if (value.CanSerialize())
-            {
-                WriteDQuote();
-                WriteValue(value);
-                WriteDQuote();
-            }
-            return this;
-        }
-
-        public ICalendarWriter WriteDQuotedParameterValues<T>(IEnumerable<T> values) where T : ICalendarSerializable
-        {
-            var first = values.FirstOrDefault();
-            foreach (var value in values)
-            {
-                if (first != null && !first.Equals(value)) WriteComma();
-                WriteDQuotedParameterValue(value);
-            }
-            return this;
-        }
-
-        public ICalendarWriter AppendParameterValue<T>(T value) where T : ICalendarSerializable
-        {
-            if (value.CanSerialize())
-            {
-                WriteComma();
-                value.WriteCalendar(this);
-            }
-            return this;
-        }
-
-        public ICalendarWriter AppendParameterValues<T>(IEnumerable<T> values) where T : ICalendarSerializable
-        {
-            if (values.Any(x => x.CanSerialize()))
-            {
-                WriteComma();
-                WriteParameterValues(values);
-            }
-            return this;
-        }
-
-        public ICalendarWriter AppendParameter<T>(T parameter) where T : ICalendarSerializable
-        {
-            if (parameter.CanSerialize())
-            {
-                WriteSemicolon();
-                WriteValue(parameter);
-            }
-            return this;
-        }
-
-        public ICalendarWriter AppendParameter<T>(string name, T value) where T : ICalendarSerializable
-        {
-            if (value.CanSerialize())
-            {
-                WriteSemicolon();
-                WriteParameter(name, value);
-            }
-            return this;
-        }
-
-        public ICalendarWriter AppendParameter<T>(string name, IEnumerable<T> values) where T : ICalendarSerializable
-        {
-            if (values.Any(x => x.CanSerialize()))
-            {
-                WriteSemicolon().WriteValue(name).WriteEquals();
-                WriteParameterValues(values);
-            }
-            return this;
-        }
-
-        public ICalendarWriter AppendParameters<T>(IEnumerable<T> parameters) where T : ICalendarSerializable
-        {
-            foreach (var parameter in parameters.Where(x => x.CanSerialize()))
-            {
-                WriteSemicolon();
-                parameter.WriteCalendar(this);
-            }
-            return this;
-        }
-
-        public ICalendarWriter WriteProperty<T>(string name, T value) where T : ICalendarSerializable
-        {
-            if (value.CanSerialize())
-            {
-                WriteValue(name).WriteColon();
-                WriteValue(value);
-            }
-
-            return this;
-        }
-
-        public ICalendarWriter WriteProperty<T>(string name, IEnumerable<T> values) where T : ICalendarSerializable
-        {
-            if (values.Any(x => x.CanSerialize()))
-            {
-                WriteValue(name).WriteColon();
-                WritePropertyValues(values);
-            }
-            return this;
-        }
-
-        public ICalendarWriter WriteProperties<T>(IEnumerable<T> properties) where T : ICalendarSerializable
-        {
-            var first = properties.FirstOrDefault();
-            foreach (var property in properties.Where(x => x.CanSerialize()))
-            {
-                if (first != null && !first.Equals(property)) writer.WriteLine();
-                property.WriteCalendar(this);
-            }
-            return this;
-        }
-
-        public ICalendarWriter AppendProperty<T>(T property) where T : ICalendarSerializable
-        {
-            if (property.CanSerialize())
-            {
-                writer.WriteLine();
-                property.WriteCalendar(this);
-            }
-            return this;
-        }
-
-        public ICalendarWriter AppendProperties<T>(IEnumerable<T> properties) where T : ICalendarSerializable
-        {
-            foreach (var property in properties.Where(x => x.CanSerialize()))
-            {
-                writer.WriteLine();
-                property.WriteCalendar(this);
-            }
-            return this;
-        }
-
-        public ICalendarWriter AppendPropertyValues<T>(IEnumerable<T> values) where T : ICalendarSerializable
-        {
-            if (values.Any(x => x.CanSerialize()))
-            {
-                WriteSemicolon();
-                WritePropertyValues(values);
-            }
-            return this;
-        }
-
-        public ICalendarWriter AppendProperty<T>(string name, T value) where T : ICalendarSerializable
-        {
-            if (value.CanSerialize())
-            {
-                WriteLine().WriteValue(name).WriteColon();
-                WriteValue(value);
-            }
-
-            return this;
-        }
-
-        public ICalendarWriter AppendProperty<T>(string name, IEnumerable<T> values) where T : ICalendarSerializable
-        {
-            if (values.Any(x => x.CanSerialize()))
-            {
-                WriteLine().WriteValue(name).WriteColon();
-                WriteParameterValues(values);
-            }
-            return this;
-        }
-
-        public ICalendarWriter WritePropertyValues<T>(IEnumerable<T> values) where T : ICalendarSerializable
-        {
-            var first = values.FirstOrDefault();
-            foreach (var value in values.Where(x => x.CanSerialize()))
-            {
-                if (first != null && !first.Equals(value)) WriteSemicolon();
-                value.WriteCalendar(this);
-            }
-            return this;
-        }
-
-        public ICalendarWriter AppendPropertyValue<T>(T value) where T : ICalendarSerializable
-        {
-            if (value.CanSerialize())
-            {
-                WriteSemicolon();
-                value.WriteCalendar(this);
-            }
-            return this;
-        }
-
-        #endregion IGenericCalendarWriter
     }
 }

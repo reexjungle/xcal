@@ -28,7 +28,7 @@ namespace xcal.infrastructure.io.concretes.readers
 
         public string Name { get; private set; }
 
-        public CalendarNodeType NodeType { get; protected set; }
+        public NodeType NodeType { get; protected set; }
 
         public virtual string Value { get; protected set; }
 

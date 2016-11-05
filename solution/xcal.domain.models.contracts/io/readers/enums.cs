@@ -3,7 +3,7 @@
     /// <summary>
     /// Specifies the type of icalendar fragments.
     /// </summary>
-    public enum CalendarNodeType
+    public enum NodeType
     {
 
         /// <summary>
@@ -12,12 +12,12 @@
         NONE,
 
         /// <summary>
-        /// Represents the end of a <see cref="COMPONENT"/> or <see cref="CALENDAR"/>.
+        /// Represents the start of a <see cref="COMPONENT"/> or <see cref="CALENDAR"/> node.
         /// </summary>
         BEGIN,
 
         /// <summary>
-        /// Represents the end of a <see cref="COMPONENT"/> or <see cref="CALENDAR"/>.
+        /// Represents the end of a <see cref="COMPONENT"/> or <see cref="CALENDAR"/> node.
         /// </summary>
         END,
 

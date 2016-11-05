@@ -1,4 +1,9 @@
 ﻿using reexjungle.xcal.core.domain.concretes.extensions;
+using reexjungle.xcal.core.domain.contracts.io.readers;
+using reexjungle.xcal.core.domain.contracts.io.writers;
+using reexjungle.xcal.core.domain.contracts.models;
+using reexjungle.xcal.core.domain.contracts.models.values;
+using reexjungle.xcal.core.domain.contracts.serialization;
 using reexjungle.xmisc.foundation.concretes;
 using System;
 using System.Text.RegularExpressions;
@@ -270,9 +275,9 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
         /// Converts an object into its iCalendar representation.
         /// </summary>
         /// <param name="writer">The iCalendar writer used to serialize the object.</param>
-        public void WriteCalendar(CalendarWriter writer)
+        public void WriteCalendar(ICalendarWriter writer)
         {
-            writer.Write($"{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}");
+            writer.WriteValue($"{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}");
         }
 
         /// <summary>
@@ -282,12 +287,12 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
         /// The iCalendar reader used to deserialize data into the iCalendar object.
         /// </param>
         /// <returns>True if the deserialization operation was successful; otherwise false.</returns>
-        public void ReadCalendar(CalendarReader reader)
+        public void ReadCalendar(ICalendarReader reader)
         {
             var inner = reader.ReadFragment();
-            while (inner.CanRead())
+            while (inner.Read())
             {
-                if (inner.NodeType != CalendarNodeType.VALUE) continue;
+                if (inner.NodeType != NodeType.VALUE) continue;
                 if (!string.IsNullOrEmpty(inner.Value) && !string.IsNullOrWhiteSpace(inner.Value))
                 {
                     var date = Parse(inner.Value);

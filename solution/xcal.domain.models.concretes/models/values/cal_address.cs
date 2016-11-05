@@ -153,14 +153,16 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
         public void ReadCalendar(ICalendarReader reader)
         {
             var inner = reader.ReadFragment();
-            while (inner.CanRead())
+            while (inner.Read())
             {
-                if (inner.NodeType != CalendarNodeType.VALUE) continue;
+                if (inner.NodeType != NodeType.VALUE) continue;
                 if (!string.IsNullOrEmpty(inner.Value) && !string.IsNullOrWhiteSpace(inner.Value))
                 {
                     Uri uri;
                     if (Uri.TryCreate(inner.Value, UriKind.RelativeOrAbsolute, out uri))
+                    {
                         Value = uri;
+                    }
                 }
             }
         }

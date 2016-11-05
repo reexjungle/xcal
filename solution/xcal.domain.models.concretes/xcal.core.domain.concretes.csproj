@@ -49,6 +49,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="extensions\writer.cs" />
     <Compile Include="models\values\cal_address.cs" />
     <Compile Include="models\values\date.cs" />
     <Compile Include="models\values\time.cs" />

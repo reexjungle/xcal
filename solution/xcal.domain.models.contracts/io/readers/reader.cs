@@ -2,6 +2,18 @@
 {
     public interface ICalendarReader
     {
-        ICalendarFragment ReadFragment();
+        string Name { get; }
+
+        string Value { get; }
+
+        NodeType NodeType { get; }
+
+        bool Read();
+
+        bool EOF();
+
+        void Close();
+
+        ICalendarReader ReadFragment();
     }
 }

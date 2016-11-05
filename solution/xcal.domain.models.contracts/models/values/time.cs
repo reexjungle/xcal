@@ -1,4 +1,5 @@
 ﻿using reexjungle.xcal.core.domain.contracts.models.parameters;
+using System;
 
 namespace reexjungle.xcal.core.domain.contracts.models.values
 {
@@ -63,5 +64,11 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <param name="value">The number of hours to add.</param>
         /// <returns>A new instance of type <typeparamref name="T"/> that adds the specified number of hours to the value of this instance.</returns>
         T AddHours(double value);
+
+        /// <summary>
+        /// Converts this time instance to an equivalent <see cref="DateTime"/> instance.
+        /// </summary>
+        /// <returns>The equivalent <see cref="DateTime"/> respresentation of this date instance.</returns>
+        DateTime AsDateTime();
     }
 }

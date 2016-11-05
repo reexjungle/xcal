@@ -51,11 +51,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 - repositories", "02 - r
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03 - services", "03 - services", "{5335CCB8-3079-41F4-B9C3-BF657CB35A68}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02-01 - infrastructure", "02-01 - infrastructure", "{C51439BE-723D-43F8-9DF8-D2D186300A28}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 - infrastructure", "02 - infrastructure", "{C51439BE-723D-43F8-9DF8-D2D186300A28}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02-03 - applications", "02-03 - applications", "{35147CF8-4F9F-462A-8B3B-CBD29A1D87C8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04 - servers", "04 - servers", "{35147CF8-4F9F-462A-8B3B-CBD29A1D87C8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02-04 - tests", "02-04 - tests", "{32DBBA27-3EB5-462E-A530-8A05BAD8596C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "05 - tests", "05 - tests", "{32DBBA27-3EB5-462E-A530-8A05BAD8596C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "obsolete", "obsolete", "{0997DD55-032E-4251-A7BC-580CE692849F}"
 EndProject
@@ -67,30 +67,30 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.core.repositories.cont
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.core.services.contracts", "xcal.services.contracts\xcal.core.services.contracts.csproj", "{A54F76E2-E6FE-40D0-A674-6B4E515864F9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02-02 - services", "02-02 - services", "{B70F161E-EDF6-4C36-9BA2-9D5D3C56027C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03 - services", "03 - services", "{B70F161E-EDF6-4C36-9BA2-9D5D3C56027C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 - core", "01 - core", "{7A94DC9F-7B62-4169-98FB-3ADFAC523852}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 - domain", "01 - domain", "{CA504B04-E630-474E-9F70-83B60B602C8E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02-01 - repositories", "02-01 - repositories", "{8A8229D9-1E6A-43D6-8C8E-9B5424FEF68A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03 - repositories", "03 - repositories", "{8A8229D9-1E6A-43D6-8C8E-9B5424FEF68A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02-02 - migration", "02-02 - migration", "{0470BC99-5CD2-4669-9976-DB0A53EAC212}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04 - migration", "04 - migration", "{0470BC99-5CD2-4669-9976-DB0A53EAC212}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 - snapshots", "01 - snapshots", "{22101900-88A5-45E9-BCDE-A1E9C8AF50DA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 - migrators", "02 - migrators", "{8A0E5B81-746D-446E-8542-02F77C3FFA29}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01-01 - io", "01-01 - io", "{9F1AC2D3-8E8F-4C84-9E7C-EDCB55926625}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 - io", "01 - io", "{9F1AC2D3-8E8F-4C84-9E7C-EDCB55926625}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01-02 - serialization", "01-02 - serialization", "{1FB360F1-B427-4ABE-AE8E-ADFBDAEEBE18}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 - serialization", "02 - serialization", "{1FB360F1-B427-4ABE-AE8E-ADFBDAEEBE18}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03 - logging", "03 - logging", "{6A342555-4297-472D-A618-69C0DDA6FEE6}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "05 - logging", "05 - logging", "{6A342555-4297-472D-A618-69C0DDA6FEE6}"
 	ProjectSection(SolutionItems) = preProject
 		xcal.crosscut.concretes\logging\tables.cs = xcal.crosscut.concretes\logging\tables.cs
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04 - validation", "04 - validation", "{426B4862-36F0-4B18-9724-6AA4FA0578E0}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "06 - validation", "06 - validation", "{426B4862-36F0-4B18-9724-6AA4FA0578E0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.infrastructure.io.concretes", "xcal.infrastructure.io.concretes\xcal.infrastructure.io.concretes.csproj", "{BD069E95-0998-4FCD-8F7A-3244DC2DFF12}"
 EndProject
@@ -108,17 +108,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.infrastructure.migrati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.infrastructure.migration.services.concretes", "xcal.infrastructure.migration.services.concretes\xcal.infrastructure.migration.services.concretes.csproj", "{D4D7234A-2A21-4A3E-BD2D-354F542EB509}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 - unit", "01 - unit", "{CAA08175-B909-4089-9917-8137E9BEEDCB}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 - units", "01 - units", "{CAA08175-B909-4089-9917-8137E9BEEDCB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 - integration", "02 - integration", "{D99CCC60-179D-438D-A526-DD6A0D992E89}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01- servers", "01- servers", "{BB11F4E0-4B65-408E-A491-911F53719E23}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 - web", "01 - web", "{1C81B9F2-4A54-4CB8-9AE7-37BB3F72AE23}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 - clients", "02 - clients", "{497A2ECE-0A7F-4DFC-8EEF-C76C1664AE1A}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01-01 - web", "01-01 - web", "{1C81B9F2-4A54-4CB8-9AE7-37BB3F72AE23}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01-02 - standalone", "01-02 - standalone", "{86C7735E-A2FE-4814-8CEB-2EAFCD4F49E4}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 - standalone", "02 - standalone", "{86C7735E-A2FE-4814-8CEB-2EAFCD4F49E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -446,10 +442,8 @@ Global
 		{D4D7234A-2A21-4A3E-BD2D-354F542EB509} = {74586066-D407-4AC3-BBF1-DC4E9EAA1CEF}
 		{CAA08175-B909-4089-9917-8137E9BEEDCB} = {32DBBA27-3EB5-462E-A530-8A05BAD8596C}
 		{D99CCC60-179D-438D-A526-DD6A0D992E89} = {32DBBA27-3EB5-462E-A530-8A05BAD8596C}
-		{BB11F4E0-4B65-408E-A491-911F53719E23} = {35147CF8-4F9F-462A-8B3B-CBD29A1D87C8}
-		{497A2ECE-0A7F-4DFC-8EEF-C76C1664AE1A} = {35147CF8-4F9F-462A-8B3B-CBD29A1D87C8}
-		{1C81B9F2-4A54-4CB8-9AE7-37BB3F72AE23} = {BB11F4E0-4B65-408E-A491-911F53719E23}
-		{86C7735E-A2FE-4814-8CEB-2EAFCD4F49E4} = {BB11F4E0-4B65-408E-A491-911F53719E23}
+		{1C81B9F2-4A54-4CB8-9AE7-37BB3F72AE23} = {35147CF8-4F9F-462A-8B3B-CBD29A1D87C8}
+		{86C7735E-A2FE-4814-8CEB-2EAFCD4F49E4} = {35147CF8-4F9F-462A-8B3B-CBD29A1D87C8}
 	EndGlobalSection
 	GlobalSection(CodealikeProperties) = postSolution
 		SolutionGuid = 1352b368-b41e-43bd-abe6-2b78282795b3

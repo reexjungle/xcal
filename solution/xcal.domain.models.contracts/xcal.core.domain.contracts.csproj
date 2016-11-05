@@ -46,7 +46,6 @@
     <Compile Include="io\readers\enums.cs" />
     <Compile Include="io\readers\fragment.cs" />
     <Compile Include="io\readers\nodes.cs" />
-    <Compile Include="io\writers\specialized\writer.cs" />
     <Compile Include="models\calendar.cs" />
     <Compile Include="models\components\alarm.cs" />
     <Compile Include="models\components\event.cs" />
