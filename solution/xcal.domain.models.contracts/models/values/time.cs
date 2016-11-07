@@ -4,25 +4,25 @@ using System;
 namespace reexjungle.xcal.core.domain.contracts.models.values
 {
     /// <summary>
-    /// Specifies the contract for identifying properties that contain a time of the day
-    /// Format 1 (Local Time): [HHMMSS]
-    /// Format 2 (UTC Time): [HHMMSS]&quot;Z&quot;
-    /// where HH is 2-digit hour, MM is 2-digit minute, SS is 2-digit second and Z is UTC zone indicator
+    /// Specifies a point in time, typically expressed as time of day.
+    /// <para /> Format 1 (Local Time): [HHMMSS]
+    /// <para />Format 2 (UTC Time): [HHMMSS]Z
+    /// <para />where HH is 2-digit hour, MM is 2-digit minute, SS is 2-digit second and Z is UTC zone indicator.
     /// </summary>
     public interface ITIME
     {
         /// <summary>
-        /// Gets the 2-digit representation of an hour
+        /// Gets the 2-digit representation of an hour.
         /// </summary>
         uint HOUR { get; }
 
         /// <summary>
-        /// Gets or sets the 2-digit representatio of a minute
+        /// Gets or sets the 2-digit representatio of a minute.
         /// </summary>
         uint MINUTE { get; }
 
         /// <summary>
-        /// Gets or sets the 2-digit representation of a second
+        /// Gets or sets the 2-digit representation of a second.
         /// </summary>
         uint SECOND { get; }
 
@@ -66,9 +66,16 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         T AddHours(double value);
 
         /// <summary>
-        /// Converts this time instance to an equivalent <see cref="DateTime"/> instance.
+        /// Converts this time instance to its equivalent <see cref="DateTime"/> representation.
         /// </summary>
         /// <returns>The equivalent <see cref="DateTime"/> respresentation of this date instance.</returns>
         DateTime AsDateTime();
+
+        /// <summary>
+        /// Converts this time instance to its equivalent <see cref="DateTimeOffset"/> representation.
+        /// </summary>
+        /// <param name="func">Function to determine the offset from the time zone reference.</param>
+        /// <returns>The equivalent <see cref="DateTimeOffset"/> respresentation of this date instance.</returns>
+        DateTimeOffset AsDateTimeOffset(Func<ITZID, IUTC_OFFSET> func = null);
     }
 }

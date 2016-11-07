@@ -2,6 +2,7 @@
 using reexjungle.xcal.core.domain.contracts.models.parameters;
 using System;
 
+
 namespace reexjungle.xcal.core.domain.concretes.extensions
 {
     /// <summary>
@@ -49,17 +50,27 @@ namespace reexjungle.xcal.core.domain.concretes.extensions
             }
         }
 
-
+        /// <summary>
+        /// Converts a <see cref="DateTimeKind"/> value of a <see cref="DateTime"/> to a <see cref="TIME_FORM"/> value.
+        /// </summary>
+        /// <param name="kind">The <see cref="DateTimeKind"/> value to be converted.</param>
+        /// <param name="tzinfo">Optional: the time zone reference associated with local <see cref="DateTime"/>.</param>
+        /// <returns>The <see cref="TIME_FORM"/> value that results from the conversion.</returns>
         public static TIME_FORM AsTIME_FORM(this DateTimeKind kind, TimeZoneInfo tzinfo = null)
         {
-            if(kind == DateTimeKind.Local) return TIME_FORM.LOCAL;
-            if(kind == DateTimeKind.Utc) return TIME_FORM.UTC;
-            if(kind == DateTimeKind.Unspecified && tzinfo != null)
+            if (kind == DateTimeKind.Local) return TIME_FORM.LOCAL;
+            if (kind == DateTimeKind.Utc) return TIME_FORM.UTC;
+            if (kind == DateTimeKind.Unspecified && tzinfo != null)
                 return TIME_FORM.LOCAL_TIMEZONE_REF;
             return TIME_FORM.UNSPECIFIED;
         }
 
-
+        /// <summary>
+        /// Converts a <see cref="TIME_FORM"/> value to a <see cref="DateTimeKind"/> value.
+        /// </summary>
+        /// <param name="form">The form in which the time is expressed.</param>
+        /// <param name="tzid">Optional: the time zone identifier.</param>
+        /// <returns>The <see cref="DateTimeKind"/> value that results from the conversion</returns>
         public static DateTimeKind AsDateTimeKind(this TIME_FORM form, ITZID tzid = null)
         {
             if (form == TIME_FORM.LOCAL) return DateTimeKind.Local;
