@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace reexjungle.xcal.core.domain.contracts.models.components
 {
-    public interface IVJOURNAL
+    public interface IJOURNAL
     {
         string Uid { get; }
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace reexjungle.xcal.core.domain.contracts.models.components
 {
-    public interface IVFREEBUSY
+    public interface IFREEBUSY
     {
         string Uid { get; }
 
@@ -25,7 +25,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
 
         List<ICOMMENT> Comments { get; }
 
-        List<IVFREEBUSY> FreeBusies { get; }
+        List<IFREEBUSY> FreeBusies { get; }
 
         List<IREQUEST_STATUS> RequestStatuses { get; }
     }

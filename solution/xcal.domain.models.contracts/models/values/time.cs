@@ -17,12 +17,12 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         uint HOUR { get; }
 
         /// <summary>
-        /// Gets or sets the 2-digit representatio of a minute.
+        /// Gets the 2-digit representatio of a minute.
         /// </summary>
         uint MINUTE { get; }
 
         /// <summary>
-        /// Gets or sets the 2-digit representation of a second.
+        /// Gets the 2-digit representation of a second.
         /// </summary>
         uint SECOND { get; }
 

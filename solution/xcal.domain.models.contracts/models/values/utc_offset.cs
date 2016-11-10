@@ -1,23 +1,23 @@
 ﻿namespace reexjungle.xcal.core.domain.contracts.models.values
 {
     /// <summary>
-    /// Specifies the contract for identifying properties that contain an offset from UTC to local time
+    /// Specifies the contract for identifying properties that contain an offset from UTC to local time.
     /// </summary>
     public interface IUTC_OFFSET
     {
         /// <summary>
-        /// Gets or sets the 2-digit representation of an hour
+        /// Gets the offset hours from UTC to local time.
         /// </summary>
-        int HOUR { get; }
+        int HOURS { get; }
 
         /// <summary>
-        /// Gets or sets the 2-digit representation of a minute
+        /// Gets the offset minutes from UTC to local time.
         /// </summary>
-        int MINUTE { get; }
+        int MINUTES { get; }
 
         /// <summary>
-        /// Gets or sets the 2-digit representation of a second
+        /// Gets the offset seconds from UTC to local time.
         /// </summary>
-        int SECOND { get; }
+        int SECONDS { get; }
     }
 }

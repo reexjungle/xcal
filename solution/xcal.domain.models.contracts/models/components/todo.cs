@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace reexjungle.xcal.core.domain.contracts.models.components
 {
-    public interface IVTODO
+    public interface ITODO
     {
         string Uid { get; }
 
@@ -69,7 +69,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
 
         List<IRDATE> RecurrenceDates { get; }
 
-        List<IVALARM> Alarms { get; }
+        List<IALARM> Alarms { get; }
     }
 
 }

@@ -6,6 +6,7 @@ using reexjungle.xcal.core.domain.contracts.models.values;
 using reexjungle.xcal.core.domain.contracts.serialization;
 using reexjungle.xmisc.foundation.concretes;
 using System;
+using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
 namespace reexjungle.xcal.core.domain.concretes.models.values
@@ -14,21 +15,25 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
     /// Represents a calendar date.
     /// Format: [YYYYMMDD] where YYYY is 4-digit year, MM is 2-digit month and DD is 2-digit day
     /// </summary>
+    [DataContract]
     public struct DATE : IDATE, IDATE<DATE>, IEquatable<DATE>, IComparable, IComparable<DATE>, ICalendarSerializable
     {
         /// <summary>
         /// Gets the 4-digit representation of a full year e.g. 2013
         /// </summary>
+        [DataMember]
         public uint FULLYEAR { get; private set; }
 
         /// <summary>
         /// Gets the 2-digit representation of a month
         /// </summary>
+        [DataMember]
         public uint MONTH { get; private set; }
 
         /// <summary>
         /// Gets the 2-digit representation of a month-day
         /// </summary>
+        [DataMember]
         public uint MDAY { get; private set; }
 
         /// <summary>
@@ -67,6 +72,24 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             FULLYEAR = (uint)date.Year;
             MONTH = (uint)date.Year;
             MDAY = (uint)date.Day;
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DATE"/> struct with the specified <see cref="DateTimeOffset"/>.
+        /// <para/>
+        /// Note: By using this constructor, the new instance of <see cref="DATE"/> shall always be
+        ///       initialized as UTC date time.
+        /// </summary>
+        /// <param name="datetime">
+        /// A point in time, typically expressed as date and time of day, relative to Coordinate
+        /// Universal Time (UTC).
+        /// </param>
+        public DATE(DateTimeOffset datetime)
+        {
+            FULLYEAR = (uint)datetime.UtcDateTime.Year;
+            MONTH = (uint)datetime.UtcDateTime.Year;
+            MDAY = (uint)datetime.UtcDateTime.Day;
         }
 
         /// <summary>
@@ -158,13 +181,18 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
         }
 
         /// <summary>
-        /// Converts this date instance explicitly to an equivalent <see cref="DateTime"/> instance.
+        /// Converts the <see cref="DATE"/> implicitly to an equivalent <see cref="DateTime"/> instance.
         /// </summary>
         /// <param name="date">
-        /// The <see cref="DATE"/> instance that is explicitly converted to the <see
-        /// cref="DateTime"/> instance.
+        /// The <see cref="DATE"/> instance that is implicitly converted to the <see cref="DateTime"/> instance.
         /// </param>
-        public static explicit operator DateTime(DATE date) => date.AsDateTime();
+        public static implicit operator DateTime(DATE date) => date.AsDateTime();
+
+        /// <summary>
+        /// Converts the <see cref="DATE_TIME"/> instance explicitly to an equivalent <see cref="DATE"/> instance.
+        /// </summary>
+        /// <param name="datetime">The <see cref="DateTime"/> instance that is explicitly converted to the <see cref="DATE"/> instance.</param>
+        public static explicit operator DATE(DateTime datetime) => new DATE(datetime);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

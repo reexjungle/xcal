@@ -12,17 +12,17 @@
     public interface ITZID
     {
         /// <summary>
-        /// Specifies whether the time-zone prefix should be included
+        /// Specifies whether the time-zone prefix should be included.
         /// </summary>
         bool GloballyUnique { get; }
 
         /// <summary>
-        /// Gets  the identifier for the time zone definition for a time component
+        /// Gets the identifier for the time zone definition for a time component.
         /// </summary>
         string Prefix { get; }
 
         /// <summary>
-        /// Gets  the identifier for the time zone definition for a time component
+        /// Gets the identifier for the time zone definition for a time component.
         /// </summary>
         string Suffix { get; }
     }

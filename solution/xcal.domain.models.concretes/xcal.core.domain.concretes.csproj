@@ -50,8 +50,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="extensions\writer.cs" />
+    <Compile Include="models\properties\tzid.cs" />
     <Compile Include="models\values\cal_address.cs" />
     <Compile Include="models\values\date.cs" />
+    <Compile Include="models\values\date_time.cs" />
     <Compile Include="models\values\time.cs" />
     <Compile Include="extensions\datetime.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -59,7 +61,6 @@
   <ItemGroup>
     <Folder Include="models\components\" />
     <Folder Include="models\parameters\" />
-    <Folder Include="models\properties\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

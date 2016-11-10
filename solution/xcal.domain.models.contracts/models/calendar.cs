@@ -35,26 +35,26 @@ namespace reexjungle.xcal.core.domain.contracts.models
         /// <summary>
         /// Gets or sets the events of the iCalendar core object
         /// </summary>
-        List<IVEVENT> Events { get; }
+        List<IEVENT> Events { get; }
 
         /// <summary>
         /// Gets or sets the to-dos of the iCalendar core object
         /// </summary>
-        List<IVTODO> ToDos { get; }
+        List<ITODO> ToDos { get; }
 
         /// <summary>
         /// Gets or sets the free or busy time information groups of the iCalendar core object
         /// </summary>
-        List<IVFREEBUSY> FreeBusies { get; }
+        List<IFREEBUSY> FreeBusies { get; }
 
         /// <summary>
         /// Gets or sets the journals of the iCalendar core object
         /// </summary>
-        List<IVJOURNAL> Journals { get; }
+        List<IJOURNAL> Journals { get; }
 
         /// <summary>
         /// Gets or sets the timezones of the iCalendar core object
         /// </summary>
-        List<IVTIMEZONE> TimeZones { get; }
+        List<ITIMEZONE> TimeZones { get; }
     }
 }

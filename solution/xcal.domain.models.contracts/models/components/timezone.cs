@@ -22,7 +22,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
         List<ITZNAME> TimeZoneNames { get; }
     }
 
-    public interface IVTIMEZONE
+    public interface ITIMEZONE
     {
         ITZID TimeZoneId { get; }
 

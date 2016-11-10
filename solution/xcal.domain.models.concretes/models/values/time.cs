@@ -1,4 +1,5 @@
 ﻿using reexjungle.xcal.core.domain.concretes.extensions;
+using reexjungle.xcal.core.domain.concretes.models.properties;
 using reexjungle.xcal.core.domain.contracts.io.readers;
 using reexjungle.xcal.core.domain.contracts.io.writers;
 using reexjungle.xcal.core.domain.contracts.models;
@@ -6,6 +7,7 @@ using reexjungle.xcal.core.domain.contracts.models.parameters;
 using reexjungle.xcal.core.domain.contracts.models.values;
 using reexjungle.xcal.core.domain.contracts.serialization;
 using System;
+using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
 namespace reexjungle.xcal.core.domain.concretes.models.values
@@ -19,31 +21,37 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
     /// <para/>
     /// where HH is 2-digit hour, MM is 2-digit minute, SS is 2-digit second and Z is UTC zone indicator.
     /// </summary>
+    [DataContract]
     public struct TIME : ITIME, ITIME<TIME>, IEquatable<TIME>, IComparable, IComparable<TIME>, ICalendarSerializable
     {
         /// <summary>
         /// Gets the 2-digit representation of an hour.
         /// </summary>
+        [DataMember]
         public uint HOUR { get; private set; }
 
         /// <summary>
         /// Gets or sets the 2-digit representation of a minute.
         /// </summary>
+        [DataMember]
         public uint MINUTE { get; private set; }
 
         /// <summary>
         /// Gets or sets the 2-digit representation of a second.
         /// </summary>
+        [DataMember]
         public uint SECOND { get; private set; }
 
         /// <summary>
         /// Gets the form in which the <see cref="TIME"/> instance is expressed.
         /// </summary>
+        [DataMember]
         public TIME_FORM Form { get; private set; }
 
         /// <summary>
         /// Gets the identifier that references the time zone.
         /// </summary>
+        [DataMember]
         public ITZID TimeZoneId { get; private set; }
 
         /// <summary>
@@ -64,6 +72,17 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             TimeZoneId = tzid;
         }
 
+
+        public TIME(ITIME other)
+        {
+            if (other == null) throw new ArgumentNullException(nameof(other));
+            HOUR = other.HOUR;
+            MINUTE = other.MINUTE;
+            SECOND = other.SECOND;
+            Form = other.Form;
+            TimeZoneId = other.TimeZoneId;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TIME"/> struct with the specified <see
         /// cref="DateTime"/> and <see cref="TimeZoneInfo"/>.
@@ -75,21 +94,17 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             HOUR = (uint)datetime.Hour;
             MINUTE = (uint)datetime.Minute;
             SECOND = (uint)datetime.Second;
-            TimeZoneId = null;
-            Form = TIME_FORM.UNSPECIFIED;
-            if (tzinfo != null)
-            {
-                //TimeZoneId = new TZID(null, tzinfo.Id);
-            }
             Form = datetime.Kind.AsTIME_FORM(tzinfo);
+            TimeZoneId = tzinfo != null
+                ? new TZID(null, tzinfo.Id)
+                : default(TZID);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TIME"/> struct with the specified <see cref="DateTimeOffset"/>.
         /// <para/>
-        /// The <see cref="DateTimeOffset.UtcDateTime"/> component initializes the components of the
-        /// new instance of <see cref="TIME"/>. This implies, the <see cref="Form"/> property is set
-        /// by default to <see cref="TIME_FORM.UTC"/>.
+        /// Note: By using this constructor, the new instance of <see cref="TIME"/> shall always be
+        ///       initialized as UTC time.
         /// </summary>
         /// <param name="datetime">
         /// A point in time, typically expressed as date and time of day, relative to Coordinate
@@ -129,7 +144,8 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             var pattern = @"^((?<tzid>TZID=(\w+)?/(\w+)):)?T(?<hour>\d{1,2})(?<min>\d{1,2})(?<sec>\d{1,2})(?<utc>Z)?$";
             var options = RegexOptions.IgnoreCase
                 | RegexOptions.CultureInvariant
-                | RegexOptions.ExplicitCapture;
+                | RegexOptions.ExplicitCapture
+                | RegexOptions.Compiled;
 
             if (Regex.IsMatch(value, pattern))
             {
@@ -141,8 +157,7 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
                     if (match.Groups["utc"].Success) form = TIME_FORM.UTC;
                     else if (match.Groups["tzid"].Success)
                     {
-                        //TODO: Add implementation of Time Zone Reference
-                        //tzid = new TZID(match.Groups["tzid"].Value);
+                        tzid = new TZID(match.Groups["tzid"].Value);
                         form = TIME_FORM.LOCAL_TIMEZONE_REF;
                     }
                     else form = TIME_FORM.LOCAL;
@@ -160,10 +175,7 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
         /// A new instance of type <typeparamref name="T"/> that adds the specified number of seconds
         /// to the value of this instance.
         /// </returns>
-        public TIME AddSeconds(double value)
-        {
-            throw new System.NotImplementedException();
-        }
+        public TIME AddSeconds(double value) => AsDateTime().AddSeconds(value).AsTIME();
 
         /// <summary>
         /// Adds the specified number of minutes to the value of the <see cref="TIME"/> instance.
@@ -173,10 +185,7 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
         /// A new instance of type <see cref="TIME"/> that adds the specified number of minutes to
         /// the value of this instance.
         /// </returns>
-        public TIME AddMinutes(double value)
-        {
-            throw new System.NotImplementedException();
-        }
+        public TIME AddMinutes(double value) => AsDateTime().AddMinutes(value).AsTIME();
 
         /// <summary>
         /// Adds the specified number of hours to the value of the <see cref="TIME"/> instance.
@@ -186,10 +195,7 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
         /// A new instance of type <see cref="TIME"/> that adds the specified number of hours to the
         /// value of this instance.
         /// </returns>
-        public TIME AddHours(double value)
-        {
-            throw new System.NotImplementedException();
-        }
+        public TIME AddHours(double value) => AsDateTime().AddMinutes(value).AsTIME();
 
         /// <summary>
         /// Converts this time instance to its equivalent <see cref="DateTime"/> representation.
@@ -216,7 +222,7 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             if (Form == TIME_FORM.LOCAL_TIMEZONE_REF && TimeZoneId != null && func != null)
             {
                 var offset = func(TimeZoneId);
-                return new DateTimeOffset(AsDateTime(), new TimeSpan(offset.HOUR, offset.MINUTE, offset.SECOND));
+                return new DateTimeOffset(AsDateTime(), new TimeSpan(offset.HOURS, offset.MINUTES, offset.SECONDS));
             }
             //Unspecified time form
             return new DateTimeOffset(AsDateTime());

@@ -8,7 +8,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
     /// <summary>
     /// Specifes a contract for the VEVENT component of the iCalendar Core Object
     /// </summary>
-    public interface IVEVENT
+    public interface IEVENT
     {
         /// <summary>
         ///
@@ -163,6 +163,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
         /// <summary>
         ///
         /// </summary>
-        List<IVALARM> Alarms { get; }
+        List<IALARM> Alarms { get; }
     }
 }
