@@ -1,4 +1,6 @@
-﻿namespace reexjungle.xcal.core.domain.contracts.models.values
+﻿using System;
+
+namespace reexjungle.xcal.core.domain.contracts.models.values
 {
     /// <summary>
     /// Specifies the contract for identifying properties that contain a duration of time
@@ -30,5 +32,19 @@
         /// Gets the duration in days
         /// </summary>
         int DAYS { get; }
+    }
+
+    public interface IDURATION<out T> where T : IDURATION
+    {
+        T Add(IDURATION other);
+
+        T Subtract(IDURATION other);
+
+        T MultiplyBy(int scalar);
+
+        T DivideBy(int scalar);
+
+        TimeSpan AsTimeSpan();
+
     }
 }

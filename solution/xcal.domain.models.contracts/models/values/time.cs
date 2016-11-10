@@ -42,7 +42,9 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
     /// Extends the <see cref="ITIME"/> interface for a type that implements the <see cref="ITIME"/> interface.
     /// </summary>
     /// <typeparam name="T">The type that implements the <see cref="ITIME"/> interface.</typeparam>
-    public interface ITIME<out T> where T : ITIME
+    public interface ITIME<out T, out TDURATION> 
+        where T : ITIME
+        where TDURATION: IDURATION
     {
         /// <summary>
         /// Adds the specified number of seconds to the value of the <typeparamref name="T"/> instance. 
@@ -77,5 +79,11 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <param name="func">Function to determine the offset from the time zone reference.</param>
         /// <returns>The equivalent <see cref="DateTimeOffset"/> respresentation of this date instance.</returns>
         DateTimeOffset AsDateTimeOffset(Func<ITZID, IUTC_OFFSET> func = null);
+
+        T Add(IDURATION duration);
+
+        T Subtract(IDURATION duration);
+
+        TDURATION Subtract(ITIME end);
     }
 }

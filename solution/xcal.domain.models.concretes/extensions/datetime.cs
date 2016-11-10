@@ -131,5 +131,8 @@ namespace reexjungle.xcal.core.domain.concretes.extensions
         /// <returns>The <see cref="DATE_TIME"/> value that results from the conversion.</returns>
         public static DATE_TIME AsDATE_TIME(this DateTime datetime) => datetime.AsDATE_TIME(x => new DATE_TIME(x));
 
+        public static T AsDURATION<T>(this TimeSpan timespan, Func<TimeSpan, T> func) where T : IDURATION => func(timespan);
+
+        public static DURATION AsDURATION(this TimeSpan timespan) => timespan.AsDURATION(x => new DURATION(x));
     }
 }

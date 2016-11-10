@@ -22,7 +22,7 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
     /// where HH is 2-digit hour, MM is 2-digit minute, SS is 2-digit second and Z is UTC zone indicator.
     /// </summary>
     [DataContract]
-    public struct TIME : ITIME, ITIME<TIME>, IEquatable<TIME>, IComparable, IComparable<TIME>, ICalendarSerializable
+    public struct TIME : ITIME, ITIME<TIME, DURATION>, IEquatable<TIME>, IComparable, IComparable<TIME>, ICalendarSerializable
     {
         /// <summary>
         /// Gets the 2-digit representation of an hour.
@@ -71,7 +71,6 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             Form = form;
             TimeZoneId = tzid;
         }
-
 
         public TIME(ITIME other)
         {
@@ -226,6 +225,21 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             }
             //Unspecified time form
             return new DateTimeOffset(AsDateTime());
+        }
+
+        public TIME Add(IDURATION duration)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TIME Subtract(IDURATION duration)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DURATION Subtract(ITIME end)
+        {
+            throw new NotImplementedException();
         }
 
         public static explicit operator DateTime(TIME time) => time.AsDateTime();
@@ -390,18 +404,78 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             inner.Close();
         }
 
+        /// <summary>
+        /// Determines whether one specified <see cref="TIME"/> is earlier than another specified
+        /// <see cref="TIME"/>.
+        /// </summary>
+        /// <param name="left">The first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> is earlier than <paramref name="right"/>; otherwise false.
+        /// </returns>
         public static bool operator <(TIME left, TIME right) => left.CompareTo(right) < 0;
 
+        /// <summary>
+        /// Determines whether one specified <see cref="TIME"/> is later than another specified <see cref="TIME"/>.
+        /// </summary>
+        /// <param name="left">The first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> is later than <paramref name="right"/>; otherwise false.
+        /// </returns>
         public static bool operator >(TIME left, TIME right) => left.CompareTo(right) > 0;
 
+        /// <summary>
+        /// Determines whether one specified <see cref="TIME"/> is earlier than or the same as
+        /// another specified <see cref="TIME"/>.
+        /// </summary>
+        /// <param name="left">The first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> is earlier than or the same as <paramref name="right"/>;
+        /// otherwise false.
+        /// </returns>
         public static bool operator <=(TIME left, TIME right) => left.CompareTo(right) <= 0;
 
+        /// <summary>
+        /// Determines whether one specified <see cref="TIME"/> is later than or the same as another
+        /// specified <see cref="TIME"/>.
+        /// </summary>
+        /// <param name="left">The first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> is later than or the same as <paramref name="right"/>;
+        /// otherwise false.
+        /// </returns>
         public static bool operator >=(TIME left, TIME right) => left.CompareTo(right) >= 0;
 
+        /// <summary>
+        /// Determines whether two specified instances of <see cref="TIME"/> are equal.
+        /// </summary>
+        /// <param name="left">This first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> and <paramref name="right"/> represent the same time
+        /// instance; otherwise false.
+        /// </returns>
         public static bool operator ==(TIME left, TIME right) => left.Equals(right);
 
+        /// <summary>
+        /// Determines whether two specified instances of <see cref="TIME"/> are not equal.
+        /// </summary>
+        /// <param name="left">This first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> and <paramref name="right"/> do not represent the same
+        /// time instance; otherwise false.
+        /// </returns>
         public static bool operator !=(TIME left, TIME right) => !left.Equals(right);
 
+        /// <summary>
+        /// Returns the fully qualified type name of this instance.
+        /// </summary>
+        /// <returns>A <see cref="T:System.String"/> containing a fully qualified type name.</returns>
+        /// <filterpriority>2</filterpriority>
         public override string ToString()
         {
             switch (Form)

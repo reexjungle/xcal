@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 namespace reexjungle.xcal.core.domain.concretes.models.values
 {
     [DataContract]
-    public struct DATE_TIME : IDATE_TIME, IDATE_TIME<DATE_TIME>, IEquatable<DATE_TIME>, IComparable, IComparable<DATE_TIME>, ICalendarSerializable
+    public struct DATE_TIME : IDATE_TIME, IDATE_TIME<DATE_TIME, DURATION>, IEquatable<DATE_TIME>, IComparable, IComparable<DATE_TIME>, ICalendarSerializable
     {
         /// <summary>
         /// Gets the 4-digit representation of a full year e.g. 2013
@@ -349,23 +349,61 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             return new DateTimeOffset(AsDateTime());
         }
 
+        public DATE_TIME Add(IDURATION duration)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DATE_TIME Subtract(IDURATION duration)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DURATION Subtract(IDATE_TIME end)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
-        /// Converts this date time instance explicitly to an equivalent <see cref="DateTime"/> instance.
+        /// Explicitly converts the specified <see cref="DateTime"/> instance to a <see
+        /// cref="DATE_TIME"/> instance.
         /// </summary>
-        /// <param name="datetime">
-        /// The <see cref="DATE_TIME"/> instance that is explicitly converted to the <see
-        /// cref="DateTime"/> instance.
-        /// </param>
+        /// <param name="datetime">The <see cref="DATE_TIME"/> instance to convert.</param>
         public static implicit operator DateTime(DATE_TIME datetime) => datetime.AsDateTime();
 
+        /// <summary>
+        /// Implicitly converts the specified <see cref="DateTime"/> instance to a <see
+        /// cref="DATE_TIME"/> instance.
+        /// </summary>
+        /// <param name="datetime">The <see cref="DateTime"/> instance to convert.</param>
         public static implicit operator DATE_TIME(DateTime datetime) => new DATE_TIME(datetime);
 
+        /// <summary>
+        /// Implicitly converts the specified <see cref="DATE"/> instance to a <see
+        /// cref="DATE_TIME"/> instance.
+        /// </summary>
+        /// <param name="date">The <see cref="DATE"/> instance to convert.</param>
         public static implicit operator DATE_TIME(DATE date) => new DATE_TIME(date);
 
+        /// <summary>
+        /// Explicitly converts the specified <see cref="DATE_TIME"/> instance to a <see
+        /// cref="DATE"/> instance.
+        /// </summary>
+        /// <param name="datetime">The <see cref="DATE_TIME"/> instance to convert.</param>
         public static explicit operator DATE(DATE_TIME datetime) => new DATE(datetime.FULLYEAR, datetime.MONTH, datetime.MDAY);
 
+        /// <summary>
+        /// Implicitly converts the specified <see cref="TIME"/> instance to a <see
+        /// cref="DATE_TIME"/> instance.
+        /// </summary>
+        /// <param name="time">The <see cref="TIME"/> instance to convert.</param>
         public static implicit operator DATE_TIME(TIME time) => new DATE_TIME(time);
 
+        /// <summary>
+        /// Implicitly converts the specified <see cref="DATE_TIME"/> instance to a <see
+        /// cref="TIME"/> instance.
+        /// </summary>
+        /// <param name="datetime">The <see cref="DATE_TIME"/> instance to convert.</param>
         public static explicit operator TIME(DATE_TIME datetime) => new TIME(datetime.HOUR, datetime.MINUTE, datetime.SECOND, datetime.Form, datetime.TimeZoneId);
 
         /// <summary>
@@ -474,16 +512,72 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             throw new ArgumentException(nameof(obj) + " is not a date time");
         }
 
+        /// <summary>
+        /// Determines whether one specified <see cref="DATE_TIME"/> is earlier than another
+        /// specified <see cref="DATE_TIME"/>.
+        /// </summary>
+        /// <param name="left">The first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> is earlier than <paramref name="right"/>; otherwise false.
+        /// </returns>
         public static bool operator <(DATE_TIME left, DATE_TIME right) => left.CompareTo(right) < 0;
 
+        /// <summary>
+        /// Determines whether one specified <see cref="DATE_TIME"/> is later than another specified
+        /// <see cref="DATE_TIME"/>.
+        /// </summary>
+        /// <param name="left">The first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> is later than <paramref name="right"/>; otherwise false.
+        /// </returns>
         public static bool operator >(DATE_TIME left, DATE_TIME right) => left.CompareTo(right) > 0;
 
+        /// <summary>
+        /// Determines whether one specified <see cref="DATE_TIME"/> is earlier than or the same as
+        /// another specified <see cref="DATE_TIME"/>.
+        /// </summary>
+        /// <param name="left">The first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> is earlier than or the same as <paramref name="right"/>;
+        /// otherwise false.
+        /// </returns>
         public static bool operator <=(DATE_TIME left, DATE_TIME right) => left.CompareTo(right) <= 0;
 
+        /// <summary>
+        /// Determines whether one specified <see cref="DATE_TIME"/> is later than or the same as
+        /// another specified <see cref="DATE_TIME"/>.
+        /// </summary>
+        /// <param name="left">The first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> is later than or the same as <paramref name="right"/>;
+        /// otherwise false.
+        /// </returns>
         public static bool operator >=(DATE_TIME left, DATE_TIME right) => left.CompareTo(right) >= 0;
 
+        /// <summary>
+        /// Determines whether two specified instances of <see cref="DATE_TIME"/> are equal.
+        /// </summary>
+        /// <param name="left">This first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> and <paramref name="right"/> represent the same date time
+        /// instance; otherwise false.
+        /// </returns>
         public static bool operator ==(DATE_TIME left, DATE_TIME right) => left.Equals(right);
 
+        /// <summary>
+        /// Determines whether two specified instances of <see cref="DATE_TIME"/> are not equal.
+        /// </summary>
+        /// <param name="left">This first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> and <paramref name="right"/> do not represent the same
+        /// date time instance; otherwise false.
+        /// </returns>
         public static bool operator !=(DATE_TIME left, DATE_TIME right) => !left.Equals(right);
 
         /// <summary>
@@ -556,6 +650,29 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             }
 
             inner.Close();
+        }
+
+        /// <summary>
+        /// Returns the fully qualified type name of this instance.
+        /// </summary>
+        /// <returns>A <see cref="T:System.String"/> containing a fully qualified type name.</returns>
+        /// <filterpriority>2</filterpriority>
+        public override string ToString()
+        {
+            switch (Form)
+            {
+                case TIME_FORM.LOCAL:
+                    return $"{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}T{HOUR:D2}{MINUTE:D2}{SECOND:D2}";
+
+                case TIME_FORM.UTC:
+                    return $"{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}T{HOUR:D2}{MINUTE:D2}{SECOND:D2}Z";
+
+                case TIME_FORM.LOCAL_TIMEZONE_REF:
+                    return $"{TimeZoneId}:{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}T{HOUR:D2}{MINUTE:D2}{SECOND:D2}";
+
+                default:
+                    return $"{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}T{HOUR:D2}{MINUTE:D2}{SECOND:D2}";
+            }
         }
     }
 }

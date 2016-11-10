@@ -29,7 +29,9 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
     /// Extends the <see cref="IDATE"/> interface for for a type that implements the <see cref="IDATE"/> interface.
     /// </summary>
     /// <typeparam name="T">The type that implements the <see cref="IDATE"/> interface.</typeparam>
-    public interface IDATE<out T> where T : IDATE
+    public interface IDATE<out T, out TDURATION>
+        where T : IDATE
+        where TDURATION : IDURATION
     {
         /// <summary>
         /// Adds the specified number of days to the value of the <typeparamref name="T"/> instance.
@@ -71,5 +73,10 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <returns>The equivalent <see cref="DateTime"/> respresentation of this date instance. </returns>
         DateTime AsDateTime();
 
+        T Add(IDURATION duration);
+
+        T Subtract(IDURATION duration);
+
+        TDURATION Subtract(IDATE end);
     }
 }

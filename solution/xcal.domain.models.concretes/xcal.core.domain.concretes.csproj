@@ -54,6 +54,7 @@
     <Compile Include="models\values\cal_address.cs" />
     <Compile Include="models\values\date.cs" />
     <Compile Include="models\values\date_time.cs" />
+    <Compile Include="models\values\duration.cs" />
     <Compile Include="models\values\time.cs" />
     <Compile Include="extensions\datetime.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

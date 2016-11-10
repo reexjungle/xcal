@@ -16,7 +16,7 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
     /// Format: [YYYYMMDD] where YYYY is 4-digit year, MM is 2-digit month and DD is 2-digit day
     /// </summary>
     [DataContract]
-    public struct DATE : IDATE, IDATE<DATE>, IEquatable<DATE>, IComparable, IComparable<DATE>, ICalendarSerializable
+    public struct DATE : IDATE, IDATE<DATE, DURATION>, IEquatable<DATE>, IComparable, IComparable<DATE>, ICalendarSerializable
     {
         /// <summary>
         /// Gets the 4-digit representation of a full year e.g. 2013
@@ -73,7 +73,6 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             MONTH = (uint)date.Year;
             MDAY = (uint)date.Day;
         }
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DATE"/> struct with the specified <see cref="DateTimeOffset"/>.
@@ -158,6 +157,21 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
         public DateTime AsDateTime() => this == default(DATE)
             ? default(DateTime)
             : new DateTime((int)FULLYEAR, (int)MONTH, (int)MDAY);
+
+        public DATE Add(IDURATION duration)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DATE Subtract(IDURATION duration)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DURATION Subtract(IDATE end)
+        {
+            throw new NotImplementedException();
+        }
 
         private static DATE Parse(string value)
         {
@@ -279,8 +293,52 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             throw new ArgumentException(nameof(obj) + " is not a date");
         }
 
+        /// <summary>
+        /// Determines whether one specified <see cref="DATE"/> is earlier than another specified <see cref="DATE"/>.
+        /// </summary>
+        /// <param name="left">The first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>true if <paramref name="left"/> is earlier than <paramref name="right"/>; otherwise false.</returns>
+        public static bool operator <(DATE left, DATE right) => left.CompareTo(right) < 0;
+
+        /// <summary>
+        /// Determines whether one specified <see cref="DATE"/> is later than another specified <see cref="DATE"/>.
+        /// </summary>
+        /// <param name="left">The first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>true if <paramref name="left"/> is later than <paramref name="right"/>; otherwise false.</returns>
+        public static bool operator >(DATE left, DATE right) => left.CompareTo(right) > 0;
+
+        /// <summary>
+        /// Determines whether one specified <see cref="DATE"/> is earlier than or the same as another specified <see cref="DATE"/>.
+        /// </summary>
+        /// <param name="left">The first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>true if <paramref name="left"/> is earlier than or the same as <paramref name="right"/>; otherwise false.</returns>
+        public static bool operator <=(DATE left, DATE right) => left.CompareTo(right) <= 0;
+
+        /// <summary>
+        /// Determines whether one specified <see cref="DATE"/> is later than or the same as another specified <see cref="DATE"/>.
+        /// </summary>
+        /// <param name="left">The first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>true if <paramref name="left"/> is later than or the same as <paramref name="right"/>; otherwise false.</returns>
+        public static bool operator >=(DATE left, DATE right) => left.CompareTo(right) >= 0;
+
+        /// <summary>
+        /// Determines whether two specified instances of <see cref="DATE"/> are equal.
+        /// </summary>
+        /// <param name="left">This first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>true if <paramref name="left"/> and <paramref name="right"/> represent the same date instance; otherwise false.</returns>
         public static bool operator ==(DATE left, DATE right) => left.Equals(right);
 
+        /// <summary>
+        /// Determines whether two specified instances of <see cref="DATE"/> are not equal.
+        /// </summary>
+        /// <param name="left">This first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>true if <paramref name="left"/> and <paramref name="right"/> do not represent the same date instance; otherwise false.</returns>
         public static bool operator !=(DATE left, DATE right) => !left.Equals(right);
 
         /// <summary>

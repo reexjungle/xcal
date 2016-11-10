@@ -14,6 +14,12 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
     public class CAL_ADDRESS : ICAL_ADDRESS, IEquatable<CAL_ADDRESS>, ICalendarSerializable
     {
         /// <summary>
+        /// Gets the value of the calendar user address.
+        /// </summary>
+        [DataMember]
+        public Uri Value { get; private set; }
+
+        /// <summary>
         /// Creates a new instance of the <see cref="CAL_ADDRESS"/> class.
         /// </summary>
         protected CAL_ADDRESS()
@@ -65,11 +71,6 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             Value = other.Value != null ? new Uri(other.Value.ToString()) : other.Value;
         }
 
-        /// <summary>
-        /// Gets the value of the calendar user address.
-        /// </summary>
-        [DataMember]
-        public Uri Value { get; private set; }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -108,8 +109,26 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
         /// <filterpriority>2</filterpriority>
         public override int GetHashCode() => Value != null ? Value.GetHashCode() : 0;
 
+        /// <summary>
+        /// Determines whether two specified instances of <see cref="CAL_ADDRESS"/> are equal.
+        /// </summary>
+        /// <param name="left">This first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> and <paramref name="right"/> represent the same calendar user address
+        /// instance; otherwise false.
+        /// </returns>
         public static bool operator ==(CAL_ADDRESS left, CAL_ADDRESS right) => Equals(left, right);
 
+        /// <summary>
+        /// Determines whether two specified instances of <see cref="CAL_ADDRESS"/> are not equal.
+        /// </summary>
+        /// <param name="left">This first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns>
+        /// true if <paramref name="left"/> and <paramref name="right"/> do not represent the same calendar user address
+        /// instance; otherwise false.
+        /// </returns>
         public static bool operator !=(CAL_ADDRESS left, CAL_ADDRESS right) => !Equals(left, right);
 
         /// <summary>
