@@ -49,6 +49,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="extensions\date.cs" />
+    <Compile Include="extensions\duration.cs" />
+    <Compile Include="extensions\time.cs" />
     <Compile Include="extensions\writer.cs" />
     <Compile Include="models\properties\tzid.cs" />
     <Compile Include="models\values\cal_address.cs" />

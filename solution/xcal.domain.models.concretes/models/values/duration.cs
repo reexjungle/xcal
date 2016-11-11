@@ -1,4 +1,5 @@
-﻿using reexjungle.xcal.core.domain.contracts.io.readers;
+﻿using reexjungle.xcal.core.domain.concretes.extensions;
+using reexjungle.xcal.core.domain.contracts.io.readers;
 using reexjungle.xcal.core.domain.contracts.io.writers;
 using reexjungle.xcal.core.domain.contracts.models.values;
 using reexjungle.xcal.core.domain.contracts.serialization;
@@ -12,7 +13,7 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
     /// <summary>
     /// </summary>
     [DataContract]
-    public struct DURATION : IDURATION, IDURATION<DURATION>, IEquatable<DURATION>, IComparable, IComparable<DURATION>, ICalendarSerializable
+    public struct DURATION : IDURATION, IEquatable<DURATION>, IComparable, IComparable<DURATION>, ICalendarSerializable
     {
         /// <summary>
         /// </summary>
@@ -175,30 +176,6 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             throw new NotImplementedException();
         }
 
-        public static DURATION operator -(DURATION duration) => new DURATION(-duration.WEEKS, -duration.DAYS, -duration.HOURS, -duration.MINUTES, -duration.SECONDS);
-
-        public static DURATION operator +(DURATION duration) => new DURATION(duration.WEEKS, duration.DAYS, duration.HOURS, duration.MINUTES, duration.SECONDS);
-
-        public static DURATION operator +(DURATION left, DURATION right) => left.Add(right);
-
-        public static DURATION operator -(DURATION left, DURATION right) => left.Subtract(right);
-
-        public static DURATION operator *(DURATION duration, int scalar) => duration.MultiplyBy(scalar);
-
-        public static DURATION operator /(DURATION duration, int scalar) => duration.DivideBy(scalar);
-
-        public static bool operator <(DURATION left, DURATION right) => left.CompareTo(right) < 0;
-
-        public static bool operator >(DURATION left, DURATION right) => left.CompareTo(right) > 0;
-
-        public static bool operator <=(DURATION left, DURATION right) => left.CompareTo(right) <= 0;
-
-        public static bool operator >=(DURATION left, DURATION right) => left.CompareTo(right) >= 0;
-
-        public static bool operator ==(DURATION left, DURATION right) => left.Equals(right);
-
-        public static bool operator !=(DURATION left, DURATION right) => !left.Equals(right);
-
         public bool CanDeserialize() => true;
 
         public void WriteCalendar(ICalendarWriter writer)
@@ -237,23 +214,35 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
 
         public bool CanSerialize() => true;
 
-        public DURATION Add(IDURATION other)
-            => new DURATION(WEEKS + other.WEEKS, DAYS + other.DAYS, HOURS + HOURS, MINUTES + other.MINUTES, SECONDS + other.SECONDS);
-
-        public DURATION Subtract(IDURATION other)
-            => new DURATION(WEEKS - other.WEEKS, DAYS - other.DAYS, HOURS - other.HOURS, MINUTES - other.MINUTES, SECONDS - other.SECONDS);
-
-        public DURATION MultiplyBy(int scalar) => new DURATION(WEEKS * scalar, DAYS * scalar, HOURS * scalar, MINUTES * scalar, SECONDS * scalar);
-
-        public DURATION DivideBy(int scalar)
-        {
-            if (scalar == 0) throw new DivideByZeroException(nameof(scalar));
-            return new DURATION(WEEKS / scalar, DAYS / scalar, HOURS / scalar, MINUTES / scalar, SECONDS / scalar);
-        }
-
         public TimeSpan AsTimeSpan()
         {
             throw new NotImplementedException();
         }
+
+        public static DURATION operator -(DURATION duration) => new DURATION(-duration.WEEKS, -duration.DAYS, -duration.HOURS, -duration.MINUTES, -duration.SECONDS);
+
+        public static DURATION operator +(DURATION duration) => new DURATION(duration.WEEKS, duration.DAYS, duration.HOURS, duration.MINUTES, duration.SECONDS);
+
+        public static DURATION operator +(DURATION left, DURATION right) => (DURATION)left.Add(right);
+
+        public static DURATION operator -(DURATION left, DURATION right) => (DURATION)left.Subtract(right);
+
+        public static DURATION operator *(DURATION duration, int scalar) => (DURATION)duration.MultiplyBy(scalar);
+
+        public static DURATION operator /(DURATION duration, int scalar) => (DURATION)duration.DivideBy(scalar);
+
+        public static bool operator <(DURATION left, DURATION right) => left.CompareTo(right) < 0;
+
+        public static bool operator >(DURATION left, DURATION right) => left.CompareTo(right) > 0;
+
+        public static bool operator <=(DURATION left, DURATION right) => left.CompareTo(right) <= 0;
+
+        public static bool operator >=(DURATION left, DURATION right) => left.CompareTo(right) >= 0;
+
+        public static bool operator ==(DURATION left, DURATION right) => left.Equals(right);
+
+        public static bool operator !=(DURATION left, DURATION right) => !left.Equals(right);
+
+
     }
 }

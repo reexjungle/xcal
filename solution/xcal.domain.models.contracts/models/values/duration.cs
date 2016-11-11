@@ -32,19 +32,8 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// Gets the duration in days
         /// </summary>
         int DAYS { get; }
-    }
-
-    public interface IDURATION<out T> where T : IDURATION
-    {
-        T Add(IDURATION other);
-
-        T Subtract(IDURATION other);
-
-        T MultiplyBy(int scalar);
-
-        T DivideBy(int scalar);
 
         TimeSpan AsTimeSpan();
-
     }
+
 }

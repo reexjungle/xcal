@@ -1,7 +1,6 @@
 ﻿using reexjungle.xcal.core.domain.concretes.extensions;
 using reexjungle.xcal.core.domain.contracts.io.readers;
 using reexjungle.xcal.core.domain.contracts.io.writers;
-using reexjungle.xcal.core.domain.contracts.models;
 using reexjungle.xcal.core.domain.contracts.models.values;
 using reexjungle.xcal.core.domain.contracts.serialization;
 using reexjungle.xmisc.foundation.concretes;
@@ -16,7 +15,7 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
     /// Format: [YYYYMMDD] where YYYY is 4-digit year, MM is 2-digit month and DD is 2-digit day
     /// </summary>
     [DataContract]
-    public struct DATE : IDATE, IDATE<DATE, DURATION>, IEquatable<DATE>, IComparable, IComparable<DATE>, ICalendarSerializable
+    public struct DATE : IDATE, IEquatable<DATE>, IComparable, IComparable<DATE>, ICalendarSerializable
     {
         /// <summary>
         /// Gets the 4-digit representation of a full year e.g. 2013
@@ -106,72 +105,6 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             MDAY = date.MDAY;
         }
 
-        /// <summary>
-        /// Adds the specified number of days to the value of the <see cref="DATE"/> instance.
-        /// </summary>
-        /// <param name="value">The number of days to add.</param>
-        /// <returns>
-        /// A new <see cref="DATE"/>&gt; that adds the specified number of days to the value of this instance.
-        /// </returns>
-        public DATE AddDays(double value) => new DATE(AsDateTime().AddDays(value));
-
-        /// <summary>
-        /// Adds the specified number of weeks to the value of the <see cref="DATE"/> instance.
-        /// </summary>
-        /// <param name="value">The number of weeks to add.</param>
-        /// <returns>
-        /// A new <see cref="DATE"/> that adds the specified number of weeks to the value of this instance.
-        /// </returns>
-        public DATE AddWeeks(int value) => new DATE(AsDateTime().AddWeeks(value));
-
-        /// <summary>
-        /// Adds the specified number of months to the value of the <see cref="DATE"/> instance.
-        /// </summary>
-        /// <param name="value">The number of months to add.</param>
-        /// <returns>
-        /// A new instance of type <see cref="DATE"/> that adds the specified number of months to the
-        /// value of this instance.
-        /// </returns>
-        public DATE AddMonths(int value) => new DATE(AsDateTime().AddMonths(value));
-
-        /// <summary>
-        /// Adds the specified number of years to the value of the <see cref="DATE"/> instance.
-        /// </summary>
-        /// <param name="value">The number of years to add.</param>
-        /// <returns>
-        /// A new instance of type <see cref="DATE"/> that adds the specified number of years to the
-        /// value of this instance.
-        /// </returns>
-        public DATE AddYears(int value) => new DATE(AsDateTime().AddYears(value));
-
-        /// <summary>
-        /// Gets the week day of the <see cref="DATE"/> instance.
-        /// </summary>
-        /// <returns>The weekday of the</returns>
-        public WEEKDAY GetWeekday() => AsDateTime().DayOfWeek.AsWEEKDAY();
-
-        /// <summary>
-        /// Converts this date instance to an equivalent <see cref="DateTime"/> instance.
-        /// </summary>
-        /// <returns>The equivalent <see cref="DateTime"/> respresentation of this date instance.</returns>
-        public DateTime AsDateTime() => this == default(DATE)
-            ? default(DateTime)
-            : new DateTime((int)FULLYEAR, (int)MONTH, (int)MDAY);
-
-        public DATE Add(IDURATION duration)
-        {
-            throw new NotImplementedException();
-        }
-
-        public DATE Subtract(IDURATION duration)
-        {
-            throw new NotImplementedException();
-        }
-
-        public DURATION Subtract(IDATE end)
-        {
-            throw new NotImplementedException();
-        }
 
         private static DATE Parse(string value)
         {
@@ -193,20 +126,6 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
 
             return new DATE(fullyear, month, mday);
         }
-
-        /// <summary>
-        /// Converts the <see cref="DATE"/> implicitly to an equivalent <see cref="DateTime"/> instance.
-        /// </summary>
-        /// <param name="date">
-        /// The <see cref="DATE"/> instance that is implicitly converted to the <see cref="DateTime"/> instance.
-        /// </param>
-        public static implicit operator DateTime(DATE date) => date.AsDateTime();
-
-        /// <summary>
-        /// Converts the <see cref="DATE_TIME"/> instance explicitly to an equivalent <see cref="DATE"/> instance.
-        /// </summary>
-        /// <param name="datetime">The <see cref="DateTime"/> instance that is explicitly converted to the <see cref="DATE"/> instance.</param>
-        public static explicit operator DATE(DateTime datetime) => new DATE(datetime);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -292,6 +211,26 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             if (obj is DATE) return CompareTo((DATE)obj);
             throw new ArgumentException(nameof(obj) + " is not a date");
         }
+
+        public static DATE operator +(DATE date, DURATION duration) => date.Add(duration);
+
+        public static DATE operator -(DATE date, DURATION duration) => date.Subtract(duration);
+
+        public static DURATION operator -(DATE left, DATE right) => left.Subtract(right);
+
+        /// <summary>
+        /// Converts the <see cref="DATE"/> implicitly to an equivalent <see cref="DateTime"/> instance.
+        /// </summary>
+        /// <param name="date">
+        /// The <see cref="DATE"/> instance that is implicitly converted to the <see cref="DateTime"/> instance.
+        /// </param>
+        public static implicit operator DateTime(DATE date) => date.AsDateTime();
+
+        /// <summary>
+        /// Converts the <see cref="DATE_TIME"/> instance explicitly to an equivalent <see cref="DATE"/> instance.
+        /// </summary>
+        /// <param name="datetime">The <see cref="DateTime"/> instance that is explicitly converted to the <see cref="DATE"/> instance.</param>
+        public static explicit operator DATE(DateTime datetime) => new DATE(datetime);
 
         /// <summary>
         /// Determines whether one specified <see cref="DATE"/> is earlier than another specified <see cref="DATE"/>.

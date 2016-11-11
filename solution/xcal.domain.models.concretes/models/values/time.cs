@@ -22,7 +22,7 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
     /// where HH is 2-digit hour, MM is 2-digit minute, SS is 2-digit second and Z is UTC zone indicator.
     /// </summary>
     [DataContract]
-    public struct TIME : ITIME, ITIME<TIME, DURATION>, IEquatable<TIME>, IComparable, IComparable<TIME>, ICalendarSerializable
+    public struct TIME : ITIME, IEquatable<TIME>, IComparable, IComparable<TIME>, ICalendarSerializable
     {
         /// <summary>
         /// Gets the 2-digit representation of an hour.
@@ -166,35 +166,6 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             return new TIME(hour, minute, second, form, tzid);
         }
 
-        /// <summary>
-        /// Adds the specified number of seconds to the value of the <typeparamref name="T"/> instance.
-        /// </summary>
-        /// <param name="value">The number of seconds to add.</param>
-        /// <returns>
-        /// A new instance of type <typeparamref name="T"/> that adds the specified number of seconds
-        /// to the value of this instance.
-        /// </returns>
-        public TIME AddSeconds(double value) => AsDateTime().AddSeconds(value).AsTIME();
-
-        /// <summary>
-        /// Adds the specified number of minutes to the value of the <see cref="TIME"/> instance.
-        /// </summary>
-        /// <param name="value">The number of mintes to add.</param>
-        /// <returns>
-        /// A new instance of type <see cref="TIME"/> that adds the specified number of minutes to
-        /// the value of this instance.
-        /// </returns>
-        public TIME AddMinutes(double value) => AsDateTime().AddMinutes(value).AsTIME();
-
-        /// <summary>
-        /// Adds the specified number of hours to the value of the <see cref="TIME"/> instance.
-        /// </summary>
-        /// <param name="value">The number of hours to add.</param>
-        /// <returns>
-        /// A new instance of type <see cref="TIME"/> that adds the specified number of hours to the
-        /// value of this instance.
-        /// </returns>
-        public TIME AddHours(double value) => AsDateTime().AddMinutes(value).AsTIME();
 
         /// <summary>
         /// Converts this time instance to its equivalent <see cref="DateTime"/> representation.
@@ -226,23 +197,6 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
             //Unspecified time form
             return new DateTimeOffset(AsDateTime());
         }
-
-        public TIME Add(IDURATION duration)
-        {
-            throw new NotImplementedException();
-        }
-
-        public TIME Subtract(IDURATION duration)
-        {
-            throw new NotImplementedException();
-        }
-
-        public DURATION Subtract(ITIME end)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static explicit operator DateTime(TIME time) => time.AsDateTime();
 
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.
@@ -403,6 +357,21 @@ namespace reexjungle.xcal.core.domain.concretes.models.values
 
             inner.Close();
         }
+
+        public static implicit operator TIME(DateTime datetime) => datetime.AsTIME();
+
+        public static explicit operator DateTime(TIME time) => time.AsDateTime();
+
+        public static implicit operator TIME(DateTimeOffset datetime) => datetime.AsTIME();
+
+        public static explicit operator DateTimeOffset(TIME time) => time.AsDateTimeOffset();
+
+
+        public static TIME operator +(TIME time, DURATION duration) => time.Add(duration);
+
+        public static TIME operator -(TIME time, DURATION duration) => time.Subtract(duration);
+
+        public static DURATION operator -(TIME time, TIME other) => time.Subtract(other);
 
         /// <summary>
         /// Determines whether one specified <see cref="TIME"/> is earlier than another specified

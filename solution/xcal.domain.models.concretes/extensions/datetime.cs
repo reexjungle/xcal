@@ -2,8 +2,8 @@
 using reexjungle.xcal.core.domain.contracts.models;
 using reexjungle.xcal.core.domain.contracts.models.parameters;
 using reexjungle.xcal.core.domain.contracts.models.values;
+using reexjungle.xmisc.foundation.concretes;
 using System;
-
 
 namespace reexjungle.xcal.core.domain.concretes.extensions
 {
@@ -53,10 +53,13 @@ namespace reexjungle.xcal.core.domain.concretes.extensions
         }
 
         /// <summary>
-        /// Converts a <see cref="DateTimeKind"/> value of a <see cref="DateTime"/> to a <see cref="TIME_FORM"/> value.
+        /// Converts a <see cref="DateTimeKind"/> value of a <see cref="DateTime"/> to a <see
+        /// cref="TIME_FORM"/> value.
         /// </summary>
         /// <param name="kind">The <see cref="DateTimeKind"/> value to be converted.</param>
-        /// <param name="tzinfo">Optional: the time zone reference associated with local <see cref="DateTime"/>.</param>
+        /// <param name="tzinfo">
+        /// Optional: the time zone reference associated with local <see cref="DateTime"/>.
+        /// </param>
         /// <returns>The <see cref="TIME_FORM"/> value that results from the conversion.</returns>
         public static TIME_FORM AsTIME_FORM(this DateTimeKind kind, TimeZoneInfo tzinfo = null)
         {
@@ -81,58 +84,37 @@ namespace reexjungle.xcal.core.domain.concretes.extensions
             return DateTimeKind.Unspecified;
         }
 
-        /// <summary>
-        /// Converts a <see cref="DateTime"/> value to the date value of type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of date that implements <see cref="IDATE"/>.</typeparam>
-        /// <param name="datetime">The <see cref="DateTime"/> value to be converted.</param>
-        /// <param name="func">The conversion function that relays the conversion of the <see cref="DateTime"/> value to the <typeparamref name="T"/> value.</param>
-        /// <returns>The <typeparamref name="T"/> value that results from the conversion. </returns>
-        public static T AsDATE<T>(this DateTime datetime, Func<DateTime, T> func)
-            where T : IDATE => func(datetime);
 
-        /// <summary>
-        /// Converts a <see cref="DateTime"/> value to a <see cref="DATE"/> value.
-        /// </summary>
-        /// <param name="datetime">The <see cref="DateTime"/> value to be converted.</param>
-        /// <returns>The <see cref="DATE"/> value that results from the conversion.</returns>
-        public static DATE AsDATE(this DateTime datetime) => datetime.AsDATE(x => new DATE(x));
+        public static IDATE_TIME AsDATE_TIME(this DateTime datetime, Func<DateTime, IDATE_TIME> func) => func(datetime);
 
-        /// <summary>
-        /// Converts a <see cref="DateTime"/> value to the time value of type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of time that implements <see cref="ITIME"/>.</typeparam>
-        /// <param name="datetime">The <see cref="DateTime"/> value to be converted.</param>
-        /// <param name="func">The conversion function that relays the conversion of the <see cref="DateTime"/> value to the <typeparamref name="T"/> value.</param>
-        /// <returns>The <typeparamref name="T"/> value that results from the conversion.</returns>
-        public static T AsTIME<T>(this DateTime datetime, Func<DateTime, T> func)
-            where T : ITIME => func(datetime);
+        public static DATE_TIME AsDATE_TIME(this DateTime datetime) => new DATE_TIME(datetime);
 
-        /// <summary>
-        /// Converts a <see cref="DateTime"/> value to a <see cref="TIME"/> value.
-        /// </summary>
-        /// <param name="datetime">The <see cref="DateTime"/> value to be converted.</param>
-        /// <returns>The <see cref="TIME"/> value that results from the conversion.</returns>
-        public static TIME AsTIME(this DateTime datetime) => datetime.AsTIME(x => new TIME(x));
+        public static IDATE_TIME AddDays(this IDATE_TIME date, double value, Func<DateTime, IDATE_TIME> func) => date.AsDateTime().AddDays(value).AsDATE_TIME(func);
 
-        /// <summary>
-        ///  Converts a <see cref="DateTime"/> value to the date time value of type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of date time that implements <see cref="IDATE_TIME"/>.</typeparam>
-        /// <param name="datetime">The <see cref="DateTime"/> value to be converted.</param>
-        /// <param name="func">The conversion function that relays the conversion of the <see cref="DateTime"/> value to the <typeparamref name="T"/> value.</param>
-        /// <returns>The <typeparamref name="T"/> value that results from the conversion.</returns>
-        public static T AsDATE_TIME<T>(this DateTime datetime, Func<DateTime, T> func) where T : IDATE_TIME => func(datetime);
+        public static DATE_TIME AddDays(this IDATE_TIME date, double value) => date.AsDateTime().AddDays(value).AsDATE_TIME();
 
-        /// <summary>
-        /// Converts a <see cref="DateTime"/> value to a <see cref="DATE_TIME"/> value.
-        /// </summary>
-        /// <param name="datetime">The <see cref="DateTime"/> value to be converted.</param>
-        /// <returns>The <see cref="DATE_TIME"/> value that results from the conversion.</returns>
-        public static DATE_TIME AsDATE_TIME(this DateTime datetime) => datetime.AsDATE_TIME(x => new DATE_TIME(x));
+        public static IDATE_TIME AddWeeks(this IDATE_TIME date, int value, Func<DateTime, IDATE_TIME> func) => date.AsDateTime().AddWeeks(value).AsDATE_TIME(func);
 
-        public static T AsDURATION<T>(this TimeSpan timespan, Func<TimeSpan, T> func) where T : IDURATION => func(timespan);
+        public static DATE_TIME AddWeeks(this IDATE_TIME date, int value) => date.AsDateTime().AddWeeks(value).AsDATE_TIME();
 
-        public static DURATION AsDURATION(this TimeSpan timespan) => timespan.AsDURATION(x => new DURATION(x));
+        public static IDATE_TIME AddMonths(this IDATE_TIME date, int value, Func<DateTime, IDATE_TIME> func) => date.AsDateTime().AddMonths(value).AsDATE_TIME(func);
+
+        public static DATE_TIME AddMonths(this IDATE_TIME date, int value) => date.AsDateTime().AddMonths(value).AsDATE_TIME();
+
+        public static IDATE_TIME AddYears(this IDATE_TIME date, int value, Func<DateTime, IDATE_TIME> func) => date.AsDateTime().AddYears(value).AsDATE_TIME(func);
+
+        public static DATE_TIME AddYears(this IDATE_TIME date, int value) => date.AsDateTime().AddYears(value).AsDATE_TIME();
+
+        public static IDATE_TIME Add(this IDATE_TIME date, IDURATION duration, Func<DateTime, IDATE_TIME> func) => date.AsDateTime().Add(duration.AsTimeSpan()).AsDATE_TIME(func);
+
+        public static DATE_TIME Add(this IDATE_TIME date, IDURATION duration) => date.AsDateTime().Add(duration.AsTimeSpan()).AsDATE_TIME();
+
+        public static IDATE_TIME Subtract(this IDATE_TIME date, IDURATION duration, Func<DateTime, IDATE_TIME> func) => date.AsDateTime().Subtract(duration.AsTimeSpan()).AsDATE_TIME(func);
+
+        public static DATE_TIME Subtract(this IDATE_TIME date, IDURATION duration) => date.AsDateTime().Subtract(duration.AsTimeSpan()).AsDATE_TIME();
+
+        public static IDURATION Subtract(this IDATE_TIME date, IDATE_TIME other, Func<TimeSpan, IDURATION> func) => date.AsDateTime().Subtract(other.AsDateTime()).AsDURATION(func);
+
+        public static DURATION Subtract(this IDATE_TIME date, IDATE_TIME other) => date.AsDateTime().Subtract(other.AsDateTime()).AsDURATION();
     }
 }
