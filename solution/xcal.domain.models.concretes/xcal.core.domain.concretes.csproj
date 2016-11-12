@@ -49,22 +49,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="extensions\date.cs" />
-    <Compile Include="extensions\duration.cs" />
-    <Compile Include="extensions\time.cs" />
     <Compile Include="extensions\writer.cs" />
-    <Compile Include="models\properties\tzid.cs" />
-    <Compile Include="models\values\cal_address.cs" />
-    <Compile Include="models\values\date.cs" />
-    <Compile Include="models\values\date_time.cs" />
-    <Compile Include="models\values\duration.cs" />
-    <Compile Include="models\values\time.cs" />
-    <Compile Include="extensions\datetime.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="models\components\" />
     <Folder Include="models\parameters\" />
+    <Folder Include="models\properties\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

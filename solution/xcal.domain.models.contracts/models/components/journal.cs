@@ -9,17 +9,17 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
     {
         string Uid { get; }
 
-        IDATE_TIME Datestamp { get; }
+        DATE_TIME Datestamp { get; }
 
-        IDATE_TIME Start { get; }
+        DATE_TIME Start { get; }
 
         CLASS Classification { get; }
 
-        IDATE_TIME Created { get; }
+        DATE_TIME Created { get; }
 
         IDESCRIPTION Description { get; }
 
-        IDATE_TIME LastModified { get; }
+        DATE_TIME LastModified { get; }
 
         IORGANIZER Organizer { get; }
 
@@ -33,7 +33,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
 
         IRECURRENCE_ID RecurrenceId { get; }
 
-        IRECUR RecurrenceRule { get; }
+        RECUR RecurrenceRule { get; }
 
         List<IATTACH> Attachments { get; }
 

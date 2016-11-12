@@ -5,7 +5,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.properties
 {
     public interface IATTENDEE
     {
-        ICAL_ADDRESS Address { get; }
+        CAL_ADDRESS Address { get; }
         CUTYPE CalendarUserType { get; }
         IMEMBER Member { get; }
         ROLE Role { get; }

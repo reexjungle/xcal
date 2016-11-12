@@ -7,13 +7,13 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
 {
     public interface IOBSERVANCE
     {
-        IDATE_TIME Start { get; }
+        DATE_TIME Start { get; }
 
-        IUTC_OFFSET TimeZoneOffsetFrom { get; }
+        UTC_OFFSET TimeZoneOffsetFrom { get; }
 
-        IUTC_OFFSET TimeZoneOffsetTo { get; }
+        UTC_OFFSET TimeZoneOffsetTo { get; }
 
-        IRECUR RecurrenceRule { get; }
+        RECUR RecurrenceRule { get; }
 
         List<ICOMMENT> Comments { get; }
 
@@ -24,11 +24,11 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
 
     public interface ITIMEZONE
     {
-        ITZID TimeZoneId { get; }
+        TZID TimeZoneId { get; }
 
         IURL Url { get; }
 
-        IDATE_TIME LastModified { get; }
+        DATE_TIME LastModified { get; }
 
         List<IOBSERVANCE> Observances { get; }
     }

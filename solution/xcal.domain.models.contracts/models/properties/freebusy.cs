@@ -7,6 +7,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.properties
     {
         FBTYPE Type { get; }
 
-        List<IPERIOD> Periods { get; }
+        List<PERIOD> Periods { get; }
     }
 }

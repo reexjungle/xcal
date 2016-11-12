@@ -6,9 +6,9 @@ namespace reexjungle.xcal.core.domain.contracts.models.properties
 {
     public interface IRDATE
     {
-        List<IDATE_TIME> DateTimes { get; }
-        List<IPERIOD> Periods { get; }
-        ITZID TimeZoneId { get; }
+        List<DATE_TIME> DateTimes { get; }
+        List<PERIOD> Periods { get; }
+        TZID TimeZoneId { get; }
         VALUE ValueType { get; }
     }
 

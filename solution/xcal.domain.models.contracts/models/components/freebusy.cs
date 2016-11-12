@@ -9,15 +9,15 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
     {
         string Uid { get; }
 
-        IDATE_TIME Datestamp { get; }
+        DATE_TIME Datestamp { get; }
 
-        IDATE_TIME Start { get; }
+        DATE_TIME Start { get; }
 
         IORGANIZER Organizer { get; }
 
         IURL Url { get; }
 
-        IDATE_TIME End { get; }
+        DATE_TIME End { get; }
 
         List<IATTACH> Attachments { get; }
 

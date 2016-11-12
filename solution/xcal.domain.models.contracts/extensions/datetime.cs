@@ -1,14 +1,13 @@
-﻿using reexjungle.xcal.core.domain.concretes.models.values;
+﻿using System;
 using reexjungle.xcal.core.domain.contracts.models;
 using reexjungle.xcal.core.domain.contracts.models.parameters;
 using reexjungle.xcal.core.domain.contracts.models.values;
 using reexjungle.xmisc.foundation.concretes;
-using System;
 
-namespace reexjungle.xcal.core.domain.concretes.extensions
+namespace reexjungle.xcal.core.domain.contracts.extensions
 {
     /// <summary>
-    /// Provides features that extend common date and time related features
+    /// Provides features that extend date and time functionalities.
     /// </summary>
     public static class DateTimeExtensions
     {
@@ -76,7 +75,7 @@ namespace reexjungle.xcal.core.domain.concretes.extensions
         /// <param name="form">The form in which the time is expressed.</param>
         /// <param name="tzid">Optional: the time zone identifier.</param>
         /// <returns>The <see cref="DateTimeKind"/> value that results from the conversion.</returns>
-        public static DateTimeKind AsDateTimeKind(this TIME_FORM form, ITZID tzid = null)
+        public static DateTimeKind AsDateTimeKind(this TIME_FORM form, TZID tzid = null)
         {
             if (form == TIME_FORM.LOCAL) return DateTimeKind.Local;
             if (form == TIME_FORM.UTC) return DateTimeKind.Utc;
@@ -84,37 +83,6 @@ namespace reexjungle.xcal.core.domain.concretes.extensions
             return DateTimeKind.Unspecified;
         }
 
-
-        public static IDATE_TIME AsDATE_TIME(this DateTime datetime, Func<DateTime, IDATE_TIME> func) => func(datetime);
-
         public static DATE_TIME AsDATE_TIME(this DateTime datetime) => new DATE_TIME(datetime);
-
-        public static IDATE_TIME AddDays(this IDATE_TIME date, double value, Func<DateTime, IDATE_TIME> func) => date.AsDateTime().AddDays(value).AsDATE_TIME(func);
-
-        public static DATE_TIME AddDays(this IDATE_TIME date, double value) => date.AsDateTime().AddDays(value).AsDATE_TIME();
-
-        public static IDATE_TIME AddWeeks(this IDATE_TIME date, int value, Func<DateTime, IDATE_TIME> func) => date.AsDateTime().AddWeeks(value).AsDATE_TIME(func);
-
-        public static DATE_TIME AddWeeks(this IDATE_TIME date, int value) => date.AsDateTime().AddWeeks(value).AsDATE_TIME();
-
-        public static IDATE_TIME AddMonths(this IDATE_TIME date, int value, Func<DateTime, IDATE_TIME> func) => date.AsDateTime().AddMonths(value).AsDATE_TIME(func);
-
-        public static DATE_TIME AddMonths(this IDATE_TIME date, int value) => date.AsDateTime().AddMonths(value).AsDATE_TIME();
-
-        public static IDATE_TIME AddYears(this IDATE_TIME date, int value, Func<DateTime, IDATE_TIME> func) => date.AsDateTime().AddYears(value).AsDATE_TIME(func);
-
-        public static DATE_TIME AddYears(this IDATE_TIME date, int value) => date.AsDateTime().AddYears(value).AsDATE_TIME();
-
-        public static IDATE_TIME Add(this IDATE_TIME date, IDURATION duration, Func<DateTime, IDATE_TIME> func) => date.AsDateTime().Add(duration.AsTimeSpan()).AsDATE_TIME(func);
-
-        public static DATE_TIME Add(this IDATE_TIME date, IDURATION duration) => date.AsDateTime().Add(duration.AsTimeSpan()).AsDATE_TIME();
-
-        public static IDATE_TIME Subtract(this IDATE_TIME date, IDURATION duration, Func<DateTime, IDATE_TIME> func) => date.AsDateTime().Subtract(duration.AsTimeSpan()).AsDATE_TIME(func);
-
-        public static DATE_TIME Subtract(this IDATE_TIME date, IDURATION duration) => date.AsDateTime().Subtract(duration.AsTimeSpan()).AsDATE_TIME();
-
-        public static IDURATION Subtract(this IDATE_TIME date, IDATE_TIME other, Func<TimeSpan, IDURATION> func) => date.AsDateTime().Subtract(other.AsDateTime()).AsDURATION(func);
-
-        public static DURATION Subtract(this IDATE_TIME date, IDATE_TIME other) => date.AsDateTime().Subtract(other.AsDateTime()).AsDURATION();
     }
 }

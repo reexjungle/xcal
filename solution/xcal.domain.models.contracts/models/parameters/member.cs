@@ -12,6 +12,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.parameters
         /// <summary>
         /// Gets the calendar addresses of the group members
         /// </summary>
-        List<ICAL_ADDRESS> Addresses { get; }
+        List<CAL_ADDRESS> Addresses { get; }
     }
 }

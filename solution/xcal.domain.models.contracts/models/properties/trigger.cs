@@ -11,11 +11,11 @@ namespace reexjungle.xcal.core.domain.contracts.models.properties
     {
         RELATED Related { get; }
 
-        IDURATION Value { get; }
+        DURATION Value { get; }
     }
 
     public interface ITRIGGER_ABSOLUTE : ITRIGGER
     {
-        IDATE_TIME Value { get; }
+        DATE_TIME Value { get; }
     }
 }

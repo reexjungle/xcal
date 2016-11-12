@@ -18,12 +18,12 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
         /// <summary>
         ///
         /// </summary>
-        IDATE_TIME Datestamp { get; }
+        DATE_TIME Datestamp { get; }
 
         /// <summary>
         ///
         /// </summary>
-        IDATE_TIME Start { get; }
+        DATE_TIME Start { get; }
 
         /// <summary>
         ///
@@ -33,7 +33,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
         /// <summary>
         ///
         /// </summary>
-        IDATE_TIME Created { get; }
+        DATE_TIME Created { get; }
 
         /// <summary>
         ///
@@ -48,7 +48,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
         /// <summary>
         ///
         /// </summary>
-        IDATE_TIME LastModified { get; }
+        DATE_TIME LastModified { get; }
 
         /// <summary>
         ///
@@ -98,17 +98,17 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
         /// <summary>
         ///
         /// </summary>
-        IRECUR RecurrenceRule { get; }
+        RECUR RecurrenceRule { get; }
 
         /// <summary>
         ///
         /// </summary>
-        IDATE_TIME End { get; }
+        DATE_TIME End { get; }
 
         /// <summary>
         ///
         /// </summary>
-        IDURATION Duration { get; }
+        DURATION Duration { get; }
 
         /// <summary>
         ///

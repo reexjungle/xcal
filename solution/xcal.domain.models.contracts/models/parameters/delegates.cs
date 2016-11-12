@@ -12,7 +12,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.parameters
         /// <summary>
         /// Gets or sets the calendar addresses of the participation delegators
         /// </summary>
-        List<ICAL_ADDRESS> Addresses { get; }
+        List<CAL_ADDRESS> Addresses { get; }
     }
 
     public interface IDELEGATE_FROM : IDELEGATE

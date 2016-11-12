@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>reexjungle.xcal.core.domain.contracts</RootNamespace>
     <AssemblyName>xcal.core.domain.contracts</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,18 +32,31 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="xmisc.foundation.concretes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\xmisc.foundation.concretes.1.0.81-rc-f858a00\lib\net45\xmisc.foundation.concretes.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xmisc.foundation.contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\xmisc.foundation.contracts.1.0.81-rc-f858a00\lib\net45\xmisc.foundation.contracts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="extensions\date.cs" />
+    <Compile Include="extensions\datetime.cs" />
+    <Compile Include="extensions\duration.cs" />
+    <Compile Include="extensions\time.cs" />
     <Compile Include="io\readers\enums.cs" />
     <Compile Include="io\readers\fragment.cs" />
     <Compile Include="io\readers\nodes.cs" />
@@ -80,6 +94,7 @@
     <Compile Include="models\parameters\tzid.cs" />
     <Compile Include="io\readers\reader.cs" />
     <Compile Include="io\writers\writer.cs" />
+    <Compile Include="models\values\weekdaynum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="models\values\cal_address.cs" />
     <Compile Include="models\values\date.cs" />

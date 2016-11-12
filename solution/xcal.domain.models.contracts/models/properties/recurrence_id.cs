@@ -5,8 +5,8 @@ namespace reexjungle.xcal.core.domain.contracts.models.properties
 {
     public interface IRECURRENCE_ID
     {
-        IDATE_TIME Value { get; }
+        DATE_TIME Value { get; }
         RANGE Range { get; }
-        ITZID TimeZoneId { get; }
+        TZID TimeZoneId { get; }
     }
 }

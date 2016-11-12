@@ -33,7 +33,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
         /// <value>
         /// The specified duration for the alarm.
         /// </value>
-        IDURATION Duration { get; }
+        DURATION Duration { get; }
 
         /// <summary>
         /// Gets or sets the number of times the alarm should be repeated after the trigger.

@@ -9,21 +9,21 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
     {
         string Uid { get; }
 
-        IDATE_TIME Datestamp { get; }
+        DATE_TIME Datestamp { get; }
 
-        IDATE_TIME Start { get; }
+        DATE_TIME Start { get; }
 
         CLASS Classification { get; }
 
-        IDATE_TIME Completed { get; }
+        DATE_TIME Completed { get; }
 
-        IDATE_TIME Created { get; }
+        DATE_TIME Created { get; }
 
         IDESCRIPTION Description { get; }
 
         IGEO Position { get; }
 
-        IDATE_TIME LastModified { get; }
+        DATE_TIME LastModified { get; }
 
         ILOCATION Location { get; }
 
@@ -43,11 +43,11 @@ namespace reexjungle.xcal.core.domain.contracts.models.components
 
         IRECURRENCE_ID RecurrenceId { get; }
 
-        IRECUR RecurrenceRule { get; }
+        RECUR RecurrenceRule { get; }
 
-        IDATE_TIME Due { get; }
+        DATE_TIME Due { get; }
 
-        IDURATION Duration { get; }
+        DURATION Duration { get; }
 
         List<IATTACH> Attachments { get; }
 
