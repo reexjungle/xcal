@@ -1,17 +1,17 @@
-﻿using reexjungle.xcal.core.domain.contracts.models.parameters;
+﻿using reexjungle.xcal.core.domain.contracts.extensions;
+using reexjungle.xcal.core.domain.contracts.io.readers;
+using reexjungle.xcal.core.domain.contracts.io.writers;
+using reexjungle.xcal.core.domain.contracts.models.parameters;
+using reexjungle.xcal.core.domain.contracts.serialization;
+using reexjungle.xmisc.foundation.concretes;
 using System;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
-using reexjungle.xcal.core.domain.contracts.extensions;
-using reexjungle.xcal.core.domain.contracts.io.readers;
-using reexjungle.xcal.core.domain.contracts.io.writers;
-using reexjungle.xcal.core.domain.contracts.serialization;
-using reexjungle.xmisc.foundation.concretes;
 
 namespace reexjungle.xcal.core.domain.contracts.models.values
 {
     [DataContract]
-    public struct DATE_TIME : IEquatable<DATE_TIME>, IComparable, IComparable<DATE_TIME>, ICalendarSerializable
+    public struct DATE_TIME : IEquatable<DATE_TIME>, IComparable, IComparable<DATE_TIME>, IConvertible, ICalendarSerializable
     {
         /// <summary>
         /// Gets the 4-digit representation of a full year e.g. 2013
@@ -83,7 +83,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             Form = form;
             TimeZoneId = tzid;
         }
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DATE_TIME"/> structure with an <see
@@ -220,23 +219,19 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             return new DATE_TIME(fullyear, month, mday, hour, minute, second, form, tzid);
         }
 
-        public  DATE_TIME AddDays( double value) => AsDateTime().AddDays(value).AsDATE_TIME();
+        public DATE_TIME AddDays(double value) => AsDateTime().AddDays(value).AsDATE_TIME();
 
-        public  DATE_TIME AddWeeks( int value) => AsDateTime().AddWeeks(value).AsDATE_TIME();
+        public DATE_TIME AddWeeks(int value) => AsDateTime().AddWeeks(value).AsDATE_TIME();
 
-        public  DATE_TIME AddMonths( int value) => AsDateTime().AddMonths(value).AsDATE_TIME();
+        public DATE_TIME AddMonths(int value) => AsDateTime().AddMonths(value).AsDATE_TIME();
 
+        public DATE_TIME AddYears(int value) => AsDateTime().AddYears(value).AsDATE_TIME();
 
-        public  DATE_TIME AddYears( int value) => AsDateTime().AddYears(value).AsDATE_TIME();
+        public DATE_TIME Add(DURATION duration) => AsDateTime().Add(duration.AsTimeSpan()).AsDATE_TIME();
 
+        public DATE_TIME Subtract(DURATION duration) => AsDateTime().Subtract(duration.AsTimeSpan()).AsDATE_TIME();
 
-        public  DATE_TIME Add( DURATION duration) => AsDateTime().Add(duration.AsTimeSpan()).AsDATE_TIME();
-
-
-        public  DATE_TIME Subtract( DURATION duration) => AsDateTime().Subtract(duration.AsTimeSpan()).AsDATE_TIME();
-
-
-        public  DURATION Subtract( DATE_TIME other) => AsDateTime().Subtract(other.AsDateTime()).AsDURATION();
+        public DURATION Subtract(DATE_TIME other) => AsDateTime().Subtract(other.AsDateTime()).AsDURATION();
 
         /// <summary>
         /// Adds the specified number of seconds to the value of the <typeparamref name="T"/> instance.
@@ -300,6 +295,14 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             //Unspecified time form
             return new DateTimeOffset(AsDateTime());
         }
+
+        public DATE AsDate() => this == default(DATE_TIME)
+            ? default(DATE)
+            : new DATE(FULLYEAR, MONTH, MDAY);
+
+        public TIME AsTime() => this == default(DATE_TIME)
+            ? default(TIME)
+            : new TIME(HOUR, MINUTE, SECOND, Form, TimeZoneId);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -506,7 +509,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// cref="DATE"/> instance.
         /// </summary>
         /// <param name="datetime">The <see cref="DATE_TIME"/> instance to convert.</param>
-        public static explicit operator DATE(DATE_TIME datetime) => new DATE(datetime.FULLYEAR, datetime.MONTH, datetime.MDAY);
+        public static explicit operator DATE(DATE_TIME datetime) => datetime.AsDate();
 
         /// <summary>
         /// Implicitly converts the specified <see cref="TIME"/> instance to a <see
@@ -520,7 +523,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// cref="TIME"/> instance.
         /// </summary>
         /// <param name="datetime">The <see cref="DATE_TIME"/> instance to convert.</param>
-        public static explicit operator TIME(DATE_TIME datetime) => new TIME(datetime.HOUR, datetime.MINUTE, datetime.SECOND, datetime.Form, datetime.TimeZoneId);
+        public static explicit operator TIME(DATE_TIME datetime) => datetime.AsTime();
 
         /// <summary>
         /// Determines whether one specified <see cref="DATE_TIME"/> is earlier than another
@@ -611,6 +614,87 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
                 default:
                     return $"{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}T{HOUR:D2}{MINUTE:D2}{SECOND:D2}";
             }
+        }
+
+        public TypeCode GetTypeCode() => TypeCode.DateTime;
+
+        bool IConvertible.ToBoolean(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Boolean));
+        }
+
+        char IConvertible.ToChar(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Char));
+        }
+
+        sbyte IConvertible.ToSByte(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(SByte));
+        }
+
+        byte IConvertible.ToByte(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Byte));
+        }
+
+        short IConvertible.ToInt16(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Int16));
+        }
+
+        ushort IConvertible.ToUInt16(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(UInt16));
+        }
+
+        int IConvertible.ToInt32(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Int32));
+        }
+
+        uint IConvertible.ToUInt32(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(UInt32));
+        }
+
+        long IConvertible.ToInt64(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Int64));
+        }
+
+        ulong IConvertible.ToUInt64(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(UInt64));
+        }
+
+        float IConvertible.ToSingle(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Single));
+        }
+
+        double IConvertible.ToDouble(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Double));
+        }
+
+        decimal IConvertible.ToDecimal(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Decimal));
+        }
+
+        public DateTime ToDateTime(IFormatProvider provider) => AsDateTime();
+
+        public string ToString(IFormatProvider provider) => ToString();
+
+        public object ToType(Type conversionType, IFormatProvider provider)
+        {
+            if (conversionType == typeof(DateTime)) return AsDateTime();
+            if (conversionType == typeof(DateTimeOffset)) return AsDateTimeOffset();
+            if (conversionType == typeof(DATE)) return AsDate();
+            if (conversionType == typeof(TIME)) return AsTime();
+            if (conversionType == typeof(string)) return ToString();
+            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + conversionType.FullName);
         }
     }
 }

@@ -1,16 +1,14 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using reexjungle.xcal.core.domain.contracts.extensions;
 using reexjungle.xcal.core.domain.contracts.io.readers;
 using reexjungle.xcal.core.domain.contracts.io.writers;
 using reexjungle.xcal.core.domain.contracts.models.parameters;
 using reexjungle.xcal.core.domain.contracts.serialization;
+using System;
 using System.Runtime.Serialization;
-using reexjungle.xcal.core.domain.contracts.extensions;
+using System.Text.RegularExpressions;
 
 namespace reexjungle.xcal.core.domain.contracts.models.values
 {
-
-
     /// <summary>
     /// Represents a point in time, typically expressed as time of day.
     /// <para/>
@@ -21,7 +19,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
     /// where HH is 2-digit hour, MM is 2-digit minute, SS is 2-digit second and Z is UTC zone indicator.
     /// </summary>
     [DataContract]
-    public struct TIME : IEquatable<TIME>, IComparable, IComparable<TIME>, ICalendarSerializable
+    public struct TIME : IEquatable<TIME>, IComparable, IComparable<TIME>, IConvertible, ICalendarSerializable
     {
         /// <summary>
         /// Gets the 2-digit representation of an hour.
@@ -84,7 +82,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             MINUTE = (uint)datetime.Minute;
             SECOND = (uint)datetime.Second;
             Form = datetime.Kind.AsTIME_FORM(tzinfo);
-            TimeZoneId = tzinfo != null && func != null ? func(tzinfo)  : null;
+            TimeZoneId = tzinfo != null && func != null ? func(tzinfo) : null;
         }
 
         /// <summary>
@@ -154,11 +152,10 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             return new TIME(hour, minute, second, form, tzid);
         }
 
-
         /// <summary>
         /// Converts this time instance to its equivalent <see cref="DateTime"/> representation.
         /// </summary>
-        /// <returns>The equivalent <see cref="DateTime"/> respresentation of this date instance.</returns>
+        /// <returns>The equivalent <see cref="DateTime"/> respresentation of this time instance.</returns>
         public DateTime AsDateTime() => this == default(TIME)
             ? default(DateTime)
             : new DateTime(1, 1, 1, (int)HOUR, (int)MINUTE, (int)SECOND, Form.AsDateTimeKind(TimeZoneId));
@@ -346,24 +343,17 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             inner.Close();
         }
 
-
         public TIME AddSeconds(double value) => AsDateTime().AddSeconds(value).AsTIME();
 
+        public TIME AddMinutes(double value) => AsDateTime().AddMinutes(value).AsTIME();
 
-        public  TIME AddMinutes( double value) => AsDateTime().AddMinutes(value).AsTIME();
+        public TIME AddHours(double value) => AsDateTime().AddHours(value).AsTIME();
 
+        public TIME Add(DURATION duration) => AsDateTime().Add(duration.AsTimeSpan()).AsTIME();
 
-        public  TIME AddHours( double value) => AsDateTime().AddHours(value).AsTIME();
+        public TIME Subtract(DURATION duration) => AsDateTime().Subtract(duration.AsTimeSpan()).AsTIME();
 
-
-        public  TIME Add(DURATION duration) => AsDateTime().Add(duration.AsTimeSpan()).AsTIME();
-
-
-        public  TIME Subtract(DURATION duration) => AsDateTime().Subtract(duration.AsTimeSpan()).AsTIME();
-
-
-        public  DURATION Subtract(TIME other) => AsDateTime().Subtract(other.AsDateTime()).AsDURATION();
-
+        public DURATION Subtract(TIME other) => AsDateTime().Subtract(other.AsDateTime()).AsDURATION();
 
         public static implicit operator TIME(DateTime datetime) => datetime.AsTIME();
 
@@ -464,6 +454,259 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
                 default: return $"T{HOUR:D2}{MINUTE:D2}{SECOND:D2}";
             }
         }
-    }
 
+        /// <summary>
+        /// Returns the <see cref="T:System.TypeCode"/> for this instance.
+        /// </summary>
+        /// <returns>
+        /// The enumerated constant that is the <see cref="T:System.TypeCode"/> of the class or value
+        /// type that implements this interface.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public TypeCode GetTypeCode() => TypeCode.DateTime;
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent Boolean value using the specified
+        /// culture-specific formatting information.
+        /// </summary>
+        /// <returns>A Boolean value equivalent to the value of this instance.</returns>
+        /// <param name="provider">
+        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
+        /// culture-specific formatting information.
+        /// </param>
+        /// <filterpriority>2</filterpriority>
+        bool IConvertible.ToBoolean(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Boolean));
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent Unicode character using the
+        /// specified culture-specific formatting information.
+        /// </summary>
+        /// <returns>A Unicode character equivalent to the value of this instance.</returns>
+        /// <param name="provider">
+        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
+        /// culture-specific formatting information.
+        /// </param>
+        /// <filterpriority>2</filterpriority>
+        char IConvertible.ToChar(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Char));
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 8-bit signed integer using the
+        /// specified culture-specific formatting information.
+        /// </summary>
+        /// <returns>An 8-bit signed integer equivalent to the value of this instance.</returns>
+        /// <param name="provider">
+        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
+        /// culture-specific formatting information.
+        /// </param>
+        /// <filterpriority>2</filterpriority>
+        sbyte IConvertible.ToSByte(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(SByte));
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 8-bit unsigned integer using the
+        /// specified culture-specific formatting information.
+        /// </summary>
+        /// <returns>An 8-bit unsigned integer equivalent to the value of this instance.</returns>
+        /// <param name="provider">
+        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
+        /// culture-specific formatting information.
+        /// </param>
+        /// <filterpriority>2</filterpriority>
+        byte IConvertible.ToByte(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Byte));
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 16-bit signed integer using the
+        /// specified culture-specific formatting information.
+        /// </summary>
+        /// <returns>An 16-bit signed integer equivalent to the value of this instance.</returns>
+        /// <param name="provider">
+        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
+        /// culture-specific formatting information.
+        /// </param>
+        /// <filterpriority>2</filterpriority>
+        short IConvertible.ToInt16(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Int16));
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 16-bit unsigned integer using the
+        /// specified culture-specific formatting information.
+        /// </summary>
+        /// <returns>An 16-bit unsigned integer equivalent to the value of this instance.</returns>
+        /// <param name="provider">
+        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
+        /// culture-specific formatting information.
+        /// </param>
+        /// <filterpriority>2</filterpriority>
+        ushort IConvertible.ToUInt16(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(UInt16));
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 32-bit signed integer using the
+        /// specified culture-specific formatting information.
+        /// </summary>
+        /// <returns>An 32-bit signed integer equivalent to the value of this instance.</returns>
+        /// <param name="provider">
+        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
+        /// culture-specific formatting information.
+        /// </param>
+        /// <filterpriority>2</filterpriority>
+        int IConvertible.ToInt32(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Int32));
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 32-bit unsigned integer using the
+        /// specified culture-specific formatting information.
+        /// </summary>
+        /// <returns>An 32-bit unsigned integer equivalent to the value of this instance.</returns>
+        /// <param name="provider">
+        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
+        /// culture-specific formatting information.
+        /// </param>
+        /// <filterpriority>2</filterpriority>
+        uint IConvertible.ToUInt32(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(UInt32));
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent 64-bit signed integer using the
+        /// specified culture-specific formatting information.
+        /// </summary>
+        /// <returns>An 64-bit signed integer equivalent to the value of this instance.</returns>
+        /// <param name="provider">
+        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
+        /// culture-specific formatting information.
+        /// </param>
+        /// <filterpriority>2</filterpriority>
+        long IConvertible.ToInt64(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Int64));
+        }
+
+        ulong IConvertible.ToUInt64(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(UInt64));
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent single-precision floating-point
+        /// number using the specified culture-specific formatting information.
+        /// </summary>
+        /// <returns>
+        /// A single-precision floating-point number equivalent to the value of this instance.
+        /// </returns>
+        /// <param name="provider">
+        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
+        /// culture-specific formatting information.
+        /// </param>
+        /// <filterpriority>2</filterpriority>
+        float IConvertible.ToSingle(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Single));
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent double-precision floating-point
+        /// number using the specified culture-specific formatting information.
+        /// </summary>
+        /// <returns>
+        /// A double-precision floating-point number equivalent to the value of this instance.
+        /// </returns>
+        /// <param name="provider">
+        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
+        /// culture-specific formatting information.
+        /// </param>
+        /// <filterpriority>2</filterpriority>
+        double IConvertible.ToDouble(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Double));
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent <see cref="T:System.Decimal"/>
+        /// number using the specified culture-specific formatting information.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Decimal"/> number equivalent to the value of this instance.
+        /// </returns>
+        /// <param name="provider">
+        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
+        /// culture-specific formatting information.
+        /// </param>
+        /// <filterpriority>2</filterpriority>
+        decimal IConvertible.ToDecimal(IFormatProvider provider)
+        {
+            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Decimal));
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent <see cref="T:System.DateTime"/>
+        /// using the specified culture-specific formatting information.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.DateTime"/> instance equivalent to the value of this instance.
+        /// </returns>
+        /// <param name="provider">
+        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
+        /// culture-specific formatting information.
+        /// </param>
+        /// <filterpriority>2</filterpriority>
+        public DateTime ToDateTime(IFormatProvider provider) => AsDateTime();
+
+        /// <summary>
+        /// Converts the value of this instance to an equivalent <see cref="T:System.String"/> using
+        /// the specified culture-specific formatting information.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"/> instance equivalent to the value of this instance.
+        /// </returns>
+        /// <param name="provider">
+        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
+        /// culture-specific formatting information.
+        /// </param>
+        /// <filterpriority>2</filterpriority>
+        public string ToString(IFormatProvider provider) => ToString();
+
+        /// <summary>
+        /// Converts the value of this instance to an <see cref="T:System.Object"/> of the specified
+        /// <see cref="T:System.Type"/> that has an equivalent value, using the specified
+        /// culture-specific formatting information.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Object"/> instance of type <paramref name="conversionType"/> whose
+        /// value is equivalent to the value of this instance.
+        /// </returns>
+        /// <param name="conversionType">
+        /// The <see cref="T:System.Type"/> to which the value of this instance is converted.
+        /// </param>
+        /// <param name="provider">
+        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
+        /// culture-specific formatting information.
+        /// </param>
+        /// <filterpriority>2</filterpriority>
+        public object ToType(Type conversionType, IFormatProvider provider)
+        {
+            if (conversionType == typeof(DateTime)) return AsDateTime();
+            if (conversionType == typeof(DateTimeOffset)) return AsDateTimeOffset();
+            if (conversionType == typeof(string)) return ToString();
+            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + conversionType.FullName);
+        }
+    }
 }

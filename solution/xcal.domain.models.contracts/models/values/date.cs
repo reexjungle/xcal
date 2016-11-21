@@ -125,9 +125,21 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             return new DATE(fullyear, month, mday);
         }
 
+        /// <summary>
+        /// Converts this date time instance to its equivalent <see cref="DateTime"/> representation.
+        /// </summary>
+        /// <returns>The equivalent <see cref="DateTime"/> respresentation of this date time instance.</returns>
         public DateTime AsDateTime() => this == default(DATE)
             ? default(DateTime)
             : new DateTime((int)FULLYEAR, (int)MONTH, (int)MDAY);
+
+        /// <summary>
+        /// Converts this date time instance to its equivalent <see cref="DateTimeOffset"/> representation.
+        /// </summary>
+        /// <returns>The equivalent <see cref="DateTimeOffset"/> respresentation of this date time instance.</returns>
+        public DateTimeOffset AsDateTimeOffset() => this == default(DATE)
+            ? default(DateTimeOffset)
+            : new DateTimeOffset(AsDateTime(), TimeSpan.Zero);
 
         /// <summary>
         /// Gets the week day of the <typeparamref name="T"/> instance.
@@ -135,7 +147,11 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <returns>The weekday of the</returns>
         public WEEKDAY GetWeekday() => AsDateTime().DayOfWeek.AsWEEKDAY();
 
-
+        /// <summary>
+        /// Adds the specified number of days to the value of this instance.
+        /// </summary>
+        /// <param name="value">A number of whole and fractional days. The value parameter can be negative or positive.</param>
+        /// <returns></returns>
         public DATE AddDays(double value) => AsDateTime().AddDays(value).AsDATE();
 
         public DATE AddWeeks(int value) => AsDateTime().AddWeeks(value).AsDATE();
@@ -641,6 +657,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         public object ToType(Type conversionType, IFormatProvider provider)
         {
             if (conversionType == typeof(DateTime)) return AsDateTime();
+            if (conversionType == typeof(DateTimeOffset)) return AsDateTimeOffset();
             if (conversionType == typeof(string)) return ToString();
             throw new InvalidCastException("Invalid Cast from type" + nameof(DATE) + "to type " + conversionType.FullName);
 
