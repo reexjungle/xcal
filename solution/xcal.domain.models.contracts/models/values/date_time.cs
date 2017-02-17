@@ -199,7 +199,8 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
                                          | RegexOptions.ExplicitCapture
                                          | RegexOptions.Compiled;
 
-            foreach (Match match in Regex.Matches(value, pattern, options))
+            var regex = new Regex(pattern, options);
+            foreach (Match match in regex.Matches(value))
             {
                 if (match.Groups["year"].Success) fullyear = uint.Parse(match.Groups["year"].Value);
                 if (match.Groups["month"].Success) month = uint.Parse(match.Groups["month"].Value);

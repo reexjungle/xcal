@@ -126,27 +126,26 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             TZID tzid = null;
             var form = TIME_FORM.UNSPECIFIED;
 
-            var pattern = @"^((?<tzid>TZID=(\w+)?/(\w+)):)?T(?<hour>\d{1,2})(?<min>\d{1,2})(?<sec>\d{1,2})(?<utc>Z)?$";
-            var options = RegexOptions.IgnoreCase
-                | RegexOptions.CultureInvariant
-                | RegexOptions.ExplicitCapture
-                | RegexOptions.Compiled;
+            const string pattern = @"^((?<tzid>TZID=(\w+)?/(\w+)):)?T(?<hour>\d{1,2})(?<min>\d{1,2})(?<sec>\d{1,2})(?<utc>Z)?$";
+            const RegexOptions options = RegexOptions.IgnoreCase
+                                         | RegexOptions.CultureInvariant
+                                         | RegexOptions.ExplicitCapture
+                                         | RegexOptions.Compiled;
 
-            if (Regex.IsMatch(value, pattern))
+            var regex = new Regex(pattern, options);
+
+            foreach (Match match in regex.Matches(value))
             {
-                foreach (Match match in Regex.Matches(value, pattern, options))
+                if (match.Groups["hour"].Success) hour = uint.Parse(match.Groups["hour"].Value);
+                if (match.Groups["min"].Success) minute = uint.Parse(match.Groups["min"].Value);
+                if (match.Groups["sec"].Success) second = uint.Parse(match.Groups["sec"].Value);
+                if (match.Groups["utc"].Success) form = TIME_FORM.UTC;
+                else if (match.Groups["tzid"].Success)
                 {
-                    if (match.Groups["hour"].Success) hour = uint.Parse(match.Groups["hour"].Value);
-                    if (match.Groups["min"].Success) minute = uint.Parse(match.Groups["min"].Value);
-                    if (match.Groups["sec"].Success) second = uint.Parse(match.Groups["sec"].Value);
-                    if (match.Groups["utc"].Success) form = TIME_FORM.UTC;
-                    else if (match.Groups["tzid"].Success)
-                    {
-                        tzid = new TZID(match.Groups["tzid"].Value);
-                        form = TIME_FORM.LOCAL_TIMEZONE_REF;
-                    }
-                    else form = TIME_FORM.LOCAL;
+                    tzid = new TZID(match.Groups["tzid"].Value);
+                    form = TIME_FORM.LOCAL_TIMEZONE_REF;
                 }
+                else form = TIME_FORM.LOCAL;
             }
 
             return new TIME(hour, minute, second, form, tzid);

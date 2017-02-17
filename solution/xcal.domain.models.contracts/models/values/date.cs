@@ -1,7 +1,5 @@
-﻿using reexjungle.xcal.core.domain.contracts.extensions;
-using reexjungle.xcal.core.domain.contracts.io.readers;
-using reexjungle.xcal.core.domain.contracts.io.writers;
-using reexjungle.xcal.core.domain.contracts.serialization;
+﻿using NodaTime;
+using reexjungle.xcal.core.domain.contracts.extensions;
 using reexjungle.xmisc.foundation.concretes;
 using System;
 using System.Runtime.Serialization;
@@ -11,25 +9,24 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 {
     /// <summary>
     /// Represents a calendar date.
-    /// Format: [YYYYMMDD] where YYYY is 4-digit year, MM is 2-digit month and DD is 2-digit day
     /// </summary>
     [DataContract]
-    public struct DATE : IEquatable<DATE>, IComparable, IComparable<DATE>, IConvertible, ICalendarSerializable
+    public struct DATE : IEquatable<DATE>, IComparable, IComparable<DATE>, IConvertible
     {
         /// <summary>
-        /// Gets the 4-digit representation of a full year e.g. 2013
+        /// Gets the digit representation of a full year e.g. 2013
         /// </summary>
         [DataMember]
         public uint FULLYEAR { get; private set; }
 
         /// <summary>
-        /// Gets the 2-digit representation of a month
+        /// Gets the digit representation of a month
         /// </summary>
         [DataMember]
         public uint MONTH { get; private set; }
 
         /// <summary>
-        /// Gets the 2-digit representation of a month-day
+        /// Gets the digit representation of a day in a month
         /// </summary>
         [DataMember]
         public uint MDAY { get; private set; }
@@ -48,13 +45,11 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DATE"/> structure with an <see
-        /// cref="IDATE"/> instance
+        /// Initializes a new instance of the <see cref="DATE"/> structure with an <see cref="DATE"/> instance
         /// </summary>
-        /// <param name="other">The <see cref="IDATE"/> instance that initializes this instance.</param>
+        /// <param name="other">The <see cref="DATE"/> instance that initializes this instance.</param>
         public DATE(DATE other)
         {
-            if (other == null) throw new ArgumentNullException(nameof(other));
             FULLYEAR = other.FULLYEAR;
             MONTH = other.MONTH;
             MDAY = other.MDAY;
@@ -62,10 +57,29 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DATE"/> structure with a <see
-        /// cref="DateTime"/> instance
+        /// cref="LocalDate"/> instance
         /// </summary>
-        /// <param name="date">The <see cref="DateTime"/> that initializes this instance.</param>
-        public DATE(DateTime date)
+        /// <param name="date">The <see cref="LocalDate"/> that initializes this instance.</param>
+        public DATE(LocalDate date)
+        {
+            FULLYEAR = (uint)date.Year;
+            MONTH = (uint)date.Year;
+            MDAY = (uint)date.Day;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DATE"/> structure with a <see
+        /// cref="LocalDateTime"/> instance
+        /// </summary>
+        /// <param name="date">The <see cref="LocalDateTime"/> that initializes this instance.</param>
+        public DATE(LocalDateTime date)
+        {
+            FULLYEAR = (uint)date.Year;
+            MONTH = (uint)date.Year;
+            MDAY = (uint)date.Day;
+        }
+
+        public DATE(ZonedDateTime date)
         {
             FULLYEAR = (uint)date.Year;
             MONTH = (uint)date.Year;
@@ -98,14 +112,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// </param>
         public DATE(string value)
         {
-            var date = Parse(value);
-            FULLYEAR = date.FULLYEAR;
-            MONTH = date.MONTH;
-            MDAY = date.MDAY;
-        }
-
-        private static DATE Parse(string value)
-        {
             var fullyear = 1u;
             var month = 1u;
             var mday = 1u;
@@ -115,20 +121,25 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
                                          | RegexOptions.ExplicitCapture
                                          | RegexOptions.Compiled;
 
-            foreach (Match match in Regex.Matches(value, pattern, options))
+            var regex = new Regex(pattern, options);
+            foreach (Match match in regex.Matches(value))
             {
                 if (match.Groups["year"].Success) fullyear = uint.Parse(match.Groups["year"].Value);
                 if (match.Groups["month"].Success) month = uint.Parse(match.Groups["month"].Value);
                 if (match.Groups["day"].Success) mday = uint.Parse(match.Groups["day"].Value);
             }
 
-            return new DATE(fullyear, month, mday);
+            FULLYEAR = fullyear;
+            MONTH = month;
+            MDAY = mday;
         }
 
         /// <summary>
         /// Converts this date time instance to its equivalent <see cref="DateTime"/> representation.
         /// </summary>
-        /// <returns>The equivalent <see cref="DateTime"/> respresentation of this date time instance.</returns>
+        /// <returns>
+        /// The equivalent <see cref="DateTime"/> respresentation of this date time instance.
+        /// </returns>
         public DateTime AsDateTime() => this == default(DATE)
             ? default(DateTime)
             : new DateTime((int)FULLYEAR, (int)MONTH, (int)MDAY);
@@ -136,7 +147,9 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <summary>
         /// Converts this date time instance to its equivalent <see cref="DateTimeOffset"/> representation.
         /// </summary>
-        /// <returns>The equivalent <see cref="DateTimeOffset"/> respresentation of this date time instance.</returns>
+        /// <returns>
+        /// The equivalent <see cref="DateTimeOffset"/> respresentation of this date time instance.
+        /// </returns>
         public DateTimeOffset AsDateTimeOffset() => this == default(DATE)
             ? default(DateTimeOffset)
             : new DateTimeOffset(AsDateTime(), TimeSpan.Zero);
@@ -150,21 +163,80 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <summary>
         /// Adds the specified number of days to the value of this instance.
         /// </summary>
-        /// <param name="value">A number of whole and fractional days. The value parameter can be negative or positive.</param>
-        /// <returns></returns>
+        /// <param name="value">
+        /// A number of whole and fractional days. The value parameter can be negative or positive.
+        /// </param>
+        /// <returns>
+        /// A <see cref="DATE"/> instance, whose value is the sum of the date represented by this
+        /// instance and the number of days represented by <paramref name="value"/>.
+        /// </returns>
         public DATE AddDays(double value) => AsDateTime().AddDays(value).AsDATE();
 
+        /// <summary>
+        /// Adds the specified number of weeks to the value of this instance.
+        /// </summary>
+        /// <param name="value">
+        /// A number of whole and fractional weeks. The value parameter can be negative or positive.
+        /// </param>
+        /// <returns>
+        /// A <see cref="DATE"/> instance, whose value is the sum of the date represented by this
+        /// instance and the number of weeks represented by <paramref name="value"/>.
+        /// </returns>
         public DATE AddWeeks(int value) => AsDateTime().AddWeeks(value).AsDATE();
 
+        /// <summary>
+        /// Adds the specified number of months to the value of this instance.
+        /// </summary>
+        /// <param name="value">
+        /// A number of whole and fractional months. The value parameter can be negative or positive.
+        /// </param>
+        /// <returns>
+        /// A <see cref="DATE"/> instance, whose value is the sum of the date represented by this
+        /// instance and the number of months represented by <paramref name="value"/>.
+        /// </returns>
         public DATE AddMonths(int value) => AsDateTime().AddMonths(value).AsDATE();
 
+        /// <summary>
+        /// Adds the specified number of years to the value of this instance.
+        /// </summary>
+        /// <param name="value">
+        /// A number of whole and fractional years. The value parameter can be negative or positive.
+        /// </param>
+        /// <returns>
+        /// A <see cref="DATE"/> instance, whose value is the sum of the date represented by this
+        /// instance and the number of years represented by <paramref name="value"/>.
+        /// </returns>
         public DATE AddYears(int value) => AsDateTime().AddYears(value).AsDATE();
 
+        /// <summary>
+        /// Adds the value of the specified <see cref="DURATION"/> instance to the value of this instance.
+        /// </summary>
+        /// <param name="duration">A positive or negative duration of time.</param>
+        /// <returns>
+        /// A <see cref="DATE"/> instance, whose value is the sum of the date represented by this
+        /// instance and duration of time represented by <paramref name="duration"/>.
+        /// </returns>
         public DATE Add(DURATION duration) => AsDateTime().Add(duration.AsTimeSpan()).AsDATE();
 
+        /// <summary>
+        /// Subtracts the value of the specified <see cref="DURATION"/> from the value of this instance.
+        /// </summary>
+        /// <param name="duration">A positive or negative duration of time.</param>
+        /// <returns>
+        /// A <see cref="DATE"/> instance, whose value is the date represented by this instance minus
+        /// the duration of time represented by <paramref name="duration"/>.
+        /// </returns>
         public DATE Subtract(DURATION duration) => AsDateTime().Subtract(duration.AsTimeSpan()).AsDATE();
 
-        public DURATION Subtract(DATE other) => AsDateTime().Subtract(other.AsDateTime()).AsDURATION();
+        /// <summary>
+        /// Subtract the specified date from this instance.
+        /// </summary>
+        /// <param name="date">The date to subtract.</param>
+        /// <returns>
+        /// A duration of time that is equal to the date represented by this instance minus the date
+        /// represented by <paramref name="date"/>.
+        /// </returns>
+        public DURATION Subtract(DATE date) => AsDateTime().Subtract(date.AsDateTime()).AsDURATION();
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -248,57 +320,15 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         {
             if (obj == null) return 1;
             if (obj is DATE) return CompareTo((DATE)obj);
-            throw new ArgumentException(nameof(obj) + " is not a date");
+            throw new ArgumentException(nameof(obj) + " is not of type " + nameof(DATE));
         }
 
         /// <summary>
-        /// Can the object be converted to its iCalendar representation?
+        /// Adds the value of the specified <see cref="DURATION"/> instance to the specified of <see cref="DATE"/> instance.
         /// </summary>
-        /// <returns>
-        /// True if the object can be serialized to its iCalendar representation, otherwise false.
-        /// </returns>
-        public bool CanSerialize() => true;
-
-        /// <summary>
-        /// Can the object be generated from its iCalendar representation?
-        /// </summary>
-        /// <returns>
-        /// True if the object can be deserialized from its iCalendar representation, otherwise false.
-        /// </returns>
-        public bool CanDeserialize() => true;
-
-        /// <summary>
-        /// Converts an object into its iCalendar representation.
-        /// </summary>
-        /// <param name="writer">The iCalendar writer used to serialize the object.</param>
-        public void WriteCalendar(ICalendarWriter writer)
-        {
-            writer.WriteValue($"{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}");
-        }
-
-        /// <summary>
-        /// Generates an object from its iCalendar representation.
-        /// </summary>
-        /// <param name="reader">
-        /// The iCalendar reader used to deserialize data into the iCalendar object.
-        /// </param>
-        /// <returns>True if the deserialization operation was successful; otherwise false.</returns>
-        public void ReadCalendar(ICalendarReader reader)
-        {
-            var inner = reader.ReadFragment();
-            while (inner.Read())
-            {
-                if (inner.NodeType != NodeType.VALUE) continue;
-                if (!string.IsNullOrEmpty(inner.Value) && !string.IsNullOrWhiteSpace(inner.Value))
-                {
-                    var date = Parse(inner.Value);
-                    FULLYEAR = date.FULLYEAR;
-                    MONTH = date.MONTH;
-                    MDAY = date.MDAY;
-                }
-            }
-        }
-
+        /// <param name="date"></param>
+        /// <param name="duration"></param>
+        /// <returns></returns>
         public static DATE operator +(DATE date, DURATION duration) => date.Add(duration);
 
         public static DATE operator -(DATE date, DURATION duration) => date.Subtract(duration);
@@ -660,7 +690,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             if (conversionType == typeof(DateTimeOffset)) return AsDateTimeOffset();
             if (conversionType == typeof(string)) return ToString();
             throw new InvalidCastException("Invalid Cast from type" + nameof(DATE) + "to type " + conversionType.FullName);
-
         }
     }
 }
