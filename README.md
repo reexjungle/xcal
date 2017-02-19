@@ -53,41 +53,13 @@ PM> Install-Package xcal.service.interfaces.concretes -Pre
 
 ### Contents of Download Package
 
-The download package contains source codes and project files of xCal. It is also worth mentioning here that xCal is a .NET-based solution. Hence its source files are logically organized as projects grouped under a single solution. Each project is compiled to its reespective assembly (*dll) files. The solution structure is illustrated below: 
-
-```
-solution/
-├── servers/
-|   ├── xcal.server.web.dev1
-|   ├── xcal.servers.web.dev2
-|   ├── xcal.servers.web.prod1
-|   ├── xcal.servers.web.prod2
-|   ├── xcal.servers.web.local
-├── crosscut/
-|   ├── crosscut.operations.concretes
-|   ├── crosscut.operations.contracts
-|   ├── crosscut.security.concretes
-├── domain/
-|   ├── xcal.domain
-├── service/
-|   ├── xcal.service.clients.concretes
-|   ├── xcal.service.formats.concretes
-|   ├── xcal.service.interfaces.concretes
-|   ├── xcal.service.interfaces.contracts
-|   ├── xcal.service.operations.contracts
-|   ├── xcal.service.repositories.concretes
-|   ├── xcal.service.repositories.contracts
-|   ├── xcal.service.validators.concretes
-├── tests/
-|   ├── xcal.tests.contracts
-|   ├── xcal.tests.concretes
-```
+The download package contains source codes and project files of xCal. It is also worth mentioning here that xCal is a .NET-based solution. Hence its source files are logically organized as projects grouped under a single solution. Each project is compiled to its reespective assembly (*dll) files. 
 
 ### Development Tools for xCal
 
-xCal is written entirely in C# - therefore it is recommended to use a specialized IDE such as [Microsoft Visual Studio][5] whose editor, debugger and compiler features facilitate rapid application development. As a matter of fact, Microsoft now  offers [Visual Studio Community 2013][6] at no cost to an unlimited number of users developing open source projects. In any case, if Visual Studio does not suit your tastes, please feel free to use other third-party tools e.g. [Xamarin Studio / Monodevelop](http://www.monodevelop.com/download/). 
+xCal is written entirely in C# - therefore it is recommended to use a specialized IDE such as [Microsoft Visual Studio][5] whose editor, debugger and compiler features facilitate rapid application development. As a matter of fact, Microsoft now  offers [Visual Studio Community 2015][6] at no cost to an unlimited number of users developing open source projects. In any case, if Visual Studio does not suit your tastes, please feel free to use other third-party tools e.g. [Xamarin Studio / Monodevelop](http://www.monodevelop.com/download/). 
 
-*For the remainder of this Get Started section and for the sake of simplicity, it would be assumed you use Visual Studio 2013 for software development.*
+*For the remainder of this Get Started section and for the sake of simplicity, it would be assumed you use Visual Studio 2015 for software development.*
 
 ### Setting up xCal
 Many would agree that the setup process of a software project should be rendered as less painful as possible. This often implies minimal configuration and non-complex set up procedures. Consequently, setting up xCal has been simplified to a **one-click** process.
@@ -144,7 +116,6 @@ Dependencies
 xCal depends on the awesome open source software libraries below, in order to be compiled, executed and tested. Furthermore, xCal integrates and extends the source code of some of these libraries for its core functionality. Each referenced library is released under its respective license.
 
 The following development library is referenced in all of the xcal projects:
-* [Semantic Git Versioning](https://www.nuget.org/packages/SemanticGit/) [(license)](https://github.com/kzu/SemanticGit/blob/master/LICENSE)
 
 The following library is referenced in almost all of the xcal projects:
 * [Service Stack V3](https://github.com/ServiceStackV3/ServiceStackV3) [(license)](https://github.com/ServiceStack/ServiceStack/blob/v3/LICENSE)
@@ -184,7 +155,7 @@ Keep track on upcoming features, development and community news:
 
 License
 =======
-Copyright (c) 2014, Emmanuel Ngwane and contributors. All rights reserved.
+Copyright (c) 2014 - 2017, Emmanuel Ngwane and contributors. All rights reserved.
 xCal source code is released under the [BSD](https://github.com/reexmonkey/xcal/blob/master/LICENSE) License. Its documentation is released under the [Creative Commons](https://github.com/reexmonkey/xcal/blob/master/docs/LICENSE) license.
 
 [1]: http://www.computerworld.com/article/2486991/app-development-4-reasons-companies-say-yes-to-open-source.html?page=1 "4 reasons companies say yes to open source"
@@ -192,4 +163,4 @@ xCal source code is released under the [BSD](https://github.com/reexmonkey/xcal/
 [3]: https://github.com/reexmonkey/xcal/archive/master.zip "Download xCal as ZIP file"
 [4]: github-windows://openRepo/https://github.com/reexmonkey/xcal "Clone the master repository"
 [5]: http://www.visualstudio.com/ "Visual Studio"
-[6]: http://www.visualstudio.com/en-us/visual-studio-community-vs.aspx "Visual Studio Community 2013"
+[6]: https://www.visualstudio.com/vs/community/ "Visual Studio Community 2015"
