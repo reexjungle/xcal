@@ -1,65 +1,55 @@
 ﻿using reexjungle.xcal.core.domain.contracts.extensions;
-using reexjungle.xcal.core.domain.contracts.io.readers;
-using reexjungle.xcal.core.domain.contracts.io.writers;
-using reexjungle.xcal.core.domain.contracts.models.parameters;
-using reexjungle.xcal.core.domain.contracts.serialization;
-using reexjungle.xmisc.foundation.concretes;
 using System;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
+using NodaTime;
 
 namespace reexjungle.xcal.core.domain.contracts.models.values
 {
     [DataContract]
-    public struct DATE_TIME : IEquatable<DATE_TIME>, IComparable, IComparable<DATE_TIME>, IConvertible, ICalendarSerializable
+    public struct DATE_TIME : IEquatable<DATE_TIME>, IComparable, IComparable<DATE_TIME>
     {
         /// <summary>
         /// Gets the 4-digit representation of a full year e.g. 2013
         /// </summary>
         [DataMember]
-        public uint FULLYEAR { get; private set; }
+        public int FULLYEAR { get; private set; }
 
         /// <summary>
         /// Gets the 2-digit representation of a month
         /// </summary>
         [DataMember]
-        public uint MONTH { get; private set; }
+        public int MONTH { get; private set; }
 
         /// <summary>
         /// Gets the 2-digit representation of a month-day
         /// </summary>
         [DataMember]
-        public uint MDAY { get; private set; }
+        public int MDAY { get; private set; }
 
         /// <summary>
         /// Gets the 2-digit representation of an hour.
         /// </summary>
         [DataMember]
-        public uint HOUR { get; private set; }
+        public int HOUR { get; private set; }
 
         /// <summary>
         /// Gets the 2-digit representatio of a minute.
         /// </summary>
         [DataMember]
-        public uint MINUTE { get; private set; }
+        public int MINUTE { get; private set; }
 
         /// <summary>
         /// Gets the 2-digit representation of a second.
         /// </summary>
         [DataMember]
-        public uint SECOND { get; private set; }
+        public int SECOND { get; private set; }
 
         /// <summary>
-        /// Gets the form in which the <see cref="ITIME"/> instance is expressed.
+        /// Specifies whether a System.DateTime object represents a local time or a Coordinated Universal Time (UTC).
         /// </summary>
         [DataMember]
         public TIME_FORM Form { get; private set; }
-
-        /// <summary>
-        /// Gets the time zone identifier.
-        /// </summary>
-        [DataMember]
-        public TZID TimeZoneId { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DATE"/> structure with the year, month and day.
@@ -72,7 +62,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <param name="second">The digit representation of a second.</param>
         /// <param name="form">The form in which the <see cref="DATE_TIME"/> instance is expressed.</param>
         /// <param name="tzid">The identifier that references the time zone.</param>
-        public DATE_TIME(uint fullyear, uint month, uint mday, uint hour, uint minute, uint second, TIME_FORM form = TIME_FORM.LOCAL, TZID tzid = null)
+        public DATE_TIME(int fullyear, int month, int mday, int hour, int minute, int second, TIME_FORM form = TIME_FORM.LOCAL)
         {
             FULLYEAR = fullyear;
             MONTH = month;
@@ -81,7 +71,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             MINUTE = minute;
             SECOND = second;
             Form = form;
-            TimeZoneId = tzid;
         }
 
         /// <summary>
@@ -89,17 +78,8 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// cref="IDATE"/> instance.
         /// </summary>
         /// <param name="other">The <see cref="IDATE"/> instance that initializes this instance.</param>
-        public DATE_TIME(DATE other)
+        public DATE_TIME(DATE other) : this(other.FULLYEAR, other.MONTH, other.MDAY, 0, 0, 0)
         {
-            if (other == null) throw new ArgumentNullException(nameof(other));
-            FULLYEAR = other.FULLYEAR;
-            MONTH = other.MONTH;
-            MDAY = other.MDAY;
-            HOUR = 0u;
-            MINUTE = 0u;
-            SECOND = 0u;
-            Form = TIME_FORM.UNSPECIFIED;
-            TimeZoneId = null;
         }
 
         /// <summary>
@@ -107,17 +87,8 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// cref="ITIME"/> instance.
         /// </summary>
         /// <param name="other">The <see cref="ITIME"/> instance that initializes this instance.</param>
-        public DATE_TIME(TIME other)
+        public DATE_TIME(TIME other) : this(1, 1, 1, other.HOUR, other.MINUTE, other.SECOND, other.Form)
         {
-            if (other == null) throw new ArgumentNullException(nameof(other));
-            FULLYEAR = 1u;
-            MONTH = 1u;
-            MDAY = 1u;
-            HOUR = other.HOUR;
-            MINUTE = other.MINUTE;
-            SECOND = other.SECOND;
-            Form = other.Form;
-            TimeZoneId = other.TimeZoneId;
         }
 
         /// <summary>
@@ -126,22 +97,12 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// </summary>
         /// <param name="datetime">The <see cref="DateTime"/> that initializes this instance.</param>
         /// <param name="tzinfo">Any time zone in the world.</param>
-        public DATE_TIME(DateTime datetime, TimeZoneInfo tzinfo)
+        public DATE_TIME(DateTime datetime) : this(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, datetime.Kind.AsTIME_FORM())
         {
-            FULLYEAR = (uint)datetime.Year;
-            MONTH = (uint)datetime.Year;
-            MDAY = (uint)datetime.Day;
-            HOUR = (uint)datetime.Hour;
-            MINUTE = (uint)datetime.Minute;
-            SECOND = (uint)datetime.Second;
-            Form = datetime.Kind.AsTIME_FORM(tzinfo);
-            TimeZoneId = tzinfo != null
-                ? new TZID(null, tzinfo.Id)
-                : default(TZID);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct with the specified <see cref="DateTimeOffset"/>.
+        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct with the specified instance of <see cref="DateTimeOffset"/>.
         /// <para/>
         /// Note: By using this constructor, the new instance of <see cref="DATE_TIME"/> shall always
         ///       be initialized as UTC time.
@@ -151,15 +112,32 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// Universal Time (UTC).
         /// </param>
         public DATE_TIME(DateTimeOffset datetime)
+            : this(datetime.UtcDateTime.Year, datetime.UtcDateTime.Month, datetime.UtcDateTime.Day, datetime.UtcDateTime.Hour, datetime.UtcDateTime.Minute, datetime.UtcDateTime.Second, TIME_FORM.UTC)
         {
-            FULLYEAR = (uint)datetime.UtcDateTime.Year;
-            MONTH = (uint)datetime.UtcDateTime.Year;
-            MDAY = (uint)datetime.UtcDateTime.Day;
-            HOUR = (uint)datetime.UtcDateTime.Hour;
-            MINUTE = (uint)datetime.UtcDateTime.Minute;
-            SECOND = (uint)datetime.UtcDateTime.Second;
-            Form = TIME_FORM.UTC;
-            TimeZoneId = null;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct with the specified instance of <see cref="LocalDate"/>.
+        /// </summary>
+        /// <param name="date">A date within the calendar, with no reference to a particular time zone or time of day.</param>
+        public DATE_TIME(LocalDate date) : this(date.Year, date.Month, date.Day, 0, 0, 0)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct with the specified instance of <see cref="LocalDateTime"/>.
+        /// </summary>
+        /// <param name="datetime">A date and time in a particular calendar system</param>
+        public DATE_TIME(LocalDateTime datetime) : this(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct with the specified instance of <see cref="ZonedDateTime"/>.
+        /// </summary>
+        /// <param name="datetime">A local date time in a specific time zone and with a particular offset to distinguish between otherwise-ambiguous instants</param>
+        public DATE_TIME(ZonedDateTime datetime) : this(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second)
+        {
         }
 
         /// <summary>
@@ -171,27 +149,13 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// </param>
         public DATE_TIME(string value)
         {
-            var datetime = Parse(value);
-            FULLYEAR = datetime.FULLYEAR;
-            MONTH = datetime.MONTH;
-            MDAY = datetime.MDAY;
-            HOUR = datetime.HOUR;
-            MINUTE = datetime.MINUTE;
-            SECOND = datetime.SECOND;
-            Form = datetime.Form;
-            TimeZoneId = datetime.TimeZoneId;
-        }
-
-        private static DATE_TIME Parse(string value)
-        {
-            var fullyear = 1u;
-            var month = 1u;
-            var mday = 1u;
-            var hour = 0u;
-            var minute = 0u;
-            var second = 0u;
-            TZID tzid = null;
-            var form = TIME_FORM.UNSPECIFIED;
+            var fullyear = 1;
+            var month = 1;
+            var mday = 1;
+            var hour = 0;
+            var minute = 0;
+            var second = 0;
+            var form = TIME_FORM.LOCAL;
 
             const string pattern = @"^((?<tzid>TZID=(\w+)?/(\w+)):)?(?<year>\d{4,})(?<month>\d{2})(?<day>\d{2})T(?<hour>\d{2})(?<min>\d{2})(?<sec>\d{2})(?<utc>Z)?$";
             const RegexOptions options = RegexOptions.IgnoreCase
@@ -202,37 +166,36 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             var regex = new Regex(pattern, options);
             foreach (Match match in regex.Matches(value))
             {
-                if (match.Groups["year"].Success) fullyear = uint.Parse(match.Groups["year"].Value);
-                if (match.Groups["month"].Success) month = uint.Parse(match.Groups["month"].Value);
-                if (match.Groups["day"].Success) mday = uint.Parse(match.Groups["day"].Value);
-                if (match.Groups["hour"].Success) hour = uint.Parse(match.Groups["hour"].Value);
-                if (match.Groups["min"].Success) minute = uint.Parse(match.Groups["min"].Value);
-                if (match.Groups["sec"].Success) second = uint.Parse(match.Groups["sec"].Value);
+                if (match.Groups["year"].Success) fullyear = int.Parse(match.Groups["year"].Value);
+                if (match.Groups["month"].Success) month = int.Parse(match.Groups["month"].Value);
+                if (match.Groups["day"].Success) mday = int.Parse(match.Groups["day"].Value);
+                if (match.Groups["hour"].Success) hour = int.Parse(match.Groups["hour"].Value);
+                if (match.Groups["min"].Success) minute = int.Parse(match.Groups["min"].Value);
+                if (match.Groups["sec"].Success) second = int.Parse(match.Groups["sec"].Value);
                 if (match.Groups["utc"].Success) form = TIME_FORM.UTC;
-                else if (match.Groups["tzid"].Success)
-                {
-                    tzid = new TZID(match.Groups["tzid"].Value);
-                    form = TIME_FORM.LOCAL_TIMEZONE_REF;
-                }
-                else form = TIME_FORM.LOCAL;
             }
-
-            return new DATE_TIME(fullyear, month, mday, hour, minute, second, form, tzid);
+            FULLYEAR = fullyear;
+            MONTH = month;
+            MDAY = mday;
+            HOUR = hour;
+            MINUTE = minute;
+            SECOND = second;
+            Form = form;
         }
 
-        public DATE_TIME AddDays(double value) => AsDateTime().AddDays(value).AsDATE_TIME();
+        public DATE_TIME AddDays(int value) => (DATE_TIME)AsLocalDateTime().PlusDays(value);
 
-        public DATE_TIME AddWeeks(int value) => AsDateTime().AddWeeks(value).AsDATE_TIME();
+        public DATE_TIME AddWeeks(int value) => (DATE_TIME)AsLocalDateTime().PlusWeeks(value);
 
-        public DATE_TIME AddMonths(int value) => AsDateTime().AddMonths(value).AsDATE_TIME();
+        public DATE_TIME AddMonths(int value) => (DATE_TIME)AsLocalDateTime().PlusMonths(value);
 
-        public DATE_TIME AddYears(int value) => AsDateTime().AddYears(value).AsDATE_TIME();
+        public DATE_TIME AddYears(int value) => (DATE_TIME)AsLocalDateTime().PlusYears(value);
 
-        public DATE_TIME Add(DURATION duration) => AsDateTime().Add(duration.AsTimeSpan()).AsDATE_TIME();
+        public DATE_TIME Add(DURATION duration) => (DATE_TIME)AsLocalDateTime().Plus(duration.AsPeriod());
 
-        public DATE_TIME Subtract(DURATION duration) => AsDateTime().Subtract(duration.AsTimeSpan()).AsDATE_TIME();
+        public DATE_TIME Subtract(DURATION duration) => (DATE_TIME)AsLocalDateTime().Minus(duration.AsPeriod());
 
-        public DURATION Subtract(DATE_TIME other) => AsDateTime().Subtract(other.AsDateTime()).AsDURATION();
+        public DURATION Subtract(DATE_TIME other) => AsDateTime().Subtract(other.AsDateTime());
 
         /// <summary>
         /// Adds the specified number of seconds to the value of the <typeparamref name="T"/> instance.
@@ -242,7 +205,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// A new instance of type <typeparamref name="T"/> that adds the specified number of seconds
         /// to the value of this instance.
         /// </returns>
-        public DATE_TIME AddSeconds(double value) => AsDateTime().AddSeconds(value).AsDATE_TIME();
+        public DATE_TIME AddSeconds(int value) => (DATE_TIME)AsLocalDateTime().PlusSeconds(value);
 
         /// <summary>
         /// Adds the specified number of minutes to the value of the <typeparamref name="T"/> instance.
@@ -252,7 +215,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// A new instance of type <typeparamref name="T"/> that adds the specified number of minutes
         /// to the value of this instance.
         /// </returns>
-        public DATE_TIME AddMinutes(double value) => AsDateTime().AddMinutes(value).AsDATE_TIME();
+        public DATE_TIME AddMinutes(int value) => (DATE_TIME)AsLocalDateTime().PlusMinutes(value);
 
         /// <summary>
         /// Adds the specified number of hours to the value of the <typeparamref name="T"/> instance.
@@ -262,7 +225,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// A new instance of type <typeparamref name="T"/> that adds the specified number of hours
         /// to the value of this instance.
         /// </returns>
-        public DATE_TIME AddHours(double value) => AsDateTime().AddHours(value).AsDATE_TIME();
+        public DATE_TIME AddHours(int value) => (DATE_TIME)AsLocalDateTime().PlusHours(value);
 
         /// <summary>
         /// Converts this date time instance to its equivalent <see cref="System.DateTime"/> representation.
@@ -272,30 +235,26 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// </returns>
         public DateTime AsDateTime() => this == default(DATE_TIME)
             ? default(DateTime)
-            : new DateTime((int)FULLYEAR, (int)MONTH, (int)MDAY, (int)HOUR, (int)MINUTE, (int)SECOND, Form.AsDateTimeKind(TimeZoneId));
+            : new DateTime(FULLYEAR, MONTH, MDAY, HOUR, MINUTE, SECOND, Form.AsDateTimeKind());
 
-        /// <summary>
-        /// Converts this date time instance to its equivalent <see cref="System.DateTimeOffset"/> representation.
-        /// </summary>
-        /// <param name="func">Function to determine the offset from the time zone reference.</param>
-        /// <returns>
-        /// The equivalent <see cref="System.DateTimeOffset"/> respresentation of this date instance.
-        /// </returns>
-        public DateTimeOffset AsDateTimeOffset(Func<TZID, UTC_OFFSET> func = null)
-        {
-            if (this == default(DATE_TIME)) return default(DateTimeOffset);
+        public DateTimeOffset AsDateTimeOffset() => this == default(DATE_TIME)
+            ? default(DateTimeOffset)
+            : new DateTimeOffset(FULLYEAR, MONTH, MDAY, HOUR, MINUTE,
+                SECOND, TimeSpan.Zero);
 
-            if (Form == TIME_FORM.LOCAL || Form == TIME_FORM.UTC)
-                return new DateTimeOffset(AsDateTime(), TimeSpan.Zero);
+        public LocalDate AsLocalDate() => this == default(DATE_TIME)
+            ? default(LocalDate)
+            : new LocalDate(FULLYEAR, MONTH, MDAY);
 
-            if (Form == TIME_FORM.LOCAL_TIMEZONE_REF && TimeZoneId != null && func != null)
-            {
-                var offset = func(TimeZoneId);
-                return new DateTimeOffset(AsDateTime(), new TimeSpan(offset.HOURS, offset.MINUTES, offset.SECONDS));
-            }
-            //Unspecified time form
-            return new DateTimeOffset(AsDateTime());
-        }
+        public LocalDateTime AsLocalDateTime() => this == default(DATE_TIME)
+            ? default(LocalDateTime)
+            : new LocalDateTime(FULLYEAR, MONTH, MDAY, HOUR, MINUTE, SECOND);
+
+        public ZonedDateTime AsZonedDateTime() => this == default(DATE_TIME)
+            ? default(ZonedDateTime)
+            : new ZonedDateTime(new LocalDateTime(FULLYEAR, MONTH, MDAY, HOUR, MINUTE, SECOND),
+                DateTimeZoneProviders.Tzdb["UTC"],
+                Offset.FromHours(0));
 
         public DATE AsDate() => this == default(DATE_TIME)
             ? default(DATE)
@@ -303,7 +262,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
         public TIME AsTime() => this == default(DATE_TIME)
             ? default(TIME)
-            : new TIME(HOUR, MINUTE, SECOND, Form, TimeZoneId);
+            : new TIME(HOUR, MINUTE, SECOND, Form);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -320,8 +279,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
                 && HOUR == other.HOUR
                 && MINUTE == other.MINUTE
                 && SECOND == other.SECOND
-                && Form == other.Form
-                && Equals(TimeZoneId, other.TimeZoneId);
+                && Form == other.Form;
         }
 
         /// <summary>
@@ -375,14 +333,13 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         {
             unchecked
             {
-                var hashCode = (int)FULLYEAR;
-                hashCode = (hashCode * 397) ^ (int)MONTH;
-                hashCode = (hashCode * 397) ^ (int)MDAY;
-                hashCode = (hashCode * 397) ^ (int)HOUR;
-                hashCode = (hashCode * 397) ^ (int)MINUTE;
-                hashCode = (hashCode * 397) ^ (int)SECOND;
+                var hashCode = FULLYEAR;
+                hashCode = (hashCode * 397) ^ MONTH;
+                hashCode = (hashCode * 397) ^ MDAY;
+                hashCode = (hashCode * 397) ^ HOUR;
+                hashCode = (hashCode * 397) ^ MINUTE;
+                hashCode = (hashCode * 397) ^ SECOND;
                 hashCode = (hashCode * 397) ^ (int)Form;
-                hashCode = (hashCode * 397) ^ (TimeZoneId?.GetHashCode() ?? 0);
                 return hashCode;
             }
         }
@@ -411,78 +368,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             throw new ArgumentException(nameof(obj) + " is not a date time");
         }
 
-        /// <summary>
-        /// Can the object be converted to its iCalendar representation?
-        /// </summary>
-        /// <returns>
-        /// True if the object can be serialized to its iCalendar representation, otherwise false.
-        /// </returns>
-        public bool CanSerialize() => true;
-
-        /// <summary>
-        /// Can the object be generated from its iCalendar representation?
-        /// </summary>
-        /// <returns>
-        /// True if the object can be deserialized from its iCalendar representation, otherwise false.
-        /// </returns>
-        public bool CanDeserialize() => true;
-
-        /// <summary>
-        /// Converts an object into its iCalendar representation.
-        /// </summary>
-        /// <param name="writer">The iCalendar writer used to serialize the object.</param>
-        public void WriteCalendar(ICalendarWriter writer)
-        {
-            switch (Form)
-            {
-                case TIME_FORM.LOCAL:
-                    writer.WriteValue($"{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}T{HOUR:D2}{MINUTE:D2}{SECOND:D2}");
-                    break;
-
-                case TIME_FORM.UTC:
-                    writer.WriteValue($"{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}T{HOUR:D2}{MINUTE:D2}{SECOND:D2}Z");
-                    break;
-
-                case TIME_FORM.LOCAL_TIMEZONE_REF:
-                    writer.WriteValue($"{TimeZoneId}:{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}T{HOUR:D2}{MINUTE:D2}{SECOND:D2}");
-                    break;
-
-                default:
-                    writer.WriteValue($"{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}T{HOUR:D2}{MINUTE:D2}{SECOND:D2}");
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Generates an object from its iCalendar representation.
-        /// </summary>
-        /// <param name="reader">
-        /// The iCalendar reader used to deserialize data into the iCalendar object.
-        /// </param>
-        /// <returns>True if the deserialization operation was successful; otherwise false.</returns>
-        public void ReadCalendar(ICalendarReader reader)
-        {
-            var inner = reader.ReadFragment();
-            while (inner.Read())
-            {
-                if (inner.NodeType != NodeType.VALUE) continue;
-                if (!string.IsNullOrEmpty(inner.Value) && !string.IsNullOrWhiteSpace(inner.Value))
-                {
-                    var datetime = Parse(inner.Value);
-                    FULLYEAR = datetime.FULLYEAR;
-                    MONTH = datetime.MONTH;
-                    MDAY = datetime.MDAY;
-                    HOUR = datetime.HOUR;
-                    MINUTE = datetime.MINUTE;
-                    SECOND = datetime.SECOND;
-                    Form = datetime.Form;
-                    TimeZoneId = datetime.TimeZoneId;
-                }
-            }
-
-            inner.Close();
-        }
-
         public static DATE_TIME operator +(DATE_TIME left, DURATION duration) => left.Add(duration);
 
         public static DATE_TIME operator -(DATE_TIME left, DURATION duration) => left.Subtract(duration);
@@ -490,7 +375,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         public static DURATION operator -(DATE_TIME left, DATE_TIME right) => left.Subtract(right);
 
         /// <summary>
-        /// Explicitly converts the specified <see cref="DateTime"/> instance to a <see
+        /// Converts implicitly the specified <see cref="DateTime"/> instance to a <see
         /// cref="DATE_TIME"/> instance.
         /// </summary>
         /// <param name="datetime">The <see cref="DATE_TIME"/> instance to convert.</param>
@@ -499,15 +384,13 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         public static implicit operator DATE_TIME(DateTime datetime) => new DATE_TIME(datetime);
 
         /// <summary>
-        /// Implicitly converts the specified <see cref="DATE"/> instance to a <see
-        /// cref="DATE_TIME"/> instance.
+        /// Converts implicitly the specified <see cref="DATE"/> instance to an equivalent <see cref="DATE_TIME"/> instance.
         /// </summary>
         /// <param name="date">The <see cref="DATE"/> instance to convert.</param>
         public static implicit operator DATE_TIME(DATE date) => new DATE_TIME(date);
 
         /// <summary>
-        /// Explicitly converts the specified <see cref="DATE_TIME"/> instance to a <see
-        /// cref="DATE"/> instance.
+        /// Explicitly converts the specified <see cref="DATE_TIME"/> instance to a <see cref="DATE"/> instance.
         /// </summary>
         /// <param name="datetime">The <see cref="DATE_TIME"/> instance to convert.</param>
         public static explicit operator DATE(DATE_TIME datetime) => datetime.AsDate();
@@ -525,6 +408,18 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// </summary>
         /// <param name="datetime">The <see cref="DATE_TIME"/> instance to convert.</param>
         public static explicit operator TIME(DATE_TIME datetime) => datetime.AsTime();
+
+        public static explicit operator LocalDate(DATE_TIME datetime) => datetime.AsDate();
+
+        public static implicit operator DATE_TIME(LocalDate date) => new DATE_TIME(date);
+
+        public static implicit operator LocalDateTime(DATE_TIME datetime) => datetime.AsLocalDateTime();
+
+        public static explicit operator DATE_TIME(LocalDateTime datetime) => new DATE_TIME(datetime);
+
+        public static implicit operator ZonedDateTime(DATE_TIME datetime) => datetime.AsZonedDateTime();
+
+        public static explicit operator DATE_TIME(ZonedDateTime datetime) => new DATE_TIME(datetime);
 
         /// <summary>
         /// Determines whether one specified <see cref="DATE_TIME"/> is earlier than another
@@ -601,101 +496,9 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <filterpriority>2</filterpriority>
         public override string ToString()
         {
-            switch (Form)
-            {
-                case TIME_FORM.LOCAL:
-                    return $"{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}T{HOUR:D2}{MINUTE:D2}{SECOND:D2}";
-
-                case TIME_FORM.UTC:
-                    return $"{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}T{HOUR:D2}{MINUTE:D2}{SECOND:D2}Z";
-
-                case TIME_FORM.LOCAL_TIMEZONE_REF:
-                    return $"{TimeZoneId}:{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}T{HOUR:D2}{MINUTE:D2}{SECOND:D2}";
-
-                default:
-                    return $"{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}T{HOUR:D2}{MINUTE:D2}{SECOND:D2}";
-            }
-        }
-
-        public TypeCode GetTypeCode() => TypeCode.DateTime;
-
-        bool IConvertible.ToBoolean(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Boolean));
-        }
-
-        char IConvertible.ToChar(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Char));
-        }
-
-        sbyte IConvertible.ToSByte(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(SByte));
-        }
-
-        byte IConvertible.ToByte(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Byte));
-        }
-
-        short IConvertible.ToInt16(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Int16));
-        }
-
-        ushort IConvertible.ToUInt16(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(UInt16));
-        }
-
-        int IConvertible.ToInt32(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Int32));
-        }
-
-        uint IConvertible.ToUInt32(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(UInt32));
-        }
-
-        long IConvertible.ToInt64(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Int64));
-        }
-
-        ulong IConvertible.ToUInt64(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(UInt64));
-        }
-
-        float IConvertible.ToSingle(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Single));
-        }
-
-        double IConvertible.ToDouble(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Double));
-        }
-
-        decimal IConvertible.ToDecimal(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + nameof(Decimal));
-        }
-
-        public DateTime ToDateTime(IFormatProvider provider) => AsDateTime();
-
-        public string ToString(IFormatProvider provider) => ToString();
-
-        public object ToType(Type conversionType, IFormatProvider provider)
-        {
-            if (conversionType == typeof(DateTime)) return AsDateTime();
-            if (conversionType == typeof(DateTimeOffset)) return AsDateTimeOffset();
-            if (conversionType == typeof(DATE)) return AsDate();
-            if (conversionType == typeof(TIME)) return AsTime();
-            if (conversionType == typeof(string)) return ToString();
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DATE_TIME) + "to type " + conversionType.FullName);
+            return Form == TIME_FORM.UTC
+                ? $"{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}T{HOUR:D2}{MINUTE:D2}{SECOND:D2}Z"
+                : $"{FULLYEAR:D4}{MONTH:D2}{MDAY:D2}T{HOUR:D2}{MINUTE:D2}{SECOND:D2}";
         }
     }
 }

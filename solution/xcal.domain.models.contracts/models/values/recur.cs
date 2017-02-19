@@ -1,12 +1,10 @@
-﻿using reexjungle.xmisc.foundation.contracts;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace reexjungle.xcal.core.domain.contracts.models.values
 {
-    public class RECUR : IContainsKey<Guid>
+    public sealed class RECUR
     {
-        public Guid Id { get; private set; }
         public FREQ FREQ { get; private set; }
         public DATE_TIME UNTIL { get; private set; }
         public uint COUNT { get; private set; }
@@ -24,7 +22,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
         public RECUR()
         {
-            Id = Guid.NewGuid();
             FREQ = FREQ.DAILY;
             UNTIL = default(DATE_TIME);
             COUNT = 0u;
@@ -48,22 +45,11 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             UNTIL = until;
         }
 
-        public RECUR(Guid id, FREQ freq, DATE_TIME until) : this(freq, until)
-        {
-            Id = id;
-        }
-
         public RECUR(FREQ freq, uint count, uint interval)
         {
             FREQ = freq;
             COUNT = count;
             INTERVAL = interval;
         }
-
-        public RECUR(Guid id, FREQ freq, uint count, uint interval) : this(freq, count, interval)
-        {
-            Id = id;
-        }
-
     }
 }

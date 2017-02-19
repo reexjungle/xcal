@@ -1,21 +1,18 @@
-﻿using reexjungle.xcal.core.domain.contracts.io.readers;
-using reexjungle.xcal.core.domain.contracts.io.writers;
-using reexjungle.xcal.core.domain.contracts.serialization;
-using System;
-using System.Globalization;
+﻿using System;
 using System.Text.RegularExpressions;
+using NodaTime;
 
 namespace reexjungle.xcal.core.domain.contracts.models.values
 {
-    public struct PERIOD : IComparable, IComparable<PERIOD>, ICalendarSerializable, IEquatable<PERIOD>, IConvertible
+    public struct PERIOD : IComparable, IComparable<PERIOD>, IEquatable<PERIOD>
     {
-        public DATE_TIME Start { get; private set; }
+        public DATE_TIME Start { get; }
 
-        public DATE_TIME End { get; private set; }
+        public DATE_TIME End { get; }
 
-        public DURATION Duration { get; private set; }
+        public DURATION Duration { get; }
 
-        public bool Explicit { get; private set; }
+        public bool Explicit { get; }
 
         public PERIOD(DATE_TIME start, DATE_TIME end)
         {
@@ -23,6 +20,32 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             End = end;
             Duration = End - Start;
             Explicit = true;
+        }
+
+        public PERIOD(DATE start, DATE end) : this(new DATE_TIME(start), new DATE_TIME(end))
+        {
+        }
+
+        public PERIOD(DateTime start, DateTime end)
+            : this(new DATE_TIME(start), new DATE_TIME(end))
+        {
+        }
+
+        public PERIOD(DateTime start, TimeSpan span)
+            : this(new DATE_TIME(start), new DURATION(span))
+        {
+        }
+
+        public PERIOD(LocalDate start, LocalDate end) : this(new DATE_TIME(start), new DATE_TIME(end))
+        {
+        }
+
+        public PERIOD(LocalDateTime start, LocalDateTime end) : this(new DATE_TIME(start), new DATE_TIME(end))
+        {
+        }
+
+        public PERIOD(ZonedDateTime start, ZonedDateTime end) : this(new DATE_TIME(start), new DATE_TIME(end))
+        {
         }
 
         public PERIOD(DATE_TIME start, DURATION duration)
@@ -33,18 +56,48 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             Explicit = false;
         }
 
-        public PERIOD(DateTime start, TimeZoneInfo startTimeZoneInfo, DateTime end, TimeZoneInfo endTimeZoneInfo)
-            : this(new DATE_TIME(start, startTimeZoneInfo), new DATE_TIME(end, endTimeZoneInfo))
+        public PERIOD(DATE start, DURATION duration) : this(new DATE_TIME(start), duration)
         {
         }
 
-        public PERIOD(DateTime start, TimeZoneInfo timeZoneInfo, TimeSpan span)
-            : this(new DATE_TIME(start, timeZoneInfo), new DURATION(span))
+        public PERIOD(LocalDate start, DURATION duration) : this(new DATE_TIME(start), duration)
         {
         }
 
-        public static PERIOD Parse(string value)
+        public PERIOD(LocalDateTime start, DURATION duration) : this(new DATE_TIME(start), duration)
         {
+        }
+
+        public PERIOD(ZonedDateTime start, DURATION duration) : this(new DATE_TIME(start), duration)
+        {
+        }
+
+        public PERIOD(DATE_TIME start, Duration duration) : this(start, new DURATION(duration))
+        {
+        }
+
+        public PERIOD(DATE start, Duration duration) : this(new DATE_TIME(start), new DURATION(duration))
+        {
+        }
+
+        public PERIOD(LocalDate start, Duration duration) : this(new DATE_TIME(start), new DURATION(duration))
+        {
+        }
+
+        public PERIOD(LocalDateTime start, Duration duration) : this(new DATE_TIME(start), new DURATION(duration))
+        {
+        }
+
+        public PERIOD(ZonedDateTime start, Duration duration) : this(new DATE_TIME(start), new DURATION(duration))
+        {
+        }
+
+        public PERIOD(string value)
+        {
+            Start = default(DATE_TIME);
+            End = default(DATE_TIME);
+            Duration = End - Start;
+            Explicit = false;
             const string datetimePattern = @"((TZID=(\w+)?/(\w+)):)?(\d{4,})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z?";
             const string durationPattern = @"(\-)?P((\d*)W)?((\d*)D)?(T((\d*)H)?((\d*)M)?((\d*)S)?)?";
             const string explicitPattern = datetimePattern + "/" + datetimePattern;
@@ -65,21 +118,22 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
                 {
                     var periodExplicit = match.Groups["periodExplicit"].Value;
                     var parts = periodExplicit.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-                    var start = new DATE_TIME(parts[0]);
-                    var end = new DATE_TIME(parts[1]);
-                    return new PERIOD(start, end);
+                    Start = new DATE_TIME(parts[0]);
+                    End = new DATE_TIME(parts[1]);
+                    Duration = End - Start;
+                    Explicit = true;
+                    break;
                 }
                 if (match.Groups["periodStart"].Success)
                 {
                     var periodStart = match.Groups["periodStart"].Value;
                     var parts = periodStart.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-                    var start = new DATE_TIME(parts[0]);
-                    var duration = new DURATION(parts[1]);
-                    return new PERIOD(start, duration);
+                    Start = new DATE_TIME(parts[0]);
+                    Duration = new DURATION(parts[1]);
+                    Duration = End - Start;
+                    break;
                 }
             }
-
-            return default(PERIOD);
         }
 
         public PERIOD Add(PERIOD other)
@@ -259,124 +313,11 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             }
         }
 
-
-        public bool CanSerialize() => true;
-
-        public bool CanDeserialize() => true;
-
-        public void WriteCalendar(ICalendarWriter writer)
-        {
-            Start.WriteCalendar(writer);
-            writer.WriteValue("/");
-            if (Explicit)
-                End.WriteCalendar(writer);
-            else Duration.WriteCalendar(writer);
-        }
-
         public override string ToString()
         {
             return Explicit
-                ? Start.ToString(CultureInfo.InvariantCulture) + "/" + End.ToString(CultureInfo.InvariantCulture)
-                : Start.ToString(CultureInfo.InvariantCulture) + "/" + Duration.ToString(CultureInfo.InvariantCulture);
-        }
-
-        public void ReadCalendar(ICalendarReader reader)
-        {
-            var inner = reader.ReadFragment();
-            while (inner.Read())
-            {
-                if (inner.NodeType != NodeType.VALUE) continue;
-                if (!string.IsNullOrEmpty(inner.Value) && !string.IsNullOrWhiteSpace(inner.Value))
-                {
-                    var period = Parse(inner.Value);
-                    Start = period.Start;
-                    End = period.End;
-                    Duration = period.Duration;
-                    Explicit = period.Explicit;
-                }
-            }
-
-            inner.Close();
-        }
-
-        public TypeCode GetTypeCode() => TypeCode.Object;
-
-        bool IConvertible.ToBoolean(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(PERIOD) + "to type " + nameof(Boolean));
-        }
-
-        char IConvertible.ToChar(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(PERIOD) + "to type " + nameof(Char));
-        }
-
-        sbyte IConvertible.ToSByte(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(PERIOD) + "to type " + nameof(SByte));
-        }
-
-        byte IConvertible.ToByte(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(PERIOD) + "to type " + nameof(Byte));
-        }
-
-        short IConvertible.ToInt16(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(PERIOD) + "to type " + nameof(Int16));
-        }
-
-        ushort IConvertible.ToUInt16(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(PERIOD) + "to type " + nameof(UInt16));
-        }
-
-        int IConvertible.ToInt32(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(PERIOD) + "to type " + nameof(Int32));
-        }
-
-        uint IConvertible.ToUInt32(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(PERIOD) + "to type " + nameof(UInt32));
-        }
-
-        long IConvertible.ToInt64(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(PERIOD) + "to type " + nameof(Int64));
-        }
-
-        ulong IConvertible.ToUInt64(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(PERIOD) + "to type " + nameof(UInt64));
-        }
-
-        float IConvertible.ToSingle(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(PERIOD) + "to type " + nameof(Single));
-        }
-
-        double IConvertible.ToDouble(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(PERIOD) + "to type " + nameof(Double));
-        }
-
-        decimal IConvertible.ToDecimal(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(PERIOD) + "to type " + nameof(Decimal));
-        }
-
-        DateTime IConvertible.ToDateTime(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(PERIOD) + "to type " + nameof(DateTime));
-        }
-
-        public string ToString(IFormatProvider provider) => ToString();
-
-        public object ToType(Type conversionType, IFormatProvider provider)
-        {
-            if (conversionType == typeof(string)) return ToString();
-            throw new InvalidCastException("Invalid Cast from type" + nameof(PERIOD) + "to type " + conversionType.FullName);
+                ? Start + "/" + End
+                : Start + "/" + Duration;
         }
     }
 }

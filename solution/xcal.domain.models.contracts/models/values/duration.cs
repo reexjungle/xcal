@@ -1,11 +1,7 @@
-﻿using reexjungle.xcal.core.domain.contracts.extensions;
-using reexjungle.xcal.core.domain.contracts.io.readers;
-using reexjungle.xcal.core.domain.contracts.io.writers;
-using reexjungle.xcal.core.domain.contracts.serialization;
-using System;
+﻿using System;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Text.RegularExpressions;
+using NodaTime;
 
 namespace reexjungle.xcal.core.domain.contracts.models.values
 {
@@ -13,8 +9,33 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
     /// Represents a duration of time.
     /// </summary>
     [DataContract]
-    public struct DURATION : IEquatable<DURATION>, IComparable, IComparable<DURATION>, IConvertible, ICalendarSerializable
+    public struct DURATION : IEquatable<DURATION>, IComparable, IComparable<DURATION>
     {
+        /// <summary>
+        /// Gets the number of weeks in the duration of time.
+        /// </summary>
+        public int WEEKS { get; }
+
+        /// <summary>
+        /// Gets the numbers of hours in the duration of time.
+        /// </summary>
+        public int HOURS { get; }
+
+        /// <summary>
+        /// Gets the number of minutes in the duration of time.
+        /// </summary>
+        public int MINUTES { get; }
+
+        /// <summary>
+        /// Gets the number of seconds in the duration of time.
+        /// </summary>
+        public int SECONDS { get; }
+
+        /// <summary>
+        /// Gets the number of days in the duration of time.
+        /// </summary>
+        public int DAYS { get; }
+
         /// <summary>
         /// Iniializes a new instance of the <see cref="DURATION"/> struct with the given weeks,
         /// days, hours, minutes and seconds.
@@ -44,10 +65,24 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             MINUTES = span.Minutes;
             SECONDS = span.Seconds;
             WEEKS = span.Days
-                    + (span.Hours / 24)
-                    + (span.Minutes / (24 * 60))
-                    + (span.Seconds / (24 * 3600))
-                    + (span.Milliseconds / (24 * 3600000)) / 7;
+                    + span.Hours / 24
+                    + span.Minutes / (24 * 60)
+                    + span.Seconds / (24 * 3600)
+                    + span.Milliseconds / (24 * 3600000) / 7;
+        }
+
+        public DURATION(Duration duration) : this(duration.ToTimeSpan())
+        {
+        }
+
+        public DURATION(Period period)
+        {
+            var normalized = period.Normalize();
+            DAYS = (int)normalized.Days;
+            HOURS = (int)normalized.Hours;
+            MINUTES = (int)normalized.Minutes;
+            SECONDS = (int)normalized.Seconds;
+            WEEKS = (int)normalized.Weeks;
         }
 
         /// <summary>
@@ -58,16 +93,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// cref="DURATION"/> instance with.
         /// </param>
         public DURATION(string value)
-        {
-            var duration = Parse(value);
-            WEEKS = duration.WEEKS;
-            DAYS = duration.DAYS;
-            HOURS = duration.HOURS;
-            MINUTES = duration.MINUTES;
-            SECONDS = duration.SECONDS;
-        }
-
-        private static DURATION Parse(string value)
         {
             var weeks = 0;
             var days = 0;
@@ -93,8 +118,11 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
                     seconds = -seconds;
                 }
             }
-
-            return new DURATION(weeks, days, hours, minutes, seconds);
+            WEEKS = weeks;
+            DAYS = days;
+            HOURS = hours;
+            MINUTES = minutes;
+            SECONDS = seconds;
         }
 
         /// <summary>
@@ -121,31 +149,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             if (SECONDS < other.SECONDS) return -1;
             return 0;
         }
-
-        /// <summary>
-        /// Gets the number of weeks in the duration of time.
-        /// </summary>
-        public int WEEKS { get; private set; }
-
-        /// <summary>
-        /// Gets the numbers of hours in the duration of time.
-        /// </summary>
-        public int HOURS { get; private set; }
-
-        /// <summary>
-        /// Gets the number of minutes in the duration of time.
-        /// </summary>
-        public int MINUTES { get; private set; }
-
-        /// <summary>
-        /// Gets the number of seconds in the duration of time.
-        /// </summary>
-        public int SECONDS { get; private set; }
-
-        /// <summary>
-        /// Gets the number of days in the duration of time.
-        /// </summary>
-        public int DAYS { get; private set; }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -217,71 +220,27 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         }
 
         /// <summary>
-        /// Can the object be generated from its iCalendar representation?
-        /// </summary>
-        /// <returns>
-        /// True if the object can be deserialized from its iCalendar representation, otherwise false.
-        /// </returns>
-        public bool CanDeserialize() => true;
-
-        /// <summary>
-        /// Converts an object into its iCalendar representation.
-        /// </summary>
-        /// <param name="writer">The iCalendar writer used to serialize the object.</param>
-        public void WriteCalendar(ICalendarWriter writer)
-        {
-            var sb = new StringBuilder();
-            var sign = (WEEKS < 0 || DAYS < 0 || HOURS < 0 || MINUTES < 0 || SECONDS < 0) ? "-" : string.Empty;
-            sb.AppendFormat("{0}P", sign);
-            if (WEEKS != 0) sb.AppendFormat("{0}W", WEEKS);
-            if (DAYS != 0) sb.AppendFormat("{0}D", DAYS);
-            if (HOURS != 0 || MINUTES != 0 || SECONDS != 0) sb.Append("T");
-            if (HOURS != 0) sb.AppendFormat("{0}H", HOURS);
-            if (MINUTES != 0) sb.AppendFormat("{0}M", MINUTES);
-            if (SECONDS != 0) sb.AppendFormat("{0}S", SECONDS);
-            writer.WriteValue(sb.ToString());
-        }
-
-        /// <summary>
-        /// Generates an object from its iCalendar representation.
-        /// </summary>
-        /// <param name="reader">
-        /// The iCalendar reader used to deserialize data into the iCalendar object.
-        /// </param>
-        /// <returns>True if the deserialization operation was successful; otherwise false.</returns>
-        public void ReadCalendar(ICalendarReader reader)
-        {
-            var inner = reader.ReadFragment();
-            while (inner.Read())
-            {
-                if (inner.NodeType != NodeType.VALUE) continue;
-                if (!string.IsNullOrEmpty(inner.Value) && !string.IsNullOrWhiteSpace(inner.Value))
-                {
-                    var duration = Parse(inner.Value);
-                    WEEKS = WEEKS;
-                    DAYS = DAYS;
-                    HOURS = HOURS;
-                    MINUTES = MINUTES;
-                    SECONDS = SECONDS;
-                }
-            }
-
-            inner.Close();
-        }
-
-        /// <summary>
-        /// Can the object be converted to its iCalendar representation?
-        /// </summary>
-        /// <returns>
-        /// True if the object can be serialized to its iCalendar representation, otherwise false.
-        /// </returns>
-        public bool CanSerialize() => true;
-
-        /// <summary>
         /// Converts the specified <see cref="DURATION"/> instance into a <see cref="TimeSpan"/> value.
         /// </summary>
         /// <returns>The equivalent <see cref="TimeSpan"/> resulting from the conversion.</returns>
         public TimeSpan AsTimeSpan() => new TimeSpan(7 * WEEKS + DAYS, HOURS, MINUTES, SECONDS);
+
+        public Duration AsDuration() => Duration.FromTimeSpan(AsTimeSpan());
+
+        public Period AsPeriod()
+        {
+            if (this == default(DURATION)) return default(Period);
+            var builder = new PeriodBuilder
+            {
+                Weeks = WEEKS,
+                Days = DAYS,
+                Hours = HOURS,
+                Minutes = MINUTES,
+                Seconds = SECONDS
+            };
+
+            return builder.Build();
+        }
 
         /// <summary>
         /// Adds two specified <see cref="DURATION"/> instances.
@@ -333,11 +292,17 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <returns>A duration of time that has the same numeric value as this instance, but opposite sign.</returns>
         public DURATION Negate() => new DURATION(-Math.Abs(WEEKS), -Math.Abs(DAYS), -Math.Abs(HOURS), -Math.Abs(MINUTES), -Math.Abs(SECONDS));
 
-
         public static implicit operator TimeSpan(DURATION duration) => duration.AsTimeSpan();
 
-        public static implicit operator DURATION(TimeSpan span) => span.AsDURATION();
+        public static implicit operator DURATION(TimeSpan timespan) => new DURATION(timespan);
 
+        public static implicit operator Duration(DURATION duration) => duration.AsDuration();
+
+        public static implicit operator DURATION(Duration duration) => new DURATION(duration);
+
+        public static implicit operator Period(DURATION duration) => duration.AsPeriod();
+
+        public static implicit operator DURATION(Period period) => new DURATION(period);
 
         /// <summary>
         /// Returns a <see cref="DURATION"/> instance, whose value is the negation of the specified duration of time.
@@ -347,7 +312,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         public static DURATION operator -(DURATION duration) => duration.Negate();
 
         /// <summary>
-        /// Returns the specified instance of <see cref="DURATION"/>. 
+        /// Returns the specified instance of <see cref="DURATION"/>.
         /// Each numeric property of the duration of time remains unchanged.
         /// </summary>
         /// <param name="duration">The duration of time to return.</param>
@@ -355,7 +320,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         public static DURATION operator +(DURATION duration) => duration;
 
         /// <summary>
-        /// Adds two specified <see cref="DURATION"/> instances. 
+        /// Adds two specified <see cref="DURATION"/> instances.
         /// </summary>
         /// <param name="left">The first duration of time to add.</param>
         /// <param name="right">The second duration of time to add.</param>
@@ -435,271 +400,5 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <param name="right">The second duration of time to compare.</param>
         /// <returns>true if the values of <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.</returns>
         public static bool operator !=(DURATION left, DURATION right) => !left.Equals(right);
-
-        /// <summary>
-        /// Returns the <see cref="T:System.TypeCode"/> for this instance.
-        /// </summary>
-        /// <returns>
-        /// The enumerated constant that is the <see cref="T:System.TypeCode"/> of the class or value
-        /// type that implements this interface.
-        /// </returns>
-        /// <filterpriority>2</filterpriority>
-        public TypeCode GetTypeCode() => TypeCode.Object;
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent Boolean value using the specified
-        /// culture-specific formatting information.
-        /// </summary>
-        /// <returns>A Boolean value equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        bool IConvertible.ToBoolean(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DURATION) + "to type " + nameof(Boolean));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent Unicode character using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>A Unicode character equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        char IConvertible.ToChar(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DURATION) + "to type " + nameof(Char));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent 8-bit signed integer using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>An 8-bit signed integer equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        sbyte IConvertible.ToSByte(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DURATION) + "to type " + nameof(SByte));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent 8-bit unsigned integer using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>An 8-bit unsigned integer equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        byte IConvertible.ToByte(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DURATION) + "to type " + nameof(Byte));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent 16-bit signed integer using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>An 16-bit signed integer equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        short IConvertible.ToInt16(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DURATION) + "to type " + nameof(Int16));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent 16-bit unsigned integer using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>An 16-bit unsigned integer equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        ushort IConvertible.ToUInt16(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DURATION) + "to type " + nameof(UInt16));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent 32-bit signed integer using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>An 32-bit signed integer equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        int IConvertible.ToInt32(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DURATION) + "to type " + nameof(Int32));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent 32-bit unsigned integer using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>An 32-bit unsigned integer equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        uint IConvertible.ToUInt32(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DURATION) + "to type " + nameof(Int32));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent 64-bit signed integer using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>An 64-bit signed integer equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        long IConvertible.ToInt64(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DURATION) + "to type " + nameof(Int64));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent 64-bit unsigned integer using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>An 64-bit unsigned integer equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        ulong IConvertible.ToUInt64(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DURATION) + "to type " + nameof(UInt64));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent single-precision floating-point
-        /// number using the specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>
-        /// A single-precision floating-point number equivalent to the value of this instance.
-        /// </returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        float IConvertible.ToSingle(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DURATION) + "to type " + nameof(Single));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent double-precision floating-point
-        /// number using the specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>
-        /// A double-precision floating-point number equivalent to the value of this instance.
-        /// </returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        double IConvertible.ToDouble(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DURATION) + "to type " + nameof(Double));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent <see cref="T:System.Decimal"/>
-        /// number using the specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.Decimal"/> number equivalent to the value of this instance.
-        /// </returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        decimal IConvertible.ToDecimal(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DURATION) + "to type " + nameof(Decimal));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent <see cref="T:System.DateTime"/>
-        /// using the specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.DateTime"/> instance equivalent to the value of this instance.
-        /// </returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        DateTime IConvertible.ToDateTime(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DURATION) + "to type " + nameof(DateTime));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent <see cref="T:System.String"/> using
-        /// the specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.String"/> instance equivalent to the value of this instance.
-        /// </returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        public string ToString(IFormatProvider provider) => ToString();
-
-        /// <summary>
-        /// Converts the value of this instance to an <see cref="T:System.Object"/> of the specified
-        /// <see cref="T:System.Type"/> that has an equivalent value, using the specified
-        /// culture-specific formatting information.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Object"/> instance of type <paramref name="conversionType"/> whose
-        /// value is equivalent to the value of this instance.
-        /// </returns>
-        /// <param name="conversionType">
-        /// The <see cref="T:System.Type"/> to which the value of this instance is converted.
-        /// </param>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        public object ToType(Type conversionType, IFormatProvider provider)
-        {
-            if (conversionType == typeof(TimeSpan)) return AsTimeSpan();
-            if (conversionType == typeof(string)) return ToString();
-            throw new InvalidCastException("Invalid Cast from type" + nameof(DURATION) + "to type " + conversionType.FullName);
-        }
     }
 }

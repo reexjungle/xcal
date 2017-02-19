@@ -19,37 +19,31 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
     /// where HH is 2-digit hour, MM is 2-digit minute, SS is 2-digit second and Z is UTC zone indicator.
     /// </summary>
     [DataContract]
-    public struct TIME : IEquatable<TIME>, IComparable, IComparable<TIME>, IConvertible, ICalendarSerializable
+    public struct TIME : IEquatable<TIME>, IComparable, IComparable<TIME>
     {
         /// <summary>
         /// Gets the 2-digit representation of an hour.
         /// </summary>
         [DataMember]
-        public uint HOUR { get; private set; }
+        public int HOUR { get; private set; }
 
         /// <summary>
         /// Gets or sets the 2-digit representation of a minute.
         /// </summary>
         [DataMember]
-        public uint MINUTE { get; private set; }
+        public int MINUTE { get; private set; }
 
         /// <summary>
         /// Gets or sets the 2-digit representation of a second.
         /// </summary>
         [DataMember]
-        public uint SECOND { get; private set; }
+        public int SECOND { get; private set; }
 
         /// <summary>
         /// Gets the form in which the <see cref="TIME"/> instance is expressed.
         /// </summary>
         [DataMember]
         public TIME_FORM Form { get; private set; }
-
-        /// <summary>
-        /// Gets the identifier that references the time zone.
-        /// </summary>
-        [DataMember]
-        public TZID TimeZoneId { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TIME"/> struct with the specified hour,
@@ -60,13 +54,12 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <param name="second">The digit representation of a second.</param>
         /// <param name="form">The form in which the <see cref="TIME"/> instance is expressed.</param>
         /// <param name="tzid">The identifier that references the time zone.</param>
-        public TIME(uint hour, uint minute, uint second, TIME_FORM form = TIME_FORM.LOCAL, TZID tzid = null)
+        public TIME(int hour, int minute, int second, TIME_FORM form = TIME_FORM.LOCAL)
         {
             HOUR = hour;
             MINUTE = minute;
             SECOND = second;
             Form = form;
-            TimeZoneId = tzid;
         }
 
         /// <summary>
@@ -76,13 +69,12 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <param name="datetime">A point in time, typically expressed as date and time of day.</param>
         /// <param name="tzinfo">Any time zone in the world.</param>
         /// <param name="func"></param>
-        public TIME(DateTime datetime, TimeZoneInfo tzinfo, Func<TimeZoneInfo, TZID> func = null)
+        public TIME(DateTime datetime)
         {
-            HOUR = (uint)datetime.Hour;
-            MINUTE = (uint)datetime.Minute;
-            SECOND = (uint)datetime.Second;
-            Form = datetime.Kind.AsTIME_FORM(tzinfo);
-            TimeZoneId = tzinfo != null && func != null ? func(tzinfo) : null;
+            HOUR = datetime.Hour;
+            MINUTE = datetime.Minute;
+            SECOND = datetime.Second;
+            Form = datetime.Kind.AsTIME_FORM();
         }
 
         /// <summary>
@@ -97,11 +89,10 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// </param>
         public TIME(DateTimeOffset datetime)
         {
-            HOUR = (uint)datetime.UtcDateTime.Hour;
-            MINUTE = (uint)datetime.UtcDateTime.Minute;
-            SECOND = (uint)datetime.UtcDateTime.Second;
+            HOUR = datetime.UtcDateTime.Hour;
+            MINUTE = datetime.UtcDateTime.Minute;
+            SECOND = datetime.UtcDateTime.Second;
             Form = TIME_FORM.UTC;
-            TimeZoneId = null;
         }
 
         /// <summary>
@@ -110,21 +101,10 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <param name="value">The string representation of the <see cref="TIME"/> instance.</param>
         public TIME(string value)
         {
-            var time = Parse(value);
-            HOUR = time.HOUR;
-            MINUTE = time.MINUTE;
-            SECOND = time.SECOND;
-            TimeZoneId = time.TimeZoneId;
-            Form = time.Form;
-        }
-
-        private static TIME Parse(string value)
-        {
-            var hour = 0u;
-            var minute = 0u;
-            var second = 0u;
-            TZID tzid = null;
-            var form = TIME_FORM.UNSPECIFIED;
+            var hour = 0;
+            var minute = 0;
+            var second = 0;
+            var form = TIME_FORM.LOCAL;
 
             const string pattern = @"^((?<tzid>TZID=(\w+)?/(\w+)):)?T(?<hour>\d{1,2})(?<min>\d{1,2})(?<sec>\d{1,2})(?<utc>Z)?$";
             const RegexOptions options = RegexOptions.IgnoreCase
@@ -136,19 +116,15 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
             foreach (Match match in regex.Matches(value))
             {
-                if (match.Groups["hour"].Success) hour = uint.Parse(match.Groups["hour"].Value);
-                if (match.Groups["min"].Success) minute = uint.Parse(match.Groups["min"].Value);
-                if (match.Groups["sec"].Success) second = uint.Parse(match.Groups["sec"].Value);
+                if (match.Groups["hour"].Success) hour = int.Parse(match.Groups["hour"].Value);
+                if (match.Groups["min"].Success) minute = int.Parse(match.Groups["min"].Value);
+                if (match.Groups["sec"].Success) second = int.Parse(match.Groups["sec"].Value);
                 if (match.Groups["utc"].Success) form = TIME_FORM.UTC;
-                else if (match.Groups["tzid"].Success)
-                {
-                    tzid = new TZID(match.Groups["tzid"].Value);
-                    form = TIME_FORM.LOCAL_TIMEZONE_REF;
-                }
-                else form = TIME_FORM.LOCAL;
             }
-
-            return new TIME(hour, minute, second, form, tzid);
+            HOUR = hour;
+            MINUTE = minute;
+            SECOND = second;
+            Form = form;
         }
 
         /// <summary>
@@ -157,7 +133,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <returns>The equivalent <see cref="DateTime"/> respresentation of this time instance.</returns>
         public DateTime AsDateTime() => this == default(TIME)
             ? default(DateTime)
-            : new DateTime(1, 1, 1, (int)HOUR, (int)MINUTE, (int)SECOND, Form.AsDateTimeKind(TimeZoneId));
+            : new DateTime(1, 1, 1, HOUR, MINUTE, SECOND, Form.AsDateTimeKind());
 
         /// <summary>
         /// Converts this time instance to its equivalent <see cref="System.DateTimeOffset"/> representation.
@@ -166,20 +142,11 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <returns>
         /// The equivalent <see cref="System.DateTimeOffset"/> respresentation of this date instance.
         /// </returns>
-        public DateTimeOffset AsDateTimeOffset(Func<TZID, UTC_OFFSET> func = null)
+        public DateTimeOffset AsDateTimeOffset()
         {
-            if (this == default(TIME)) return default(DateTimeOffset);
-
-            if (Form == TIME_FORM.LOCAL || Form == TIME_FORM.UTC)
-                return new DateTimeOffset(AsDateTime(), TimeSpan.Zero);
-
-            if (Form == TIME_FORM.LOCAL_TIMEZONE_REF && TimeZoneId != null && func != null)
-            {
-                var offset = func(TimeZoneId);
-                return new DateTimeOffset(AsDateTime(), new TimeSpan(offset.HOURS, offset.MINUTES, offset.SECONDS));
-            }
-            //Unspecified time form
-            return new DateTimeOffset(AsDateTime());
+            return this == default(TIME)
+                ? default(DateTimeOffset)
+                : new DateTimeOffset(new DateTime(1, 1, 1, HOUR, MINUTE, SECOND, Form.AsDateTimeKind()), TimeSpan.Zero);
         }
 
         /// <summary>
@@ -208,8 +175,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             HOUR == other.HOUR
             && MINUTE == other.MINUTE
             && SECOND == other.SECOND
-            && Form == other.Form
-            && Equals(TimeZoneId, other.TimeZoneId);
+            && Form == other.Form;
 
         /// <summary>
         /// Returns the hash code for this instance.
@@ -220,11 +186,10 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         {
             unchecked
             {
-                var hashCode = (int)HOUR;
-                hashCode = (hashCode * 397) ^ (int)MINUTE;
-                hashCode = (hashCode * 397) ^ (int)SECOND;
+                var hashCode = HOUR;
+                hashCode = (hashCode * 397) ^ MINUTE;
+                hashCode = (hashCode * 397) ^ SECOND;
                 hashCode = (hashCode * 397) ^ (int)Form;
-                hashCode = (hashCode * 397) ^ (TimeZoneId?.GetHashCode() ?? 0);
                 return hashCode;
             }
         }
@@ -270,97 +235,28 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         {
             if (obj == null) return 1;
             if (obj is TIME) return CompareTo((TIME)obj);
-            throw new ArgumentException(nameof(obj) + " is not left time");
+            throw new ArgumentException(nameof(obj) + " is not a valid time");
         }
 
-        /// <summary>
-        /// Can the object be converted to its iCalendar representation?
-        /// </summary>
-        /// <returns>
-        /// True if the object can be serialized to its iCalendar representation, otherwise false.
-        /// </returns>
-        public bool CanSerialize() => true;
+        public TIME AddSeconds(double value) => (TIME)AsDateTime().AddSeconds(value);
 
-        /// <summary>
-        /// Can the object be generated from its iCalendar representation?
-        /// </summary>
-        /// <returns>
-        /// True if the object can be deserialized from its iCalendar representation, otherwise false.
-        /// </returns>
-        public bool CanDeserialize() => true;
+        public TIME AddMinutes(double value) => (TIME)AsDateTime().AddMinutes(value);
 
-        /// <summary>
-        /// Converts an object into its iCalendar representation.
-        /// </summary>
-        /// <param name="writer">The iCalendar writer used to serialize the object.</param>
-        public void WriteCalendar(ICalendarWriter writer)
-        {
-            switch (Form)
-            {
-                case TIME_FORM.LOCAL:
-                    writer.WriteValue($"T{HOUR:D2}{MINUTE:D2}{SECOND:D2}");
-                    break;
+        public TIME AddHours(double value) => (TIME)AsDateTime().AddHours(value);
 
-                case TIME_FORM.UTC:
-                    writer.WriteValue($"T{HOUR:D2}{MINUTE:D2}{SECOND:D2}Z");
-                    break;
+        public TIME Add(DURATION duration) => (TIME)AsDateTime().Add(duration.AsTimeSpan());
 
-                case TIME_FORM.LOCAL_TIMEZONE_REF:
-                    writer.WriteValue($"{TimeZoneId}:T{HOUR:D2}{MINUTE:D2}{SECOND:D2}");
-                    break;
+        public TIME Subtract(DURATION duration) => (TIME)AsDateTime().Subtract(duration.AsTimeSpan());
 
-                default:
-                    writer.WriteValue($"T{HOUR:D2}{MINUTE:D2}{SECOND:D2}");
-                    break;
-            }
-        }
+        public DURATION Subtract(TIME other) => AsDateTime().Subtract(other.AsDateTime());
 
-        /// <summary>
-        /// Generates an object from its iCalendar representation.
-        /// </summary>
-        /// <param name="reader">
-        /// The iCalendar reader used to deserialize data into the iCalendar object.
-        /// </param>
-        /// <returns>True if the deserialization operation was successful; otherwise false.</returns>
-        public void ReadCalendar(ICalendarReader reader)
-        {
-            var inner = reader.ReadFragment();
-            while (inner.Read())
-            {
-                if (inner.NodeType != NodeType.VALUE) continue;
-                if (!string.IsNullOrEmpty(inner.Value) && !string.IsNullOrWhiteSpace(inner.Value))
-                {
-                    var time = Parse(inner.Value);
-                    HOUR = time.HOUR;
-                    MINUTE = time.MINUTE;
-                    SECOND = time.SECOND;
-                    Form = time.Form;
-                    TimeZoneId = time.TimeZoneId;
-                }
-            }
+        public static explicit operator TIME(DateTime datetime) => new TIME(datetime);
 
-            inner.Close();
-        }
+        public static implicit operator DateTime(TIME time) => time.AsDateTime();
 
-        public TIME AddSeconds(double value) => AsDateTime().AddSeconds(value).AsTIME();
+        public static explicit operator TIME(DateTimeOffset datetime) => new TIME(datetime);
 
-        public TIME AddMinutes(double value) => AsDateTime().AddMinutes(value).AsTIME();
-
-        public TIME AddHours(double value) => AsDateTime().AddHours(value).AsTIME();
-
-        public TIME Add(DURATION duration) => AsDateTime().Add(duration.AsTimeSpan()).AsTIME();
-
-        public TIME Subtract(DURATION duration) => AsDateTime().Subtract(duration.AsTimeSpan()).AsTIME();
-
-        public DURATION Subtract(TIME other) => AsDateTime().Subtract(other.AsDateTime()).AsDURATION();
-
-        public static implicit operator TIME(DateTime datetime) => datetime.AsTIME();
-
-        public static explicit operator DateTime(TIME time) => time.AsDateTime();
-
-        public static implicit operator TIME(DateTimeOffset datetime) => datetime.AsTIME();
-
-        public static explicit operator DateTimeOffset(TIME time) => time.AsDateTimeOffset();
+        public static implicit operator DateTimeOffset(TIME time) => time.AsDateTimeOffset();
 
         public static TIME operator +(TIME time, DURATION duration) => time.Add(duration);
 
@@ -440,272 +336,8 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// </summary>
         /// <returns>A <see cref="T:System.String"/> containing a fully qualified type name.</returns>
         /// <filterpriority>2</filterpriority>
-        public override string ToString()
-        {
-            switch (Form)
-            {
-                case TIME_FORM.LOCAL: return $"T{HOUR:D2}{MINUTE:D2}{SECOND:D2}";
-
-                case TIME_FORM.UTC: return $"T{HOUR:D2}{MINUTE:D2}{SECOND:D2}Z";
-
-                case TIME_FORM.LOCAL_TIMEZONE_REF: return $"{TimeZoneId}:T{HOUR:D2}{MINUTE:D2}{SECOND:D2}";
-
-                default: return $"T{HOUR:D2}{MINUTE:D2}{SECOND:D2}";
-            }
-        }
-
-        /// <summary>
-        /// Returns the <see cref="T:System.TypeCode"/> for this instance.
-        /// </summary>
-        /// <returns>
-        /// The enumerated constant that is the <see cref="T:System.TypeCode"/> of the class or value
-        /// type that implements this interface.
-        /// </returns>
-        /// <filterpriority>2</filterpriority>
-        public TypeCode GetTypeCode() => TypeCode.DateTime;
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent Boolean value using the specified
-        /// culture-specific formatting information.
-        /// </summary>
-        /// <returns>A Boolean value equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        bool IConvertible.ToBoolean(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Boolean));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent Unicode character using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>A Unicode character equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        char IConvertible.ToChar(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Char));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent 8-bit signed integer using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>An 8-bit signed integer equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        sbyte IConvertible.ToSByte(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(SByte));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent 8-bit unsigned integer using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>An 8-bit unsigned integer equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        byte IConvertible.ToByte(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Byte));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent 16-bit signed integer using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>An 16-bit signed integer equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        short IConvertible.ToInt16(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Int16));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent 16-bit unsigned integer using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>An 16-bit unsigned integer equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        ushort IConvertible.ToUInt16(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(UInt16));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent 32-bit signed integer using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>An 32-bit signed integer equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        int IConvertible.ToInt32(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Int32));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent 32-bit unsigned integer using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>An 32-bit unsigned integer equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        uint IConvertible.ToUInt32(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(UInt32));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent 64-bit signed integer using the
-        /// specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>An 64-bit signed integer equivalent to the value of this instance.</returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        long IConvertible.ToInt64(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Int64));
-        }
-
-        ulong IConvertible.ToUInt64(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(UInt64));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent single-precision floating-point
-        /// number using the specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>
-        /// A single-precision floating-point number equivalent to the value of this instance.
-        /// </returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        float IConvertible.ToSingle(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Single));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent double-precision floating-point
-        /// number using the specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>
-        /// A double-precision floating-point number equivalent to the value of this instance.
-        /// </returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        double IConvertible.ToDouble(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Double));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent <see cref="T:System.Decimal"/>
-        /// number using the specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.Decimal"/> number equivalent to the value of this instance.
-        /// </returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        decimal IConvertible.ToDecimal(IFormatProvider provider)
-        {
-            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + nameof(Decimal));
-        }
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent <see cref="T:System.DateTime"/>
-        /// using the specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.DateTime"/> instance equivalent to the value of this instance.
-        /// </returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        public DateTime ToDateTime(IFormatProvider provider) => AsDateTime();
-
-        /// <summary>
-        /// Converts the value of this instance to an equivalent <see cref="T:System.String"/> using
-        /// the specified culture-specific formatting information.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.String"/> instance equivalent to the value of this instance.
-        /// </returns>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        public string ToString(IFormatProvider provider) => ToString();
-
-        /// <summary>
-        /// Converts the value of this instance to an <see cref="T:System.Object"/> of the specified
-        /// <see cref="T:System.Type"/> that has an equivalent value, using the specified
-        /// culture-specific formatting information.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Object"/> instance of type <paramref name="conversionType"/> whose
-        /// value is equivalent to the value of this instance.
-        /// </returns>
-        /// <param name="conversionType">
-        /// The <see cref="T:System.Type"/> to which the value of this instance is converted.
-        /// </param>
-        /// <param name="provider">
-        /// An <see cref="T:System.IFormatProvider"/> interface implementation that supplies
-        /// culture-specific formatting information.
-        /// </param>
-        /// <filterpriority>2</filterpriority>
-        public object ToType(Type conversionType, IFormatProvider provider)
-        {
-            if (conversionType == typeof(DateTime)) return AsDateTime();
-            if (conversionType == typeof(DateTimeOffset)) return AsDateTimeOffset();
-            if (conversionType == typeof(string)) return ToString();
-            throw new InvalidCastException("Invalid Cast from type" + nameof(TIME) + "to type " + conversionType.FullName);
-        }
+        public override string ToString() => Form == TIME_FORM.LOCAL
+            ? $"T{HOUR:D2}{MINUTE:D2}{SECOND:D2}"
+            : $"T{HOUR:D2}{MINUTE:D2}{SECOND:D2}Z";
     }
 }

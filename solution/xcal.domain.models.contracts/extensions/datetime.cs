@@ -1,8 +1,8 @@
 ﻿using System;
+using NodaTime;
 using reexjungle.xcal.core.domain.contracts.models;
 using reexjungle.xcal.core.domain.contracts.models.parameters;
 using reexjungle.xcal.core.domain.contracts.models.values;
-using reexjungle.xmisc.foundation.concretes;
 
 namespace reexjungle.xcal.core.domain.contracts.extensions
 {
@@ -51,38 +51,56 @@ namespace reexjungle.xcal.core.domain.contracts.extensions
             }
         }
 
-        /// <summary>
-        /// Converts a <see cref="DateTimeKind"/> value of a <see cref="DateTime"/> to a <see
-        /// cref="TIME_FORM"/> value.
-        /// </summary>
-        /// <param name="kind">The <see cref="DateTimeKind"/> value to be converted.</param>
-        /// <param name="tzinfo">
-        /// Optional: the time zone reference associated with local <see cref="DateTime"/>.
-        /// </param>
-        /// <returns>The <see cref="TIME_FORM"/> value that results from the conversion.</returns>
-        public static TIME_FORM AsTIME_FORM(this DateTimeKind kind, TimeZoneInfo tzinfo = null)
-        {
-            if (kind == DateTimeKind.Local) return TIME_FORM.LOCAL;
-            if (kind == DateTimeKind.Utc) return TIME_FORM.UTC;
-            if (kind == DateTimeKind.Unspecified && tzinfo != null)
-                return TIME_FORM.LOCAL_TIMEZONE_REF;
-            return TIME_FORM.UNSPECIFIED;
-        }
+
+        public static TIME_FORM AsTIME_FORM(this DateTimeKind kind) 
+            => kind == DateTimeKind.Utc ? TIME_FORM.UTC : TIME_FORM.LOCAL;
 
         /// <summary>
         /// Converts a <see cref="TIME_FORM"/> value to a <see cref="DateTimeKind"/> value.
         /// </summary>
         /// <param name="form">The form in which the time is expressed.</param>
-        /// <param name="tzid">Optional: the time zone identifier.</param>
         /// <returns>The <see cref="DateTimeKind"/> value that results from the conversion.</returns>
-        public static DateTimeKind AsDateTimeKind(this TIME_FORM form, TZID tzid = null)
+        public static DateTimeKind AsDateTimeKind(this TIME_FORM form) 
+            => form == TIME_FORM.UTC ? DateTimeKind.Utc : DateTimeKind.Local;
+
+        /// <summary>
+        /// Converts a <see cref="WEEKDAY"/> value to a NodaTime "DayOfWeek" value.
+        /// </summary>
+        /// <param name="weekday">The <see cref="WEEKDAY"/> value that is to be converted.</param>
+        /// <returns>The NodaTime "DayOfWeek" value that results from the conversion.</returns>
+        public static int AsNodaTimeDayOfWeek(this WEEKDAY weekday)
         {
-            if (form == TIME_FORM.LOCAL) return DateTimeKind.Local;
-            if (form == TIME_FORM.UTC) return DateTimeKind.Utc;
-            if (form == TIME_FORM.LOCAL_TIMEZONE_REF && tzid != null) return DateTimeKind.Local;
-            return DateTimeKind.Unspecified;
+            switch (weekday)
+            {
+                case WEEKDAY.SU: return 7;
+                case WEEKDAY.MO: return 1;
+                case WEEKDAY.TU: return 2;
+                case WEEKDAY.WE: return 3;
+                case WEEKDAY.TH: return 4;
+                case WEEKDAY.FR: return 5;
+                case WEEKDAY.SA: return 6;
+                default: return 7; //SU
+            }
         }
 
-        public static DATE_TIME AsDATE_TIME(this DateTime datetime) => new DATE_TIME(datetime);
+        /// <summary>
+        /// Converts a NodaTime "DayOfWeek" value to a <see cref="WEEKDAY"/> value.
+        /// </summary>
+        /// <param name="dayofweek">The NodaTime "DayOfWeek" value to be converted.</param>
+        /// <returns>The <see cref="WEEKDAY"/> value that results from the conversion.</returns>
+        public static WEEKDAY AsWEEKDAY(this int dayofweek)
+        {
+            switch (dayofweek)
+            {
+                case 7: return WEEKDAY.SU;
+                case 1: return WEEKDAY.MO;
+                case 2: return WEEKDAY.TU;
+                case 3: return WEEKDAY.WE;
+                case 4: return WEEKDAY.TH;
+                case 5: return WEEKDAY.FR;
+                case 6: return WEEKDAY.SA;
+                default: return default(WEEKDAY);
+            }
+        }
     }
 }

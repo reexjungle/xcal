@@ -6,12 +6,37 @@ using reexjungle.xcal.core.domain.contracts.serialization;
 
 namespace reexjungle.xcal.core.domain.contracts.models.values
 {
+    public sealed class MailtoUri : Uri
+    {
+        public MailtoUri(string uriString) : base(uriString)
+        {
+            if (uriString == null) throw new ArgumentNullException(nameof(uriString));
+            if (!Uri.IsWellFormedUriString(uriString, UriKind.RelativeOrAbsolute))
+                throw new FormatException(nameof(uriString) + " is not well formed Uri");
+        }
+
+        public MailtoUri(string uriString, UriKind uriKind) : base(uriString, uriKind)
+        {
+        }
+
+        public MailtoUri(Uri baseUri, string relativeUri) : base(baseUri, relativeUri)
+        {
+        }
+
+        public MailtoUri(Uri baseUri, Uri relativeUri) : base(baseUri, relativeUri)
+        {
+        }
+
+        public MailtoUri(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext)
+        {
+        }
+    }
 
     /// <summary>
     /// Represents a calendar user addresss.
     /// </summary>
     [DataContract]
-    public class CAL_ADDRESS : IEquatable<CAL_ADDRESS>, ICalendarSerializable
+    public class CAL_ADDRESS : IEquatable<CAL_ADDRESS>
     {
         /// <summary>
         /// Gets the value of the calendar user address.
@@ -70,7 +95,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
             Value = other.Value != null ? new Uri(other.Value.ToString()) : other.Value;
         }
-
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -136,55 +160,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// </summary>
         /// <param name="address">The calendar address that is to be converted to its equivalent <see cref="Uri"/> representation.</param>
         public static explicit operator Uri(CAL_ADDRESS address) => address.AsUri();
-
-        /// <summary>
-        /// Can the object be converted to its iCalendar representation?
-        /// </summary>
-        /// <returns>
-        /// True if the object can be serialized to its iCalendar representation, otherwise false.
-        /// </returns>
-        public bool CanSerialize() => true;
-
-        /// <summary>
-        /// Can the object be generated from its iCalendar representation?
-        /// </summary>
-        /// <returns>
-        /// True if the object can be deserialized from its iCalendar representation, otherwise false.
-        /// </returns>
-        public bool CanDeserialize() => true;
-
-        /// <summary>
-        /// Converts an object into its iCalendar representation.
-        /// </summary>
-        /// <param name="writer">The iCalendar writer used to serialize the object.</param>
-        public void WriteCalendar(ICalendarWriter writer)
-        {
-            writer.WriteValue(Value.ToString());
-        }
-
-        /// <summary>
-        /// Generates an object from its iCalendar representation.
-        /// </summary>
-        /// <param name="reader">
-        /// The iCalendar reader used to deserialize data into the iCalendar object.
-        /// </param>
-        /// <returns>True if the deserialization operation was successful; otherwise false.</returns>
-        public void ReadCalendar(ICalendarReader reader)
-        {
-            var inner = reader.ReadFragment();
-            while (inner.Read())
-            {
-                if (inner.NodeType != NodeType.VALUE) continue;
-                if (!string.IsNullOrEmpty(inner.Value) && !string.IsNullOrWhiteSpace(inner.Value))
-                {
-                    Uri uri;
-                    if (Uri.TryCreate(inner.Value, UriKind.RelativeOrAbsolute, out uri))
-                    {
-                        Value = uri;
-                    }
-                }
-            }
-        }
 
         /// <summary>
         /// Converts this calendar address into an equivalent <see cref="Uri"/> instance.

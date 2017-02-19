@@ -113,17 +113,7 @@
         /// <summary>
         /// The time represented is specified as Coordinate Universal Time (UTC)
         /// </summary>
-        UTC,
-
-        /// <summary>
-        /// The time represented is specified as local time with a time zone reference.
-        /// </summary>
-        LOCAL_TIMEZONE_REF,
-
-        /// <summary>
-        /// The time represented is not specified as either local time or Coordinated Universal Time (UTC)
-        /// </summary>
-        UNSPECIFIED
+        UTC
     }
 
     /// <summary>

@@ -31,7 +31,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.parameters
             }
         }
 
-
         /// <summary>
         /// Gets the identifier for the time zone definition for a time component.
         /// </summary>
@@ -64,6 +63,8 @@ namespace reexjungle.xcal.core.domain.contracts.models.parameters
             Prefix = other.Prefix;
             Suffix = other.Suffix;
         }
+
+        
 
         public TZID(string value)
         {

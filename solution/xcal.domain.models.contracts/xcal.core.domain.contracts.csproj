@@ -47,20 +47,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="xmisc.foundation.concretes, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\xmisc.foundation.concretes.1.0.81-rc-f858a00\lib\net45\xmisc.foundation.concretes.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="xmisc.foundation.contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\xmisc.foundation.contracts.1.0.81-rc-f858a00\lib\net45\xmisc.foundation.contracts.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="extensions\date.cs" />
     <Compile Include="extensions\datetime.cs" />
     <Compile Include="extensions\duration.cs" />
-    <Compile Include="extensions\time.cs" />
     <Compile Include="io\readers\enums.cs" />
     <Compile Include="io\readers\fragment.cs" />
     <Compile Include="io\readers\nodes.cs" />
