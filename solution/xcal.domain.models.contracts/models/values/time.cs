@@ -67,8 +67,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// cref="DateTime"/> and <see cref="TimeZoneInfo"/>.
         /// </summary>
         /// <param name="datetime">A point in time, typically expressed as date and time of day.</param>
-        /// <param name="tzinfo">Any time zone in the world.</param>
-        /// <param name="func"></param>
         public TIME(DateTime datetime)
         {
             HOUR = datetime.Hour;
@@ -138,7 +136,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <summary>
         /// Converts this time instance to its equivalent <see cref="System.DateTimeOffset"/> representation.
         /// </summary>
-        /// <param name="func">Function to determine the offset from the time zone reference.</param>
         /// <returns>
         /// The equivalent <see cref="System.DateTimeOffset"/> respresentation of this date instance.
         /// </returns>
