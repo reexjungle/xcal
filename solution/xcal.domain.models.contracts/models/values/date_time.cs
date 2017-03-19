@@ -6,6 +6,9 @@ using NodaTime;
 
 namespace reexjungle.xcal.core.domain.contracts.models.values
 {
+    /// <summary>
+    /// Represents a calendar date with reference to the time of the day.
+    /// </summary>
     [DataContract]
     public struct DATE_TIME : IEquatable<DATE_TIME>, IComparable, IComparable<DATE_TIME>
     {
@@ -46,7 +49,8 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         public int SECOND { get; private set; }
 
         /// <summary>
-        /// Specifies whether a System.DateTime object represents a local time or a Coordinated Universal Time (UTC).
+        /// Specifies whether a System.DateTime object represents a local time or a Coordinated
+        /// Universal Time (UTC).
         /// </summary>
         [DataMember]
         public TIME_FORM Form { get; private set; }
@@ -102,7 +106,8 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct with the specified instance of <see cref="DateTimeOffset"/>.
+        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct with the specified
+        /// instance of <see cref="DateTimeOffset"/>.
         /// <para/>
         /// Note: By using this constructor, the new instance of <see cref="DATE_TIME"/> shall always
         ///       be initialized as UTC time.
@@ -117,15 +122,19 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct with the specified instance of <see cref="LocalDate"/>.
+        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct with the specified
+        /// instance of <see cref="LocalDate"/>.
         /// </summary>
-        /// <param name="date">A date within the calendar, with no reference to a particular time zone or time of day.</param>
+        /// <param name="date">
+        /// A date within the calendar, with no reference to a particular time zone or time of day.
+        /// </param>
         public DATE_TIME(LocalDate date) : this(date.Year, date.Month, date.Day, 0, 0, 0)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct with the specified instance of <see cref="LocalDateTime"/>.
+        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct with the specified
+        /// instance of <see cref="LocalDateTime"/>.
         /// </summary>
         /// <param name="datetime">A date and time in a particular calendar system</param>
         public DATE_TIME(LocalDateTime datetime) : this(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second)
@@ -133,9 +142,13 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct with the specified instance of <see cref="ZonedDateTime"/>.
+        /// Initializes a new instance of the <see cref="DATE_TIME"/> struct with the specified
+        /// instance of <see cref="ZonedDateTime"/>.
         /// </summary>
-        /// <param name="datetime">A local date time in a specific time zone and with a particular offset to distinguish between otherwise-ambiguous instants</param>
+        /// <param name="datetime">
+        /// A local date time in a specific time zone and with a particular offset to distinguish
+        /// between otherwise-ambiguous instants
+        /// </param>
         public DATE_TIME(ZonedDateTime datetime) : this(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second)
         {
         }
@@ -183,18 +196,82 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             Form = form;
         }
 
+        /// <summary>
+        /// Adds the specified number of days to the value of this instance.
+        /// </summary>
+        /// <param name="value">
+        /// A number of whole days. The value parameter can be negative or positive.
+        /// </param>
+        /// <returns>
+        /// A <see cref="DATE_TIME"/> instance, whose value is the sum of the date represented by
+        /// this instance and the number of days represented by <paramref name="value"/>.
+        /// </returns>
         public DATE_TIME AddDays(int value) => (DATE_TIME)AsLocalDateTime().PlusDays(value);
 
+        /// <summary>
+        /// Adds the specified number of weeks to the value of this instance.
+        /// </summary>
+        /// <param name="value">
+        /// A number of whole weeks. The value parameter can be negative or positive.
+        /// </param>
+        /// <returns>
+        /// A <see cref="DATE_TIME"/> instance, whose value is the sum of the date time represented
+        /// by this instance and the number of weeks represented by <paramref name="value"/>.
+        /// </returns>
         public DATE_TIME AddWeeks(int value) => (DATE_TIME)AsLocalDateTime().PlusWeeks(value);
 
+        /// <summary>
+        /// Adds the specified number of months to the value of this instance.
+        /// </summary>
+        /// <param name="value">
+        /// A number of whole months. The value parameter can be negative or positive.
+        /// </param>
+        /// <returns>
+        /// A <see cref="DATE_TIME"/> instance, whose value is the sum of the date time represented
+        /// by this instance and the number of months represented by <paramref name="value"/>.
+        /// </returns>
         public DATE_TIME AddMonths(int value) => (DATE_TIME)AsLocalDateTime().PlusMonths(value);
 
+        /// <summary>
+        /// Adds the specified number of years to the value of this instance.
+        /// </summary>
+        /// <param name="value">
+        /// A number of whole years. The value parameter can be negative or positive.
+        /// </param>
+        /// <returns>
+        /// A <see cref="DATE_TIME"/> instance, whose value is the sum of the date time represented
+        /// by this instance and the number of years represented by <paramref name="value"/>.
+        /// </returns>
         public DATE_TIME AddYears(int value) => (DATE_TIME)AsLocalDateTime().PlusYears(value);
 
+        /// <summary>
+        /// Adds the value of the specified <see cref="DURATION"/> instance to the value of this instance.
+        /// </summary>
+        /// <param name="duration">A positive or negative duration of time.</param>
+        /// <returns>
+        /// A <see cref="DATE_TIME"/> instance, whose value is the sum of the date time represented
+        /// by this instance and duration of time represented by <paramref name="duration"/>.
+        /// </returns>
         public DATE_TIME Add(DURATION duration) => (DATE_TIME)AsLocalDateTime().Plus(duration.AsPeriod());
 
+        /// <summary>
+        /// Subtracts the value of the specified <see cref="DURATION"/> from the value of this instance.
+        /// </summary>
+        /// <param name="duration">A positive or negative duration of time.</param>
+        /// <returns>
+        /// A <see cref="DATE_TIME"/> instance, whose value is the date time represented by this
+        /// instance minus the duration of time represented by <paramref name="duration"/>.
+        /// </returns>
         public DATE_TIME Subtract(DURATION duration) => (DATE_TIME)AsLocalDateTime().Minus(duration.AsPeriod());
 
+        /// <summary>
+        /// Subtract the specified date time from this instance.
+        /// </summary>
+        /// <param name="other">The date to subtract.</param>
+        /// <returns>
+        /// A duration of time that is equal to the date time represented by this instance minus the
+        /// date time represented by <paramref name="other"/>.
+        /// </returns>
         public DURATION Subtract(DATE_TIME other) => AsDateTime().Subtract(other.AsDateTime());
 
         /// <summary>
@@ -228,38 +305,66 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         public DATE_TIME AddHours(int value) => (DATE_TIME)AsLocalDateTime().PlusHours(value);
 
         /// <summary>
-        /// Converts this date time instance to its equivalent <see cref="System.DateTime"/> representation.
+        /// Converts this date time instance to its equivalent <see cref="DateTime"/> representation.
         /// </summary>
-        /// <returns>
-        /// The equivalent <see cref="System.DateTime"/> respresentation of this date instance.
-        /// </returns>
+        /// <returns>The equivalent <see cref="DateTime"/> respresentation of this date instance.</returns>
         public DateTime AsDateTime() => this == default(DATE_TIME)
             ? default(DateTime)
             : new DateTime(FULLYEAR, MONTH, MDAY, HOUR, MINUTE, SECOND, Form.AsDateTimeKind());
 
+        /// <summary>
+        /// Converts this date time instance to its equivalent <see cref="DateTimeOffset"/> representation.
+        /// </summary>
+        /// <returns>
+        /// The equivalent <see cref="DateTimeOffset"/> respresentation of this date instance.
+        /// </returns>
         public DateTimeOffset AsDateTimeOffset() => this == default(DATE_TIME)
             ? default(DateTimeOffset)
             : new DateTimeOffset(FULLYEAR, MONTH, MDAY, HOUR, MINUTE,
                 SECOND, TimeSpan.Zero);
 
+        /// <summary>
+        /// Converts this date time instance to its equivalent <see cref="LocalDate"/> representation.
+        /// </summary>
+        /// <returns>The equivalent <see cref="LocalDate"/> respresentation of this date instance.</returns>
         public LocalDate AsLocalDate() => this == default(DATE_TIME)
             ? default(LocalDate)
             : new LocalDate(FULLYEAR, MONTH, MDAY);
 
+        /// <summary>
+        /// Converts this date time instance to its equivalent <see cref="LocalDateTime"/> representation.
+        /// </summary>
+        /// <returns>
+        /// The equivalent <see cref="LocalDateTime"/> respresentation of this date instance.
+        /// </returns>
         public LocalDateTime AsLocalDateTime() => this == default(DATE_TIME)
             ? default(LocalDateTime)
             : new LocalDateTime(FULLYEAR, MONTH, MDAY, HOUR, MINUTE, SECOND);
 
+        /// <summary>
+        /// Converts this date time instance to its equivalent <see cref="ZonedDateTime"/> representation.
+        /// </summary>
+        /// <returns>
+        /// The equivalent <see cref="ZonedDateTime"/> respresentation of this date instance.
+        /// </returns>
         public ZonedDateTime AsZonedDateTime() => this == default(DATE_TIME)
             ? default(ZonedDateTime)
             : new ZonedDateTime(new LocalDateTime(FULLYEAR, MONTH, MDAY, HOUR, MINUTE, SECOND),
                 DateTimeZoneProviders.Tzdb["UTC"],
                 Offset.FromHours(0));
 
+        /// <summary>
+        /// Converts this date time instance to its equivalent <see cref="DATE"/> representation.
+        /// </summary>
+        /// <returns>The equivalent <see cref="DATE"/> respresentation of this date instance.</returns>
         public DATE AsDate() => this == default(DATE_TIME)
             ? default(DATE)
             : new DATE(FULLYEAR, MONTH, MDAY);
 
+        /// <summary>
+        /// Converts this date time instance to its equivalent <see cref="TIME"/> representation.
+        /// </summary>
+        /// <returns>The equivalent <see cref="TIME"/> respresentation of this date instance.</returns>
         public TIME AsTime() => this == default(DATE_TIME)
             ? default(TIME)
             : new TIME(HOUR, MINUTE, SECOND, Form);
@@ -368,10 +473,36 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             throw new ArgumentException(nameof(obj) + " is not a date time");
         }
 
-        public static DATE_TIME operator +(DATE_TIME left, DURATION duration) => left.Add(duration);
+        /// <summary>
+        /// Adds the value of the specified <see cref="DURATION"/> instance to the specified of <see
+        /// cref="DATE_TIME"/> instance.
+        /// </summary>
+        /// <param name="datetime">The date time, to which the duration is added.</param>
+        /// <param name="duration">The duration of time to add.</param>
+        /// <returns>
+        /// A date, whose value is the value of <paramref name="datetime"/> plus <paramref name="duration"/>.
+        /// </returns>
+        public static DATE_TIME operator +(DATE_TIME datetime, DURATION duration) => datetime.Add(duration);
 
+        /// <summary>
+        /// Subtracts the value of the specified <see cref="DURATION"/> instance from the specified
+        /// of <see cref="DATE_TIME"/> instance.
+        /// </summary>
+        /// <param name="left">The date, from which the duration is subtracted.</param>
+        /// <param name="duration">The duration of time to subtract.</param>
+        /// <returns>
+        /// A date, whose value is the value of <paramref name="left"/> minus <paramref name="duration"/>.
+        /// </returns>
         public static DATE_TIME operator -(DATE_TIME left, DURATION duration) => left.Subtract(duration);
 
+        /// <summary>
+        /// Subtracts a specified <see cref="DATE_TIME"/> instance from another.
+        /// </summary>
+        /// <param name="left">The first date to subtract from (the minuend).</param>
+        /// <param name="right">The second date that is subtracted (the subtrahend).</param>
+        /// <returns>
+        /// A duration of time, whose value is the value of <paramref name="left"/> minus <paramref name="right"/>.
+        /// </returns>
         public static DURATION operator -(DATE_TIME left, DATE_TIME right) => left.Subtract(right);
 
         /// <summary>
@@ -381,16 +512,25 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <param name="datetime">The <see cref="DATE_TIME"/> instance to convert.</param>
         public static implicit operator DateTime(DATE_TIME datetime) => datetime.AsDateTime();
 
+        /// <summary>
+        /// Converts the <see cref="DateTime"/> implicitly to an equivalent <see cref="DATE_TIME"/> instance.
+        /// </summary>
+        /// <param name="datetime">
+        /// The <see cref="DateTime"/> instance that is implicitly converted to the <see
+        /// cref="DATE_TIME"/> instance.
+        /// </param>
         public static implicit operator DATE_TIME(DateTime datetime) => new DATE_TIME(datetime);
 
         /// <summary>
-        /// Converts implicitly the specified <see cref="DATE"/> instance to an equivalent <see cref="DATE_TIME"/> instance.
+        /// Converts implicitly the specified <see cref="DATE"/> instance to an equivalent <see
+        /// cref="DATE_TIME"/> instance.
         /// </summary>
         /// <param name="date">The <see cref="DATE"/> instance to convert.</param>
         public static implicit operator DATE_TIME(DATE date) => new DATE_TIME(date);
 
         /// <summary>
-        /// Explicitly converts the specified <see cref="DATE_TIME"/> instance to a <see cref="DATE"/> instance.
+        /// Explicitly converts the specified <see cref="DATE_TIME"/> instance to a <see
+        /// cref="DATE"/> instance.
         /// </summary>
         /// <param name="datetime">The <see cref="DATE_TIME"/> instance to convert.</param>
         public static explicit operator DATE(DATE_TIME datetime) => datetime.AsDate();
@@ -409,16 +549,46 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <param name="datetime">The <see cref="DATE_TIME"/> instance to convert.</param>
         public static explicit operator TIME(DATE_TIME datetime) => datetime.AsTime();
 
+        /// <summary>
+        /// Implicitly converts the specified <see cref="DATE_TIME"/> instance to a <see
+        /// cref="LocalDate"/> instance.
+        /// </summary>
+        /// <param name="datetime">The <see cref="DATE_TIME"/> instance to convert</param>
         public static explicit operator LocalDate(DATE_TIME datetime) => datetime.AsDate();
 
+        /// <summary>
+        /// Implicitly converts the specified <see cref="LocalDate"/> instance to a <see
+        /// cref="DateTime"/> instance.
+        /// </summary>
+        /// <param name="date">The <see cref="LocalDate"/> instance to convert.</param>
         public static implicit operator DATE_TIME(LocalDate date) => new DATE_TIME(date);
 
+        /// <summary>
+        /// Implicitly converts the specified <see cref="DATE_TIME"/> instance to a <see
+        /// cref="LocalDateTime"/> instance.
+        /// </summary>
+        /// <param name="datetime">The <see cref="DATE_TIME"/> instance to convert.</param>
         public static implicit operator LocalDateTime(DATE_TIME datetime) => datetime.AsLocalDateTime();
 
+        /// <summary>
+        /// Explicitly converts the specified <see cref="LocalDateTime"/> instance to a <see
+        /// cref="DATE_TIME"/> instance.
+        /// </summary>
+        /// <param name="datetime">The <see cref="DATE_TIME"/> instance to convert.</param>
         public static explicit operator DATE_TIME(LocalDateTime datetime) => new DATE_TIME(datetime);
 
+        /// <summary>
+        /// Implicitly converts the specified <see cref="DATE_TIME"/> instance to a <see
+        /// cref="ZonedDateTime"/> instance.
+        /// </summary>
+        /// <param name="datetime">The <see cref="DATE_TIME"/> instance to convert.</param>
         public static implicit operator ZonedDateTime(DATE_TIME datetime) => datetime.AsZonedDateTime();
 
+        /// <summary>
+        /// Explicitly converts the specified <see cref="ZonedDateTime"/> instance to a <see
+        /// cref="DATE_TIME"/> instance.
+        /// </summary>
+        /// <param name="datetime">The <see cref="ZonedDateTime"/> instance to convert.</param>
         public static explicit operator DATE_TIME(ZonedDateTime datetime) => new DATE_TIME(datetime);
 
         /// <summary>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "servers", "servers", "{A6C8E01B-8688-4D61-AACF-E045B9BC68C6}"
 EndProject
@@ -55,8 +55,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 - infrastructure", "02 -
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04 - servers", "04 - servers", "{35147CF8-4F9F-462A-8B3B-CBD29A1D87C8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "05 - tests", "05 - tests", "{32DBBA27-3EB5-462E-A530-8A05BAD8596C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "obsolete", "obsolete", "{0997DD55-032E-4251-A7BC-580CE692849F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.core.domain.contracts", "xcal.domain.models.contracts\xcal.core.domain.contracts.csproj", "{14F5DB14-0BA1-47D9-B5D0-E3B022750A80}"
@@ -107,10 +105,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.infrastructure.migration.migrators.contracts", "xcal.infrastructure.migration.migrators.contracts\xcal.infrastructure.migration.migrators.contracts.csproj", "{BA4C77BC-7C32-4184-ABCD-AD32CC588AFE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xcal.infrastructure.migration.services.concretes", "xcal.infrastructure.migration.services.concretes\xcal.infrastructure.migration.services.concretes.csproj", "{D4D7234A-2A21-4A3E-BD2D-354F542EB509}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 - units", "01 - units", "{CAA08175-B909-4089-9917-8137E9BEEDCB}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 - integration", "02 - integration", "{D99CCC60-179D-438D-A526-DD6A0D992E89}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 - web", "01 - web", "{1C81B9F2-4A54-4CB8-9AE7-37BB3F72AE23}"
 EndProject
@@ -440,8 +434,6 @@ Global
 		{99F7294A-6AB1-485F-9BB7-A5FC2AE79BA2} = {74586066-D407-4AC3-BBF1-DC4E9EAA1CEF}
 		{BA4C77BC-7C32-4184-ABCD-AD32CC588AFE} = {8A0E5B81-746D-446E-8542-02F77C3FFA29}
 		{D4D7234A-2A21-4A3E-BD2D-354F542EB509} = {74586066-D407-4AC3-BBF1-DC4E9EAA1CEF}
-		{CAA08175-B909-4089-9917-8137E9BEEDCB} = {32DBBA27-3EB5-462E-A530-8A05BAD8596C}
-		{D99CCC60-179D-438D-A526-DD6A0D992E89} = {32DBBA27-3EB5-462E-A530-8A05BAD8596C}
 		{1C81B9F2-4A54-4CB8-9AE7-37BB3F72AE23} = {35147CF8-4F9F-462A-8B3B-CBD29A1D87C8}
 		{86C7735E-A2FE-4814-8CEB-2EAFCD4F49E4} = {35147CF8-4F9F-462A-8B3B-CBD29A1D87C8}
 	EndGlobalSection

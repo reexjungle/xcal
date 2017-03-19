@@ -147,43 +147,43 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
         public PERIOD[] Subtract(PERIOD other)
         {
-            //Case A: P1.Start < P2.Start P1.Start < P2.End && AND P1.End > P2.Start AND P1.End < P2.End
+            //Case 1: P1.Start < P2.Start P1.Start < P2.End && AND P1.End > P2.Start AND P1.End < P2.End
             if (Start < other.Start && Start < other.End && End > other.Start && End < other.End)
                 return SubtractCaseA(other);
 
-            //Case B: P1.Start < P2.Start AND P1.Start < P2.End && AND P1.End <= P2.Start AND P1.End < P2.End
+            //Case 2: P1.Start < P2.Start AND P1.Start < P2.End && AND P1.End <= P2.Start AND P1.End < P2.End
             if (Start < other.Start && Start < other.End && End == other.Start && End < other.End)
                 return SubtractCaseB();
 
-            //Case C: P1.Start < P2.Start AND P1.Start <P2.End && AND P1.End > P2.Start AND P1.End == P2.End
+            //Case 3: P1.Start < P2.Start AND P1.Start <P2.End && AND P1.End > P2.Start AND P1.End == P2.End
             if (Start < other.Start && Start < other.End && End > other.Start && End == other.End)
                 return SubtractCaseC(other);
 
-            //Case D: P1.Start == P2.Start AND && P1.Start < P2.End AND P1.End > P2.Start && P1.End > P2.End
+            //Case 4: P1.Start == P2.Start AND && P1.Start < P2.End AND P1.End > P2.Start && P1.End > P2.End
             if (Start == other.Start && Start < other.End && End > other.Start && End > other.End)
                 return SubtractCaseD(other);
 
-            //Case E: P1.Start > P2.Start AND P1.Start < P2.End AND P1.End == P2.End
+            //Case 5: P1.Start > P2.Start AND P1.Start < P2.End AND P1.End == P2.End
             if (Start > other.Start && Start < other.End && End == other.End)
                 return SubtractCaseE(other);
 
-            //Case F: P1.Start == P2.Start AND P1.Start < P2.End && AND P1.End < P2.Start AND P1.End > P2.End
+            //Case 6: P1.Start == P2.Start AND P1.Start < P2.End && AND P1.End < P2.Start AND P1.End > P2.End
             if (Start == other.Start && Start < other.End && End > other.Start && End > other.End)
                 return SubtractCaseF(other);
 
-            //Case G: P1.Start > P2.Start AND P1.Start < P2.End AND P1.End > P2.Start AND P1.End > P2.End
+            //Case 7: P1.Start > P2.Start AND P1.Start < P2.End AND P1.End > P2.Start AND P1.End > P2.End
             if (Start > other.Start && Start < other.End && End > other.Start && End > other.End)
                 return SubtractCaseG(other);
 
-            //Case H: P1.Start < P2.Start AND P1.Start < P2.End && AND P1.End > P2.Start AND P1.End > P2.End
+            //Case 8: P1.Start < P2.Start AND P1.Start < P2.End && AND P1.End > P2.Start AND P1.End > P2.End
             if (Start < other.Start && Start < other.End && End > other.Start && End > other.End)
                 return SubtractCaseH(other);
 
-            //Case I: P1.Start > P2.Start AND P1.Start < P2.End && AND P1.End < P2.Start AND P1.End < P2.End
+            //Case 9: P1.Start > P2.Start AND P1.Start < P2.End && AND P1.End < P2.Start AND P1.End < P2.End
             if (Start > other.Start && Start < other.End && End < other.Start && End < other.End)
                 return SubtractCaseI(other);
 
-            //Case J: P1 == P2
+            //Case 10: P1 == P2
             return SubtractEqualPeriods(other);
         }
 

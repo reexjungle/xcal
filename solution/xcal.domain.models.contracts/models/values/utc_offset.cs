@@ -6,26 +6,26 @@ using System.Text.RegularExpressions;
 
 namespace reexjungle.xcal.core.domain.contracts.models.values
 {
-
-    public struct UTC_OFFSET : IEquatable<UTC_OFFSET>, IComparable, IComparable<UTC_OFFSET>, ICalendarSerializable
+    public struct UTC_OFFSET : IEquatable<UTC_OFFSET>, IComparable, IComparable<UTC_OFFSET>
     {
         /// <summary>
         /// Gets the offset hours from UTC to local time.
         /// </summary>
-        public int HOURS { get; private set; }
+        public int HOURS { get; }
 
         /// <summary>
         /// Gets the offset minutes from UTC to local time.
         /// </summary>
-        public int MINUTES { get; private set; }
+        public int MINUTES { get; }
 
         /// <summary>
         /// Gets the offset seconds from UTC to local time.
         /// </summary>
-        public int SECONDS { get; private set; }
+        public int SECONDS { get; }
 
         /// <summary>
-        /// Initialize a new instance of the <see cref="UTC_OFFSET"/> struct with the given offset hours, minutes, and seconds from UTC to local time.
+        /// Initialize a new instance of the <see cref="UTC_OFFSET"/> struct with the given offset
+        /// hours, minutes, and seconds from UTC to local time.
         /// </summary>
         /// <param name="hours">The offset hours from UTC to local time.</param>
         /// <param name="minutes">The offset minutes form UTC to local time.</param>
@@ -40,17 +40,11 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <summary>
         /// Initializes a new instance of the <see cref="UTC_OFFSET"/> struct with a string value.
         /// </summary>
-        /// <param name="value">The string represenatation of a <see cref="UTC_OFFSET"/> 
-        /// to initialize a new <see cref="UTC_OFFSET"/> instance with.</param>
+        /// <param name="value">
+        /// The string represenatation of a <see cref="UTC_OFFSET"/> to initialize a new <see
+        /// cref="UTC_OFFSET"/> instance with.
+        /// </param>
         public UTC_OFFSET(string value)
-        {
-            var offset = Parse(value);
-            HOURS = offset.HOURS;
-            MINUTES = offset.MINUTES;
-            SECONDS = offset.MINUTES;
-        }
-
-        public static UTC_OFFSET Parse(string value)
         {
             var hour = 0;
             var minute = 0;
@@ -72,16 +66,29 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
                 }
             }
 
-            return new UTC_OFFSET(hour, minute, second);
+            HOURS = hour;
+            MINUTES = minute;
+            SECONDS = second;
         }
 
-        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-        /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+        /// </returns>
         /// <param name="other">An object to compare with this object.</param>
         public bool Equals(UTC_OFFSET other) => HOURS == other.HOURS && MINUTES == other.MINUTES && SECONDS == other.SECONDS;
 
-        /// <summary>Compares the current object with another object of the same type.</summary>
-        /// <returns>A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />. </returns>
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value
+        /// has the following meanings: Value Meaning Less than zero This object is less than the
+        /// <paramref name="other"/> parameter.Zero This object is equal to <paramref name="other"/>.
+        /// Greater than zero This object is greater than <paramref name="other"/>.
+        /// </returns>
         /// <param name="other">An object to compare with this object.</param>
         public int CompareTo(UTC_OFFSET other)
         {
@@ -94,9 +101,14 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             return 0;
         }
 
-        /// <summary>Indicates whether this instance and a specified object are equal.</summary>
-        /// <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false. </returns>
-        /// <param name="obj">The object to compare with the current instance. </param>
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <returns>
+        /// true if <paramref name="obj"/> and this instance are the same type and represent the same
+        /// value; otherwise, false.
+        /// </returns>
+        /// <param name="obj">The object to compare with the current instance.</param>
         /// <filterpriority>2</filterpriority>
         public override bool Equals(object obj)
         {
@@ -104,7 +116,9 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             return obj is UTC_OFFSET && Equals((UTC_OFFSET)obj);
         }
 
-        /// <summary>Returns the hash code for this instance.</summary>
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
         /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
         /// <filterpriority>2</filterpriority>
         public override int GetHashCode()
@@ -118,11 +132,22 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             }
         }
 
-        /// <summary>Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.</summary>
-        /// <returns>A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero This instance precedes <paramref name="obj" /> in the sort order. Zero This instance occurs in the same position in the sort order as <paramref name="obj" />. Greater than zero This instance follows <paramref name="obj" /> in the sort order. </returns>
-        /// <param name="obj">An object to compare with this instance. </param>
+        /// <summary>
+        /// Compares the current instance with another object of the same type and returns an integer
+        /// that indicates whether the current instance precedes, follows, or occurs in the same
+        /// position in the sort order as the other object.
+        /// </summary>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value
+        /// has these meanings: Value Meaning Less than zero This instance precedes <paramref
+        /// name="obj"/> in the sort order. Zero This instance occurs in the same position in the
+        /// sort order as <paramref name="obj"/>. Greater than zero This instance follows <paramref
+        /// name="obj"/> in the sort order.
+        /// </returns>
+        /// <param name="obj">An object to compare with this instance.</param>
         /// <exception cref="T:System.ArgumentException">
-        /// <paramref name="obj" /> is not the same type as this instance. </exception>
+        /// <paramref name="obj"/> is not the same type as this instance.
+        /// </exception>
         /// <filterpriority>2</filterpriority>
         public int CompareTo(object obj)
         {
@@ -143,50 +168,11 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
         public static bool operator >=(UTC_OFFSET left, UTC_OFFSET right) => left.CompareTo(right) >= 0;
 
-        /// <summary>
-        /// Can the object be converted to its iCalendar representation?
-        /// </summary>
-        /// <returns>True if the object can be serialized to its iCalendar representation, otherwise false.</returns>
-        public bool CanSerialize() => true;
-
-        /// <summary>
-        /// Can the object be generated from its iCalendar representation?
-        /// </summary>
-        /// <returns>True if the object can be deserialized from its iCalendar representation, otherwise false.</returns>
-        public bool CanDeserialize() => true;
-
-        /// <summary>
-        /// Converts an object into its iCalendar representation.
-        /// </summary>
-        /// <param name="writer">The iCalendar writer used to serialize the object.</param>
-        public void WriteCalendar(ICalendarWriter writer)
+        public override string ToString()
         {
-            writer.WriteValue(HOURS < 0 || MINUTES < 0 || SECONDS < 0
+            return HOURS < 0 || MINUTES < 0 || SECONDS < 0
                 ? $"-{HOURS:D2}{MINUTES:D2}{SECONDS:D2}"
-                : $"+{HOURS:D2}{MINUTES:D2}{SECONDS:D2}");
-        }
-
-        /// <summary>
-        /// Generates an object from its iCalendar representation.
-        /// </summary>
-        /// <param name="reader">The iCalendar reader used to deserialize data into the iCalendar object.</param>
-        /// <returns>True if the deserialization operation was successful; otherwise false.</returns>
-        public void ReadCalendar(ICalendarReader reader)
-        {
-            var inner = reader.ReadFragment();
-            while (inner.Read())
-            {
-                if (inner.NodeType != NodeType.VALUE) continue;
-                if (!string.IsNullOrEmpty(inner.Value) && !string.IsNullOrWhiteSpace(inner.Value))
-                {
-                    var offset = Parse(inner.Value);
-                    HOURS = offset.HOURS;
-                    MINUTES = offset.MINUTES;
-                    SECONDS = offset.SECONDS;
-                }
-            }
-
-            inner.Close();
+                : $"+{HOURS:D2}{MINUTES:D2}{SECONDS:D2}";
         }
     }
 }
