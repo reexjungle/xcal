@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using reexjungle.xcal.core.domain.contracts.io.readers;
-using reexjungle.xcal.core.domain.contracts.io.writers;
-using reexjungle.xcal.core.domain.contracts.serialization;
 
 namespace reexjungle.xcal.core.domain.contracts.models.values
 {

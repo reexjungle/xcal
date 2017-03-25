@@ -1,8 +1,5 @@
 ﻿using System;
-using NodaTime;
 using reexjungle.xcal.core.domain.contracts.models;
-using reexjungle.xcal.core.domain.contracts.models.parameters;
-using reexjungle.xcal.core.domain.contracts.models.values;
 
 namespace reexjungle.xcal.core.domain.contracts.extensions
 {
@@ -102,5 +99,7 @@ namespace reexjungle.xcal.core.domain.contracts.extensions
                 default: return default(WEEKDAY);
             }
         }
+
+
     }
 }

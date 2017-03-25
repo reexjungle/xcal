@@ -305,6 +305,22 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         public DATE_TIME AddHours(int value) => (DATE_TIME)AsLocalDateTime().PlusHours(value);
 
         /// <summary>
+        /// Returns the latest of two dates.
+        /// </summary>
+        /// <param name="left">The first date to compare.</param>
+        /// <param name="right">The second date to compare.</param>
+        /// <returns><paramref name="left"/> if it is later than <paramref name="right"/>; otherwise <paramref name="right."/>.</returns>
+        public static DATE_TIME Max(DATE_TIME left, DATE_TIME right) => left > right ? left : right;
+
+        /// <summary>
+        /// Returns the earliest of two dates.
+        /// </summary>
+        /// <param name="left">The first date to compare. </param>
+        /// <param name="right">The second date to compare.</param>
+        /// <returns><paramref name="left"/> if it is earlier than <paramref name="right"/>; otherwise <paramref name="right."/>.</returns>
+        public static DATE_TIME Min(DATE_TIME left, DATE_TIME right) => left < right ? left : right;
+
+        /// <summary>
         /// Converts this date time instance to its equivalent <see cref="DateTime"/> representation.
         /// </summary>
         /// <returns>The equivalent <see cref="DateTime"/> respresentation of this date instance.</returns>

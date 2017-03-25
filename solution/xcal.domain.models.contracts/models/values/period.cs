@@ -6,6 +6,8 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 {
     public struct PERIOD : IComparable, IComparable<PERIOD>, IEquatable<PERIOD>
     {
+        public static readonly PERIOD Zero = new PERIOD();
+
         public DATE_TIME Start { get; }
 
         public DATE_TIME End { get; }
@@ -138,113 +140,46 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
         public PERIOD Add(PERIOD other)
         {
-            var start = Start <= other.Start ? Start : other.Start;
-            var end = End >= other.End ? End : other.End;
+            var start = DATE_TIME.Min(Start, other.Start);
+            var end = DATE_TIME.Max(End, other.End);
             return Explicit
                ? new PERIOD(start, end)
                : new PERIOD(start, end - start);
         }
 
-        public PERIOD[] Subtract(PERIOD other)
+        public PERIOD Subtract(PERIOD other)
         {
-            //Case 1: P1.Start < P2.Start P1.Start < P2.End && AND P1.End > P2.Start AND P1.End < P2.End
-            if (Start < other.Start && Start < other.End && End > other.Start && End < other.End)
-                return SubtractCaseA(other);
 
-            //Case 2: P1.Start < P2.Start AND P1.Start < P2.End && AND P1.End <= P2.Start AND P1.End < P2.End
-            if (Start < other.Start && Start < other.End && End == other.Start && End < other.End)
-                return SubtractCaseB();
+            // ________ ________
+            if (Start < other.Start && Start < other.End && End <= other.Start && End < other.End)
+                return this;
 
-            //Case 3: P1.Start < P2.Start AND P1.Start <P2.End && AND P1.End > P2.Start AND P1.End == P2.End
-            if (Start < other.Start && Start < other.End && End > other.Start && End == other.End)
-                return SubtractCaseC(other);
+            // ________
+            //    ________
+            if (Start <= other.Start && Start < other.End && End >= other.Start && End <= other.End)
+                return new PERIOD(Start, other.Start) + new PERIOD(End, other.End) + other.Negate();
 
-            //Case 4: P1.Start == P2.Start AND && P1.Start < P2.End AND P1.End > P2.Start && P1.End > P2.End
-            if (Start == other.Start && Start < other.End && End > other.Start && End > other.End)
-                return SubtractCaseD(other);
+            //     _______
+            // ________
+            if (Start >= other.Start && Start <= other.End && End > other.Start && End >= other.End)
+                return new PERIOD(other.End, End) + new PERIOD(other.Start, Start) + other.Negate();
 
-            //Case 5: P1.Start > P2.Start AND P1.Start < P2.End AND P1.End == P2.End
-            if (Start > other.Start && Start < other.End && End == other.End)
-                return SubtractCaseE(other);
+            // ________
+            //   ____
+            if (Start <= other.Start && Start < other.End && End > other.Start && End >= other.End)
+                return new PERIOD(Start, other.Start) + other.Negate();
 
-            //Case 6: P1.Start == P2.Start AND P1.Start < P2.End && AND P1.End < P2.Start AND P1.End > P2.End
-            if (Start == other.Start && Start < other.End && End > other.Start && End > other.End)
-                return SubtractCaseF(other);
+            //   ____
+            // ________
+            if (Start >= other.Start && Start < other.End && End > other.Start && End <= other.End)
+                return this +  other.Negate();
 
-            //Case 7: P1.Start > P2.Start AND P1.Start < P2.End AND P1.End > P2.Start AND P1.End > P2.End
-            if (Start > other.Start && Start < other.End && End > other.Start && End > other.End)
-                return SubtractCaseG(other);
-
-            //Case 8: P1.Start < P2.Start AND P1.Start < P2.End && AND P1.End > P2.Start AND P1.End > P2.End
-            if (Start < other.Start && Start < other.End && End > other.Start && End > other.End)
-                return SubtractCaseH(other);
-
-            //Case 9: P1.Start > P2.Start AND P1.Start < P2.End && AND P1.End < P2.Start AND P1.End < P2.End
-            if (Start > other.Start && Start < other.End && End < other.Start && End < other.End)
-                return SubtractCaseI(other);
-
-            //Case 10: P1 == P2
-            return SubtractEqualPeriods(other);
+            return Zero;
         }
 
-        private PERIOD[] SubtractEqualPeriods(PERIOD other)
-        {
-            return Explicit
-                ? new[] { new PERIOD(Start, other.Start) }
-                : new[] { new PERIOD(Start, Start - other.Start) };
-        }
-
-        private PERIOD[] SubtractCaseI(PERIOD other)
-        {
-            return Explicit
-                ? new[] { new PERIOD(other.Start, Start), new PERIOD(End, other.End) }
-                : new[] { new PERIOD(Start, Start - other.Start), new PERIOD(End, other.End - End) };
-        }
-
-        private PERIOD[] SubtractCaseH(PERIOD other)
-        {
-            return Explicit
-                ? new[] { new PERIOD(Start, other.Start), new PERIOD(other.End, End) }
-                : new[] { new PERIOD(Start, other.Start - Start), new PERIOD(other.End, End - other.End) };
-        }
-
-        private PERIOD[] SubtractCaseG(PERIOD other)
-        {
-            return Explicit
-                ? new[] { new PERIOD(other.Start, Start), new PERIOD(other.End, End) } //-PERIOD, +PERIOD
-                : new[] { new PERIOD(other.Start, Start - other.Start), new PERIOD(other.End, other.End - End) }; //-PERIOD, +PERIOD
-        }
-
-        private PERIOD[] SubtractCaseF(PERIOD other)
-        {
-            return Explicit
-                ? new[] { new PERIOD(other.End, End) } //-PERIOD
-                : new[] { new PERIOD(other.End, End - other.End) }; //-PERIOD
-        }
-
-        private PERIOD[] SubtractCaseE(PERIOD other)
-        {
-            return Explicit
-                ? new[] { new PERIOD(Start, other.Start) } //-PERIOD
-                : new[] { new PERIOD(Start, other.Start - Start) }; //-PERIOD
-        }
-
-        private PERIOD[] SubtractCaseD(PERIOD other)
-            => Explicit
-            ? new[] { new PERIOD(other.End, End) }
-            : new[] { new PERIOD(other.End, other.End - End) };
-
-        private PERIOD[] SubtractCaseC(PERIOD other)
-            => Explicit
-            ? new[] { new PERIOD(Start, other.Start) }
-            : new[] { new PERIOD(Start, other.Start - Start) };
-
-        private PERIOD[] SubtractCaseB() => new[] { this };
-
-        private PERIOD[] SubtractCaseA(PERIOD other)
-            => Explicit
-            ? new[] { new PERIOD(Start, other.Start) }
-            : new[] { new PERIOD(Start, other.Start - Start) };
+        public PERIOD Negate() => Explicit
+            ? new PERIOD(End, Start)
+            : new PERIOD(End, Start - End);
 
         public int CompareTo(object obj)
         {
@@ -281,12 +216,9 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
         public static PERIOD operator +(PERIOD period) => period;
 
-        public static PERIOD operator -(PERIOD period)
-            => period.Explicit
-            ? new PERIOD(period.End, period.Start)
-            : new PERIOD(period.End, period.Start - period.End);
+        public static PERIOD operator -(PERIOD period) => period.Negate();
 
-        public static PERIOD[] operator -(PERIOD left, PERIOD right) => left.Subtract(right);
+        public static PERIOD operator -(PERIOD left, PERIOD right) => left.Subtract(right);
 
         public static PERIOD operator +(PERIOD left, PERIOD right) => left.Add(right);
 

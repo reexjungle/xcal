@@ -1,7 +1,4 @@
-﻿using reexjungle.xcal.core.domain.contracts.io.writers;
-using reexjungle.xcal.core.domain.contracts.io.writers.specialized;
-using reexjungle.xcal.core.domain.contracts.serialization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

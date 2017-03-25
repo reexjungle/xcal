@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace reexjungle.xcal.core.domain.contracts.models.values
 {

@@ -40,11 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="writers\streamwriter.cs" />
-    <Compile Include="writers\stringwriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="readers\reader.cs" />
-    <Compile Include="writers\writer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\xcal.domain.models.contracts\xcal.core.domain.contracts.csproj">

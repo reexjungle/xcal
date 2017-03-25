@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>reexjungle.xcal.core.domain.contracts</RootNamespace>
     <AssemblyName>xcal.core.domain.contracts</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -51,9 +51,6 @@
   <ItemGroup>
     <Compile Include="extensions\datetime.cs" />
     <Compile Include="extensions\duration.cs" />
-    <Compile Include="io\readers\enums.cs" />
-    <Compile Include="io\readers\fragment.cs" />
-    <Compile Include="io\readers\nodes.cs" />
     <Compile Include="models\calendar.cs" />
     <Compile Include="models\components\alarm.cs" />
     <Compile Include="models\components\event.cs" />
@@ -86,8 +83,6 @@
     <Compile Include="models\properties\trigger.cs" />
     <Compile Include="models\properties\tzname.cs" />
     <Compile Include="models\parameters\tzid.cs" />
-    <Compile Include="io\readers\reader.cs" />
-    <Compile Include="io\writers\writer.cs" />
     <Compile Include="models\values\weekdaynum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="models\values\cal_address.cs" />
@@ -98,8 +93,6 @@
     <Compile Include="models\values\recur.cs" />
     <Compile Include="models\values\time.cs" />
     <Compile Include="models\values\utc_offset.cs" />
-    <Compile Include="serialization\serializable.cs" />
-    <Compile Include="serialization\serializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

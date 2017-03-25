@@ -224,7 +224,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// A <see cref="DATE"/> instance, whose value is the sum of the date represented by this
         /// instance and duration of time represented by <paramref name="duration"/>.
         /// </returns>
-        public DATE Add(DURATION duration) => (DATE)AsLocalDate().Plus(duration.AsPeriod());
+        public DATE Add(DURATION duration) => (DATE)AsDateTime().Add(duration.AsTimeSpan());
 
         /// <summary>
         /// Subtracts the value of the specified <see cref="DURATION"/> from the value of this instance.
@@ -234,7 +234,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// A <see cref="DATE"/> instance, whose value is the date represented by this instance minus
         /// the duration of time represented by <paramref name="duration"/>.
         /// </returns>
-        public DATE Subtract(DURATION duration) => (DATE)AsLocalDate().Minus(duration.AsPeriod());
+        public DATE Subtract(DURATION duration) => (DATE)AsDateTime().Subtract(duration.AsTimeSpan());
 
         /// <summary>
         /// Subtract the specified date from this instance.
@@ -244,7 +244,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// A duration of time that is equal to the date represented by this instance minus the date
         /// represented by <paramref name="other"/>.
         /// </returns>
-        public DURATION Subtract(DATE other) => AsDateTime().Subtract(other);
+        public DURATION Subtract(DATE other) => Period.Between(other.AsLocalDate(), AsLocalDate(),  PeriodUnits.Weeks | PeriodUnits.Days );
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

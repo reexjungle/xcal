@@ -1,8 +1,4 @@
 ﻿using reexjungle.xcal.core.domain.contracts.extensions;
-using reexjungle.xcal.core.domain.contracts.io.readers;
-using reexjungle.xcal.core.domain.contracts.io.writers;
-using reexjungle.xcal.core.domain.contracts.models.parameters;
-using reexjungle.xcal.core.domain.contracts.serialization;
 using System;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;

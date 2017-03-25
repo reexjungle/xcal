@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
-using reexjungle.xcal.core.domain.contracts.io.readers;
-using reexjungle.xcal.core.domain.contracts.io.writers;
-using reexjungle.xcal.core.domain.contracts.serialization;
 
 namespace reexjungle.xcal.core.domain.contracts.models.parameters
 {
@@ -12,7 +9,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.parameters
     /// Time Zone ID class
     /// </summary>
     [DataContract]
-    public class TZID : IEquatable<TZID>, IComparable<TZID>, ICalendarSerializable
+    public class TZID : IEquatable<TZID>, IComparable<TZID>
     {
         private string prefix;
         private bool globallyUnique;
@@ -147,21 +144,5 @@ namespace reexjungle.xcal.core.domain.contracts.models.parameters
             return a.CompareTo(b) > 0;
         }
 
-        public bool CanDeserialize()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void WriteCalendar(ICalendarWriter writer)
-        {
-            writer.WriteParameter("TZID", GloballyUnique ? $"/{Suffix}" : $"{Prefix}/{Suffix}");
-        }
-
-        public void ReadCalendar(ICalendarReader reader)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool CanSerialize() => !string.IsNullOrEmpty(Suffix) && !string.IsNullOrWhiteSpace(Suffix);
     }
 }

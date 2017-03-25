@@ -1,8 +1,4 @@
-﻿using System;
-using NodaTime;
-using reexjungle.xcal.core.domain.contracts.models.values;
-
-namespace reexjungle.xcal.core.domain.contracts.extensions
+﻿namespace reexjungle.xcal.core.domain.contracts.extensions
 {
     /// <summary>
     /// Provides extensions for duration-related features-.

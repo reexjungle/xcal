@@ -1,5 +1,4 @@
-﻿using reexjungle.xcal.core.domain.contracts.io.readers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

@@ -12,6 +12,11 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
     public struct DURATION : IEquatable<DURATION>, IComparable, IComparable<DURATION>
     {
         /// <summary>
+        /// Represents the zero <see cref="DURATION"/> value. This field is readonly.
+        /// </summary>
+        public static readonly DURATION Zero = new DURATION();
+
+        /// <summary>
         /// Gets the number of weeks in the duration of time.
         /// </summary>
         public int WEEKS { get; }
@@ -57,18 +62,19 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <summary>
         /// Initializes a new instance of the <see cref="DURATION"/> struct with the given time interval.
         /// </summary>
-        /// <param name="span">The interval for the duration of time.</param>
-        public DURATION(TimeSpan span)
+        /// <param name="timespan">The interval for the duration of time.</param>
+        public DURATION(TimeSpan timespan)
         {
-            DAYS = span.Days;
-            HOURS = span.Hours;
-            MINUTES = span.Minutes;
-            SECONDS = span.Seconds;
-            WEEKS = span.Days
-                    + span.Hours / 24
-                    + span.Minutes / (24 * 60)
-                    + span.Seconds / (24 * 3600)
-                    + span.Milliseconds / (24 * 3600000) / 7;
+            var period = Period.FromDays(timespan.Days)
+                         + Period.FromHours(timespan.Hours)
+                         + Period.FromMinutes(timespan.Minutes)
+                         + Period.FromSeconds(timespan.Seconds);
+
+            WEEKS = (int)period.Weeks;
+            DAYS = (int)period.Days;
+            HOURS = (int)period.Hours;
+            MINUTES = (int)period.Minutes;
+            SECONDS = (int)period.Seconds;
         }
 
         public DURATION(Duration duration) : this(duration.ToTimeSpan())
@@ -77,12 +83,11 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
         public DURATION(Period period)
         {
-            var normalized = period.Normalize();
-            DAYS = (int)normalized.Days;
-            HOURS = (int)normalized.Hours;
-            MINUTES = (int)normalized.Minutes;
-            SECONDS = (int)normalized.Seconds;
-            WEEKS = (int)normalized.Weeks;
+            DAYS = (int)period.Days;
+            HOURS = (int)period.Hours;
+            MINUTES = (int)period.Minutes;
+            SECONDS = (int)period.Seconds;
+            WEEKS = (int)period.Weeks;
         }
 
         /// <summary>
@@ -229,17 +234,11 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
         public Period AsPeriod()
         {
-            if (this == default(DURATION)) return default(Period);
-            var builder = new PeriodBuilder
-            {
-                Weeks = WEEKS,
-                Days = DAYS,
-                Hours = HOURS,
-                Minutes = MINUTES,
-                Seconds = SECONDS
-            };
-
-            return builder.Build();
+            return Period.FromWeeks(WEEKS)
+                   + Period.FromDays(DAYS)
+                   + Period.FromHours(HOURS)
+                   + Period.FromMinutes(MINUTES)
+                   + Period.FromSeconds(SECONDS);
         }
 
         /// <summary>
@@ -291,6 +290,12 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// </summary>
         /// <returns>A duration of time that has the same numeric value as this instance, but opposite sign.</returns>
         public DURATION Negate() => new DURATION(-Math.Abs(WEEKS), -Math.Abs(DAYS), -Math.Abs(HOURS), -Math.Abs(MINUTES), -Math.Abs(SECONDS));
+
+        /// <summary>
+        /// Checks if this duration instance is negative.
+        /// </summary>
+        /// <returns>True if this </returns>
+        public bool IsNegative() => this < Zero;
 
         public static implicit operator TimeSpan(DURATION duration) => duration.AsTimeSpan();
 
@@ -400,5 +405,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <param name="right">The second duration of time to compare.</param>
         /// <returns>true if the values of <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.</returns>
         public static bool operator !=(DURATION left, DURATION right) => !left.Equals(right);
+
     }
 }

@@ -1,5 +1,4 @@
-﻿using reexjungle.xcal.core.domain.contracts.io.writers;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 
