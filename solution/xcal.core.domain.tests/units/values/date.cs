@@ -1,7 +1,7 @@
 ﻿using reexjungle.xcal.core.domain.contracts.models.values;
 using Xunit;
 
-namespace xcal.core.domain.tests.units
+namespace xcal.core.domain.tests.units.values
 {
     public class DateTests
     {
@@ -32,8 +32,8 @@ namespace xcal.core.domain.tests.units
         public void TestSubtractDays()
         {
             var date = new DATE(1997, 7, 14);
-            var successor = date.AddDays(-1);
-            Assert.Equal(successor, new DATE(1997, 7, 13));
+            var predecessor = date.AddDays(-1);
+            Assert.Equal(predecessor, new DATE(1997, 7, 13));
         }
 
 
@@ -50,8 +50,8 @@ namespace xcal.core.domain.tests.units
         public void TestSubtractWeeks()
         {
             var date = new DATE(1997, 7, 14);
-            var successor = date.AddWeeks(-1);
-            Assert.Equal(successor, new DATE(1997, 7, 7));
+            var predecessor = date.AddWeeks(-1);
+            Assert.Equal(predecessor, new DATE(1997, 7, 7));
         }
 
 
@@ -68,8 +68,8 @@ namespace xcal.core.domain.tests.units
         public void TestSubtractMonths()
         {
             var date = new DATE(1997, 7, 14);
-            var successor = date.AddMonths(-1);
-            Assert.Equal(successor, new DATE(1997, 6, 14));
+            var predecessor = date.AddMonths(-1);
+            Assert.Equal(predecessor, new DATE(1997, 6, 14));
         }
 
         [Fact]
@@ -85,8 +85,8 @@ namespace xcal.core.domain.tests.units
         public void TestSubtractYears()
         {
             var date = new DATE(1997, 7, 14);
-            var successor = date.AddYears(-2);
-            Assert.Equal(successor, new DATE(1995, 7, 14));
+            var predecessor = date.AddYears(-2);
+            Assert.Equal(predecessor, new DATE(1995, 7, 14));
         }
 
         [Fact]
@@ -114,7 +114,7 @@ namespace xcal.core.domain.tests.units
         }
 
         [Fact]
-        public void TestSameDates()
+        public void TestCompareSameDates()
         {
             var date = new DATE(1997, 7, 14);
             var other = new DATE(1997, 7, 14);
@@ -122,7 +122,7 @@ namespace xcal.core.domain.tests.units
         }
 
         [Fact]
-        public void TestDifferentDates()
+        public void TestCompareDifferentDates()
         {
             var date = new DATE(1997, 7, 14);
             var other = new DATE(2000, 9, 17);

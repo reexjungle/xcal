@@ -69,7 +69,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="units\date.cs" />
+    <Compile Include="units\values\date.cs" />
+    <Compile Include="units\values\date_time.cs" />
+    <Compile Include="units\values\time.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\xcal.domain.models.concretes\xcal.core.domain.concretes.csproj">

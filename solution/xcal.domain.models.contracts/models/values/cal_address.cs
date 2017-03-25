@@ -7,6 +7,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
     /// Represents a calendar user addresss.
     /// </summary>
     [DataContract]
+    [Serializable]
     public sealed class CAL_ADDRESS : Uri, IEquatable<CAL_ADDRESS>
     {
         public CAL_ADDRESS(string uriString) : base(uriString)

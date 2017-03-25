@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Text.RegularExpressions;
 using NodaTime;
 
@@ -406,5 +407,19 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <returns>true if the values of <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise, false.</returns>
         public static bool operator !=(DURATION left, DURATION right) => !left.Equals(right);
 
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+            var sign = (WEEKS < 0 || DAYS < 0 || HOURS < 0 || MINUTES < 0 || SECONDS < 0) ? "-" : string.Empty;
+            builder.AppendFormat("{0}P", sign);
+            if (WEEKS != 0) builder.AppendFormat("{0}W", WEEKS);
+            if (DAYS != 0) builder.AppendFormat("{0}D", DAYS);
+            if (HOURS != 0 || MINUTES != 0 || SECONDS != 0) builder.Append("T");
+            if (HOURS != 0) builder.AppendFormat("{0}H", HOURS);
+            if (MINUTES != 0) builder.AppendFormat("{0}M", MINUTES);
+            if (SECONDS != 0) builder.AppendFormat("{0}S", SECONDS);
+            return builder.ToString();
+        }
     }
 }

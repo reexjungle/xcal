@@ -2,6 +2,7 @@
 using System;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
+using NodaTime;
 
 namespace reexjungle.xcal.core.domain.contracts.models.values
 {
@@ -58,17 +59,21 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             Form = form;
         }
 
+        public TIME(TIME other)
+        {
+            HOUR = other.HOUR;
+            MINUTE = other.MINUTE;
+            SECOND = other.SECOND;
+            Form = other.Form;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TIME"/> struct with the specified <see
         /// cref="DateTime"/> and <see cref="TimeZoneInfo"/>.
         /// </summary>
-        /// <param name="datetime">A point in time, typically expressed as date and time of day.</param>
-        public TIME(DateTime datetime)
+        /// <param name="time">A point in time, typically expressed as date and time of day.</param>
+        public TIME(DateTime time): this(time.Hour, time.Minute, time.Second, time.Kind.AsTIME_FORM())
         {
-            HOUR = datetime.Hour;
-            MINUTE = datetime.Minute;
-            SECOND = datetime.Second;
-            Form = datetime.Kind.AsTIME_FORM();
         }
 
         /// <summary>
@@ -77,16 +82,35 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// Note: By using this constructor, the new instance of <see cref="TIME"/> shall always be
         ///       initialized as UTC time.
         /// </summary>
-        /// <param name="datetime">
+        /// <param name="time">
         /// A point in time, typically expressed as date and time of day, relative to Coordinate
         /// Universal Time (UTC).
         /// </param>
-        public TIME(DateTimeOffset datetime)
+        public TIME(DateTimeOffset time)
+            : this(time.UtcDateTime.Hour, time.UtcDateTime.Minute, time.UtcDateTime.Second, TIME_FORM.UTC)
         {
-            HOUR = datetime.UtcDateTime.Hour;
-            MINUTE = datetime.UtcDateTime.Minute;
-            SECOND = datetime.UtcDateTime.Second;
-            Form = TIME_FORM.UTC;
+
+        }
+
+
+        public TIME(LocalTime time)
+            : this(time.Hour, time.Minute, time.Second)
+        {
+            
+        }
+        public TIME(LocalDateTime time)
+            : this(time.Hour, time.Minute, time.Second)
+        {
+            
+        }
+
+        public TIME(ZonedDateTime time)
+            : this(time.Hour, 
+                  time.Minute, 
+                  time.Second, 
+                  time.Zone.Id.Equals("UTC", StringComparison.OrdinalIgnoreCase) ? TIME_FORM.UTC: TIME_FORM.LOCAL)
+        {
+            
         }
 
         /// <summary>
@@ -100,7 +124,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             var second = 0;
             var form = TIME_FORM.LOCAL;
 
-            const string pattern = @"^((?<tzid>TZID=(\w+)?/(\w+)):)?T(?<hour>\d{1,2})(?<min>\d{1,2})(?<sec>\d{1,2})(?<utc>Z)?$";
+            const string pattern = @"^(?<hour>\d{1,2})(?<min>\d{1,2})(?<sec>\d{1,2})(?<utc>Z)?$";
             const RegexOptions options = RegexOptions.IgnoreCase
                                          | RegexOptions.CultureInvariant
                                          | RegexOptions.ExplicitCapture
@@ -141,6 +165,26 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
                 ? default(DateTimeOffset)
                 : new DateTimeOffset(new DateTime(1, 1, 1, HOUR, MINUTE, SECOND, Form.AsDateTimeKind()), TimeSpan.Zero);
         }
+
+        public LocalTime AsLocalTime()
+            => this == default(TIME) 
+            ? default(LocalTime) 
+            : new LocalTime(HOUR, MINUTE, SECOND);
+
+        public LocalDateTime AsLocalDateTime()  
+            => this == default(TIME)
+            ? default(LocalDateTime)
+            : new LocalDateTime(1, 1,1,HOUR, MINUTE, SECOND);
+
+        public ZonedDateTime AsZonedDateTime()
+        {
+            return this == default(TIME)
+                ? default(ZonedDateTime)
+                : new ZonedDateTime(new LocalDateTime(1, 1, 1, HOUR, MINUTE, SECOND),
+                    DateTimeZoneProviders.Tzdb["UTC"],
+                    Offset.FromHours(0));
+        }
+
 
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.
@@ -200,6 +244,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         public int CompareTo(TIME other)
         {
             if (HOUR > other.HOUR) return 1;
+            if (HOUR < other.HOUR) return -1;
             if (MINUTE < other.MINUTE) return -1;
             if (MINUTE > other.MINUTE) return 1;
             if (SECOND < other.SECOND) return -1;
@@ -231,25 +276,69 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
             throw new ArgumentException(nameof(obj) + " is not a valid time");
         }
 
-        public TIME AddSeconds(double value) => (TIME)AsDateTime().AddSeconds(value);
+        public TIME AddSeconds(int value) => (TIME)AsDateTime().AddSeconds(value);
 
-        public TIME AddMinutes(double value) => (TIME)AsDateTime().AddMinutes(value);
+        public TIME AddMinutes(int value) => (TIME)AsDateTime().AddMinutes(value);
 
-        public TIME AddHours(double value) => (TIME)AsDateTime().AddHours(value);
+        public TIME AddHours(int value) =>(TIME) AsDateTime().AddHours(value);
 
         public TIME Add(DURATION duration) => (TIME)AsDateTime().Add(duration.AsTimeSpan());
 
         public TIME Subtract(DURATION duration) => (TIME)AsDateTime().Subtract(duration.AsTimeSpan());
 
-        public DURATION Subtract(TIME other) => AsDateTime().Subtract(other.AsDateTime());
+        public DURATION Subtract(TIME other) => Period
+            .Between(other.AsLocalTime(), AsLocalTime(),  PeriodUnits.Hours | PeriodUnits.Minutes | PeriodUnits.Seconds);
 
-        public static explicit operator TIME(DateTime datetime) => new TIME(datetime);
+        public static explicit operator TIME(DateTime time) => new TIME(time);
 
         public static implicit operator DateTime(TIME time) => time.AsDateTime();
 
-        public static explicit operator TIME(DateTimeOffset datetime) => new TIME(datetime);
+        public static explicit operator TIME(DateTimeOffset time) => new TIME(time);
 
         public static implicit operator DateTimeOffset(TIME time) => time.AsDateTimeOffset();
+
+
+        /// <summary>
+        /// Implicitly converts the specified <see cref="TIME"/> instance to a <see
+        /// cref="LocalTime"/> instance.
+        /// </summary>
+        /// <param name="time">The <see cref="TIME"/> instance to convert</param>
+        public static explicit operator LocalTime(TIME time) => time.AsLocalTime();
+
+        /// <summary>
+        /// Implicitly converts the specified <see cref="LocalTime"/> instance to a <see
+        /// cref="DateTime"/> instance.
+        /// </summary>
+        /// <param name="time">The <see cref="LocalTime"/> instance to convert.</param>
+        public static implicit operator TIME(LocalTime time) => new TIME(time);
+
+        /// <summary>
+        /// Implicitly converts the specified <see cref="TIME"/> instance to a <see
+        /// cref="LocalDateTime"/> instance.
+        /// </summary>
+        /// <param name="time">The <see cref="TIME"/> instance to convert.</param>
+        public static implicit operator LocalDateTime(TIME time) => time.AsLocalDateTime();
+
+        /// <summary>
+        /// Explicitly converts the specified <see cref="LocalDateTime"/> instance to a <see
+        /// cref="TIME"/> instance.
+        /// </summary>
+        /// <param name="time">The <see cref="TIME"/> instance to convert.</param>
+        public static explicit operator TIME(LocalDateTime time) => new TIME(time);
+
+        /// <summary>
+        /// Explicitly converts the specified <see cref="TIME"/> instance to a <see
+        /// cref="ZonedDateTime"/> instance.
+        /// </summary>
+        /// <param name="time">The <see cref="TIME"/> instance to convert.</param>
+        public static explicit operator ZonedDateTime(TIME time) => time.AsZonedDateTime();
+
+        /// <summary>
+        /// Explicitly converts the specified <see cref="ZonedDateTime"/> instance to a <see
+        /// cref="TIME"/> instance.
+        /// </summary>
+        /// <param name="time">The <see cref="ZonedDateTime"/> instance to convert.</param>
+        public static explicit operator TIME(ZonedDateTime time) => new TIME(time);
 
         public static TIME operator +(TIME time, DURATION duration) => time.Add(duration);
 
@@ -330,7 +419,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <returns>A <see cref="T:System.String"/> containing a fully qualified type name.</returns>
         /// <filterpriority>2</filterpriority>
         public override string ToString() => Form == TIME_FORM.LOCAL
-            ? $"T{HOUR:D2}{MINUTE:D2}{SECOND:D2}"
-            : $"T{HOUR:D2}{MINUTE:D2}{SECOND:D2}Z";
+            ? $"{HOUR:D2}{MINUTE:D2}{SECOND:D2}"
+            : $"{HOUR:D2}{MINUTE:D2}{SECOND:D2}Z";
     }
 }

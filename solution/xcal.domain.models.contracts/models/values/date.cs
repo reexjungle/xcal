@@ -244,7 +244,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// A duration of time that is equal to the date represented by this instance minus the date
         /// represented by <paramref name="other"/>.
         /// </returns>
-        public DURATION Subtract(DATE other) => Period.Between(other.AsLocalDate(), AsLocalDate(),  PeriodUnits.Weeks | PeriodUnits.Days );
+        public DURATION Subtract(DATE other) => Period.Between(other.AsLocalDate(), AsLocalDate(),  PeriodUnits.Weeks | PeriodUnits.Days);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
