@@ -71,6 +71,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="units\values\date.cs" />
     <Compile Include="units\values\date_time.cs" />
+    <Compile Include="units\values\duration.cs" />
+    <Compile Include="units\values\period.cs" />
     <Compile Include="units\values\time.cs" />
   </ItemGroup>
   <ItemGroup>

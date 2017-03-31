@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using NodaTime;
 
@@ -6,7 +8,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 {
     public struct PERIOD : IComparable, IComparable<PERIOD>, IEquatable<PERIOD>
     {
-        public static readonly PERIOD Zero = new PERIOD();
+        public static readonly PERIOD Zero = new PERIOD(DATE_TIME.Zero, DATE_TIME.Zero);
 
         public DATE_TIME Start { get; }
 
@@ -96,46 +98,29 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
         public PERIOD(string value)
         {
-            Start = default(DATE_TIME);
-            End = default(DATE_TIME);
+            Explicit = true;
+            Start = DATE_TIME.Zero;
+            End = DATE_TIME.Zero;
             Duration = End - Start;
-            Explicit = false;
-            const string datetimePattern = @"((TZID=(\w+)?/(\w+)):)?(\d{4,})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z?";
-            const string durationPattern = @"(\-)?P((\d*)W)?((\d*)D)?(T((\d*)H)?((\d*)M)?((\d*)S)?)?";
-            const string explicitPattern = datetimePattern + "/" + datetimePattern;
-            const string startPattern = datetimePattern + "/" + durationPattern;
 
-            var pattern = $@"^(?<periodExplicit>{explicitPattern})|(?<periodStart>{startPattern})$";
-            const RegexOptions options = RegexOptions.IgnoreCase
-                                         | RegexOptions.ExplicitCapture
-                                         | RegexOptions.IgnorePatternWhitespace
-                                         | RegexOptions.CultureInvariant
-                                         | RegexOptions.Compiled;
-
-            var regex = new Regex(pattern, options);
-
-            foreach (Match match in regex.Matches(value))
+            var tokens = value.Split(new[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
+            if (tokens.Length == 2)
             {
-                if (match.Groups["periodExplicit"].Success)
+                Start = new DATE_TIME(tokens[0]);
+                End = new DATE_TIME(tokens[1]);
+                if (Start != DATE_TIME.Zero && End != DATE_TIME.Zero)
                 {
-                    var periodExplicit = match.Groups["periodExplicit"].Value;
-                    var parts = periodExplicit.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-                    Start = new DATE_TIME(parts[0]);
-                    End = new DATE_TIME(parts[1]);
                     Duration = End - Start;
-                    Explicit = true;
-                    break;
                 }
-                if (match.Groups["periodStart"].Success)
+                else if (Start != DATE_TIME.Zero && End == DATE_TIME.Zero)
                 {
-                    var periodStart = match.Groups["periodStart"].Value;
-                    var parts = periodStart.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-                    Start = new DATE_TIME(parts[0]);
-                    Duration = new DURATION(parts[1]);
-                    Duration = End - Start;
-                    break;
+                    Duration = new DURATION(tokens[1]);
+                    End = Start + Duration;
+                    Explicit = false;
                 }
+
             }
+
         }
 
         public PERIOD Add(PERIOD other)
@@ -147,39 +132,59 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
                : new PERIOD(start, end - start);
         }
 
-        public PERIOD Subtract(PERIOD other)
+        public PERIOD[] Add(IEnumerable<PERIOD> others)
         {
-
-            // ________ ________
-            if (Start < other.Start && Start < other.End && End <= other.Start && End < other.End)
-                return this;
-
-            // ________
-            //    ________
-            if (Start <= other.Start && Start < other.End && End >= other.Start && End <= other.End)
-                return new PERIOD(Start, other.Start) + new PERIOD(End, other.End) + other.Negate();
-
-            //     _______
-            // ________
-            if (Start >= other.Start && Start <= other.End && End > other.Start && End >= other.End)
-                return new PERIOD(other.End, End) + new PERIOD(other.Start, Start) + other.Negate();
-
-            // ________
-            //   ____
-            if (Start <= other.Start && Start < other.End && End > other.Start && End >= other.End)
-                return new PERIOD(Start, other.Start) + other.Negate();
-
-            //   ____
-            // ________
-            if (Start >= other.Start && Start < other.End && End > other.Start && End <= other.End)
-                return this +  other.Negate();
-
-            return Zero;
+            var sums = new List<PERIOD>();
+            var items = others as IList<PERIOD> ?? others.ToList();
+            for (int i = 0; i < items.Count; i++)  sums.Add(items[i]);
+            return sums.ToArray();
         }
 
-        public PERIOD Negate() => Explicit
-            ? new PERIOD(End, Start)
-            : new PERIOD(End, Start - End);
+        public PERIOD[] Subtract(PERIOD other)
+        {
+            //equal periods
+            if (this == other) return new PERIOD[] {};
+
+            //non-overlapping periods
+            if (Start < other.Start && Start < other.End && End < other.Start && End < other.End)
+                return new[] {this, other};
+
+            //overlapping periods with equal edges
+            if(Start == other.Start) return new[]{new PERIOD(DATE_TIME.Min(End, other.End), DATE_TIME.Max(End, other.End))};
+            if(End == other.End) return new[]{ new PERIOD(DATE_TIME.Min(Start, other.Start), DATE_TIME.Max(Start, other.Start)) };
+
+            //overlapping periods with non-overlapping edges
+            return new[]
+            {
+                new PERIOD(DATE_TIME.Min(Start, other.Start), DATE_TIME.Max(Start, other.Start)),
+                new PERIOD(DATE_TIME.Min(End, other.End), DATE_TIME.Max(End, other.End))
+            };
+        }
+
+        public PERIOD[] Subtract(IEnumerable<PERIOD> others)
+        {
+            var differences = new List<PERIOD>();
+            var items = others as IList<PERIOD> ?? others.ToList();
+            for (int i = 0; i < items.Count; i++) differences.AddRange(this-items[i]);
+            return differences.ToArray();
+        }
+
+
+        /// <summary>
+        /// Returns the latest of two periods.
+        /// </summary>
+        /// <param name="left">The first period to compare.</param>
+        /// <param name="right">The second period to compare.</param>
+        /// <returns><paramref name="left"/> if it is later than <paramref name="right"/>; otherwise <paramref name="right."/>.</returns>
+        public static PERIOD Max(PERIOD left, PERIOD right) => left > right ? left : right;
+
+        /// <summary>
+        /// Returns the earliest of two periods.
+        /// </summary>
+        /// <param name="left">The first period to compare. </param>
+        /// <param name="right">The second period to compare.</param>
+        /// <returns><paramref name="left"/> if it is earlier than <paramref name="right"/>; otherwise <paramref name="right."/>.</returns>
+        public static PERIOD Min(PERIOD left, PERIOD right) => left < right ? left : right;
 
         public int CompareTo(object obj)
         {
@@ -216,16 +221,17 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
         public static PERIOD operator +(PERIOD period) => period;
 
-        public static PERIOD operator -(PERIOD period) => period.Negate();
+        public static PERIOD[] operator -(PERIOD left, PERIOD right) => left.Subtract(right);
 
-        public static PERIOD operator -(PERIOD left, PERIOD right) => left.Subtract(right);
+        public static PERIOD[] operator -(PERIOD left, IEnumerable<PERIOD> right) => left.Subtract(right);
 
         public static PERIOD operator +(PERIOD left, PERIOD right) => left.Add(right);
 
+        public static PERIOD[] operator +(PERIOD left, IEnumerable<PERIOD> right) => left.Add(right);
+
         public bool Equals(PERIOD other) => Start.Equals(other.Start)
                                             && End.Equals(other.End)
-                                            && Duration.Equals(other.Duration)
-                                            && Explicit == other.Explicit;
+                                            && Duration.Equals(other.Duration);
 
         public override bool Equals(object obj)
         {

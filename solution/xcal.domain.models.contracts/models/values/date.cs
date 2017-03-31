@@ -12,6 +12,8 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
     [DataContract]
     public struct DATE : IEquatable<DATE>, IComparable, IComparable<DATE>
     {
+        public static readonly DATE Zero = new DATE(1, 1, 1);
+
         /// <summary>
         /// Gets the digit representation of a full year e.g. 2013
         /// </summary>

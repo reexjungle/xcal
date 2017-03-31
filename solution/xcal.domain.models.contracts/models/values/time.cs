@@ -18,6 +18,8 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
     [DataContract]
     public struct TIME : IEquatable<TIME>, IComparable, IComparable<TIME>
     {
+        public static readonly TIME Zero = new TIME(0, 0, 0);
+
         /// <summary>
         /// Gets the 2-digit representation of an hour.
         /// </summary>

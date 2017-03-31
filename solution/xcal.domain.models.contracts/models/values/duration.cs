@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -292,6 +293,9 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         /// <returns>A duration of time that has the same numeric value as this instance, but opposite sign.</returns>
         public DURATION Negate() => new DURATION(-Math.Abs(WEEKS), -Math.Abs(DAYS), -Math.Abs(HOURS), -Math.Abs(MINUTES), -Math.Abs(SECONDS));
 
+        public static DURATION Abs(DURATION duration) 
+            => new DURATION(Math.Abs(duration.WEEKS), Math.Abs(duration.DAYS), Math.Abs(duration.HOURS), Math.Abs(duration.MINUTES), Math.Abs(duration.SECONDS));
+
         /// <summary>
         /// Checks if this duration instance is negative.
         /// </summary>
@@ -410,15 +414,16 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
         public override string ToString()
         {
+            if (this == Zero) return "P0W0DT0H0M0S";
             var builder = new StringBuilder();
-            var sign = (WEEKS < 0 || DAYS < 0 || HOURS < 0 || MINUTES < 0 || SECONDS < 0) ? "-" : string.Empty;
+            var sign = WEEKS < 0 || DAYS < 0 || HOURS < 0 || MINUTES < 0 || SECONDS < 0 ? "-" : string.Empty;
             builder.AppendFormat("{0}P", sign);
-            if (WEEKS != 0) builder.AppendFormat("{0}W", WEEKS);
-            if (DAYS != 0) builder.AppendFormat("{0}D", DAYS);
+            if (WEEKS != 0) builder.AppendFormat("{0}W", Math.Abs(WEEKS));
+            if (DAYS != 0) builder.AppendFormat("{0}D", Math.Abs(DAYS));
             if (HOURS != 0 || MINUTES != 0 || SECONDS != 0) builder.Append("T");
-            if (HOURS != 0) builder.AppendFormat("{0}H", HOURS);
-            if (MINUTES != 0) builder.AppendFormat("{0}M", MINUTES);
-            if (SECONDS != 0) builder.AppendFormat("{0}S", SECONDS);
+            if (HOURS != 0) builder.AppendFormat("{0}H", Math.Abs(HOURS));
+            if (MINUTES != 0) builder.AppendFormat("{0}M", Math.Abs(MINUTES));
+            if (SECONDS != 0) builder.AppendFormat("{0}S", Math.Abs(SECONDS));
             return builder.ToString();
         }
     }
