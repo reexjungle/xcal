@@ -8,7 +8,7 @@ The xCal project is a **free and open source software (FOSS)** project that basi
 
 Why xCal?
 =========
-First of all, xCal is **free** - yes  *'free' as in 'free air'* and not *'free' as in 'free beer'*. 
+First of all, xCal is needed because there is a poor online presence of .NET implementations of vCalendar.  xCal is **free** - yes  *'free' as in 'free air'* and not *'free' as in 'free beer'*. 
 
 Secondly, xCal allows you **to host and maintain your calendar data on your own server** - that is, you have total control over your calendar information and thus in no way is your private data shared with third parties.
 
