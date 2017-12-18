@@ -296,6 +296,23 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         public static DURATION Abs(DURATION duration) 
             => new DURATION(Math.Abs(duration.WEEKS), Math.Abs(duration.DAYS), Math.Abs(duration.HOURS), Math.Abs(duration.MINUTES), Math.Abs(duration.SECONDS));
 
+
+        /// <summary>
+        /// Returns the greatest of two durations.
+        /// </summary>
+        /// <param name="left">The first duration to compare.</param>
+        /// <param name="right">The second duration to compare.</param>
+        /// <returns><paramref name="left"/> if it is greater than <paramref name="right"/>; otherwise <paramref name="right."/>.</returns>
+        public static DURATION Max(DURATION left, DURATION right) => left > right ? left : right;
+
+        /// <summary>
+        /// Returns the smallest of two durations.
+        /// </summary>
+        /// <param name="left">The first duration to compare. </param>
+        /// <param name="right">The second duration to compare.</param>
+        /// <returns><paramref name="left"/> if it is smaller than <paramref name="right"/>; otherwise <paramref name="right."/>.</returns>
+        public static DURATION Min(DURATION left, DURATION right) => left < right ? left : right;
+
         /// <summary>
         /// Checks if this duration instance is negative.
         /// </summary>

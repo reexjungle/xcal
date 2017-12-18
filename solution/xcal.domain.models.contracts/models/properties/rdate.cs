@@ -9,7 +9,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.properties
         List<DATE_TIME> DateTimes { get; }
         List<PERIOD> Periods { get; }
         TZID TimeZoneId { get; }
-        VALUE ValueType { get; }
+        VALUETYPE ValuetypeType { get; }
     }
 
 }

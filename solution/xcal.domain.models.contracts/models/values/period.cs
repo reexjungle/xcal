@@ -142,23 +142,25 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
         public PERIOD[] Subtract(PERIOD other)
         {
+
             //equal periods
-            if (this == other) return new PERIOD[] {};
+            if (this == other) return new PERIOD[] { };
 
             //non-overlapping periods
             if (Start < other.Start && Start < other.End && End < other.Start && End < other.End)
-                return new[] {this, other};
+                return new[] { this, - other };
 
             //overlapping periods with equal edges
-            if(Start == other.Start) return new[]{new PERIOD(DATE_TIME.Min(End, other.End), DATE_TIME.Max(End, other.End))};
-            if(End == other.End) return new[]{ new PERIOD(DATE_TIME.Min(Start, other.Start), DATE_TIME.Max(Start, other.Start)) };
+            if (Start == other.Start) return new[] { new PERIOD(DATE_TIME.Min(End, other.End), DATE_TIME.Max(End, other.End)) };
+            if (End == other.End) return new[] { new PERIOD(DATE_TIME.Min(Start, other.Start), DATE_TIME.Max(Start, other.Start)) };
 
             //overlapping periods with non-overlapping edges
             return new[]
             {
                 new PERIOD(DATE_TIME.Min(Start, other.Start), DATE_TIME.Max(Start, other.Start)),
-                new PERIOD(DATE_TIME.Min(End, other.End), DATE_TIME.Max(End, other.End))
+                new PERIOD(DATE_TIME.Max(End, other.End), DATE_TIME.Min(End, other.End))
             };
+
         }
 
         public PERIOD[] Subtract(IEnumerable<PERIOD> others)
@@ -171,7 +173,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
 
         /// <summary>
-        /// Returns the latest of two periods.
+        /// Returns the smaller of two periods.
         /// </summary>
         /// <param name="left">The first period to compare.</param>
         /// <param name="right">The second period to compare.</param>
@@ -179,12 +181,30 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         public static PERIOD Max(PERIOD left, PERIOD right) => left > right ? left : right;
 
         /// <summary>
-        /// Returns the earliest of two periods.
+        /// Returns the bigger of two periods.
         /// </summary>
         /// <param name="left">The first period to compare. </param>
         /// <param name="right">The second period to compare.</param>
         /// <returns><paramref name="left"/> if it is earlier than <paramref name="right"/>; otherwise <paramref name="right."/>.</returns>
         public static PERIOD Min(PERIOD left, PERIOD right) => left < right ? left : right;
+
+        /// <summary>
+        /// Returns the later of two periods.
+        /// </summary>
+        /// <param name="left">The first period to compare.</param>
+        /// <param name="right">The second period to compare.</param>
+        /// <returns><paramref name="left"/> if it is later than <paramref name="right"/>; otherwise <paramref name="right."/>.</returns>
+        public static PERIOD Latest(PERIOD left, PERIOD right) => left.Start > right.Start ? left : right;
+
+        /// <summary>
+        /// Returns the earlier of two periods.
+        /// </summary>
+        /// <param name="left">The first period to compare. </param>
+        /// <param name="right">The second period to compare.</param>
+        /// <returns><paramref name="left"/> if it is earlier than <paramref name="right"/>; otherwise <paramref name="right."/>.</returns>
+        public static PERIOD Earliest(PERIOD left, PERIOD right) => left.Start < right.Start ? left : right;
+
+        public PERIOD Negate() => new PERIOD(End, Start); 
 
         public int CompareTo(object obj)
         {
@@ -195,13 +215,8 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
         public int CompareTo(PERIOD other)
         {
-            //Irrespective of ends
-            if (Start < other.Start) return -1;
-            if (Start > other.Start) return 1;
-
-            //Equal starts
-            if (End < other.End) return -1;
-            if (End > other.End) return 1;
+            if (Duration < other.Duration) return -1;
+            if (Duration > other.Duration) return 1;
 
             //Equal starts and ends
             return 0;
@@ -221,6 +236,9 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
 
         public static PERIOD operator +(PERIOD period) => period;
 
+        public static PERIOD operator -(PERIOD other) => other.Negate();
+
+
         public static PERIOD[] operator -(PERIOD left, PERIOD right) => left.Subtract(right);
 
         public static PERIOD[] operator -(PERIOD left, IEnumerable<PERIOD> right) => left.Subtract(right);
@@ -230,7 +248,6 @@ namespace reexjungle.xcal.core.domain.contracts.models.values
         public static PERIOD[] operator +(PERIOD left, IEnumerable<PERIOD> right) => left.Add(right);
 
         public bool Equals(PERIOD other) => Start.Equals(other.Start)
-                                            && End.Equals(other.End)
                                             && Duration.Equals(other.Duration);
 
         public override bool Equals(object obj)

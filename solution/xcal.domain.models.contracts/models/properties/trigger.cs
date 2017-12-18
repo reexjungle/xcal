@@ -4,7 +4,7 @@ namespace reexjungle.xcal.core.domain.contracts.models.properties
 {
     public interface ITRIGGER
     {
-        VALUE ValueType { get; }
+        VALUETYPE ValuetypeType { get; }
     }
 
     public interface ITRIGGER_RELATED : ITRIGGER
